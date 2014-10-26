@@ -56,7 +56,8 @@
     (allow plymouth_admin_type plymouth_subject_type (process (ptrace)))
     (call ps_subject_pattern (plymouth_admin_type plymouth_subject_type))
     (allow plymouth_admin_type unit_object (service (all)))
-    ; (call admin_pattern (plymouth_admin_type plymouth_file_type)) ; create admin pattern functionality using classmapping
+    (allow plymouth_admin_type plymouth_file_type (all_file_objects
+        (not_mounton_entrypoint_and_execmod)))
 
     (optional plymouthd_optional_unconfined
         (call unconfined (common_subject)))

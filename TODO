@@ -1,4 +1,2 @@
 * ideally add a never allow mechanism for execmod and ptrace
     access is governed through macro's but there is no neverallow rule enforcing the use of them, too complicated
-
-* investigate feasibility of reimplementation of admin_pattern() using classmapping

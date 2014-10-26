@@ -37,7 +37,8 @@
     (allow kmod_admin_type common_subject (process (ptrace)))
     (call ps_subject_pattern (kmod_admin_type common_subject))
     (allow kmod_admin_type unit_object (service (all)))
-    ; (call admin_pattern (kmod_admin_type kmod_file_type)) ; create admin pattern functionality using classmapping
+    (allow kmod_admin_type kmod_file_type (all_file_objects
+        (not_mounton_entrypoint_and_execmod)))
 
     (optional kmod_optional_unconfined
         (call unconfined (common_subject)))
