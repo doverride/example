@@ -18,6 +18,12 @@
 (typeattribute uncond_exempt)
 (typeattribute user_target)
 
+(block subject
+    (blockabstract subject)
+        (type subject)
+        (call subject_type (subject))
+)
+
 (block common_subject
     (blockabstract common_subject)
         (type common_subject)
