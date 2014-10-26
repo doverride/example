@@ -1,0 +1,7 @@
+* ideally add a never allow mechanism for execmod and ptrace
+    access is governed trough macro's but there is no neverallow rule enforcing the use of them, too complicated
+
+* investigate feasibility of reimplementation of admin_pattern() using classmapping
+
+* systemd daemon executable files get associated with bin_type two times, once through subject_entry() in systemd_daemon_subject_entry()
+    and once though systemd bin_object blockinherit included with systemd_daemon blockabstract
