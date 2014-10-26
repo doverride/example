@@ -3,7 +3,7 @@
 (type fixed_disk_dev)
 (call dev_stor_type (fixed_disk_dev))
 
-(context fixed_disk_dev (sys.user sys.role fixed_disk_dev
+(context fixed_disk_dev (sys.u sys.r fixed_disk_dev
     (mls_systemhigh mls_systemhigh)))
 (filecon "/dev/[shmxv]d[^/]*" block fixed_disk_dev)
 (filecon "/dev/dm-[0-9]+" block fixed_disk_dev)
@@ -12,20 +12,20 @@
 (type fuse_dev)
 (call dev_stor_type (fuse_dev))
 
-(context fuse_dev (sys.user sys.role fuse_dev (systemlow systemlow)))
+(context fuse_dev (sys.u sys.r fuse_dev (systemlow systemlow)))
 (filecon "/dev/fuse" char fuse_dev)
 
 (type removable_dev)
 (call dev_stor_type (removable_dev))
 
-(context removable_dev (sys.user sys.role removable_dev (systemlow systemlow)))
+(context removable_dev (sys.u sys.r removable_dev (systemlow systemlow)))
 (filecon "/dev/mmcblk.+" block removable_dev)
 (filecon "/dev/sr[0-9]+" block removable_dev)
 
 (type scsi_generic_dev)
 (call dev_stor_type (scsi_generic_dev))
 
-(context scsi_generic_dev (sys.user sys.role scsi_generic_dev
+(context scsi_generic_dev (sys.u sys.r scsi_generic_dev
     (systemlow systemlow)))
 (filecon "/dev/bsg/.+" char scsi_generic_dev)
 (filecon "/dev/sg[0-9]+" char scsi_generic_dev)

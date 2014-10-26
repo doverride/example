@@ -5,7 +5,7 @@
 (type tty_dev)
 (call term_serial_type (tty_dev))
 
-(context tty_dev (sys.user sys.role tty_dev (systemlow systemlow)))
+(context tty_dev (sys.u sys.r tty_dev (systemlow systemlow)))
 (filecon "/dev/hvc[0-9]+" char tty_dev)
 (filecon "/dev/tty.+" char tty_dev)
 (filecon "/dev/vcs[^/]*" char tty_dev)
@@ -13,7 +13,7 @@
 (type virtio_dev)
 (call term_serial_type (virtio_dev))
 
-(context virtio_dev (sys.user sys.role virtio_dev (systemlow systemlow)))
+(context virtio_dev (sys.u sys.r virtio_dev (systemlow systemlow)))
 (filecon "/dev/vport[0-9]p[0-9]+" char virtio_dev)
 
 (call fs_associate_devpts (term_pty_type))

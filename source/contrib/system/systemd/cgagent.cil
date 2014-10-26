@@ -1,7 +1,7 @@
 (block cgagent
     (blockinherit system_entry)
 
-    (context bin_cgagent (sys.user sys.role bin_object (systemlow systemlow)))
+    (context bin_cgagent (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/systemd-cgroups-agent" file bin_cgagent)
 
     (optional cgagent_optional_unconfined

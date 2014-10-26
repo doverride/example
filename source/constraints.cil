@@ -1,13 +1,13 @@
 (constrain (process (transition dyntransition noatsecure siginh rlimitinh))
     (or (or (or (eq u1 u2) (and
     (eq t1 can_change_subject_identity) (eq t2 user_target)))
-    (and (eq t1 can_change_system_identity) (eq u2 sys.user)))
+    (and (eq t1 can_change_system_identity) (eq u2 sys.u)))
     (eq t1 uncond_exempt)))
 
 (constrain (process (transition dyntransition noatsecure siginh rlimitinh))
     (or (or (or (eq r1 r2) (and
     (eq t1 can_change_subject_role) (eq t2 user_target)))
-    (and (eq t1 can_change_system_role) (eq r2 sys.role)))
+    (and (eq t1 can_change_system_role) (eq r2 sys.r)))
     (eq t1 uncond_exempt)))
 
 (constrain (file (create relabelto relabelfrom)) (or (eq u1 u2)

@@ -28,7 +28,7 @@
 (block execmod_all
     (blockinherit bool_object)
 
-    (context execmod_all (sys.user sys.role bool_object
+    (context execmod_all (sys.u sys.r bool_object
         (systemlow systemlow)))
     (genfscon "selinuxfs" "/booleans/execmod_all"
         execmod_all)
@@ -116,7 +116,7 @@
 (call file_boot_type (boot))
 (call sys_mountpoint_type (boot))
 
-(context boot (sys.user sys.role boot (systemlow systemlow)))
+(context boot (sys.u sys.r boot (systemlow systemlow)))
 (filecon "/boot/.*" any boot)
 (filecon "/boot" dir boot)
 
@@ -124,7 +124,7 @@
 (call file_etc_type (etc))
 (call sys_mountpoint_type (etc))
 
-(context etc (sys.user sys.role etc (systemlow systemlow)))
+(context etc (sys.u sys.r etc (systemlow systemlow)))
 (filecon "/etc/.*" any etc)
 (filecon "/etc" dir etc)
 (filecon "/etc/sysconfig/network-scripts/network-functions.*"
@@ -137,22 +137,22 @@
 (type file)
 (call file_type (file))
 
-(context file (sys.user sys.role file (systemlow systemlow)))
+(context file (sys.u sys.r file (systemlow systemlow)))
 (filecon "/.*" any file)
 
 (type home)
 (call file_type (home))
 (call sys_mountpoint_type (home))
 
-(context home (sys.user sys.role home (systemlow mls_systemhigh)))
+(context home (sys.u sys.r home (systemlow mls_systemhigh)))
 (filecon "/home/.*" any ())
-(filecon "/home" symlink (sys.user sys.role home (systemlow systemlow)))
+(filecon "/home" symlink (sys.u sys.r home (systemlow systemlow)))
 (filecon "/home" dir home)
 
 (type lf)
 (call file_type (lf))
 
-(context lf (sys.user sys.role lf (mls_systemhigh mls_systemhigh)))
+(context lf (sys.u sys.r lf (mls_systemhigh mls_systemhigh)))
 (filecon "/\.journal" any ())
 (filecon "/lost\+found/.*" any ())
 (filecon "/lost\+found" dir lf)
@@ -200,7 +200,7 @@
 (call file_mnt_type (mnt))
 (call sys_mountpoint_type (mnt))
 
-(context mnt (sys.user sys.role mnt (systemlow systemlow)))
+(context mnt (sys.u sys.r mnt (systemlow systemlow)))
 (filecon "/media/[^/]*/.*" any ())
 (filecon "/media(/[^/]*)?" symlink mnt)
 (filecon "/media(/[^/]*)?" dir mnt)
@@ -212,7 +212,7 @@
 (call file_run_type (run))
 (call sys_mountpoint_type (run))
 
-(context run (sys.user sys.role run (systemlow systemlow)))
+(context run (sys.u sys.r run (systemlow systemlow)))
 (filecon "/var/run/.*" any run)
 (filecon "/var/run" symlink run)
 (filecon "/var/run" dir run)
@@ -221,7 +221,7 @@
 (call file_lock_type (run_lock))
 (call sys_mountpoint_type (run_lock))
 
-(context run_lock (sys.user sys.role run_lock (systemlow systemlow)))
+(context run_lock (sys.u sys.r run_lock (systemlow systemlow)))
 (filecon "/var/lock" symlink run_lock)
 (filecon "/var/run/lock/.*" any run_lock)
 (filecon "/var/run/lock" symlink run_lock)
@@ -231,7 +231,7 @@
 (call file_run_type (run_user))
 (call sys_mountpoint_type (run_user))
 
-(context run_user (sys.user sys.role run_user (systemlow mls_systemhigh)))
+(context run_user (sys.u sys.r run_user (systemlow mls_systemhigh)))
 (filecon "/var/run/user/.*" any ())
 (filecon "/var/run/user" dir run_user)
 
@@ -239,7 +239,7 @@
 (call file_usr_type (usr))
 (call sys_mountpoint_type (usr))
 
-(context usr (sys.user sys.role usr (systemlow systemlow)))
+(context usr (sys.u sys.r usr (systemlow systemlow)))
 (filecon "/opt/.*" any usr)
 (filecon "/opt" dir usr)
 (filecon "/usr/.*" any usr)
@@ -249,7 +249,7 @@
 (call file_var_type (var))
 (call sys_mountpoint_type (var))
 
-(context var (sys.user sys.role var (systemlow systemlow)))
+(context var (sys.u sys.r var (systemlow systemlow)))
 (filecon "/srv/.*" any var)
 (filecon "/srv" dir var)
 (filecon "/var/.*" any var)
@@ -259,7 +259,7 @@
 (call file_cache_type (var_cache))
 (call sys_mountpoint_type (var_cache))
 
-(context var_cache (sys.user sys.role var_cache (systemlow systemlow)))
+(context var_cache (sys.u sys.r var_cache (systemlow systemlow)))
 (filecon "/var/cache/.*" any var_cache)
 (filecon "/var/cache" dir var_cache)
 
@@ -267,7 +267,7 @@
 (call file_lib_type (var_lib))
 (call sys_mountpoint_type (var_lib))
 
-(context var_lib (sys.user sys.role var_lib (systemlow systemlow)))
+(context var_lib (sys.u sys.r var_lib (systemlow systemlow)))
 (filecon "/var/lib/.*" any var_lib)
 (filecon "/var/lib" dir var_lib)
 
@@ -275,7 +275,7 @@
 (call file_log_type (var_log))
 (call sys_mountpoint_type (var_log))
 
-(context var_log (sys.user sys.role var_log (systemlow mls_systemhigh)))
+(context var_log (sys.u sys.r var_log (systemlow mls_systemhigh)))
 (filecon "/var/log/.*" any var_log)
 (filecon "/var/log" dir var_log)
 
@@ -283,7 +283,7 @@
 (call file_spool_type (var_spool))
 (call sys_mountpoint_type (var_spool))
 
-(context var_spool (sys.user sys.role var_spool (systemlow systemlow)))
+(context var_spool (sys.u sys.r var_spool (systemlow systemlow)))
 (filecon "/var/spool/.*" any var_spool)
 (filecon "/var/spool" dir var_spool)
 
@@ -291,10 +291,10 @@
 (call file_tmp_type (var_tmp))
 (call sys_mountpoint_type (var_tmp))
 
-(context var_tmp (sys.user sys.role var_tmp (systemlow mls_systemhigh)))
-(filecon "/usr/tmp" symlink (sys.user sys.role var_tmp (systemlow systemlow)))
+(context var_tmp (sys.u sys.r var_tmp (systemlow mls_systemhigh)))
+(filecon "/usr/tmp" symlink (sys.u sys.r var_tmp (systemlow systemlow)))
 (filecon "/var/tmp/.*" any ())
-(filecon "/var/tmp" symlink (sys.user sys.role var_tmp (systemlow systemlow)))
+(filecon "/var/tmp" symlink (sys.u sys.r var_tmp (systemlow systemlow)))
 (filecon "/var/tmp" dir var_tmp)
 
 (call fs_associate_fs (file_type))

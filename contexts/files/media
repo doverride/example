@@ -1,3 +1,3 @@
-cdrom sys.user:sys.role:removable_dev
-floppy sys.user:sys.role:removable_dev
-disk sys.user:sys.role:removable_dev
+cdrom sys.u:sys.r:removable_dev
+floppy sys.u:sys.r:removable_dev
+disk sys.u:sys.r:removable_dev

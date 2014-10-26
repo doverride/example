@@ -8,7 +8,7 @@
     (roletype plymouth_role common_subject)
     (typeattributeset plymouth_subject_type (common_subject))
 
-    (context bin_plymouth (sys.user sys.role bin_object (systemlow systemlow)))
+    (context bin_plymouth (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/plymouth" file bin_plymouth)
 
     (optional plymouth_optional_unconfined
@@ -19,32 +19,32 @@
     (blockinherit systemd_daemon)
     (typeattributeset plymouth_subject_type (common_subject))
 
-    (context bin_plymouthd (sys.user sys.role bin_object (systemlow systemlow)))
+    (context bin_plymouthd (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/plymouthd" file bin_plymouthd)
 
     (blockinherit etc_object)
 
-    (context etc_plymouthd (sys.user sys.role etc_object (systemlow systemlow)))
+    (context etc_plymouthd (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/plymouth(/.*)?" any etc_plymouthd)
 
     (blockinherit run_object)
 
-    (context run_plymouthd (sys.user sys.role run_object (systemlow systemlow)))
+    (context run_plymouthd (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/plymouth(/.*)?" any run_plymouthd)
 
     (blockinherit unit_object)
 
-    (context unit_plymouthd (sys.user sys.role unit_object (systemlow systemlow)))
+    (context unit_plymouthd (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*plymouth-.*" file unit_plymouthd)
 
     (blockinherit var_lib_object)
 
-    (context var_lib_plymouthd (sys.user sys.role var_lib_object (systemlow systemlow)))
+    (context var_lib_plymouthd (sys.u sys.r var_lib_object (systemlow systemlow)))
     (filecon "/var/lib/plymouth(/.*)?" any var_lib_plymouthd)
 
     (blockinherit var_spool_object)
 
-    (context var_spool_plymouthd (sys.user sys.role var_spool_object (systemlow systemlow)))
+    (context var_spool_plymouthd (sys.u sys.r var_spool_object (systemlow systemlow)))
     (filecon "/var/spool/plymouth(/.*)?" any var_spool_plymouthd)
 
     (call file_run_filetrans (common_subject run_object dir "*"))

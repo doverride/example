@@ -6,62 +6,62 @@
 (type aio)
 (call fs_type (aio))
 
-(context aio (sys.user sys.role aio (systemlow systemlow)))
+(context aio (sys.u sys.r aio (systemlow systemlow)))
 (genfscon "aio" "/" aio)
 
 (type anon_inodefs)
 (call fs_type (anon_inodefs))
 
-(context anon_inodefs (sys.user sys.role anon_inodefs (systemlow systemlow)))
+(context anon_inodefs (sys.u sys.r anon_inodefs (systemlow systemlow)))
 (genfscon "anon_inodefs" "/" anon_inodefs)
 
 (type autofs)
 (call fs_type (autofs))
 
-(context autofs (sys.user sys.role autofs (systemlow systemlow)))
+(context autofs (sys.u sys.r autofs (systemlow systemlow)))
 (genfscon "autofs" "/" autofs)
 
 (type bdev)
 (call fs_type (bdev))
 
-(context bdev (sys.user sys.role bdev (systemlow systemlow)))
+(context bdev (sys.u sys.r bdev (systemlow systemlow)))
 (genfscon "bdev" "/" bdev)
 
 (type binfmt_misc)
 (call fs_type (binfmt_misc))
 
-(context binfmt_misc (sys.user sys.role binfmt_misc (systemlow systemlow)))
+(context binfmt_misc (sys.u sys.r binfmt_misc (systemlow systemlow)))
 (genfscon "binfmt_misc" "/" binfmt_misc)
 
 (type cgroup)
 (call fs_type (cgroup))
 
-(context cgroup (sys.user sys.role cgroup (systemlow systemlow)))
+(context cgroup (sys.u sys.r cgroup (systemlow systemlow)))
 (genfscon "cgroup" "/" cgroup)
 
 (type configfs)
 (call fs_type (configfs))
 
-(context configfs (sys.user sys.role configfs (systemlow systemlow)))
+(context configfs (sys.u sys.r configfs (systemlow systemlow)))
 (genfscon "configfs" "/" configfs)
 
 (type debugfs)
 (call fs_type (debugfs))
 
-(context debugfs (sys.user sys.role debugfs (systemlow systemlow)))
+(context debugfs (sys.u sys.r debugfs (systemlow systemlow)))
 (genfscon "debugfs" "/" debugfs)
 
 (type devpts)
 (call fs_type (devpts))
 
-(context devpts (sys.user sys.role devpts (systemlow systemlow)))
+(context devpts (sys.u sys.r devpts (systemlow systemlow)))
 (fsuse trans "devpts" devpts)
 
 (type devtmpfs)
 (call fs_type (devtmpfs))
 (call sys_mountpoint_type (devtmpfs))
 
-(context devtmpfs (sys.user sys.role devtmpfs (systemlow systemlow)))
+(context devtmpfs (sys.u sys.r devtmpfs (systemlow systemlow)))
 (fsuse trans "devtmpfs" devtmpfs)
 (filecon "/dev/.*" any ())
 (filecon "/dev" dir ())
@@ -69,19 +69,19 @@
 (type dosfs)
 (call fs_type (dosfs))
 
-(context dosfs (sys.user sys.role dosfs (systemlow systemlow)))
+(context dosfs (sys.u sys.r dosfs (systemlow systemlow)))
 (genfscon "vfat" "/" dosfs)
 
 (type drm)
 (call fs_type (drm))
 
-(context drm (sys.user sys.role drm (systemlow systemlow)))
+(context drm (sys.u sys.r drm (systemlow systemlow)))
 (genfscon "drm" "/" drm)
 
 (type efivarfs)
 (call fs_type (efivarfs))
 
-(context efivarfs (sys.user sys.role efivarfs (systemlow systemlow)))
+(context efivarfs (sys.u sys.r efivarfs (systemlow systemlow)))
     (genfscon "efivarfs" "/" efivarfs)
 
 (type fs)
@@ -90,13 +90,13 @@
 (type hugetlbfs)
 (call fs_type (hugetlbfs))
 
-(context hugetlbfs (sys.user sys.role hugetlbfs (systemlow systemlow)))
+(context hugetlbfs (sys.u sys.r hugetlbfs (systemlow systemlow)))
 (fsuse trans "hugetlbfs" hugetlbfs)
 
 (type proc)
 (call fs_type (proc))
 
-(context proc (sys.user sys.role proc (systemlow systemlow)))
+(context proc (sys.u sys.r proc (systemlow systemlow)))
 (genfscon "proc" "/" proc)
 (genfscon "proc" "/sysvipc" proc) ; BUG
 (filecon "/proc/.*" any ())
@@ -105,7 +105,7 @@
 (type pstore)
 (call fs_type (pstore))
 
-(context pstore (sys.user sys.role pstore (systemlow systemlow)))
+(context pstore (sys.u sys.r pstore (systemlow systemlow)))
 (genfscon "pstore" "/" pstore)
 
 (type removable)
@@ -115,7 +115,7 @@
 (call fs_type (rootfs))
 (call sys_mountpoint_type (rootfs))
 
-(context rootfs (sys.user sys.role rootfs (systemlow systemlow)))
+(context rootfs (sys.u sys.r rootfs (systemlow systemlow)))
 (genfscon "rootfs" "/" rootfs)
 (filecon "/" dir ())
 
@@ -123,7 +123,7 @@
 (call fs_type (sysfs))
 (call sys_mountpoint_type (sysfs))
 
-(context sysfs (sys.user sys.role sysfs (systemlow systemlow)))
+(context sysfs (sys.u sys.r sysfs (systemlow systemlow)))
 (genfscon "sysfs" "/" sysfs)
 (filecon "/sys/.*" any ())
 (filecon "/sys" dir ())
@@ -131,7 +131,7 @@
 (type tmpfs)
 (call fs_type (tmpfs))
 
-(context tmpfs (sys.user sys.role tmpfs (systemlow systemlow)))
+(context tmpfs (sys.u sys.r tmpfs (systemlow systemlow)))
 (filecon "/var/run/user/.*" any ())
 (filecon "/var/run/initramfs/\.need_shutdown" file ())
 (filecon "/tmp/.*" any ())
@@ -204,7 +204,7 @@
 (macro fs_unconfined ((type ARG1))
     (typeattributeset fs_unconfined_type ARG1))
 
-(context fs (sys.user sys.role fs (systemlow systemlow)))
+(context fs (sys.u sys.r fs (systemlow systemlow)))
 (sidcontext fs fs)
 (fsuse task "pipefs" fs)
 (fsuse task "sockfs" fs)

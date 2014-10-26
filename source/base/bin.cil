@@ -9,7 +9,7 @@
 (type bin)
 (call bin_type (bin))
 
-(context bin (sys.user sys.role bin (systemlow systemlow)))
+(context bin (sys.u sys.r bin (systemlow systemlow)))
 (filecon "/bin" symlink bin)
 (filecon "/etc/dhcp/dhclient\.d/chrony\.sh" file bin)
 (filecon "/etc/grub\.d/.*" file bin)
@@ -44,7 +44,7 @@
 (block shell
     (blockinherit bin_object)
 
-    (context shell (sys.user sys.role bin_object (systemlow systemlow)))
+    (context shell (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/d?ash" file shell)
     (filecon "/usr/bin/esh" file shell)
     (filecon "/usr/bin/bash" file shell)

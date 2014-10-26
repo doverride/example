@@ -22,27 +22,27 @@
 (block load_kernel_module
     (blockinherit bool_object)
 
-    (context load_kernel_module (sys.user sys.role bool_object
+    (context load_kernel_module (sys.u sys.r bool_object
         (systemlow systemlow)))
     (genfscon "selinuxfs" "/booleans/load_kernel_module"
         load_kernel_module)
 )
 
 (block sys
-    (user user)
-    (role role)
+    (user u)
+    (role r)
 
     (blockinherit common_subject)
 
     (call sys_roletype (common_subject))
-    (call sys_userrole (user))
+    (call sys_userrole (u))
 
-    (userlevel user systemlow)
-    (userrange user (systemlow systemhigh))
+    (userlevel u systemlow)
+    (userrange u (systemlow systemhigh))
 
     (blockinherit var_log_object)
 
-    (context var_log_sys (user role var_log_object
+    (context var_log_sys (u r var_log_object
         (systemlow systemlow)))
     (filecon "/var/log/boot\.log.*" file var_log_sys)
 
@@ -68,8 +68,6 @@
     (call fs_manage_devtmpfs_chr_files (common_subject))
     (call fs_manage_devtmpfs_blk_files (common_subject))
     (call fs_mounton_rootfs_dirs (common_subject))
-
-    ; (call fs_list_tmpfs (common_subject)) ; /run/initramfs
 
     (call sec_compute_create_context (common_subject))
     (call sec_list (common_subject))
@@ -122,43 +120,43 @@
 (type kallsyms_proc)
 (call sys_proc_type (kallsyms_proc))
 
-(context kallsyms_proc (sys.user sys.role kallsyms_proc (systemlow systemlow)))
+(context kallsyms_proc (sys.u sys.r kallsyms_proc (systemlow systemlow)))
 (genfscon "proc" "/kallsyms" kallsyms_proc)
 
 (type kcore_proc)
 (call sys_proc_type (kcore_proc))
 
-(context kcore_proc (sys.user sys.role kcore_proc (mls_systemhigh mls_systemhigh)))
+(context kcore_proc (sys.u sys.r kcore_proc (mls_systemhigh mls_systemhigh)))
 (genfscon "proc" "/kcore" kcore_proc)
 
 (type kmsg_proc)
 (call sys_proc_type (kmsg_proc))
 
-(context kmsg_proc (sys.user sys.role kmsg_proc (mls_systemhigh mls_systemhigh)))
+(context kmsg_proc (sys.u sys.r kmsg_proc (mls_systemhigh mls_systemhigh)))
 (genfscon "proc" "/kmsg" kmsg_proc)
 
 (type mdstat_proc)
 (call sys_proc_type (mdstat_proc))
 
-(context mdstat_proc (sys.user sys.role mdstat_proc (systemlow systemlow)))
+(context mdstat_proc (sys.u sys.r mdstat_proc (systemlow systemlow)))
 (genfscon "proc" "/mdstat" mdstat_proc)
 
 (type mtrr_proc)
 (call sys_proc_type (mtrr_proc))
 
-(context mtrr_proc (sys.user sys.role mtrr_proc (systemlow systemlow)))
+(context mtrr_proc (sys.u sys.r mtrr_proc (systemlow systemlow)))
 (genfscon "proc" "/mtrr" mtrr_proc)
 
 (type net_proc)
 (call sys_proc_type (net_proc))
 
-(context net_proc (sys.user sys.role net_proc (systemlow systemlow)))
+(context net_proc (sys.u sys.r net_proc (systemlow systemlow)))
 (genfscon "proc" "/net" net_proc)
 
 (type sysrq_proc)
 (call sys_proc_type (sysrq_proc))
 
-(context sysrq_proc (sys.user sys.role sysrq_proc (systemlow systemlow)))
+(context sysrq_proc (sys.u sys.r sysrq_proc (systemlow systemlow)))
 (genfscon "proc" "/sysrq-trigger" sysrq_proc)
 
 (type sysctl)
@@ -167,51 +165,51 @@
 (type crypto_sysctl)
 (call sys_sysctl_type (crypto_sysctl))
 
-(context crypto_sysctl (sys.user sys.role crypto_sysctl (systemlow systemlow)))
+(context crypto_sysctl (sys.u sys.r crypto_sysctl (systemlow systemlow)))
 (genfscon "proc" "/sys/crypto" crypto_sysctl)
 
 (type dev_sysctl)
 (call sys_sysctl_type (dev_sysctl))
 
-(context dev_sysctl (sys.user sys.role dev_sysctl (systemlow systemlow)))
+(context dev_sysctl (sys.u sys.r dev_sysctl (systemlow systemlow)))
 (genfscon "proc" "/sys/dev" dev_sysctl)
 
 (type fs_sysctl)
 (call sys_sysctl_type (fs_sysctl))
 (call sys_mountpoint_type (fs_sysctl))
 
-(context fs_sysctl (sys.user sys.role fs_sysctl (systemlow systemlow)))
+(context fs_sysctl (sys.u sys.r fs_sysctl (systemlow systemlow)))
 (genfscon "proc" "/sys/fs" fs_sysctl)
 
 (type irq_sysctl)
 (call sys_sysctl_type (irq_sysctl))
 
-(context irq_sysctl (sys.user sys.role irq_sysctl (systemlow systemlow)))
+(context irq_sysctl (sys.u sys.r irq_sysctl (systemlow systemlow)))
 (genfscon "proc" "/irq" irq_sysctl)
 
 (type kernel_sysctl)
 (call sys_sysctl_type (kernel_sysctl))
 
-(context kernel_sysctl (sys.user sys.role kernel_sysctl (systemlow systemlow)))
+(context kernel_sysctl (sys.u sys.r kernel_sysctl (systemlow systemlow)))
 (genfscon "proc" "/sys/kernel" kernel_sysctl)
 
 (type net_sysctl)
 (call sys_sysctl_type (net_sysctl))
 
-(context net_sysctl (sys.user sys.role net_sysctl (systemlow systemlow)))
+(context net_sysctl (sys.u sys.r net_sysctl (systemlow systemlow)))
 (genfscon "proc" "/sys/net" net_sysctl)
 
 (type net_unix_sysctl)
 (call sys_sysctl_type (net_unix_sysctl))
 
-(context net_unix_sysctl (sys.user sys.role net_unix_sysctl (systemlow systemlow)))
+(context net_unix_sysctl (sys.u sys.r net_unix_sysctl (systemlow systemlow)))
 (genfscon "proc" "/sys/net/unix" net_unix_sysctl)
 
 (type security_sysctl)
 (call sys_sysctl_type (security_sysctl))
 (typeattributeset security_or_usermodehelper_sysctl_type (security_sysctl))
 
-(context security_sysctl (sys.user sys.role security_sysctl (systemlow systemlow)))
+(context security_sysctl (sys.u sys.r security_sysctl (systemlow systemlow)))
 (genfscon "proc" "/sys/fs/protected_hardlinks" security_sysctl)
 (genfscon "proc" "/sys/fs/protected_symlinks" security_sysctl)
 (genfscon "proc" "/sys/fs/suid_dumpable" security_sysctl)
@@ -225,7 +223,7 @@
 (call sys_sysctl_type (usermodehelper_sysctl))
 (typeattributeset security_or_usermodehelper_sysctl_type (usermodehelper_sysctl))
 
-(context usermodehelper_sysctl (sys.user sys.role usermodehelper_sysctl (systemlow systemlow)))
+(context usermodehelper_sysctl (sys.u sys.r usermodehelper_sysctl (systemlow systemlow)))
 (genfscon "proc" "/sys/kernel/core_pattern" usermodehelper_sysctl)
 (genfscon "proc" "/sys/kernel/modprobe" usermodehelper_sysctl)
 (genfscon "proc" "/sys/kernel/poweroff_cmd" usermodehelper_sysctl)
@@ -234,13 +232,13 @@
 (type vm_sysctl)
 (call sys_sysctl_type (vm_sysctl))
 
-(context vm_sysctl (sys.user sys.role vm_sysctl (systemlow systemlow)))
+(context vm_sysctl (sys.u sys.r vm_sysctl (systemlow systemlow)))
 (genfscon "proc" "/sys/vm" vm_sysctl)
 
 (type vm_overcommit_sysctl)
 (call sys_sysctl_type (vm_overcommit_sysctl))
 
-(context vm_overcommit_sysctl (sys.user sys.role vm_overcommit_sysctl (systemlow systemlow)))
+(context vm_overcommit_sysctl (sys.u sys.r vm_overcommit_sysctl (systemlow systemlow)))
 (genfscon "proc" "/sys/vm/overcommit_memory" vm_overcommit_sysctl)
 
 (type unlabeled)
@@ -328,14 +326,14 @@
     (typeattributeset sys_proc_type ARG1))
 
 (macro sys_roletype ((type ARG1))
-    (roletype sys.role ARG1))
+    (roletype sys.r ARG1))
 
 (macro sys_sysctl_type ((type ARG1))
     (call sys_object_type (ARG1))
     (typeattributeset sys_sysctl_type ARG1))
 
 (macro sys_userrole ((user ARG1))
-    (userrole ARG1 sys.role))
+    (userrole ARG1 sys.r))
 
 (macro sys_dump_kernel ((type ARG1))
     (call fs_search_proc (ARG1))
@@ -405,15 +403,15 @@
     (call sys_load_kernel_module (ARG1))
     (typeattributeset sys_unconfined_type ARG1))
 
-(context system (sys.user sys.role sys.common_subject (mls_systemhigh mls_systemhigh)))
+(context system (sys.u sys.r sys.common_subject (mls_systemhigh mls_systemhigh)))
 (sidcontext kernel system)
 
-(context sysctl (sys.user sys.role sysctl (systemlow systemlow)))
+(context sysctl (sys.u sys.r sysctl (systemlow systemlow)))
 (sidcontext sysctl sysctl)
 (genfscon "proc" "/sys" sysctl)
 
-(context invalid (sys.user sys.role invalid (mls_systemhigh mls_systemhigh)))
+(context invalid (sys.u sys.r invalid (mls_systemhigh mls_systemhigh)))
 (sidcontext unlabeled invalid)
 
-(context unlabeled (sys.user sys.role unlabeled (systemlow systemlow)))
+(context unlabeled (sys.u sys.r unlabeled (systemlow systemlow)))
 (sidcontext file unlabeled)

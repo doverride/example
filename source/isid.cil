@@ -21,7 +21,7 @@
     sysctl_net sysctl_net_unix sysctl_vm sysctl_dev kmod policy
     scmp_packet devnull))
 
-(context isid (sys.user sys.role unlabeled (systemlow systemlow)))
+(context isid (sys.u sys.r unlabeled (systemlow systemlow)))
 
 (sidcontext file_labels isid)
 (sidcontext init isid)

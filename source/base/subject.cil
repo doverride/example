@@ -36,13 +36,13 @@
     (blockabstract system_entry)
         (blockinherit entry)
 
-        (roletype sys.role common_subject)
+        (roletype sys.r common_subject)
 )
 
 (block execheap
     (blockinherit bool_object)
 
-    (context execheap (sys.user sys.role bool_object
+    (context execheap (sys.u sys.r bool_object
         (systemlow systemlow)))
     (genfscon "selinuxfs" "/booleans/execheap"
         execheap)
@@ -51,7 +51,7 @@
 (block execmem
     (blockinherit bool_object)
 
-    (context execmem (sys.user sys.role bool_object
+    (context execmem (sys.u sys.r bool_object
         (systemlow systemlow)))
     (genfscon "selinuxfs" "/booleans/execmem"
         execmem)
@@ -60,7 +60,7 @@
 (block execstack
     (blockinherit bool_object)
 
-    (context execstack (sys.user sys.role bool_object
+    (context execstack (sys.u sys.r bool_object
         (systemlow systemlow)))
     (genfscon "selinuxfs" "/booleans/execstack"
         execstack)
@@ -69,7 +69,7 @@
 (block mmap_low
     (blockinherit bool_object)
 
-    (context mmap_low (sys.user sys.role bool_object
+    (context mmap_low (sys.u sys.r bool_object
         (systemlow systemlow)))
     (genfscon "selinuxfs" "/booleans/mmap_low"
         mmap_low)
@@ -78,7 +78,7 @@
 (block ptrace_all
     (blockinherit bool_object)
 
-    (context ptrace_all (sys.user sys.role bool_object
+    (context ptrace_all (sys.u sys.r bool_object
         (systemlow systemlow)))
     (genfscon "selinuxfs" "/booleans/ptrace_all"
         ptrace_all)

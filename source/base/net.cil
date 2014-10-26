@@ -104,14 +104,14 @@
 (macro net_unconfined ((type ARG1))
     (typeattributeset net_unconfined_type ARG1))
 
-(context port (sys.user sys.role port (systemlow systemlow)))
+(context port (sys.u sys.r port (systemlow systemlow)))
 (sidcontext port port)
 
-(context if (sys.user sys.role if (systemlow mls_systemhigh)))
+(context if (sys.u sys.r if (systemlow mls_systemhigh)))
 (sidcontext netif if)
 
-(context peer (sys.user sys.role peer (mls_systemhigh mls_systemhigh)))
+(context peer (sys.u sys.r peer (mls_systemhigh mls_systemhigh)))
 (sidcontext netmsg peer)
 
-(context node (sys.user sys.role node (systemlow mls_systemhigh)))
+(context node (sys.u sys.r node (systemlow mls_systemhigh)))
 (sidcontext node node)

@@ -15,14 +15,14 @@
 (call fs_type (securityfs))
 (typeattributeset sec_bool_type securityfs)
 
-(context securityfs (sys.user sys.role securityfs (systemlow systemlow)))
+(context securityfs (sys.u sys.r securityfs (systemlow systemlow)))
 (genfscon "selinuxfs" "/" securityfs)
 (genfscon "securityfs" "/" securityfs)
 
 (block load_policy
     (blockinherit bool_object)
 
-    (context load_policy (sys.user sys.role bool_object
+    (context load_policy (sys.u sys.r bool_object
         (systemlow systemlow)))
     (genfscon "selinuxfs" "/booleans/load_policy"
         load_policy)
@@ -119,5 +119,5 @@
 (macro sec_unconfined ((type ARG1))
     (typeattributeset sec_unconfined_type ARG1))
 
-(sidcontext security (sys.user sys.role securityfs
+(sidcontext security (sys.u sys.r securityfs
     (mls_systemhigh mls_systemhigh)))
