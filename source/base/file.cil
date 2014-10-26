@@ -58,6 +58,27 @@
         (call file_run_type (run_object))
 )
 
+(block run_object_all_files
+    (blockabstract run_object_all_files)
+        (blockinherit run_object)
+
+        (allow common_subject run_object manage_file_perms)
+        (allow common_subject run_object manage_dir_perms)
+        (allow common_subject run_object manage_lnk_file_perms)
+        (allow common_subject run_object manage_sock_file_perms)
+        (allow common_subject run_object manage_fifo_file_perms)
+
+        (call file_run_filetrans (common_subject run_object dir "*"))
+)
+
+(block run_object_single_file
+    (blockabstract run_object_single_file)
+        (blockinherit run_object)
+
+        (allow common_subject run_object manage_file_perms)
+        (call file_run_filetrans (common_subject run_object file "*"))
+)
+
 (block run_lock_object
     (blockabstract run_lock_object)
         (type run_lock_object)
@@ -100,6 +121,15 @@
 
         (allow common_subject var_log_object manage_file_perms)
         (call file_log_filetrans (common_subject var_log_object file "*"))
+)
+
+(block var_log_object_dir_file
+    (blockabstract var_log_object_dir_file)
+        (blockinherit var_log_object)
+
+        (allow common_subject var_log_object manage_file_perms)
+        (allow common_subject var_log_object manage_dir_perms)
+        (call file_log_filetrans (common_subject var_log_object dir "*"))
 )
 
 (block var_spool_object

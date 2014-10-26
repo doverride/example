@@ -27,7 +27,7 @@
     (context etc_plymouthd (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/plymouth(/.*)?" any etc_plymouthd)
 
-    (blockinherit run_object)
+    (blockinherit run_object_all_files)
 
     (context run_plymouthd (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/plymouth(/.*)?" any run_plymouthd)
@@ -46,8 +46,6 @@
 
     (context var_spool_plymouthd (sys.u sys.r var_spool_object (systemlow systemlow)))
     (filecon "/var/spool/plymouth(/.*)?" any var_spool_plymouthd)
-
-    (call file_run_filetrans (common_subject run_object dir "*"))
 
     (typeattributeset plymouth_file_type (etc_object var_lib_object run_object
         var_spool_object unit_object))
