@@ -94,6 +94,14 @@
         (call file_log_type (var_log_object))
 )
 
+(block var_log_object_single_file
+    (blockabstract var_log_object_single_file)
+        (blockinherit var_log_object)
+
+        (allow common_subject var_log_object manage_file_perms)
+        (call file_log_filetrans (common_subject var_log_object file "*"))
+)
+
 (block var_spool_object
     (blockabstract var_spool_object)
         (type var_spool_object)

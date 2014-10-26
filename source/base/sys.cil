@@ -40,7 +40,7 @@
     (userlevel u systemlow)
     (userrange u (systemlow systemhigh))
 
-    (blockinherit var_log_object)
+    (blockinherit var_log_object_single_file)
 
     (context var_log_sys (u r var_log_object
         (systemlow systemlow)))
@@ -52,9 +52,6 @@
     (allow common_subject self (process (setsched)))
     (allow common_subject self create_unix_stream_socket_perms)
     (allow common_subject self (capability2 (block_suspend syslog)))
-
-    (allow common_subject var_log_object manage_file_perms)
-    (call file_log_filetrans (common_subject var_log_object file "*"))
 
     (call sys_request_load_module (common_subject))
 
