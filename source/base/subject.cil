@@ -24,6 +24,21 @@
         (call subject_common_type (common_subject))
 )
 
+(block entry
+    (blockabstract entry)
+        (blockinherit bin_object)
+        (blockinherit common_subject)
+
+        (call subject_entry (common_subject bin_object))
+)
+
+(block system_entry
+    (blockabstract system_entry)
+        (blockinherit entry)
+
+        (roletype sys.role common_subject)
+)
+
 (block execheap
     (blockinherit bool_object)
 

@@ -1,9 +1,5 @@
 (block cgagent
-    (blockinherit bin_object)
-    (blockinherit common_subject)
-
-    (call subject_entry (common_subject bin_object))
-    (roletype sys.role common_subject)
+    (blockinherit system_entry)
 
     (context bin_cgagent (sys.user sys.role bin_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/systemd-cgroups-agent" file bin_cgagent)
