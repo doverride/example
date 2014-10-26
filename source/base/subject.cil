@@ -216,7 +216,6 @@
     (call subject_entry_type (ARG2)))
 
 (macro subject_entry_type ((type ARG1))
-    (call bin_type (ARG1))
     (typeattributeset subject_entry_type ARG1))
 
 (macro subject_execheap ((type ARG1))
