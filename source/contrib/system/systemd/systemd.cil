@@ -7,8 +7,8 @@
         (call systemd_unit_type (unit_object))
 )
 
-(block systemd_daemon_subject
-    (blockabstract systemd_daemon_subject)
+(block systemd_daemon
+    (blockabstract systemd_daemon)
         (blockinherit bin_object)
         (blockinherit common_subject)
 
@@ -19,7 +19,7 @@
     (blockinherit bin_object)
     (blockinherit common_subject)
 
-    (call subject_entry (systemd.common_subject systemd.bin_object))
+    (call subject_entry (common_subject bin_object))
     (roletype sys.role common_subject)
 
     (context bin_systemd (sys.user sys.role bin_object (systemlow systemlow)))

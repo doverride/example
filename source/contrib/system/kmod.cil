@@ -3,7 +3,7 @@
 (typeattribute kmod_file_type)
 
 (block kmod
-    (blockinherit systemd_daemon_subject)
+    (blockinherit systemd_daemon)
     (roletype kmod_role common_subject)
 
     (context bin_kmod (sys.user sys.role bin_object (systemlow systemlow)))

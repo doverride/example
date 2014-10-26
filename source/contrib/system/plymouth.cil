@@ -4,7 +4,7 @@
 (typeattribute plymouth_file_type)
 
 (block plymouth
-    (blockinherit systemd_daemon_subject)
+    (blockinherit systemd_daemon)
     (roletype plymouth_role common_subject)
     (typeattributeset plymouth_subject_type (common_subject))
 
@@ -16,7 +16,7 @@
 )
 
 (block plymouthd
-    (blockinherit systemd_daemon_subject)
+    (blockinherit systemd_daemon)
     (typeattributeset plymouth_subject_type (common_subject))
 
     (context bin_plymouthd (sys.user sys.role bin_object (systemlow systemlow)))
