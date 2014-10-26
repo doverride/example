@@ -71,6 +71,15 @@
         (call file_run_filetrans (common_subject run_object dir "*"))
 )
 
+(block run_object_dir_file
+    (blockabstract run_object_dir_file)
+        (blockinherit run_object)
+
+        (allow common_subject run_object manage_file_perms)
+        (allow common_subject run_object manage_dir_perms)
+        (call file_run_filetrans (common_subject run_object dir "*"))
+)
+
 (block run_object_single_file
     (blockabstract run_object_single_file)
         (blockinherit run_object)

@@ -27,7 +27,7 @@
     (context etc_plymouthd (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/plymouth(/.*)?" any etc_plymouthd)
 
-    (blockinherit run_object_all_files)
+    (blockinherit run_object_dir_file)
 
     (context run_plymouthd (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/plymouth(/.*)?" any run_plymouthd)
