@@ -1,0 +1,123 @@
+(boolean load_policy true)
+
+(sid security)
+
+(typeattribute sec_bool_type)
+(typeattribute sec_unconfined_type)
+
+(block bool_object
+    (blockabstract bool_object)
+        (type bool_object)
+        (call sec_bool_type (bool_object))
+)
+
+(type securityfs)
+(call fs_type (securityfs))
+(typeattributeset sec_bool_type securityfs)
+
+(context securityfs (sys.user sys.role securityfs (systemlow systemlow)))
+(genfscon "selinuxfs" "/" securityfs)
+(genfscon "securityfs" "/" securityfs)
+
+(block load_policy
+    (blockinherit bool_object)
+
+    (context load_policy (sys.user sys.role bool_object
+        (systemlow systemlow)))
+    (genfscon "selinuxfs" "/booleans/load_policy"
+        load_policy)
+)
+
+(typeattribute can_load_policy)
+(typeattribute not_can_load_policy_or_sec_unconfined_type)
+(typeattributeset not_can_load_policy_or_sec_unconfined_type
+    (not (can_load_policy sec_unconfined_type)))
+(neverallow not_can_load_policy_or_sec_unconfined_type
+    securityfs (security (load_policy)))
+
+(typeattribute can_setenforce)
+(typeattribute not_can_setenforce_or_sec_unconfined_type)
+(typeattributeset not_can_setenforce_or_sec_unconfined_type
+    (not (can_setenforce sec_unconfined_type)))
+(neverallow not_can_setenforce_or_sec_unconfined_type
+    securityfs (security (setenforce)))
+
+(typeattribute can_setsecparam)
+(typeattribute not_can_setsecparam_or_sec_unconfined_type)
+(typeattributeset not_can_setsecparam_or_sec_unconfined_type
+    (not (can_setsecparam sec_unconfined_type)))
+(neverallow not_can_setsecparam_or_sec_unconfined_type
+    securityfs (security (setsecparam)))
+
+(allow sec_unconfined_type securityfs list_dir_perms)
+(allow sec_unconfined_type securityfs read_lnk_file_perms)
+
+(typeattribute bool_except_load_policy)
+(typeattributeset bool_except_load_policy
+    (and (sec_bool_type) (not (load_policy.bool_object))))
+(allow sec_unconfined_type sec_bool_type read_file_perms)
+(allow sec_unconfined_type bool_except_load_policy
+    (file (append write)))
+(allow sec_unconfined_type securityfs
+    all_security_perms_except_load_policy_and_setenforce)
+
+(booleanif (load_policy)
+    (true
+        (allow sec_unconfined_type securityfs (security
+            (load_policy setenforce)))
+        (allow sec_unconfined_type
+            securityfs (file (append write)))))
+
+(macro sec_bool_type ((type ARG1))
+    (call sys_object_type (ARG1))
+    (typeattributeset sec_bool_type ARG1))
+
+(macro sec_compute_create_context ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call rw_files_pattern (ARG1 securityfs securityfs))
+    (allow ARG1 securityfs (security (compute_create))))
+
+(macro sec_getattr_filesystems ((type ARG1))
+    (allow ARG1 securityfs (filesystem (getattr))))
+
+(macro sec_list ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (allow ARG1 securityfs list_dir_perms))
+
+(macro sec_set_enforce_mode ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call rw_files_pattern (ARG1 securityfs securityfs))
+    (typeattributeset can_setenforce ARG1)
+    (booleanif (load_policy)
+        (true
+            (allow ARG1 securityfs (security (setenforce))))))
+
+(macro sec_load_policy ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call rw_files_pattern (ARG1 securityfs securityfs))
+    (typeattributeset can_load_policy ARG1)
+    (booleanif (load_policy)
+        (true
+            (allow ARG1 securityfs (security (load_policy))))))
+
+(macro sec_set_all_booleans ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (allow ARG1 bool_except_load_policy rw_file_perms)
+    (call read_files_pattern (ARG1 securityfs securityfs))
+    (allow ARG1 securityfs (security (setbool)))
+    (booleanif (load_policy)
+        (true
+            (allow ARG1 load_policy.bool_object (file (append write))))))
+
+(macro sec_set_parameter ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call rw_files_pattern (ARG1 securityfs securityfs))
+    (allow ARG1 securityfs (security (setsecparam)))
+    (auditallow ARG1 securityfs (security (setsecparam)))
+    (typeattributeset can_setsecparam ARG1))
+
+(macro sec_unconfined ((type ARG1))
+    (typeattributeset sec_unconfined_type ARG1))
+
+(sidcontext security (sys.user sys.role securityfs
+    (mls_systemhigh mls_systemhigh)))

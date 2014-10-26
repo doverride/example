@@ -1,0 +1,420 @@
+(boolean execmod_all true)
+
+(typeattribute file_type)
+
+(typeattribute file_auth_type)
+(typeattribute file_not_auth_type)
+
+(typeattribute file_security_type)
+(typeattribute file_not_security_type)
+
+(typeattribute file_boot_type)
+(typeattribute file_etc_type)
+(typeattribute file_mnt_type)
+(typeattribute file_run_type)
+(typeattribute file_usr_type)
+(typeattribute file_var_type)
+
+(typeattribute file_cache_type)
+(typeattribute file_lib_type)
+(typeattribute file_lock_type)
+(typeattribute file_log_type)
+(typeattribute file_spool_type)
+(typeattribute file_tmp_type)
+(typeattribute file_tmpfs_type)
+
+(typeattribute file_unconfined_type)
+
+(block execmod_all
+    (blockinherit bool_object)
+
+    (context execmod_all (sys.user sys.role bool_object
+        (systemlow systemlow)))
+    (genfscon "selinuxfs" "/booleans/execmod_all"
+        execmod_all)
+)
+
+(block boot_object
+    (blockabstract boot_object)
+        (type boot_object)
+        (call file_boot_type (boot_object))
+)
+
+(block etc_object
+    (blockabstract etc_object)
+        (type etc_object)
+        (call file_boot_type (etc_object))
+)
+
+(block file_object
+    (blockabstract file_object)
+        (type file_object)
+        (call file_type (file_object))
+)
+
+(block run_object
+    (blockabstract run_object)
+        (type run_object)
+        (call file_run_type (run_object))
+)
+
+(block run_lock_object
+    (blockabstract run_lock_object)
+        (type run_lock_object)
+        (call file_lock_type (run_lock_object))
+)
+
+(block usr_object
+    (blockabstract usr_object)
+        (type usr_object)
+        (call file_usr_type (usr_object))
+)
+
+(block var_object
+    (blockabstract var_object)
+        (type var_object)
+        (call file_var_type (var_object))
+)
+
+(block var_cache_object
+    (blockabstract var_cache_object)
+        (type var_cache_object)
+        (call file_cache_type (var_cache_object))
+)
+
+(block var_lib_object
+    (blockabstract var_lib_object)
+        (type var_lib_object)
+        (call file_lib_type (var_lib_object))
+)
+
+(block var_log_object
+    (blockabstract var_log_object)
+        (type var_log_object)
+        (call file_log_type (var_log_object))
+)
+
+(block var_spool_object
+    (blockabstract var_spool_object)
+        (type var_spool_object)
+        (call file_spool_type (var_spool_object))
+)
+
+(block var_tmp_object
+    (blockabstract var_tmp_object)
+        (type var_tmp_object)
+        (call file_tmp_type (var_tmp_object))
+)
+
+(block tmpfs_object
+    (blockabstract tmpfs_object)
+        (type tmpfs_object)
+        (call file_tmpfs_type (tmpfs_object))
+)
+
+(type boot)
+(call file_boot_type (boot))
+(call sys_mountpoint_type (boot))
+
+(context boot (sys.user sys.role boot (systemlow systemlow)))
+(filecon "/boot/.*" any boot)
+(filecon "/boot" dir boot)
+
+(type etc)
+(call file_etc_type (etc))
+(call sys_mountpoint_type (etc))
+
+(context etc (sys.user sys.role etc (systemlow systemlow)))
+(filecon "/etc/.*" any etc)
+(filecon "/etc" dir etc)
+(filecon "/etc/sysconfig/network-scripts/network-functions.*"
+    file etc)
+(filecon "/etc/rc\.d/init\.d/functions" file etc)
+(filecon "/etc/rc\.d/init\.d/README" file etc)
+(filecon "/usr/local/etc/.*" any etc)
+(filecon "/usr/local/etc" dir etc)
+
+(type file)
+(call file_type (file))
+
+(context file (sys.user sys.role file (systemlow systemlow)))
+(filecon "/.*" any file)
+
+(type home)
+(call file_type (home))
+(call sys_mountpoint_type (home))
+
+(context home (sys.user sys.role home (systemlow mls_systemhigh)))
+(filecon "/home/.*" any ())
+(filecon "/home" symlink (sys.user sys.role home (systemlow systemlow)))
+(filecon "/home" dir home)
+
+(type lf)
+(call file_type (lf))
+
+(context lf (sys.user sys.role lf (mls_systemhigh mls_systemhigh)))
+(filecon "/\.journal" any ())
+(filecon "/lost\+found/.*" any ())
+(filecon "/lost\+found" dir lf)
+(filecon "/boot/\.journal" any ())
+(filecon "/boot/lost\+found/.*" any ())
+(filecon "/boot/lost\+found" dir lf)
+(filecon "/etc/\.journal" any ())
+(filecon "/etc/lost\+found/.*" any ())
+(filecon "/etc/lost\+found" dir lf)
+(filecon "/home/\.journal" any ())
+(filecon "/home/lost\+found/.*" any ())
+(filecon "/home/lost\+found" dir lf)
+(filecon "/opt/\.journal" any ())
+(filecon "/opt/lost\+found/.*" any ())
+(filecon "/opt/lost\+found" dir lf)
+(filecon "/srv/\.journal" any ())
+(filecon "/srv/lost\+found/.*" any ())
+(filecon "/srv/lost\+found" dir lf)
+(filecon "/usr/\.journal" any ())
+(filecon "/usr/lost\+found/.*" any ())
+(filecon "/usr/lost\+found" dir lf)
+(filecon "/var/\.journal" any ())
+(filecon "/var/lost\+found/.*" any ())
+(filecon "/var/lost\+found" dir lf)
+(filecon "/var/cache/\.journal" any ())
+(filecon "/var/cache/lost\+found/.*" any ())
+(filecon "/var/cache/lost\+found" dir lf)
+(filecon "/var/lib/\.journal" any ())
+(filecon "/var/lib/lost\+found/.*" any ())
+(filecon "/var/lib/lost\+found" dir lf)
+(filecon "/var/log/\.journal" any ())
+(filecon "/var/log/lost\+found/.*" any ())
+(filecon "/var/log/lost\+found" dir lf)
+(filecon "/var/log/audit/\.journal" any ())
+(filecon "/var/log/audit/lost\+found/.*" any ())
+(filecon "/var/log/audit/lost\+found" dir lf)
+(filecon "/var/spool/\.journal" any ())
+(filecon "/var/spool/lost\+found/.*" any ())
+(filecon "/var/spool/lost\+found" dir lf)
+(filecon "/var/tmp/\.journal" any ())
+(filecon "/var/tmp/lost\+found/.*" any ())
+(filecon "/var/tmp/lost\+found" dir lf)
+
+(type mnt)
+(call file_mnt_type (mnt))
+(call sys_mountpoint_type (mnt))
+
+(context mnt (sys.user sys.role mnt (systemlow systemlow)))
+(filecon "/media/[^/]*/.*" any ())
+(filecon "/media(/[^/]*)?" symlink mnt)
+(filecon "/media(/[^/]*)?" dir mnt)
+(filecon "/mnt/[^/]*/.*" any ())
+(filecon "/mnt(/[^/]*)?" symlink mnt)
+(filecon "/mnt(/[^/]*)?" dir mnt)
+
+(type run)
+(call file_run_type (run))
+(call sys_mountpoint_type (run))
+
+(context run (sys.user sys.role run (systemlow systemlow)))
+(filecon "/var/run/.*" any run)
+(filecon "/var/run" symlink run)
+(filecon "/var/run" dir run)
+
+(type run_lock)
+(call file_lock_type (run_lock))
+(call sys_mountpoint_type (run_lock))
+
+(context run_lock (sys.user sys.role run_lock (systemlow systemlow)))
+(filecon "/var/lock" symlink run_lock)
+(filecon "/var/run/lock/.*" any run_lock)
+(filecon "/var/run/lock" symlink run_lock)
+(filecon "/var/run/lock" dir run_lock)
+
+(type run_user)
+(call file_run_type (run_user))
+(call sys_mountpoint_type (run_user))
+
+(context run_user (sys.user sys.role run_user (systemlow mls_systemhigh)))
+(filecon "/var/run/user/.*" any ())
+(filecon "/var/run/user" dir run_user)
+
+(type usr)
+(call file_usr_type (usr))
+(call sys_mountpoint_type (usr))
+
+(context usr (sys.user sys.role usr (systemlow systemlow)))
+(filecon "/opt/.*" any usr)
+(filecon "/opt" dir usr)
+(filecon "/usr/.*" any usr)
+(filecon "/usr" dir usr)
+
+(type var)
+(call file_var_type (var))
+(call sys_mountpoint_type (var))
+
+(context var (sys.user sys.role var (systemlow systemlow)))
+(filecon "/srv/.*" any var)
+(filecon "/srv" dir var)
+(filecon "/var/.*" any var)
+(filecon "/var" dir var)
+
+(type var_cache)
+(call file_cache_type (var_cache))
+(call sys_mountpoint_type (var_cache))
+
+(context var_cache (sys.user sys.role var_cache (systemlow systemlow)))
+(filecon "/var/cache/.*" any var_cache)
+(filecon "/var/cache" dir var_cache)
+
+(type var_lib)
+(call file_lib_type (var_lib))
+(call sys_mountpoint_type (var_lib))
+
+(context var_lib (sys.user sys.role var_lib (systemlow systemlow)))
+(filecon "/var/lib/.*" any var_lib)
+(filecon "/var/lib" dir var_lib)
+
+(type var_log)
+(call file_log_type (var_log))
+(call sys_mountpoint_type (var_log))
+
+(context var_log (sys.user sys.role var_log (systemlow mls_systemhigh)))
+(filecon "/var/log/.*" any var_log)
+(filecon "/var/log" dir var_log)
+
+(type var_spool)
+(call file_spool_type (var_spool))
+(call sys_mountpoint_type (var_spool))
+
+(context var_spool (sys.user sys.role var_spool (systemlow systemlow)))
+(filecon "/var/spool/.*" any var_spool)
+(filecon "/var/spool" dir var_spool)
+
+(type var_tmp)
+(call file_tmp_type (var_tmp))
+(call sys_mountpoint_type (var_tmp))
+
+(context var_tmp (sys.user sys.role var_tmp (systemlow mls_systemhigh)))
+(filecon "/usr/tmp" symlink (sys.user sys.role var_tmp (systemlow systemlow)))
+(filecon "/var/tmp/.*" any ())
+(filecon "/var/tmp" symlink (sys.user sys.role var_tmp (systemlow systemlow)))
+(filecon "/var/tmp" dir var_tmp)
+
+(call fs_associate_fs (file_type))
+
+(call fs_associate_tmpfs (file_lock_type))
+(call fs_associate_tmpfs (file_run_type))
+(call fs_associate_tmpfs (file_tmpfs_type))
+
+(allow file_unconfined_type file_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+
+(macro file_type ((type ARG1))
+    (call sys_object_type (ARG1))
+    (typeattributeset file_type ARG1)
+    (typeattributeset file_not_auth_type ARG1)
+    (typeattributeset file_not_security_type ARG1))
+
+(macro file_auth_type ((type ARG1))
+    (call sys_object_type (ARG1))
+    (typeattributeset file_type ARG1)
+    (typeattributeset file_auth_type ARG1))
+
+(macro file_boot_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_boot_type ARG1))
+
+(macro file_cache_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_cache_type ARG1))
+
+(macro file_etc_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_etc_type ARG1))
+
+(macro file_lib_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_lib_type ARG1))
+
+(macro file_lock_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_lock_type ARG1))
+
+(macro file_log_filetrans ((type ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call file_search_var (ARG1))
+    (call file_type_transition_pattern
+        (ARG1 var_log ARG2 ARG3 ARG4)))
+
+(macro file_log_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_log_type ARG1))
+
+(macro file_mnt_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_mnt_type ARG1))
+
+(macro file_run_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_run_type ARG1))
+
+(macro file_run_filetrans ((type ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call file_type_transition_pattern
+        (ARG1 run ARG2 ARG3 ARG4)))
+
+(macro file_read_generic_usr_files ((type ARG1))
+    (call read_files_pattern (ARG1 usr usr)))
+
+(macro file_read_run_lnk_files ((type ARG1))
+    (allow ARG1 run read_lnk_file_perms))
+
+(macro file_search_etc ((type ARG1))
+    (allow ARG1 etc search_dir_perms))
+
+(macro file_search_var_lib ((type ARG1))
+    (call search_dirs_pattern (ARG1 var var_lib)))
+
+(macro file_search_usr ((type ARG1))
+    (allow ARG1 usr search_dir_perms))
+
+(macro file_search_run ((type ARG1))
+    (call file_read_run_lnk_files (ARG1))
+    (call search_dirs_pattern (ARG1 var run)))
+
+(macro file_search_var ((type ARG1))
+    (allow ARG1 var search_dir_perms))
+
+(macro file_security_type ((type ARG1))
+    (call sys_object_type (ARG1))
+    (typeattributeset file_type ARG1)
+    (typeattributeset file_security_type ARG1))
+
+(macro file_spool_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_spool_type ARG1))
+
+(macro file_tmp_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_tmp_type ARG1))
+
+(macro file_tmpfs_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_tmpfs_type ARG1))
+
+(macro file_usr_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_usr_type ARG1))
+
+(macro file_var_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_var_type ARG1))
+
+(macro file_execmod_all ((type ARG1))
+    (booleanif execmod_all
+        (true
+            (allow ARG1 file_type (file (execmod))))))
+
+(macro file_execmod_all_uncond ((type ARG1))
+    (allow ARG1 file_type (file (execmod))))
+
+(macro file_unconfined ((type ARG1))
+    (call file_execmod_all (ARG1))
+    (typeattributeset file_unconfined_type ARG1))

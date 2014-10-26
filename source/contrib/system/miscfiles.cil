@@ -1,0 +1,113 @@
+(typeattribute miscfiles_cert_type)
+(typeattribute miscfiles_terminfo_type)
+
+(block cert_object
+    (blockabstract cert_object)
+        (type cert_object)
+        (call miscfiles_cert_type (cert_object))
+)
+
+(block terminfo_object
+    (blockabstract terminfo_object)
+        (type terminfo_object)
+        (call miscfiles_terminfo_type (terminfo_object))
+)
+
+(block locale
+    (blockinherit file_object)
+
+    (context locale (sys.user sys.role file_object (systemlow systemlow)))
+    (filecon "/etc/localtime" symlink locale)
+    (filecon "/usr/lib/locale(/.*)?" any locale)
+    (filecon "/usr/share/locale(/.*)?" any locale)
+    (filecon "/usr/share/X11/locale(/.*)?" any locale)
+    (filecon "/usr/share/zoneinfo(/.*)?" any locale)
+)
+
+(block modules
+    (blockinherit file_object)
+
+    (context modules (sys.user sys.role file_object (systemlow systemlow)))
+    (filecon "/usr/lib/modules(/.*)?" any modules)
+)
+
+
+(block terminfo
+    (blockinherit terminfo_object)
+
+    (context terminfo (sys.user sys.role terminfo_object (systemlow systemlow)))
+    (filecon "/etc/terminfo(/.*)?" any terminfo)
+    (filecon "/usr/share/terminfo(/.*)?" any terminfo)
+)
+
+(block tetex
+    (blockinherit file_object)
+
+    (context tetex (sys.user sys.role file_object (systemlow systemlow)))
+    (filecon "/var/lib/texmf(/.*)?" any tetex)
+    (filecon "/var/spool/texmf(/.*)?" any tetex)
+)
+
+(block cert
+    (blockinherit cert_object)
+
+    (context cert (sys.user sys.role cert_object (systemlow systemlow)))
+    (filecon "/etc/pki(/.*)?" any cert)
+)
+
+(block fonts
+    (blockinherit var_cache_object)
+
+    (context var_cache_fonts (sys.user sys.role var_cache_object (systemlow systemlow)))
+    (filecon "/var/cache/fontconfig(/.*)?" any var_cache_fonts)
+
+    (blockinherit etc_object)
+
+    (context etc_fonts (sys.user sys.role etc_object (systemlow systemlow)))
+    (filecon "/etc/fonts(/.*)?" any etc_fonts)
+
+    (blockinherit usr_object)
+
+    (context usr_fonts (sys.user sys.role usr_object (systemlow systemlow)))
+    (filecon "/usr/share/fonts(/.*)?" any usr_fonts)
+    (filecon "/usr/share/ghostscript/fonts(/.*)?" any usr_fonts)
+)
+
+(block factory
+    (blockinherit usr_object)
+
+    (context factory (sys.user sys.role usr_object (systemlow systemlow)))
+    (filecon "/usr/share/factory(/.*)?" any factory)
+)
+
+(block hwdata
+    (blockinherit usr_object)
+
+    (context hwdata (sys.user sys.role usr_object (systemlow systemlow)))
+    (filecon "/usr/share/hwdata(/.*)?" any hwdata)
+)
+
+(block man
+    (blockinherit usr_object)
+
+    (context man (sys.user sys.role usr_object (systemlow systemlow)))
+    (filecon "/usr/share/man(/.*)?" any man)
+)
+
+(block net
+    (blockinherit etc_object)
+
+    (context net (sys.user sys.role etc_object (systemlow systemlow)))
+    (filecon "/etc/hosts" file net)
+    (filecon "/etc/host\.conf" file net)
+    (filecon "/etc/sysconfig/network" file net)
+    (filecon "/etc/sysconfig/network-scripts(/.*)?" file net)
+)
+
+(macro miscfiles_cert_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset miscfiles_cert_type ARG1))
+
+(macro miscfiles_terminfo_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset miscfiles_terminfo_type ARG1))

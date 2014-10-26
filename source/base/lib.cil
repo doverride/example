@@ -1,0 +1,64 @@
+(typeattribute lib_type)
+
+(type lib)
+(call file_type (lib))
+(typeattributeset lib_type (lib))
+
+(context lib (sys.user sys.role lib (systemlow systemlow)))
+(filecon "/usr/lib/.*" any lib)
+(filecon "/usr/lib" symlink lib)
+(filecon "/usr/lib" dir lib)
+(filecon "/usr/libexec/sudo/.*" any lib)
+(filecon "/opt/google/talkplugin/.*\.so.*" file lib)
+
+(block textrel_lib
+    (blockinherit file_object)
+    (typeattributeset lib_type (file_object))
+)
+
+(block ld_so
+    (blockinherit file_object)
+
+    (context ld_so (sys.user sys.role file_object (systemlow systemlow)))
+    (filecon "/usr/lib/ld-[^/]*\.so(\.[^/]*)*" file ld_so)
+
+    (blockinherit etc_object)
+
+    (context ld_so_cache (sys.user sys.role etc_object (systemlow systemlow)))
+    (filecon "/etc/ld\.so\.cache.*" file ld_so_cache)
+    (filecon "/etc/ld\.so\.preload.*" file ld_so_cache)
+)
+
+(macro lib_list ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call lib_read_lnk_files (ARG1))
+    (allow ARG1 lib list_dir_perms))
+
+(macro lib_read_lnk_files ((type ARG1))
+    (allow ARG1 lib read_lnk_file_perms))
+
+(macro lib_search ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call lib_read_lnk_files (ARG1))
+    (allow ARG1 lib search_list_perms))
+
+(macro lib_use_ld_so ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call lib_read_lnk_files (ARG1))
+    (call mmap_files_pattern (ARG1 lib ld_so.file_object))
+    (call lib_read_ld_so_cache_files (ARG1)))
+
+(macro lib_read_ld_so_cache_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 ld_so.etc_object read_file_perms))
+
+(macro lib_read_lib_files ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call lib_read_lnk_files (ARG1))
+    (call read_files_pattern (ARG1 lib lib)))
+
+(macro lib_use_shared_libs ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call lib_read_lnk_files (ARG1))
+    (call mmap_files_pattern (ARG1 lib lib_type))
+    (allow ARG1 textrel_lib.file_object (file (execmod))))

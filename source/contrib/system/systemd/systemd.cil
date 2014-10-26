@@ -1,0 +1,57 @@
+(typeattribute systemd_daemon_type)
+(typeattribute systemd_unit_type)
+
+(block unit_object
+    (blockabstract unit_object)
+        (type unit_object)
+        (call systemd_unit_type (unit_object))
+)
+
+(block systemd_daemon_subject
+    (blockabstract systemd_daemon_subject)
+        (blockinherit bin_object)
+        (blockinherit common_subject)
+
+        (call systemd_daemon_subject_entry (common_subject bin_object))
+)
+
+(block systemd
+    (blockinherit bin_object)
+    (blockinherit common_subject)
+
+    (call subject_entry (systemd.common_subject systemd.bin_object))
+    (roletype sys.role common_subject)
+
+    (context bin_systemd (sys.user sys.role bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd" file bin_systemd)
+
+    (allow common_subject self (process (setsched)))
+
+    (optional systemd_optional_unconfined
+        (call unconfined (common_subject)))
+)
+
+(roletype sys.role systemd_daemon_type)
+
+(macro systemd_unit_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset systemd_unit_type ARG1))
+
+(macro systemd_daemon_subject_entry ((type ARG1)(type ARG2))
+    (call subject_entry (ARG1 ARG2))
+    (call auto_subject_type_transition_pattern (systemd.common_subject ARG2 ARG1))
+    (typeattributeset systemd_daemon_type ARG1))
+
+(macro systemd_dynamic_subtrans ((type ARG1))
+    (call subject_dynamic_subject_type_transition_subject (ARG1))
+    (call dynamic_subject_type_transition_pattern (ARG1 systemd.common_subject))
+    (typetransition ARG1 systemd.bin_object process "*" systemd.common_subject))
+
+(macro systemd_getattr_exec_files ((type ARG1))
+    (allow ARG1 systemd.bin_object (file (getattr))))
+
+(macro systemd_send_sigchld ((type ARG1))
+    (allow ARG1 systemd.common_subject (process (sigchld))))
+
+(macro systemd_send_signal ((type ARG1))
+    (allow ARG1 systemd.common_subject (process (signal))))

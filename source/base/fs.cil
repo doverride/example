@@ -1,0 +1,211 @@
+(sid fs)
+
+(typeattribute fs_type)
+(typeattribute fs_unconfined_type)
+
+(type aio)
+(call fs_type (aio))
+
+(context aio (sys.user sys.role aio (systemlow systemlow)))
+(genfscon "aio" "/" aio)
+
+(type anon_inodefs)
+(call fs_type (anon_inodefs))
+
+(context anon_inodefs (sys.user sys.role anon_inodefs (systemlow systemlow)))
+(genfscon "anon_inodefs" "/" anon_inodefs)
+
+(type autofs)
+(call fs_type (autofs))
+
+(context autofs (sys.user sys.role autofs (systemlow systemlow)))
+(genfscon "autofs" "/" autofs)
+
+(type bdev)
+(call fs_type (bdev))
+
+(context bdev (sys.user sys.role bdev (systemlow systemlow)))
+(genfscon "bdev" "/" bdev)
+
+(type binfmt_misc)
+(call fs_type (binfmt_misc))
+
+(context binfmt_misc (sys.user sys.role binfmt_misc (systemlow systemlow)))
+(genfscon "binfmt_misc" "/" binfmt_misc)
+
+(type cgroup)
+(call fs_type (cgroup))
+
+(context cgroup (sys.user sys.role cgroup (systemlow systemlow)))
+(genfscon "cgroup" "/" cgroup)
+
+(type configfs)
+(call fs_type (configfs))
+
+(context configfs (sys.user sys.role configfs (systemlow systemlow)))
+(genfscon "configfs" "/" configfs)
+
+(type debugfs)
+(call fs_type (debugfs))
+
+(context debugfs (sys.user sys.role debugfs (systemlow systemlow)))
+(genfscon "debugfs" "/" debugfs)
+
+(type devpts)
+(call fs_type (devpts))
+
+(context devpts (sys.user sys.role devpts (systemlow systemlow)))
+(fsuse trans "devpts" devpts)
+
+(type devtmpfs)
+(call fs_type (devtmpfs))
+(call sys_mountpoint_type (devtmpfs))
+
+(context devtmpfs (sys.user sys.role devtmpfs (systemlow systemlow)))
+(fsuse trans "devtmpfs" devtmpfs)
+(filecon "/dev/.*" any ())
+(filecon "/dev" dir ())
+
+(type dosfs)
+(call fs_type (dosfs))
+
+(context dosfs (sys.user sys.role dosfs (systemlow systemlow)))
+(genfscon "vfat" "/" dosfs)
+
+(type drm)
+(call fs_type (drm))
+
+(context drm (sys.user sys.role drm (systemlow systemlow)))
+(genfscon "drm" "/" drm)
+
+(type efivarfs)
+(call fs_type (efivarfs))
+
+(context efivarfs (sys.user sys.role efivarfs (systemlow systemlow)))
+    (genfscon "efivarfs" "/" efivarfs)
+
+(type fs)
+(call fs_type (fs))
+
+(type hugetlbfs)
+(call fs_type (hugetlbfs))
+
+(context hugetlbfs (sys.user sys.role hugetlbfs (systemlow systemlow)))
+(fsuse trans "hugetlbfs" hugetlbfs)
+
+(type proc)
+(call fs_type (proc))
+
+(context proc (sys.user sys.role proc (systemlow systemlow)))
+(genfscon "proc" "/" proc)
+(genfscon "proc" "/sysvipc" proc) ; BUG
+(filecon "/proc/.*" any ())
+(filecon "/proc" dir ())
+
+(type pstore)
+(call fs_type (pstore))
+
+(context pstore (sys.user sys.role pstore (systemlow systemlow)))
+(genfscon "pstore" "/" pstore)
+
+(type removable)
+(call fs_type (removable))
+
+(type rootfs)
+(call fs_type (rootfs))
+(call sys_mountpoint_type (rootfs))
+
+(context rootfs (sys.user sys.role rootfs (systemlow systemlow)))
+(genfscon "rootfs" "/" rootfs)
+(filecon "/" dir ())
+
+(type sysfs)
+(call fs_type (sysfs))
+(call sys_mountpoint_type (sysfs))
+
+(context sysfs (sys.user sys.role sysfs (systemlow systemlow)))
+(genfscon "sysfs" "/" sysfs)
+(filecon "/sys/.*" any ())
+(filecon "/sys" dir ())
+
+(type tmpfs)
+(call fs_type (tmpfs))
+
+(context tmpfs (sys.user sys.role tmpfs (systemlow systemlow)))
+(filecon "/var/run/user/.*" any ())
+(filecon "/var/run/initramfs/\.need_shutdown" file ())
+(filecon "/tmp/.*" any ())
+(filecon "/tmp" dir ())
+(fsuse trans "mqueue" tmpfs)
+(fsuse trans "tmpfs" tmpfs)
+
+(allow fs_type self (filesystem (associate)))
+
+(allow fs_unconfined_type fs_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(allow fs_unconfined_type fs_type (filesystem (all)))
+
+(macro fs_type ((type ARG1))
+    (call sys_object_type (ARG1))
+    (typeattributeset fs_type ARG1))
+
+(macro fs_associate_devpts ((type ARG1))
+    (allow ARG1 devpts (filesystem (associate))))
+
+(macro fs_associate_devtmpfs ((type ARG1))
+    (allow ARG1 devtmpfs (filesystem (associate))))
+
+(macro fs_associate_fs ((type ARG1))
+    (allow ARG1 fs (filesystem (associate))))
+
+(macro fs_associate_tmpfs ((type ARG1))
+    (allow ARG1 tmpfs (filesystem (associate))))
+
+(macro fs_list_debugfs ((type ARG1))
+    (call list_dirs_pattern (ARG1 proc debugfs)))
+
+(macro fs_list_proc ((type ARG1))
+    (call fs_read_generic_proc_lnk_files (ARG1))
+    (allow ARG1 proc list_dir_perms))
+
+(macro fs_manage_devtmpfs_dirs ((type ARG1))
+    (allow ARG1 devtmpfs manage_dir_perms))
+
+(macro fs_manage_devtmpfs_chr_files ((type ARG1))
+    (call manage_chr_files_pattern (ARG1 devtmpfs devtmpfs)))
+
+(macro fs_manage_devtmpfs_blk_files ((type ARG1))
+    (call manage_blk_files_pattern (ARG1 devtmpfs devtmpfs)))
+
+(macro fs_mounton_rootfs_dirs ((type ARG1))
+    (allow ARG1 rootfs (dir (mounton))))
+
+(macro fs_read_generic_proc_files ((type ARG1))
+    (call read_files_pattern (ARG1 proc proc)))
+
+(macro fs_read_generic_proc_lnk_files ((type ARG1))
+    (allow ARG1 proc read_lnk_file_perms))
+
+(macro fs_rw_devtmpfs_dirs ((type ARG1))
+    (allow ARG1 devtmpfs rw_dir_perms))
+
+(macro fs_search_devtmpfs ((type ARG1))
+    (allow ARG1 devtmpfs search_dir_perms))
+
+(macro fs_search_proc ((type ARG1))
+    (allow ARG1 proc search_dir_perms))
+
+(macro fs_search_rootfs ((type ARG1))
+    (allow ARG1 rootfs search_dir_perms))
+
+(macro fs_search_sysfs ((type ARG1))
+    (allow ARG1 sysfs search_dir_perms))
+
+(macro fs_unconfined ((type ARG1))
+    (typeattributeset fs_unconfined_type ARG1))
+
+(context fs (sys.user sys.role fs (systemlow systemlow)))
+(sidcontext fs fs)
+(fsuse task "pipefs" fs)
+(fsuse task "sockfs" fs)
+(fsuse xattr "ext4" fs)

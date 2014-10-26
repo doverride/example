@@ -1,0 +1,133 @@
+(typeattribute stor_unconfined_type)
+
+(type fixed_disk_dev)
+(call dev_stor_type (fixed_disk_dev))
+
+(context fixed_disk_dev (sys.user sys.role fixed_disk_dev
+    (mls_systemhigh mls_systemhigh)))
+(filecon "/dev/[shmxv]d[^/]*" block fixed_disk_dev)
+(filecon "/dev/dm-[0-9]+" block fixed_disk_dev)
+(filecon "/dev/raw/.+" char fixed_disk_dev)
+
+(type fuse_dev)
+(call dev_stor_type (fuse_dev))
+
+(context fuse_dev (sys.user sys.role fuse_dev (systemlow systemlow)))
+(filecon "/dev/fuse" char fuse_dev)
+
+(type removable_dev)
+(call dev_stor_type (removable_dev))
+
+(context removable_dev (sys.user sys.role removable_dev (systemlow systemlow)))
+(filecon "/dev/mmcblk.+" block removable_dev)
+(filecon "/dev/sr[0-9]+" block removable_dev)
+
+(type scsi_generic_dev)
+(call dev_stor_type (scsi_generic_dev))
+
+(context scsi_generic_dev (sys.user sys.role scsi_generic_dev
+    (systemlow systemlow)))
+(filecon "/dev/bsg/.+" char scsi_generic_dev)
+(filecon "/dev/sg[0-9]+" char scsi_generic_dev)
+
+(typeattribute can_read_fixed_disk)
+(typeattribute not_can_read_fixed_disk_or_stor_unconfined_type)
+(typeattributeset not_can_read_fixed_disk_or_stor_unconfined_type
+    (not (can_read_fixed_disk stor_unconfined_type)))
+(neverallow not_can_read_fixed_disk_or_stor_unconfined_type
+    fixed_disk_dev (chr_file (read)))
+(neverallow not_can_read_fixed_disk_or_stor_unconfined_type
+    fixed_disk_dev (blk_file (read)))
+
+(typeattribute can_write_fixed_disk)
+(typeattribute not_can_write_fixed_disk_or_stor_unconfined_type)
+(typeattributeset not_can_write_fixed_disk_or_stor_unconfined_type
+    (not (can_write_fixed_disk stor_unconfined_type)))
+(neverallow not_can_write_fixed_disk_or_stor_unconfined_type
+    fixed_disk_dev (chr_file (append write)))
+(neverallow not_can_write_fixed_disk_or_stor_unconfined_type
+    fixed_disk_dev (blk_file (append write)))
+
+(typeattribute can_read_scsi_generic)
+(typeattribute not_can_read_scsi_generic_or_stor_unconfined_type)
+(typeattributeset not_can_read_scsi_generic_or_stor_unconfined_type
+    (not (can_read_scsi_generic stor_unconfined_type)))
+(neverallow not_can_read_scsi_generic_or_stor_unconfined_type
+    scsi_generic_dev (chr_file (read)))
+
+(typeattribute can_write_scsi_generic)
+(typeattribute not_can_write_scsi_generic_or_stor_unconfined_type)
+(typeattributeset not_can_write_scsi_generic_or_stor_unconfined_type
+    (not (can_write_scsi_generic stor_unconfined_type)))
+(neverallow not_can_write_scsi_generic_or_stor_unconfined_type
+    scsi_generic_dev (chr_file (append write)))
+
+(allow stor_unconfined_type fixed_disk_dev
+    all_chr_file_perms_except_mounton_and_execmod)
+(allow stor_unconfined_type fixed_disk_dev
+    all_blk_file_perms_except_mounton_and_execmod)
+
+(allow stor_unconfined_type fuse_dev
+    all_chr_file_perms_except_mounton_and_execmod)
+
+(allow stor_unconfined_type removable_dev
+    all_blk_file_perms_except_mounton_and_execmod)
+
+(allow stor_unconfined_type scsi_generic_dev
+    all_chr_file_perms_except_mounton_and_execmod)
+
+(macro stor_manage_all ((type ARG1))
+    (call stor_manage_fixed_disk (ARG1))
+    (call stor_manage_fuse (ARG1))
+    (call stor_manage_removable (ARG1))
+    (call stor_manage_scsi_generic (ARG1)))
+
+(macro stor_manage_fixed_disk ((type ARG1))
+    (allow ARG1 self (capability (mknod)))
+    (call fs_rw_devtmpfs_dirs (ARG1))
+    (allow ARG1 fixed_disk_dev manage_blk_file_perms)
+    (allow ARG1 fixed_disk_dev manage_chr_file_perms)
+    (typeattributeset can_read_fixed_disk ARG1)
+    (typeattributeset can_write_fixed_disk ARG1))
+
+(macro stor_read_fixed_disk ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 fixed_disk_dev read_chr_file_perms)
+    (allow ARG1 fixed_disk_dev read_blk_file_perms)
+    (typeattributeset can_read_fixed_disk ARG1))
+
+(macro stor_write_fixed_disk ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 fixed_disk_dev write_chr_file_perms)
+    (allow ARG1 fixed_disk_dev write_blk_file_perms)
+    (typeattributeset can_write_fixed_disk ARG1))
+
+(macro stor_manage_fuse ((type ARG1))
+    (allow ARG1 self (capability (mknod)))
+    (call fs_rw_devtmpfs_dirs (ARG1))
+    (allow ARG1 fuse_dev manage_chr_file_perms))
+
+(macro stor_manage_removable ((type ARG1))
+    (allow ARG1 self (capability (mknod)))
+    (call fs_rw_devtmpfs_dirs (ARG1))
+    (allow ARG1 removable_dev manage_blk_file_perms))
+
+(macro stor_manage_scsi_generic ((type ARG1))
+    (allow ARG1 self (capability (mknod)))
+    (call fs_rw_devtmpfs_dirs (ARG1))
+    (allow ARG1 fixed_disk_dev manage_chr_file_perms)
+    (typeattributeset can_read_scsi_generic ARG1)
+    (typeattributeset can_write_scsi_generic ARG1))
+
+(macro stor_read_scsi_generic ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 scsi_generic_dev read_chr_file_perms)
+    (typeattributeset can_read_scsi_generic ARG1))
+
+(macro stor_write_scsi_generic ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 scsi_generic_dev write_chr_file_perms)
+    (typeattributeset can_write_scsi_generic ARG1))
+
+(macro stor_unconfined ((type ARG1))
+    (typeattributeset stor_unconfined_type ARG1))

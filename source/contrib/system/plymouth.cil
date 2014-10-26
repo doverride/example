@@ -1,0 +1,85 @@
+(roleattribute plymouth_role)
+(typeattribute plymouth_admin_type)
+(typeattribute plymouth_subject_type)
+(typeattribute plymouth_file_type)
+
+(block plymouth
+    (blockinherit systemd_daemon_subject)
+    (roletype plymouth_role common_subject)
+    (typeattributeset plymouth_subject_type (common_subject))
+
+    (context bin_plymouth (sys.user sys.role bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/plymouth" file bin_plymouth)
+
+    (optional plymouth_optional_unconfined
+        (call unconfined (common_subject)))
+)
+
+(block plymouthd
+    (blockinherit systemd_daemon_subject)
+    (typeattributeset plymouth_subject_type (common_subject))
+
+    (context bin_plymouthd (sys.user sys.role bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/plymouthd" file bin_plymouthd)
+
+    (blockinherit etc_object)
+
+    (context etc_plymouthd (sys.user sys.role etc_object (systemlow systemlow)))
+    (filecon "/etc/plymouth(/.*)?" any etc_plymouthd)
+
+    (blockinherit run_object)
+
+    (context run_plymouthd (sys.user sys.role run_object (systemlow systemlow)))
+    (filecon "/var/run/plymouth(/.*)?" any run_plymouthd)
+
+    (blockinherit unit_object)
+
+    (context unit_plymouthd (sys.user sys.role unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*plymouth-.*" file unit_plymouthd)
+
+    (blockinherit var_lib_object)
+
+    (context var_lib_plymouthd (sys.user sys.role var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/plymouth(/.*)?" any var_lib_plymouthd)
+
+    (blockinherit var_spool_object)
+
+    (context var_spool_plymouthd (sys.user sys.role var_spool_object (systemlow systemlow)))
+    (filecon "/var/spool/plymouth(/.*)?" any var_spool_plymouthd)
+
+    (call file_run_filetrans (common_subject run_object dir "*"))
+
+    (typeattributeset plymouth_file_type (etc_object var_lib_object run_object
+        var_spool_object unit_object))
+
+    (allow plymouth_admin_type plymouth_subject_type signal_perms)
+    (allow plymouth_admin_type plymouth_subject_type (process (ptrace)))
+    (call ps_subject_pattern (plymouth_admin_type plymouth_subject_type))
+    (allow plymouth_admin_type unit_object (service (all)))
+    ; (call admin_pattern (plymouth_admin_type plymouth_file_type)) ; create admin pattern functionality using classmapping
+
+    (optional plymouthd_optional_unconfined
+        (call unconfined (common_subject)))
+)
+
+(macro plymouth_exec ((type ARG1))
+    (call can_exec (ARG1 plymouth.bin_object)))
+
+(macro plymouth_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 plymouth.bin_object plymouth.common_subject)))
+
+(macro plymouth_run ((type ARG1)(role ARG2))
+    (call plymouth_auto_subtrans (ARG1))
+    (roleattributeset plymouth_role ARG2))
+
+(macro plymouth_manage_var_lib_files ((type ARG1))
+    (call file_search_var_lib (ARG1))
+    (call manage_files_pattern (ARG1 plymouthd.var_lib_object plymouthd.var_lib_object)))
+
+(macro plymouth_manage_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call manage_files_pattern (ARG1 plymouthd.run_object plymouthd.run_object)))
+
+(macro plymouth_admin ((type ARG1))
+    (typeattributeset plymouth_admin_type ARG1))

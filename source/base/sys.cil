@@ -1,0 +1,419 @@
+(boolean load_kernel_module true)
+
+(defaultrole file source)
+(defaultrole dir source)
+(defaultrole lnk_file source)
+(defaultrole chr_file source)
+(defaultrole blk_file source)
+(defaultrole sock_file source)
+(defaultrole fifo_file source)
+
+(sid kernel)
+(sid sysctl)
+(sid unlabeled)
+(sid file)
+
+(typeattribute sys_mountpoint_type)
+(typeattribute sys_object_type)
+(typeattribute sys_proc_type)
+(typeattribute sys_unconfined_type)
+(typeattribute sys_sysctl_type)
+
+(block load_kernel_module
+    (blockinherit bool_object)
+
+    (context load_kernel_module (sys.user sys.role bool_object
+        (systemlow systemlow)))
+    (genfscon "selinuxfs" "/booleans/load_kernel_module"
+        load_kernel_module)
+)
+
+(block sys
+    (user user)
+    (role role)
+
+    (blockinherit common_subject)
+
+    (call sys_roletype (common_subject))
+    (call sys_userrole (user))
+
+    (userlevel user systemlow)
+    (userrange user (systemlow systemhigh))
+
+    (blockinherit var_log_object)
+
+    (context var_log_sys (user role var_log_object
+        (systemlow systemlow)))
+    (filecon "/var/log/boot\.log.*" file var_log_sys)
+
+    (allow common_subject self (system (syslog_console)))
+    (allow common_subject self (capability (sys_tty_config sys_admin
+        sys_nice net_admin)))
+    (allow common_subject self (process (setsched)))
+    (allow common_subject self create_unix_stream_socket_perms)
+    (allow common_subject self (capability2 (block_suspend syslog)))
+
+    (allow common_subject var_log_object manage_file_perms)
+    (call file_log_filetrans (common_subject var_log_object file "*"))
+
+    (call sys_request_load_module (common_subject))
+
+    (call dev_manage_all (common_subject)) ; FIXME
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call fs_list_debugfs (common_subject))
+    (call fs_list_proc (common_subject))
+    (call fs_manage_devtmpfs_dirs (common_subject))
+    (call fs_manage_devtmpfs_chr_files (common_subject))
+    (call fs_manage_devtmpfs_blk_files (common_subject))
+    (call fs_mounton_rootfs_dirs (common_subject))
+
+    ; (call fs_list_tmpfs (common_subject)) ; /run/initramfs
+
+    (call sec_compute_create_context (common_subject))
+    (call sec_list (common_subject))
+
+    ; (optional sys_optional_bootchart
+        ; (call bootchart_auto_subtrans (common_subject)))
+
+    (optional sys_optional_cgagent
+        (call cgagent_auto_subtrans (common_subject)))
+
+    ; (optional sys_optional coreump
+        ; (call coredump_auto_subtrans (common_subject)))
+
+    (optional sys_optional_kmod
+        (call kmod_auto_subtrans (common_subject)))
+
+    (optional sys_optional_plymouth
+        (call plymouth_manage_var_lib_files (common_subject))
+        (call plymouth_manage_run_files (common_subject)))
+
+    ; (optional sys_optional_shutdown
+        ; (call shutdown_send_sigchld_shutdown (common_subject)))
+
+    (optional sys_optional_systemd
+        (call systemd_dynamic_subtrans (common_subject))
+        (call systemd_getattr_exec_files (common_subject))
+        (call systemd_send_signal (common_subject)))
+)
+
+(type invalid)
+
+(allow invalid self (process (sigchld)))
+
+(allow invalid self read_file_perms)
+(allow invalid self list_dir_perms)
+(allow invalid self read_lnk_file_perms)
+
+(call sys_mountpoint_type (invalid)) ; FIXME
+(call sys_roletype (invalid))
+
+(call fs_associate_fs (invalid))
+(call fs_associate_tmpfs (invalid))
+(call fs_search_proc (invalid))
+
+(allow sys_unconfined_type invalid signal_perms)
+(allow sys_unconfined_type invalid (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(allow sys_unconfined_type invalid (filesystem (all)))
+
+(type kallsyms_proc)
+(call sys_proc_type (kallsyms_proc))
+
+(context kallsyms_proc (sys.user sys.role kallsyms_proc (systemlow systemlow)))
+(genfscon "proc" "/kallsyms" kallsyms_proc)
+
+(type kcore_proc)
+(call sys_proc_type (kcore_proc))
+
+(context kcore_proc (sys.user sys.role kcore_proc (mls_systemhigh mls_systemhigh)))
+(genfscon "proc" "/kcore" kcore_proc)
+
+(type kmsg_proc)
+(call sys_proc_type (kmsg_proc))
+
+(context kmsg_proc (sys.user sys.role kmsg_proc (mls_systemhigh mls_systemhigh)))
+(genfscon "proc" "/kmsg" kmsg_proc)
+
+(type mdstat_proc)
+(call sys_proc_type (mdstat_proc))
+
+(context mdstat_proc (sys.user sys.role mdstat_proc (systemlow systemlow)))
+(genfscon "proc" "/mdstat" mdstat_proc)
+
+(type mtrr_proc)
+(call sys_proc_type (mtrr_proc))
+
+(context mtrr_proc (sys.user sys.role mtrr_proc (systemlow systemlow)))
+(genfscon "proc" "/mtrr" mtrr_proc)
+
+(type net_proc)
+(call sys_proc_type (net_proc))
+
+(context net_proc (sys.user sys.role net_proc (systemlow systemlow)))
+(genfscon "proc" "/net" net_proc)
+
+(type sysrq_proc)
+(call sys_proc_type (sysrq_proc))
+
+(context sysrq_proc (sys.user sys.role sysrq_proc (systemlow systemlow)))
+(genfscon "proc" "/sysrq-trigger" sysrq_proc)
+
+(type sysctl)
+(call sys_sysctl_type (sysctl))
+
+(type crypto_sysctl)
+(call sys_sysctl_type (crypto_sysctl))
+
+(context crypto_sysctl (sys.user sys.role crypto_sysctl (systemlow systemlow)))
+(genfscon "proc" "/sys/crypto" crypto_sysctl)
+
+(type dev_sysctl)
+(call sys_sysctl_type (dev_sysctl))
+
+(context dev_sysctl (sys.user sys.role dev_sysctl (systemlow systemlow)))
+(genfscon "proc" "/sys/dev" dev_sysctl)
+
+(type fs_sysctl)
+(call sys_sysctl_type (fs_sysctl))
+(call sys_mountpoint_type (fs_sysctl))
+
+(context fs_sysctl (sys.user sys.role fs_sysctl (systemlow systemlow)))
+(genfscon "proc" "/sys/fs" fs_sysctl)
+
+(type irq_sysctl)
+(call sys_sysctl_type (irq_sysctl))
+
+(context irq_sysctl (sys.user sys.role irq_sysctl (systemlow systemlow)))
+(genfscon "proc" "/irq" irq_sysctl)
+
+(type kernel_sysctl)
+(call sys_sysctl_type (kernel_sysctl))
+
+(context kernel_sysctl (sys.user sys.role kernel_sysctl (systemlow systemlow)))
+(genfscon "proc" "/sys/kernel" kernel_sysctl)
+
+(type net_sysctl)
+(call sys_sysctl_type (net_sysctl))
+
+(context net_sysctl (sys.user sys.role net_sysctl (systemlow systemlow)))
+(genfscon "proc" "/sys/net" net_sysctl)
+
+(type net_unix_sysctl)
+(call sys_sysctl_type (net_unix_sysctl))
+
+(context net_unix_sysctl (sys.user sys.role net_unix_sysctl (systemlow systemlow)))
+(genfscon "proc" "/sys/net/unix" net_unix_sysctl)
+
+(type security_sysctl)
+(call sys_sysctl_type (security_sysctl))
+(typeattributeset security_or_usermodehelper_sysctl_type (security_sysctl))
+
+(context security_sysctl (sys.user sys.role security_sysctl (systemlow systemlow)))
+(genfscon "proc" "/sys/fs/protected_hardlinks" security_sysctl)
+(genfscon "proc" "/sys/fs/protected_symlinks" security_sysctl)
+(genfscon "proc" "/sys/fs/suid_dumpable" security_sysctl)
+(genfscon "proc" "/sys/kernel/dmesg_restrict" security_sysctl)
+(genfscon "proc" "/sys/kernel/kptr_restrict" security_sysctl)
+(genfscon "proc" "/sys/kernel/modules_disabled" security_sysctl)
+(genfscon "proc" "/sys/kernel/randomize_va_space" security_sysctl)
+(genfscon "proc" "/sys/vm/mmap_min_addr" security_sysctl)
+
+(type usermodehelper_sysctl)
+(call sys_sysctl_type (usermodehelper_sysctl))
+(typeattributeset security_or_usermodehelper_sysctl_type (usermodehelper_sysctl))
+
+(context usermodehelper_sysctl (sys.user sys.role usermodehelper_sysctl (systemlow systemlow)))
+(genfscon "proc" "/sys/kernel/core_pattern" usermodehelper_sysctl)
+(genfscon "proc" "/sys/kernel/modprobe" usermodehelper_sysctl)
+(genfscon "proc" "/sys/kernel/poweroff_cmd" usermodehelper_sysctl)
+(genfscon "proc" "/sys/kernel/usermodehelper" usermodehelper_sysctl)
+
+(type vm_sysctl)
+(call sys_sysctl_type (vm_sysctl))
+
+(context vm_sysctl (sys.user sys.role vm_sysctl (systemlow systemlow)))
+(genfscon "proc" "/sys/vm" vm_sysctl)
+
+(type vm_overcommit_sysctl)
+(call sys_sysctl_type (vm_overcommit_sysctl))
+
+(context vm_overcommit_sysctl (sys.user sys.role vm_overcommit_sysctl (systemlow systemlow)))
+(genfscon "proc" "/sys/vm/overcommit_memory" vm_overcommit_sysctl)
+
+(type unlabeled)
+(call sys_object_type (unlabeled))
+
+(call fs_associate_devtmpfs (unlabeled))
+(call fs_associate_fs (unlabeled))
+(call fs_associate_tmpfs (unlabeled))
+
+(allow sys_unconfined_type sys_mountpoint_type (dir (mounton)))
+
+(allow sys_unconfined_type unlabeled (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+
+(call sys_roletype (sys_object_type))
+
+(typeattribute can_load_kernel_module)
+(typeattribute not_can_load_kernel_module)
+(typeattributeset not_can_load_kernel_module (not can_load_kernel_module))
+(neverallow not_can_load_kernel_module self (capability (sys_module)))
+
+(typeattribute can_read_kernel_message)
+(typeattribute not_can_read_kernel_message_or_sys_unconfined_type)
+(typeattributeset not_can_read_kernel_message_or_sys_unconfined_type
+    (not (can_read_kernel_message sys_unconfined_type)))
+(neverallow not_can_read_kernel_message_or_sys_unconfined_type
+    kmsg_proc all_file_perms_except_getattr)
+
+(typeattribute can_dump_kernel)
+(typeattribute not_can_dump_kernel_or_sys_unconfined_type)
+(typeattributeset not_can_dump_kernel_or_sys_unconfined_type
+    (not (can_dump_kernel sys_unconfined_type)))
+(neverallow not_can_dump_kernel_or_sys_unconfined_type
+    kcore_proc all_file_perms_except_getattr)
+
+(typeattribute security_or_usermodehelper_sysctl_type)
+(typeattribute not_security_or_usermodehelper_sysctl_type)
+(typeattribute can_write_security_and_usermodehelper_sysctl)
+(typeattribute not_can_write_security_and_usermodehelper_sysctl)
+(typeattributeset not_can_write_security_and_usermodehelper_sysctl
+    (not (can_write_security_and_usermodehelper_sysctl)))
+(neverallow not_can_write_security_and_usermodehelper_sysctl
+    security_or_usermodehelper_sysctl_type (file (append write)))
+
+(allow sys_unconfined_type sys.common_subject (system
+    (ipc_info syslog_read syslog_mod syslog_console module_request)))
+
+(allow sys_unconfined_type sys_proc_type rw_file_perms)
+(allow sys_unconfined_type sys_proc_type list_dir_perms)
+(allow sys_unconfined_type sys_proc_type read_lnk_file_perms)
+
+(typeattributeset not_security_or_usermodehelper_sysctl_type
+    (and (sys_sysctl_type) (not (security_or_usermodehelper_sysctl_type))))
+(allow sys_unconfined_type
+    not_security_or_usermodehelper_sysctl_type rw_file_perms)
+(allow sys_unconfined_type security_or_usermodehelper_sysctl_type
+    read_file_perms)
+(allow sys_unconfined_type sys_sysctl_type list_dir_perms)
+(allow sys_unconfined_type sys_sysctl_type read_lnk_file_perms)
+
+(booleanif (load_kernel_module)
+    (true
+        (allow can_load_kernel_module self (capability (sys_nice sys_module)))
+        (allow can_load_kernel_module sys.common_subject (process (setsched)))))
+
+(macro sys_object_type ((type ARG1))
+    (typeattributeset sys_object_type ARG1))
+
+(macro sys_mountpoint_type ((type ARG1))
+    (typeattributeset sys_mountpoint_type ARG1))
+
+(macro sys_dontaudit_audit_access_mountpoint_dir ((type ARG1))
+    (dontaudit ARG1 sys_mountpoint_type (dir (audit_access))))
+
+(macro sys_list_mountpoint ((type ARG1))
+    (allow ARG1 sys_mountpoint_type list_dir_perms))
+
+(macro sys_mounton_mountpoint_dir ((type ARG1))
+    (call sys_dontaudit_audit_access_mountpoint_dir (ARG1))
+    (call sys_list_mountpoint (ARG1))
+    (allow ARG1 sys_mountpoint_type (dir (mounton))))
+
+(macro sys_proc_type ((type ARG1))
+    (call sys_object_type (ARG1))
+    (typeattributeset sys_proc_type ARG1))
+
+(macro sys_roletype ((type ARG1))
+    (roletype sys.role ARG1))
+
+(macro sys_sysctl_type ((type ARG1))
+    (call sys_object_type (ARG1))
+    (typeattributeset sys_sysctl_type ARG1))
+
+(macro sys_userrole ((user ARG1))
+    (userrole ARG1 sys.role))
+
+(macro sys_dump_kernel ((type ARG1))
+    (call fs_search_proc (ARG1))
+    (allow ARG1 self (capability (sys_rawio)))
+    (allow ARG1 kcore_proc read_file_perms)
+    (typeattributeset can_dump_kernel ARG1))
+
+(macro sys_load_kernel_module ((type ARG1))
+    (typeattributeset can_load_kernel_module ARG1))
+
+(macro sys_read_kernel_message ((type ARG1))
+    (call fs_search_proc (ARG1))
+    (allow ARG1 kmsg_proc read_file_perms)
+    (typeattributeset can_read_kernel_message ARG1))
+
+(macro sys_read_vm_overcommit_sysctl_files ((type ARG1))
+    (call sys_search_vm_sysctl (ARG1))
+    (allow ARG1 vm_overcommit_sysctl read_file_perms))
+
+(macro sys_request_load_module ((type ARG1))
+    (allow ARG1 sys.common_subject (system (module_request))))
+
+(macro sys_rw_security_sysctl_files ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (allow ARG1 fs_sysctl search_dir_perms)
+    (allow ARG1 kernel_sysctl search_dir_perms)
+    (allow ARG1 vm_sysctl search_dir_perms)
+    (allow ARG1 security_sysctl rw_file_perms)
+    (typeattributeset
+        can_write_security_and_usermodehelper_sysctl ARG1))
+
+(macro sys_rw_usermodehelper_sysctl_files ((type ARG1))
+    (call sys_search_kernel_sysctl (ARG1))
+    (call rw_files_pattern (ARG1 usermodehelper_sysctl
+        usermodehelper_sysctl))
+    (typeattributeset
+        can_write_security_and_usermodehelper_sysctl ARG1))
+
+(macro sys_search_sysctl ((type ARG1))
+    (call fs_search_proc (ARG1))
+    (allow ARG1 sysctl search_dir_perms))
+
+(macro sys_search_kernel_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (allow ARG1 kernel_sysctl search_dir_perms))
+
+(macro sys_search_vm_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (allow ARG1 vm_sysctl search_dir_perms))
+
+(macro sys_recvfrom_unlabeled_tcp_socket ((type ARG1))
+    (allow ARG1 unlabeled (tcp_socket (recvfrom))))
+
+(macro sys_recvfrom_unlabeled_udp_socket ((type ARG1))
+    (allow ARG1 unlabeled (udp_socket (recvfrom))))
+
+(macro sys_recvfrom_unlabeled_rawip_socket ((type ARG1))
+    (allow ARG1 unlabeled (rawip_socket (recvfrom))))
+
+(macro sys_recvfrom_unlabeled_dccp_socket ((type ARG1))
+    (allow ARG1 unlabeled (dccp_socket (recvfrom))))
+
+(macro sys_recv_unlabeled_peer ((type ARG1))
+    (allow ARG1 unlabeled (peer (recv))))
+
+(macro sys_unconfined ((type ARG1))
+    (call sys_load_kernel_module (ARG1))
+    (typeattributeset sys_unconfined_type ARG1))
+
+(context system (sys.user sys.role sys.common_subject (mls_systemhigh mls_systemhigh)))
+(sidcontext kernel system)
+
+(context sysctl (sys.user sys.role sysctl (systemlow systemlow)))
+(sidcontext sysctl sysctl)
+(genfscon "proc" "/sys" sysctl)
+
+(context invalid (sys.user sys.role invalid (mls_systemhigh mls_systemhigh)))
+(sidcontext unlabeled invalid)
+
+(context unlabeled (sys.user sys.role unlabeled (systemlow systemlow)))
+(sidcontext file unlabeled)

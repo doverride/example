@@ -1,0 +1,285 @@
+(sid devnull)
+
+(typeattribute dev_type)
+(typeattribute dev_unconfined_type)
+(typeattribute dev_stor_type)
+
+(type apm_dev)
+(call dev_type (apm_dev))
+
+(context apm_dev (sys.user sys.role apm_dev (systemlow systemlow)))
+(filecon "/dev/snapshot" char apm_dev)
+
+(type autofs_dev)
+(call dev_type (autofs_dev))
+
+(context autofs_dev (sys.user sys.role autofs_dev (systemlow systemlow)))
+(filecon "/dev/autofs" char autofs_dev)
+
+(type clock_dev)
+(call dev_type (clock_dev))
+
+(context clock_dev (sys.user sys.role clock_dev (systemlow systemlow)))
+(filecon "/dev/hpet" char clock_dev)
+(filecon "/dev/rtc[0-9]+" char clock_dev)
+
+(type console_dev)
+(call dev_type (console_dev))
+
+(context console_dev (sys.user sys.role console_dev (systemlow systemlow)))
+(filecon "/dev/console" char console_dev)
+
+(type cpu_dev)
+(call dev_type (cpu_dev))
+
+(context cpu_dev (sys.user sys.role cpu_dev (systemlow systemlow)))
+(filecon "/dev/cpu/.+" char cpu_dev)
+
+(type devtty_dev)
+(call dev_type (devtty_dev))
+
+(context devtty_dev (sys.user sys.role devtty_dev (systemlow systemlow)))
+(filecon "/dev/tty" char devtty_dev)
+
+(type dri_dev)
+(call dev_type (dri_dev))
+
+(context dri_dev (sys.user sys.role dri_dev (systemlow systemlow)))
+(filecon "/dev/dri/.+" char dri_dev)
+
+(type event_dev)
+(call dev_type (event_dev))
+
+(context event_dev (sys.user sys.role event_dev (systemlow systemlow)))
+(filecon "/dev/input/event[0-9]+" char event_dev)
+(filecon "/dev/uinput" char event_dev)
+
+(type framebuf_dev)
+(call dev_type (framebuf_dev))
+
+(context framebuf_dev (sys.user sys.role framebuf_dev (systemlow systemlow)))
+(filecon "/dev/fb[0-9]+" char framebuf_dev)
+
+(type kmsg_dev)
+(call dev_type (kmsg_dev))
+
+(context kmsg_dev (sys.user sys.role kmsg_dev (mls_systemhigh mls_systemhigh)))
+(filecon "/dev/kmsg" char kmsg_dev)
+(filecon "/dev/mcelog" char kmsg_dev)
+
+(type loop_control_dev)
+(call dev_type (loop_control_dev))
+
+(context loop_control_dev (sys.user sys.role loop_control_dev (systemlow systemlow)))
+(filecon "/dev/loop-control" char loop_control_dev)
+
+(type lvm_control_dev)
+(call dev_type (lvm_control_dev))
+
+(context lvm_control_dev (sys.user sys.role lvm_control_dev (systemlow systemlow)))
+(filecon "/dev/btrfs-control" char lvm_control_dev)
+(filecon "/dev/mapper/control" char lvm_control_dev)
+
+(type memory_dev)
+(call dev_type (memory_dev))
+
+(context memory_dev (sys.user sys.role memory_dev (mls_systemhigh mls_systemhigh)))
+(filecon "/dev/mem" char memory_dev)
+(filecon "/dev/port" char memory_dev)
+
+(type mouse_dev)
+(call dev_type (mouse_dev))
+
+(context mouse_dev (sys.user sys.role mouse_dev (systemlow systemlow)))
+(filecon "/dev/input/mice" char mouse_dev)
+(filecon "/dev/input/mouse[0-9]+" char mouse_dev)
+
+(type net_control_dev)
+(call dev_type (net_control_dev))
+
+(context net_control_dev (sys.user sys.role net_control_dev (systemlow systemlow)))
+(filecon "/dev/cpu_dma_latency" char net_control_dev)
+(filecon "/dev/network_latency" char net_control_dev)
+(filecon "/dev/network_throughput" char net_control_dev)
+
+(type null_dev)
+(call dev_type (null_dev))
+
+(type nvram_dev)
+(call dev_type (nvram_dev))
+
+(context nvram_dev (sys.user sys.role nvram_dev (mls_systemhigh mls_systemhigh)))
+(filecon "/dev/nvram" char nvram_dev)
+
+(type ppp_dev)
+(call dev_type (ppp_dev))
+
+(context ppp_dev (sys.user sys.role ppp_dev (systemlow systemlow)))
+(filecon "/dev/ppp" char ppp_dev)
+
+(type ptmx_dev)
+(call dev_type (ptmx_dev))
+
+(context ptmx_dev (sys.user sys.role ptmx_dev (systemlow systemlow)))
+(filecon "/dev/ptmx" char ptmx_dev)
+
+(type random_dev)
+(call dev_type (random_dev))
+
+(context random_dev (sys.user sys.role random_dev (systemlow systemlow)))
+(filecon "/dev/random" char random_dev)
+
+(type sound_dev)
+(call dev_type (sound_dev))
+
+(context sound_dev (sys.user sys.role sound_dev (systemlow systemlow)))
+(filecon "/dev/snd/.+" char sound_dev)
+
+(type tun_tap_dev)
+(call dev_type (tun_tap_dev))
+
+(context tun_tap_dev (sys.user sys.role tun_tap_dev (systemlow systemlow)))
+(filecon "/dev/net/tun" char tun_tap_dev)
+
+(type uhid_dev)
+(call dev_type (uhid_dev))
+
+(context uhid_dev (sys.user sys.role uhid_dev (systemlow systemlow)))
+(filecon "/dev/uhid" char uhid_dev)
+
+(type urandom_dev)
+(call dev_type (urandom_dev))
+
+(context urandom_dev (sys.user sys.role urandom_dev (systemlow systemlow)))
+(filecon "/dev/urandom" char urandom_dev)
+
+(type usb_dev)
+(call dev_type (usb_dev))
+
+(context usb_dev (sys.user sys.role usb_dev (systemlow systemlow)))
+(filecon "/dev/bus/usb/.+" char usb_dev)
+(filecon "/dev/hidraw[0-9]+" char usb_dev)
+
+(type usbmon_dev)
+(call dev_type (usbmon_dev))
+
+(context usbmon_dev (sys.user sys.role usbmon_dev (systemlow systemlow)))
+(filecon "/dev/usbmon[0-9]+" char usbmon_dev)
+
+(type v4l_dev)
+(call dev_type (v4l_dev))
+
+(context v4l_dev (sys.user sys.role v4l_dev (systemlow systemlow)))
+(filecon "/dev/media[0-9]+" char v4l_dev)
+(filecon "/dev/video[0-9]+" char v4l_dev)
+
+(type vfio_dev)
+(call dev_type (vfio_dev))
+
+(context vfio_dev (sys.user sys.role vfio_dev (systemlow systemlow)))
+(filecon "/dev/vfio/.+" char vfio_dev)
+
+(type vhci_dev)
+(call dev_type (vhci_dev))
+
+(context vhci_dev (sys.user sys.role vhci_dev (systemlow systemlow)))
+(filecon "/dev/vhci" char vhci_dev)
+
+(type vhost_dev)
+(call dev_type (vhost_dev))
+
+(context vhost_dev (sys.user sys.role vhost_dev (systemlow systemlow)))
+(filecon "/dev/vhost-net" char vhost_dev)
+
+(type wireless_dev)
+(call dev_type (wireless_dev))
+
+(context wireless_dev (sys.user sys.role wireless_dev (systemlow systemlow)))
+(filecon "/dev/rfkill" char wireless_dev)
+
+(type xserver_misc_dev)
+(call dev_type (xserver_misc_dev))
+
+(context xserver_misc_dev (sys.user sys.role xserver_misc_dev (systemlow systemlow)))
+(filecon "/dev/vga_arbiter" char xserver_misc_dev)
+
+(type zero_dev)
+(call dev_type (zero_dev))
+
+(context zero_dev (sys.user sys.role zero_dev (systemlow systemlow)))
+(filecon "/dev/zero" char zero_dev)
+
+(typeattribute can_read_memory)
+(typeattribute not_can_read_memory_or_dev_unconfined_type)
+(typeattributeset not_can_read_memory_or_dev_unconfined_type
+    (not (can_read_memory dev_unconfined_type)))
+(neverallow not_can_read_memory_or_dev_unconfined_type
+    memory_dev (chr_file (read)))
+
+(typeattribute can_write_memory)
+(typeattribute not_can_write_memory_or_dev_unconfined_type)
+(typeattributeset not_can_write_memory_or_dev_unconfined_type
+    (not (can_write_memory dev_unconfined_type)))
+(neverallow not_can_write_memory_or_dev_unconfined_type
+    memory_dev (chr_file (append write)))
+
+(call fs_associate_devtmpfs (dev_type))
+
+(allow dev_unconfined_type self (capability (sys_rawio)))
+
+(typeattribute dev_except_storage)
+(typeattributeset dev_except_storage (and (dev_type)
+    (not (dev_stor_type))))
+
+(allow dev_unconfined_type dev_except_storage
+    all_chr_file_perms_except_mounton_and_execmod)
+
+(macro dev_type ((type ARG1))
+    (call sys_object_type (ARG1))
+    (typeattributeset dev_type ARG1))
+
+(macro dev_stor_type ((type ARG1))
+    (call dev_type (ARG1))
+    (typeattributeset dev_stor_type ARG1))
+
+(macro dev_manage_all ((type ARG1))
+    (call fs_rw_devtmpfs_dirs (ARG1))
+    (allow ARG1 dev_except_storage manage_chr_file_perms)
+    (typeattributeset can_read_memory ARG1)
+    (typeattributeset can_write_memory ARG1)
+    (optional dev_manage_all_optional_storage
+        (call stor_manage_all (ARG1))))
+
+(macro dev_read_memory ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 self (capability (sys_rawio)))
+    (allow ARG1 memory_dev read_chr_file_perms)
+    (typeattributeset can_read_memory ARG1))
+
+(macro dev_rw_devtty ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 devtty_dev rw_chr_file_perms))
+
+(macro dev_rw_null ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 null_dev rw_chr_file_perms))
+
+(macro dev_rw_zero ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 zero_dev rw_chr_file_perms))
+
+(macro dev_write_memory ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 self (capability (sys_rawio)))
+    (allow ARG1 memory_dev write_chr_file_perms)
+    (typeattributeset can_write_memory ARG1))
+
+(macro dev_unconfined ((type ARG1))
+    (typeattributeset dev_unconfined_type ARG1))
+
+(context null_dev (sys.user sys.role null_dev (systemlow systemlow)))
+
+(sidcontext devnull null_dev)
+
+(filecon "/dev/full" char null_dev)
+(filecon "/dev/null" char null_dev)
