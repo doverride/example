@@ -152,8 +152,9 @@
 
 (call sec_getattr_filesystems (subject_common_type))
 
-(call lib_use_ld_so (subject_common_type))
-(call lib_use_shared_libs (subject_common_type))
+(optional subject_common_type_optional_lib
+    (call lib_use_ld_so (subject_common_type))
+    (call lib_use_shared_libs (subject_common_type)))
 
 (optional subject_common_type_optional_systemd
     (call systemd_send_sigchld (subject_common_type)))
