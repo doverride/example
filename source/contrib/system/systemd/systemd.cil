@@ -31,6 +31,10 @@
     (call file_type (ARG1))
     (typeattributeset systemd_unit_type ARG1))
 
+(macro systemd_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 systend.bin_object systemd.common_subject)))
+
 (macro systemd_dynamic_subtrans ((type ARG1))
     (call subject_dynamic_subject_type_transition_subject (ARG1))
     (call dynamic_subject_type_transition_pattern (ARG1 systemd.common_subject))

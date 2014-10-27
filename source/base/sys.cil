@@ -92,6 +92,11 @@
         (call systemd_dynamic_subtrans (common_subject))
         (call systemd_getattr_exec_files (common_subject))
         (call systemd_send_signal (common_subject)))
+
+    ; (optional sys_optional_unconfined
+        ; (call unconfined (common_subject))
+            ; (optional sys_optional_systemd
+                ; (call systemd_auto_subtrans (common_subject))))
 )
 
 (type invalid)
