@@ -39,7 +39,6 @@
     (filecon "/usr/share/authconfig/authconfig\.py" file bin_authconfig)
 
     (blockinherit pam_object)
-    (typeattributeset auth_file_type pam_object)
 
     (context pam_authconfig (sys.u sys.r pam_object (systemlow systemlow)))
     (filecon "/etc/pam\.d/fingerprint-auth-ac" file pam_authconfig)
@@ -87,7 +86,6 @@
     (filecon "/usr/sbin/pam_timestamp_check" file bin_pam)
 
     (blockinherit pam_object)
-    (typeattributeset auth_file_type pam_object)
 
     (context pam (sys.u sys.r pam_object (systemlow systemlow)))
     (filecon "/etc/pam\.d(/.*)?" any pam)
@@ -189,6 +187,8 @@
     (filecon "/etc/security/opasswd" file auth_shadow)
     (filecon "/etc/security/opasswd\.old" file auth_shadow)
 )
+
+(typeattributeset auth_file_type (auth_pam_etc_type))
 
 (typeattributeset not_can_read_shadow_passwords
     (not (can_read_shadow_passwords)))
