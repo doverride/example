@@ -1,5 +1,7 @@
 (typeattribute systemd_daemon_type)
 (typeattribute systemd_unit_type)
+(typeattribute systemd_socket_activated_object_type)
+(typeattribute systemd_socket_activated_subect_type)
 
 (block unit_object
     (blockabstract unit_object)
@@ -10,9 +12,29 @@
 (block systemd_daemon
     (blockabstract systemd_daemon)
         (blockinherit system_entry)
+        (blockinherit unit_object)
 
         (call auto_subject_type_transition_pattern (systemd.common_subject bin_object common_subject))
         (typeattributeset systemd_daemon_type common_subject)
+)
+
+(block systemd_daemon_no_unit
+    (blockabstract systemd_daemon_no_unit)
+        (blockinherit system_entry)
+
+        (call auto_subject_type_transition_pattern (systemd.common_subject bin_object common_subject))
+        (typeattributeset systemd_daemon_type common_subject)
+)
+
+(block systemd_daemon_socket_activated
+    (blockabstract systemd_daemon_socket_activated)
+        (blockinherit system_entry)
+        (blockinherit unit_object)
+
+        (call auto_subject_type_transition_pattern (systemd.common_subject bin_object common_subject))
+        (typeattributeset systemd_daemon_type common_subject)
+
+        (call systemd_socket_activated_subject_type (common_subject))
 )
 
 (block systemd
@@ -48,3 +70,13 @@
 
 (macro systemd_send_signal ((type ARG1))
     (allow ARG1 systemd.common_subject (process (signal))))
+
+(macro systemd_socket_activated ((type ARG1)(type ARG2))
+    (call systemd_socket_activated_object_type (ARG2))
+    (call systemd_socket_activated_subject_type (ARG1)))
+
+(macro systemd_socket_activated_object_type ((type ARG1))
+    (typeattributeset systemd_socket_activated_object_type ARG1))
+
+(macro systemd_socket_activated_subject_type ((type ARG1))
+    (typeattributeset systemd_socket_activated_subject_type ARG1))
