@@ -353,14 +353,26 @@
     (allow ARG1 kmsg_proc read_file_perms)
     (typeattributeset can_read_kernel_message ARG1))
 
-(macro sys_read_vm_overcommit_sysctl_files ((type ARG1))
+(macro sys_read_vm_overcommit_sysctl ((type ARG1))
     (call sys_search_vm_sysctl (ARG1))
     (allow ARG1 vm_overcommit_sysctl read_file_perms))
 
 (macro sys_request_load_module ((type ARG1))
     (allow ARG1 sys.common_subject (system (module_request))))
 
-(macro sys_rw_security_sysctl_files ((type ARG1))
+(macro sys_rw_fs_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (call rw_files_pattern (ARG1 fs_sysctl fs_sysctl)))
+
+(macro sys_rw_kernel_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (call rw_files_pattern (ARG1 kernel_sysctl kernel_sysctl)))
+
+(macro sys_rw_net_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (call rw_files_pattern (ARG1 net_sysctl net_sysctl)))
+
+(macro sys_rw_security_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (allow ARG1 fs_sysctl search_dir_perms)
     (allow ARG1 kernel_sysctl search_dir_perms)
@@ -369,12 +381,16 @@
     (typeattributeset
         can_write_security_and_usermodehelper_sysctl ARG1))
 
-(macro sys_rw_usermodehelper_sysctl_files ((type ARG1))
+(macro sys_rw_usermodehelper_sysctl ((type ARG1))
     (call sys_search_kernel_sysctl (ARG1))
     (call rw_files_pattern (ARG1 usermodehelper_sysctl
         usermodehelper_sysctl))
     (typeattributeset
         can_write_security_and_usermodehelper_sysctl ARG1))
+
+(macro sys_rw_vm_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (call rw_files_pattern (ARG1 vm_sysctl vm_sysctl)))
 
 (macro sys_search_sysctl ((type ARG1))
     (call fs_search_proc (ARG1))

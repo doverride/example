@@ -1,0 +1,57 @@
+(roleattribute sysctl_role)
+(typeattribute sysctl_admin_type)
+(typeattribute sysctl_file_type)
+
+(block sysctl
+    (blockinherit systemd_daemon)
+
+    (call app_subject_type (common_subject))
+    (call app_exec_file_type (common_subject))
+
+    (roletype sysctl_role common_subject)
+
+    (context bin_sysctl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/sysctl" file bin_sysctl)
+    (filecon "/usr/lib/systemd/systemd-sysctl" file bin_sysctl)
+
+    (context unit_sysctl (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*systemd-sysctl.*" file unit_sysctl)
+
+    (blockinherit etc_object)
+
+    (context etc_sysctl (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/sysctl\.conf" file etc_sysctl)
+    (filecon "/etc/sysctl\.d(/.*)?" any etc_sysctl)
+
+    (call sys_rw_fs_sysctl (common_subject))
+    (call sys_rw_kernel_sysctl (common_subject))
+    (call sys_rw_net_sysctl (common_subject))
+    (call sys_rw_security_sysctl (common_subject))
+    (call sys_rw_usermodehelper_sysctl (common_subject))
+
+    (typeattributeset sysctl_file_type (etc_object unit_object))
+
+    (allow sysctl_admin_type common_subject signal_perms)
+    (allow sysctl_admin_type common_subject (process (ptrace)))
+    (call ps_subject_pattern (sysctl_admin_type common_subject))
+    (allow sysctl_admin_type unit_object (service (all)))
+    (allow sysctl_admin_type sysctl_file_type (all_file_objects
+        (not_mounton_entrypoint_and_execmod)))
+
+    (optional sysctl_optional_unconfined
+        (call unconfined (common_subject)))
+)
+
+(macro sysctl_exec ((type ARG1))
+    (call can_exec (ARG1 sysctl_exec_t)))
+
+(macro sysctl_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 sysctl.bin_object sysctl.common_subject)))
+
+(macro sysctl_run ((type ARG1)(role ARG2))
+    (call sysctl_auto_subtrans (ARG1))
+    (roleattributeset sysctl_role (ARG2)))
+
+(macro sysctl_admin ((type ARG1))
+    (typeattributeset sysctl_admin_type ARG1))

@@ -5,9 +5,6 @@
     start stop undefined enable disable reload)))
 (allow unconfined_type file_type (service (all)))
 
-(call sys_rw_security_sysctl_files (unconfined_type))
-(call sys_rw_usermodehelper_sysctl_files (unconfined_type))
-
 (allow unconfined_type self
     all_capability_perms_except_sys_module_and_sys_nice)
 (allow unconfined_type self
