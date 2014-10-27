@@ -4,7 +4,6 @@
 (allow unconfined_type self (system (halt reboot status
     start stop undefined enable disable reload)))
 (allow unconfined_type file_type (service (all)))
-(allow unconfined_type self (passwd (all)))
 
 (call sys_rw_security_sysctl_files (unconfined_type))
 (call sys_rw_usermodehelper_sysctl_files (unconfined_type))

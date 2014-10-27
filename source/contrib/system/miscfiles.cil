@@ -31,7 +31,6 @@
     (filecon "/usr/lib/modules(/.*)?" any modules)
 )
 
-
 (block terminfo
     (blockinherit terminfo_object)
 
