@@ -1,16 +1,13 @@
 (typeattribute miscfiles_cert_type)
 (typeattribute miscfiles_terminfo_type)
 
-(block cert_object
-    (blockabstract cert_object)
-        (type cert_object)
-        (call miscfiles_cert_type (cert_object))
-)
+(block cert
+    (blockinherit etc_object)
 
-(block terminfo_object
-    (blockabstract terminfo_object)
-        (type terminfo_object)
-        (call miscfiles_terminfo_type (terminfo_object))
+    (typeattributeset miscfiles_cert_type etc_object)
+
+    (context etc_cert (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/pki(/.*)?" any etc_cert)
 )
 
 (block locale
@@ -32,11 +29,15 @@
 )
 
 (block tetex
-    (blockinherit file_object)
+    (blockinherit var_lib_object)
 
-    (context tetex (sys.u sys.r file_object (systemlow systemlow)))
-    (filecon "/var/lib/texmf(/.*)?" any tetex)
-    (filecon "/var/spool/texmf(/.*)?" any tetex)
+    (context var_lib_tetex (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/texmf(/.*)?" any var_lib_tetex)
+
+    (blockinherit var_spool_object)
+
+    (context var_spool_tetex (sys.u sys.r var_spool_object (systemlow systemlow)))
+    (filecon "/var/spool/texmf(/.*)?" any var_spool_tetex)
 )
 
 (block fonts
@@ -88,18 +89,21 @@
     (filecon "/etc/sysconfig/network-scripts(/.*)?" file net)
 )
 
-(type cert)
-(call miscfiles_cert_type (cert))
+(block terminfo
+    (blockinherit etc_object)
 
-(context cert (sys.u sys.r cert (systemlow systemlow)))
-(filecon "/etc/pki(/.*)?" any cert)
+    (typeattributeset miscfiles_terminfo_type etc_object)
 
-(type terminfo)
-(call miscfiles_terminfo_type (terminfo))
+    (context etc_terminfo (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/terminfo(/.*)?" any etc_terminfo)
 
-(context terminfo (sys.u sys.r terminfo (systemlow systemlow)))
-(filecon "/etc/terminfo(/.*)?" any terminfo)
-(filecon "/usr/share/terminfo(/.*)?" any terminfo)
+    (blockinherit usr_object)
+
+    (typeattributeset miscfiles_terminfo_type usr_object)
+
+    (context usr_terminfo (sys.u sys.r usr_object (systemlow systemlow)))
+    (filecon "/usr/share/terminfo(/.*)?" any usr_terminfo)
+)
 
 (macro miscfiles_cert_type ((type ARG1))
     (call file_type (ARG1))

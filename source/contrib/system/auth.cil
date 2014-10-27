@@ -6,7 +6,7 @@
 (typeattribute auth_login_program_type)
 (typeattribute auth_nsswitch_client_type)
 (typeattribute auth_pam_client_type)
-(typeattribute auth_pam_file_type)
+(typeattribute auth_pam_etc_file_type)
 (typeattribute auth_admin_type)
 (typeattribute auth_file_type)
 (typeattribute auth_subject_type)
@@ -16,7 +16,7 @@
 (block pam_object
     (blockabstract pam_object)
         (type pam_object)
-        (call auth_pam_file_type (pam_object))
+        (call auth_pam_etc_file_type (pam_object))
 )
 
 (optional auth_optional_unconfined
@@ -183,14 +183,15 @@
     (filecon "/var/db/shadow.*" file auth_shadow)
 )
 
-(type pam)
-(call auth_pam_file_type (pam))
+(type etc_pam)
+(call file_etc_type (etc_pam))
+(typeattributeset auth_pam_etc_file_type etc_pam)
 
-(context pam (sys.u sys.r pam (systemlow systemlow)))
-(filecon "/etc/pam\.d(/.*)?" any pam)
-(filecon "/etc/security(/.*)?" any pam)
+(context etc_pam (sys.u sys.r etc_pam (systemlow systemlow)))
+(filecon "/etc/pam\.d(/.*)?" any etc_pam)
+(filecon "/etc/security(/.*)?" any etc_pam)
 
-(typeattributeset auth_file_type (auth_pam_file_type))
+(typeattributeset auth_file_type (auth_pam_etc_file_type))
 
 (typeattribute can_read_shadow_passwords)
 (typeattribute not_can_read_shadow_passwords)
@@ -252,9 +253,9 @@
 
 (allow auth_unconfined_type self (passwd (all)))
 
-(macro auth_pam_file_type ((type ARG1))
-    (call file_type (ARG1))
-    (typeattributeset auth_pam_file_type ARG1))
+(macro auth_pam_etc_file_type ((type ARG1))
+    (call file_etc_type (ARG1))
+    (typeattributeset auth_pam_etc_file_type ARG1))
 
 (macro auth_execute_pam_executable_files ((type ARG1))
     (call can_exec (ARG1 pam.bin_object)))
@@ -361,26 +362,26 @@
 
 (macro auth_read_authconfig_pam_config_files ((type ARG1))
     (call file_search_etc (ARG1))
-    (call read_files_pattern (ARG1 pam authconfig.pam_object)))
+    (call read_files_pattern (ARG1 etc_pam authconfig.pam_object)))
 
 (macro auth_list_pam_config ((type ARG1))
     (call file_search_etc (ARG1))
-    (allow ARG1 pam list_dir_perms))
+    (allow ARG1 etc_pam list_dir_perms))
 
 (macro auth_read_generic_pam_config_lnk_files ((type ARG1))
-    (allow ARG1 pam read_lnk_file_perms))
+    (allow ARG1 etc_pam read_lnk_file_perms))
 
 (macro auth_search_pam_config ((type ARG1))
     (call file_search_etc (ARG1))
-    (allow ARG1 pam search_dir_perms))
+    (allow ARG1 etc_pam search_dir_perms))
 
 (macro auth_read_all_pam_config_files ((type ARG1))
     (call file_search_etc (ARG1))
-    (call read_files_pattern (ARG1 pam auth_pam_file_type)))
+    (call read_files_pattern (ARG1 etc_pam auth_pam_etc_file_type)))
 
 (macro auth_read_generic_pam_config_files ((type ARG1))
     (call file_search_etc (ARG1))
-    (allow ARG1 pam.pam_object read_file_perms))
+    (allow ARG1 etc_pam read_file_perms))
 
 (macro auth_manage_pam_console_run_files ((type ARG1))
     (call file_search_run (ARG1))
