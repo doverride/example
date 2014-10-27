@@ -31,13 +31,13 @@
         (call file_auth_type (auth_object))
 )
 
-(block execmod_all
+(block execmod_all_except
     (blockinherit bool_object)
 
-    (context execmod_all (sys.u sys.r bool_object
+    (context execmod_all_except (sys.u sys.r bool_object
         (systemlow systemlow)))
-    (genfscon "selinuxfs" "/booleans/execmod_all"
-        execmod_all)
+    (genfscon "selinuxfs" "/booleans/execmod_all_except"
+        execmod_all_except)
 )
 
 (block boot_object
@@ -365,7 +365,7 @@
 (allow file_unconfined_type file_except (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 
-(call file_execmod_all (file_unconfined_type))
+(call file_execmod_all_except (file_unconfined_type))
 
 (macro file_exception ((type ARG1))
     (typeattributeset file_exception ARG1))
@@ -495,13 +495,13 @@
     (call file_type (ARG1))
     (typeattributeset file_var_type ARG1))
 
-(macro file_execmod_all ((type ARG1))
+(macro file_execmod_all_except ((type ARG1))
     (booleanif execmod_all
         (true
-            (allow ARG1 file_type (file (execmod))))))
+            (allow ARG1 file_except (file (execmod))))))
 
-(macro file_execmod_all_uncond ((type ARG1))
-    (allow ARG1 file_type (file (execmod))))
+(macro file_execmod_all_except_uncond ((type ARG1))
+    (allow ARG1 file_except (file (execmod))))
 
 (macro file_unconfined ((type ARG1))
     (typeattributeset file_unconfined_type ARG1))
