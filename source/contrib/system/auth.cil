@@ -156,7 +156,12 @@
     (filecon "/var/log/btmp.*" file var_log_faillog)
     (filecon "/var/log/faillog" file var_log_faillog)
     (filecon "/var/log/tallylog" file var_log_faillog)
-    (filecon "/var/run/faillock(/.*)?" any var_log_faillog)
+
+    (blockinherit run_object)
+    (typeattributeset auth_file_type run_object)
+
+    (context run_faillog (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/faillock(/.*)?" any run_faillog)
 )
 
 (block lastlog
@@ -179,13 +184,13 @@
     (blockinherit auth_object)
 
     (context auth_shadow (sys.u sys.r auth_object (systemlow systemlow)))
-    (filecon "/var/db/shadow.*" file auth_shadow)
     (filecon "/etc/group\.lock" file auth_shadow)
     (filecon "/etc/gshadow.*" file auth_shadow)
     (filecon "/etc/nshadow.*" file auth_shadow)
     (filecon "/etc/shadow.*" file auth_shadow)
     (filecon "/etc/security/opasswd" file auth_shadow)
     (filecon "/etc/security/opasswd\.old" file auth_shadow)
+    (filecon "/var/db/shadow.*" file auth_shadow)
 )
 
 (typeattributeset auth_file_type (auth_pam_etc_type))
