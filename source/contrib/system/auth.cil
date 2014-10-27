@@ -12,12 +12,6 @@
 (typeattribute auth_subject_type)
 
 (typeattribute auth_unconfined_type)
-(typeattribute can_read_shadow_passwords)
-(typeattribute not_can_read_shadow_passwords)
-(typeattribute can_write_shadow_passwords)
-(typeattribute not_can_write_shadow_passwords)
-(typeattribute can_relabelto_shadow_passwords)
-(typeattribute not_can_relabelto_shadow_passwords)
 
 (block pam_object
     (blockabstract pam_object)
@@ -197,16 +191,22 @@
 
 (typeattributeset auth_file_type (auth_pam_etc_type))
 
+(typeattribute can_read_shadow_passwords)
+(typeattribute not_can_read_shadow_passwords)
 (typeattributeset not_can_read_shadow_passwords
     (not (can_read_shadow_passwords)))
 (neverallow not_can_read_shadow_passwords shadow.auth_object
     (file (read)))
 
+(typeattribute can_write_shadow_passwords)
+(typeattribute not_can_write_shadow_passwords)
 (typeattributeset not_can_write_shadow_passwords
     (not (can_write_shadow_passwords)))
 (neverallow not_can_write_shadow_passwords shadow.auth_object
     (file (create write)))
 
+(typeattribute can_relabelto_shadow_passwords)
+(typeattribute not_can_relabelto_shadow_passwords)
 (typeattributeset not_can_relabelto_shadow_passwords
     (not (can_relabelto_shadow_passwords)))
 (neverallow not_can_relabelto_shadow_passwords shadow.auth_object
