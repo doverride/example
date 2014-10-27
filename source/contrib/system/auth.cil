@@ -66,6 +66,8 @@
 
     (roletype chkpwd_role chkpwd.common_subject)
 
+    (call auth_read_shadow (common_subject))
+
     (context bin_chkpwd (sys.u sys.r chkpwd.bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/unix_chkpwd" file bin_chkpwd)
 )
