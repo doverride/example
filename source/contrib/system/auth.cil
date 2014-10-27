@@ -334,8 +334,9 @@
     (allow ARG1 faillog.var_log_object rw_file_perms))
 
 (macro auth_var_log_filetrans_faillog ((type ARG1))
-    (call file_var_log_filetrans (ARG1 faillog.var_log_object file "tallylog"))
-    (call file_var_log_filetrans (ARG1 faillog.var_log_object file "btmp")))
+    (call file_var_log_filetrans (ARG1 faillog.var_log_object file "btmp"))
+    (call file_var_log_filetrans (ARG1 faillog.var_log_object file "faillog"))
+    (call file_var_log_filetrans (ARG1 faillog.var_log_object file "tallylog")))
 
 (macro auth_create_lastlog ((type ARG1))
     (call file_search_var (ARG1))
