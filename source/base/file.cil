@@ -5,8 +5,8 @@
 (typeattribute file_auth_type)
 (typeattribute file_not_auth_type)
 
-(typeattribute file_security_type)
-(typeattribute file_not_security_type)
+(typeattribute file_sec_type)
+(typeattribute file_not_sec_type)
 
 (typeattribute file_boot_type)
 (typeattribute file_etc_type)
@@ -24,6 +24,12 @@
 (typeattribute file_tmpfs_type)
 
 (typeattribute file_unconfined_type)
+
+(block auth_object
+    (blockabstract auth_object)
+        (type auth_object)
+        (call file_auth_type (auth_object))
+)
 
 (block execmod_all
     (blockinherit bool_object)
@@ -51,6 +57,7 @@
         (type file_object)
         (call file_type (file_object))
 )
+
 
 (block run_object
     (blockabstract run_object)
@@ -129,7 +136,7 @@
         (blockinherit var_log_object)
 
         (allow common_subject var_log_object manage_file_perms)
-        (call file_log_filetrans (common_subject var_log_object file "*"))
+        (call file_var_log_filetrans (common_subject var_log_object file "*"))
 )
 
 (block var_log_object_dir_file
@@ -138,7 +145,7 @@
 
         (allow common_subject var_log_object manage_file_perms)
         (allow common_subject var_log_object manage_dir_perms)
-        (call file_log_filetrans (common_subject var_log_object dir "*"))
+        (call file_var_log_filetrans (common_subject var_log_object dir "*"))
 )
 
 (block var_spool_object
@@ -344,25 +351,38 @@
 (filecon "/var/tmp" symlink (sys.u sys.r var_tmp (systemlow systemlow)))
 (filecon "/var/tmp" dir var_tmp)
 
+(typeattribute file_except)
+(typeattribute file_exception)
+(typeattributeset file_except
+    (and (file_type) (not (file_auth_type file_sec_type file_exception))))
+
 (call fs_associate_fs (file_type))
 
 (call fs_associate_tmpfs (file_lock_type))
 (call fs_associate_tmpfs (file_run_type))
 (call fs_associate_tmpfs (file_tmpfs_type))
 
-(allow file_unconfined_type file_type (all_file_objects
+(allow file_unconfined_type file_except (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
+
+(call file_execmod_all (file_unconfined_type))
+
+(macro file_exception ((type ARG1))
+    (typeattributeset file_exception ARG1))
 
 (macro file_type ((type ARG1))
     (call sys_object_type (ARG1))
     (typeattributeset file_type ARG1)
     (typeattributeset file_not_auth_type ARG1)
-    (typeattributeset file_not_security_type ARG1))
+    (typeattributeset file_not_sec_type ARG1))
 
 (macro file_auth_type ((type ARG1))
     (call sys_object_type (ARG1))
     (typeattributeset file_type ARG1)
     (typeattributeset file_auth_type ARG1))
+
+(macro file_add_entry_generic_var_log ((type ARG1))
+    (allow ARG1 var_log add_entry_dir_perms))
 
 (macro file_boot_type ((type ARG1))
     (call file_type (ARG1))
@@ -376,6 +396,11 @@
     (call file_type (ARG1))
     (typeattributeset file_etc_type ARG1))
 
+(macro file_etc_filetrans ((type ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call file_type_transition_pattern
+        (ARG1 etc ARG2 ARG3 ARG4)))
+
 (macro file_lib_type ((type ARG1))
     (call file_type (ARG1))
     (typeattributeset file_lib_type ARG1))
@@ -384,7 +409,7 @@
     (call file_type (ARG1))
     (typeattributeset file_lock_type ARG1))
 
-(macro file_log_filetrans ((type ARG1)(type ARG2)
+(macro file_var_log_filetrans ((type ARG1)(type ARG2)
     (class ARG3)(name ARG4))
     (call file_search_var (ARG1))
     (call file_type_transition_pattern
@@ -397,6 +422,9 @@
 (macro file_mnt_type ((type ARG1))
     (call file_type (ARG1))
     (typeattributeset file_mnt_type ARG1))
+
+(macro file_not_auth_exception ((type ARG1))
+    (typeattributeset file_not_auth_exception ARG1))
 
 (macro file_run_type ((type ARG1))
     (call file_type (ARG1))
@@ -413,11 +441,17 @@
 (macro file_read_run_lnk_files ((type ARG1))
     (allow ARG1 run read_lnk_file_perms))
 
+(macro file_rw_etc_dirs ((type ARG1))
+    (allow ARG1 etc rw_dir_perms))
+
 (macro file_search_etc ((type ARG1))
     (allow ARG1 etc search_dir_perms))
 
 (macro file_search_var_lib ((type ARG1))
     (call search_dirs_pattern (ARG1 var var_lib)))
+
+(macro file_search_var_log ((type ARG1))
+    (call search_dirs_pattern (ARG1 var var_log)))
 
 (macro file_search_usr ((type ARG1))
     (allow ARG1 usr search_dir_perms))
@@ -429,10 +463,17 @@
 (macro file_search_var ((type ARG1))
     (allow ARG1 var search_dir_perms))
 
-(macro file_security_type ((type ARG1))
+(macro file_sec_type ((type ARG1))
     (call sys_object_type (ARG1))
     (typeattributeset file_type ARG1)
-    (typeattributeset file_security_type ARG1))
+    (typeattributeset file_sec_type ARG1))
+
+(macro file_spec_except ((type ARG1)(type ARG2))
+    (typeattributeset ARG1 (and (file_type)
+        (not (file_auth_type file_sec_type file_exception ARG2)))))
+
+(macro files_spec_exception ((type ARG1)(type ARG2))
+    (typeattributeset ARG1 ARG2))
 
 (macro file_spool_type ((type ARG1))
     (call file_type (ARG1))
@@ -463,5 +504,4 @@
     (allow ARG1 file_type (file (execmod))))
 
 (macro file_unconfined ((type ARG1))
-    (call file_execmod_all (ARG1))
     (typeattributeset file_unconfined_type ARG1))

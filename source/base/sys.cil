@@ -301,6 +301,8 @@
 (allow sys_unconfined_type sys_sysctl_type list_dir_perms)
 (allow sys_unconfined_type sys_sysctl_type read_lnk_file_perms)
 
+(call sys_load_kernel_module (sys_unconfined_type))
+
 (booleanif (load_kernel_module)
     (true
         (allow can_load_kernel_module self (capability (sys_nice sys_module)))
@@ -402,7 +404,6 @@
     (allow ARG1 unlabeled (peer (recv))))
 
 (macro sys_unconfined ((type ARG1))
-    (call sys_load_kernel_module (ARG1))
     (typeattributeset sys_unconfined_type ARG1))
 
 (context system (sys.u sys.r sys.common_subject (mls_systemhigh mls_systemhigh)))

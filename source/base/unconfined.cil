@@ -26,6 +26,9 @@
 (call subject_unconfined (unconfined_type))
 (call sys_unconfined (unconfined_type))
 
+(optional unconfined_optional_auth
+    (call auth_unconfined (unconfined_type)))
+
 (optional unconfined_optional_stor
     (call stor_unconfined (unconfined_type)))
 
