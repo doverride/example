@@ -9,12 +9,35 @@
 (typeattribute net_packet_type)
 (typeattribute net_peer_type)
 
+(typeattribute ephemeral_port_type)
+(typeattribute reserved_port_type)
+(typeattribute rpc_port_type)
+(typeattribute unreserved_port_type)
+
 (typeattribute net_unconfined_type)
 
-(block port_object
-    (blockabstract port_object)
-    (type port_object)
-    (call net_port_type (port_object))
+(block ephemeral_port_object
+    (blockabstract ephemeral_port_object)
+    (type ephemeral_port_object)
+    (call net_ephemeral_port_type (ephemeral_port_object))
+)
+
+(block reserved_port_object
+    (blockabstract reserved_port_object)
+    (type reserved_port_object)
+    (call net_reserved_port_type (reserved_port_object))
+)
+
+(block hi_reserved_port_object
+    (blockabstract hi_reserved_port_object)
+    (type hi_reserved_port_object)
+    (call net_hi_reserved_port_type (hi_reserved_port_object))
+)
+
+(block unreserved_port_object
+    (blockabstract unreserved_port_object)
+    (type unreserved_port_object)
+    (call net_unreserved_port_type (unreserved_port_object))
 )
 
 (block node_object
@@ -43,6 +66,36 @@
 
 (type port)
 (call net_port_type (port))
+
+(type ephemeral_port)
+(call net_ephemeral_port_type (ephemeral_port))
+
+(context ephemeral_port (sys.u sys.r ephemeral_port (systemlow systemlow)))
+(portcon "tcp" (32768 61000) ephemeral_port)
+(portcon "udp" (32768 61000) ephemeral_port)
+
+(type hi_reserved_port)
+(call net_hi_reserved_port_type (hi_reserved_port))
+
+(context hi_reserved_port (sys.u sys.r hi_reserved_port (systemlow systemlow)))
+(portcon "tcp" (512 1023) hi_reserved_port)
+(portcon "udp" (512 1023) hi_reserved_port)
+
+(type reserved_port)
+(call net_reserved_port_type (reserved_port))
+
+(context reserved_port (sys.u sys.r reserved_port (systemlow systemlow)))
+(portcon "tcp" (1 511) reserved_port)
+(portcon "udp" (1 511) reserved_port)
+
+(type unreserved_port)
+(call net_unreserved_port_type (unreserved_port))
+
+(context unreserved_port (sys.u sys.r unreserved_port (systemlow systemlow)))
+(portcon "tcp" (1024 32767) unreserved_port)
+(portcon "udp" (1024 32767) unreserved_port)
+(portcon "tcp" (61001 65535) unreserved_port)
+(portcon "udp" (61001 65535) unreserved_port)
 
 (type node)
 (call net_node_type (node))
@@ -81,17 +134,22 @@
 
 (call sys_recv_unlabeled_peer (net_unconfined_type))
 
-(macro net_port_type ((type ARG1))
-    (call sys_object_type (ARG1))
-    (typeattributeset net_port_type ARG1))
+(macro net_ephemeral_port_type ((type ARG1))
+    (call net_port_type (ARG1))
+    (typeattributeset ephemeral_port_type ARG1))
 
-(macro net_node_type ((type ARG1))
-    (call sys_object_type (ARG1))
-    (typeattributeset net_node_type ARG1))
+(macro net_hi_reserved_port_type ((type ARG1))
+    (call net_port_type (ARG1))
+    (typeattributeset reserved_port_type ARG1)
+    (typeattributeset rpc_port_type ARG1))
 
 (macro net_if_type ((type ARG1))
     (call sys_object_type (ARG1))
     (typeattributeset net_if_type ARG1))
+
+(macro net_node_type ((type ARG1))
+    (call sys_object_type (ARG1))
+    (typeattributeset net_node_type ARG1))
 
 (macro net_packet_type ((type ARG1))
     (call sys_object_type (ARG1))
@@ -100,6 +158,18 @@
 (macro net_peer_type ((type ARG1))
     (call sys_object_type (ARG1))
     (typeattributeset net_peer_type ARG1))
+
+(macro net_port_type ((type ARG1))
+    (call sys_object_type (ARG1))
+    (typeattributeset net_port_type ARG1))
+
+(macro net_reserved_port_type ((type ARG1))
+    (call net_port_type (ARG1))
+    (typeattributeset reserved_port_type ARG1))
+
+(macro net_unreserved_port_type ((type ARG1))
+    (call net_port_type (ARG1))
+    (typeattributeset unreserved_port_type ARG1))
 
 (macro net_unconfined ((type ARG1))
     (typeattributeset net_unconfined_type ARG1))

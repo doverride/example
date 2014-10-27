@@ -1,0 +1,86 @@
+(typeattribute dns_resolv_client_type)
+
+(block dns
+    (blockinherit reserved_port_object)
+
+    (context reserved_port_dns (sys.u sys.r reserved_port_object
+        (systemlow systemlow)))
+    (portcon "tcp" 53 reserved_port_dns)
+    (portcon "udp" 53 reserved_port_dns)
+)
+
+(block dnssec
+    (blockinherit unreserved_port_object)
+
+    (context unreserved_port_dnssec (sys.u sys.r unreserved_port_object
+        (systemlow systemlow)))
+    (portcon "tcp" 8955 unreserved_port_dnssec)
+    (portcon "udp" 8955 unreserved_port_dnssec)
+)
+
+(block mdns
+    (blockinherit unreserved_port_object)
+
+    (context unreserved_port_mdns (sys.u sys.r unreserved_port_object
+        (systemlow systemlow)))
+    (portcon "tcp" 5353 unreserved_port_mdns)
+    (portcon "udp" 5353 unreserved_port_mdns)
+)
+
+(block resolv
+    (blockinherit etc_object)
+
+    (context etc_resolv (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/resolv\.conf.*" file etc_resolv)
+)
+
+(allow dns_resolv_client_type self r_netlink_route_socket_perms)
+(allow dns_resolv_client_type self create_udp_socket_perms)
+
+(call dns_tcp_connect_dns_port (dns_resolv_client_type))
+(call dns_tcp_connect_dnssec_port (dns_resolv_client_type))
+(call dns_read_resolv (dns_resolv_client_type))
+
+(macro dns_etc_filetrans_resolv ((type ARG1))
+    (call file_etc_filetrans
+        (ARG1 resolv.etc_object file "resolv.conf"))
+    (call file_etc_filetrans
+        (ARG1 resolv.etc_object file "resolv.conf.tmp"))
+    (call file_etc_filetrans
+        (ARG1 resolv.etc_object file "resolv.conf.fp-tmp"))
+    (call file_etc_filetrans
+        (ARG1 resolv.etc_object file "resolv.conf.fp-saved")))
+
+(macro dns_manage_resolv ((type ARG1))
+    (call file_rw_etc_dirs (ARG1))
+    (allow ARG1 resolv.etc_object manage_file_perms))
+
+(macro dns_read_resolv ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 resolv.etc_object read_file_perms))
+
+(macro dns_resolv_client ((type ARG1))
+    (typeattributeset dns_resolv_client_type ARG1))
+
+(macro dns_tcp_connect_dns_port ((type ARG1))
+    (allow ARG1 self create_tcp_socket_perms)
+    (allow ARG1 dns.reserved_port_object (tcp_socket (name_connect))))
+
+(macro dns_udp_bind_mdns_port ((type ARG1))
+    (allow ARG1 self (capability (net_bind_service)))
+    (allow ARG1 self create_udp_socket_perms)
+    (allow ARG1 mdns.unreserved_port_object (udp_socket (name_bind))))
+
+(macro dns_udp_bind_dns_port ((type ARG1))
+    (allow ARG1 self (capability (net_bind_service)))
+    (allow ARG1 self create_udp_socket_perms)
+    (allow ARG1 dns.reserved_port_object (udp_socket (name_bind))))
+
+(macro dns_tcp_bind_dns_port ((type ARG1))
+    (allow ARG1 self (capability (net_bind_service)))
+    (allow ARG1 self create_tcp_stream_socket_perms)
+    (allow ARG1 dns.reserved_port_object (tcp_socket (name_bind))))
+
+(macro dns_tcp_connect_dnssec_port ((type ARG1))
+    (allow ARG1 self create_tcp_socket_perms)
+    (allow ARG1 dnssec.unreserved_port_object (tcp_socket (name_connect))))
