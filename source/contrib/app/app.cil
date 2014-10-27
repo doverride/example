@@ -1,0 +1,37 @@
+(typeattribute app_type)
+(typeattribute app_exec_type)
+
+(block app
+    (blockabstract app)
+        (blockinherit entry)
+
+        (call app_type (common_subject))
+        (call app_exec_type (bin_object))
+)
+
+(macro app_type ((type ARG1))
+    (typeattributeset app_type ARG1))
+
+(macro app_exec_type ((type ARG1))
+    (typeattributeset app_exec_type ARG1))
+
+(macro app_getattr_all_app_exec_files ((type ARG1))
+    (allow ARG1 app_exec_type (file (getattr))))
+
+(macro app_execute_all_app_exec_files ((type ARG1))
+    (call can_exec (ARG1 app_exec_type)))
+
+(macro app_read_state_all_app_type_subjects ((type ARG1))
+    (allow ARG1 app_type read_file_perms)
+    (allow ARG1 app_type list_dir_perms)
+    (allow ARG1 app_type read_lnk_file_perms))
+
+(macro app_execute_all_exe_files ((type ARG1))
+    (call app_execute_all_app_exec_files (ARG1))
+    (call bin_execute_bin_files (ARG1))
+    (call bin_execute_shell_files (ARG1)))
+
+(macro app_entry ((type ARG1)(type ARG2))
+    (call app_type (ARG1))
+    (call app_exec_type (ARG2))
+    (call subject_entry (ARG1 ARG2)))

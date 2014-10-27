@@ -70,9 +70,41 @@
 (macro bin_type ((type ARG1))
     (typeattributeset bin_type ARG1))
 
+(macro bin_list ((type ARG1))
+    (call bin_read_lnk_files (ARG1))
+    (call file_search_usr (ARG1))
+    (allow ARG1 bin list_dir_perms))
+
 (macro bin_read_lnk_files ((type ARG1))
     (allow ARG1 bin read_lnk_file_perms))
 
 (macro bin_search ((type ARG1))
     (call bin_read_lnk_files (ARG1))
+    (call file_search_usr (ARG1))
     (allow ARG1 bin search_dir_perms))
+
+(macro bin_entry ((type ARG1))
+    (call subject_entry (ARG1 bin)))
+
+(macro bin_auto_subtrans ((type ARG1)(type ARG2))
+    (call bin_manual_subtrans (ARG1 ARG2))
+    (typetransition ARG1 bin process "*" ARG2))
+
+(macro bin_manual_subtrans ((type ARG1)(type ARG2))
+    (call manual_subject_type_transition_pattern (ARG1 bin ARG2)))
+
+(macro bin_execute_bin_files ((type ARG1))
+    (allow ARG1 bin exec_file_perms))
+
+(macro bin_shell_entry ((type ARG1))
+    (call subject_entry (ARG1 shell.bin_object)))
+
+(macro bin_shell_auto_subtrans ((type ARG1)(type ARG2))
+    (call bin_shell_manual_subtrans (ARG1 ARG2))
+    (typetransition ARG1 shell.bin_object process "*" ARG2))
+
+(macro bin_shell_manual_subtrans ((type ARG1)(type ARG2))
+    (call manual_subject_type_transition_pattern (ARG1 shell.bin_object ARG2)))
+
+(macro bin_execute_shell_files ((type ARG1))
+    (allow ARG1 shell.bin_object exec_file_perms))
