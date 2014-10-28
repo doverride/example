@@ -505,7 +505,7 @@
     (typeattributeset file_var_type ARG1))
 
 (macro file_execmod_all_except ((type ARG1))
-    (booleanif execmod_all
+    (booleanif execmod_all_except
         (true
             (allow ARG1 file_except (file (execmod))))))
 
