@@ -9,15 +9,6 @@
         (call systemd_unit_type (unit_object))
 )
 
-(block systemd_daemon
-    (blockabstract systemd_daemon)
-        (blockinherit system_entry)
-        (blockinherit unit_object)
-
-        (call auto_subject_type_transition_pattern (systemd.common_subject bin_object common_subject))
-        (typeattributeset systemd_daemon_type common_subject)
-)
-
 (block systemd_daemon_no_unit
     (blockabstract systemd_daemon_no_unit)
         (blockinherit system_entry)
@@ -26,13 +17,18 @@
         (typeattributeset systemd_daemon_type common_subject)
 )
 
-(block systemd_daemon_socket_activated
-    (blockabstract systemd_daemon_socket_activated)
-        (blockinherit system_entry)
+(block systemd_daemon
+    (blockabstract systemd_daemon)
+        (blockinherit systemd_daemon_no_unit)
         (blockinherit unit_object)
 
         (call auto_subject_type_transition_pattern (systemd.common_subject bin_object common_subject))
         (typeattributeset systemd_daemon_type common_subject)
+)
+
+(block systemd_daemon_socket_activated
+    (blockabstract systemd_daemon_socket_activated)
+        (blockinherit systemd_daemon)
 
         (call systemd_socket_activated_subject_type (common_subject))
 )
