@@ -152,6 +152,8 @@
 (block sshd_net
     (blockinherit ssh_sshd_privsep_preauth_template)
 
+    (allow common_subject sshd.common_subject (fifo_file (write)))
+
     (optional sshd_net_optional_unconfined
         (call unconfined (common_subject)))
 )
