@@ -1,6 +1,6 @@
 (roleattribute kmod_role)
 (typeattribute kmod_admin_type)
-(typeattribute kmod_file_type)
+(typeattribute kmod_object_type)
 
 (block kmod
     (blockinherit systemd_daemon_template)
@@ -29,13 +29,13 @@
     (context usr_kmod (sys.u sys.r usr_object (systemlow systemlow)))
     (filecon "/usr/lib/modules/[^/]+/modules\..+" file usr_kmod)
 
-    (typeattributeset kmod_file_type (etc_object usr_object run_object unit_object))
+    (typeattributeset kmod_object_type (etc_object usr_object run_object unit_object))
 
     (allow kmod_admin_type common_subject signal_perms)
     (allow kmod_admin_type common_subject (process (ptrace)))
     (call ps_subject_pattern (kmod_admin_type common_subject))
     (allow kmod_admin_type unit_object (service (all)))
-    (allow kmod_admin_type kmod_file_type (all_file_objects
+    (allow kmod_admin_type kmod_object_type (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
 
     (optional kmod_optional_unconfined

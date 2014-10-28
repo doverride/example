@@ -1,12 +1,12 @@
 (roleattribute sysctl_role)
 (typeattribute sysctl_admin_type)
-(typeattribute sysctl_file_type)
+(typeattribute sysctl_object_type)
 
 (block sysctl
     (blockinherit systemd_daemon_template)
 
     (call app_subject_type (common_subject))
-    (call app_exec_file_type (common_subject))
+    (call app_exec_object_type (common_subject))
 
     (roletype sysctl_role common_subject)
 
@@ -29,13 +29,13 @@
     (call sys_rw_security_sysctl (common_subject))
     (call sys_rw_usermodehelper_sysctl (common_subject))
 
-    (typeattributeset sysctl_file_type (etc_object unit_object))
+    (typeattributeset sysctl_object_type (etc_object unit_object))
 
     (allow sysctl_admin_type common_subject signal_perms)
     (allow sysctl_admin_type common_subject (process (ptrace)))
     (call ps_subject_pattern (sysctl_admin_type common_subject))
     (allow sysctl_admin_type unit_object (service (all)))
-    (allow sysctl_admin_type sysctl_file_type (all_file_objects
+    (allow sysctl_admin_type sysctl_object_type (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
 
     (optional sysctl_optional_unconfined

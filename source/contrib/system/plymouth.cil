@@ -1,7 +1,7 @@
 (roleattribute plymouth_role)
 (typeattribute plymouth_admin_type)
 (typeattribute plymouth_subject_type)
-(typeattribute plymouth_file_type)
+(typeattribute plymouth_object_type)
 
 (block plymouth
     (blockinherit systemd_daemon_no_unit_template)
@@ -45,14 +45,14 @@
     (context var_spool_plymouthd (sys.u sys.r var_spool_object (systemlow systemlow)))
     (filecon "/var/spool/plymouth(/.*)?" any var_spool_plymouthd)
 
-    (typeattributeset plymouth_file_type (etc_object var_lib_object run_object
+    (typeattributeset plymouth_object_type (etc_object var_lib_object run_object
         var_spool_object unit_object))
 
     (allow plymouth_admin_type plymouth_subject_type signal_perms)
     (allow plymouth_admin_type plymouth_subject_type (process (ptrace)))
     (call ps_subject_pattern (plymouth_admin_type plymouth_subject_type))
     (allow plymouth_admin_type unit_object (service (all)))
-    (allow plymouth_admin_type plymouth_file_type (all_file_objects
+    (allow plymouth_admin_type plymouth_object_type (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
 
     (optional plymouthd_optional_unconfined

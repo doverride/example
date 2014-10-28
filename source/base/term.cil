@@ -6,29 +6,22 @@
 (block term_login_pty_object_template
     (blockabstract term_login_pty_object_template)
 
-    (type dev_object)
-    (call term_login_pty_type (dev_object))
+    (type pty_object)
+    (call term_login_pty_type (pty_object))
 )
 
 (block term_pty_object_template
     (blockabstract term_pty_object_template)
 
-    (type dev_object)
-    (call term_pty_type (dev_object))
-)
-
-(block term_serial_object_template
-    (blockabstract term_serial_object_template)
-
-    (type dev_object)
-    (call term_serial_type (dev_object))
+    (type pty_object)
+    (call term_pty_type (pty_object))
 )
 
 (block term_tty_object_template
     (blockabstract term_tty_object_template)
 
-    (type dev_object)
-    (call term_tty_type (dev_object))
+    (type tty_object)
+    (call term_tty_type (tty_object))
 )
 
 (type tty_dev)
@@ -47,6 +40,11 @@
 
 (call fs_associate_devpts (term_pty_type))
 
+(macro term_create_pty ((type ARG1)(type ARG2))
+    (call dev_rw_ptmx (ARG1))
+    (call fs_getattr_devpts (ARG1))
+    (call fs_devpts_filetrans (ARG1 ARG2 chr_file "*")))
+
 (macro term_login_pty_type ((type ARG1))
     (call term_pty_type (ARG1))
     (typeattributeset term_server_pty_type ARG1))
@@ -62,3 +60,7 @@
 (macro term_tty_type ((type ARG1))
     (call term_serial_type (ARG1))
     (typeattributeset term_tty_type ARG1))
+
+(macro term_user_pty ((type ARG1)(type ARG2))
+    (call term_pty_type (ARG2))
+    (typechange ARG1 term_server_pty_type chr_file ARG2))

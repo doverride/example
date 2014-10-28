@@ -1,6 +1,6 @@
 (typeattribute unconfined_type)
 
-(allow unconfined_type self (dbus (all)))
+(allow unconfined_type subject_common_type (dbus (all)))
 (allow unconfined_type self (system (halt reboot status
     start stop undefined enable disable reload)))
 (allow unconfined_type file_type (service (all)))

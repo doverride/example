@@ -1,3 +1,4 @@
 sys.u:sys.u
-root:sys.u:sys.u
-__default__:sys.u:sys.u
+root:sys.u
+joe:joe.u
+__default__:sys.u

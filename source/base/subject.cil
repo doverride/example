@@ -144,6 +144,7 @@
 (call bin_search (subject_common_type))
 
 (call fs_read_generic_proc_files (subject_common_type))
+(call fs_search_devtmpfs (subject_common_type))
 (call fs_search_rootfs (subject_common_type))
 
 (call dev_rw_devtty (subject_common_type))

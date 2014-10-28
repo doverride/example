@@ -1,1 +1,1 @@
-privsep_preauth=systemd.common_subject
+privsep_preauth=sshd_net.common_subject

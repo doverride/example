@@ -1,25 +1,25 @@
 (typeattribute app_subject_type)
-(typeattribute app_exec_file_type)
+(typeattribute app_exec_object_type)
 
 (block app_template
     (blockabstract app_template)
         (blockinherit subject_entry_template)
 
         (call app_subject_type (common_subject))
-        (call app_exec_file_type (bin_object))
+        (call app_exec_object_type (bin_object))
 )
 
 (macro app_subject_type ((type ARG1))
     (typeattributeset app_subject_type ARG1))
 
-(macro app_exec_file_type ((type ARG1))
-    (typeattributeset app_exec_file_type ARG1))
+(macro app_exec_object_type ((type ARG1))
+    (typeattributeset app_exec_object_type ARG1))
 
 (macro app_getattr_all_app_exec_files ((type ARG1))
-    (allow ARG1 app_exec_file_type (file (getattr))))
+    (allow ARG1 app_exec_object_type (file (getattr))))
 
 (macro app_execute_all_app_exec_files ((type ARG1))
-    (call can_exec (ARG1 app_exec_file_type)))
+    (call can_exec (ARG1 app_exec_object_type)))
 
 (macro app_read_state_all_app_subjects ((type ARG1))
     (allow ARG1 app_subject_type read_file_perms)
@@ -33,5 +33,5 @@
 
 (macro app_entry ((type ARG1)(type ARG2))
     (call app_subject_type (ARG1))
-    (call app_exec_file_type (ARG2))
+    (call app_exec_object_type (ARG2))
     (call subject_entry (ARG1 ARG2)))

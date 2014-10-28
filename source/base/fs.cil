@@ -167,8 +167,15 @@
 (macro fs_associate_tmpfs ((type ARG1))
     (allow ARG1 tmpfs (filesystem (associate))))
 
+(macro fs_devpts_filetrans ((type ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call file_type_transition_pattern (ARG1 devpts ARG2 ARG3 ARG4)))
+
+(macro fs_getattr_devpts ((type ARG1))
+    (allow ARG1 devpts (filesystem (getattr))))
+
 (macro fs_list_debugfs ((type ARG1))
-    (call list_dirs_pattern (ARG1 proc debugfs)))
+    (allow ARG1 debugfs list_dir_perms))
 
 (macro fs_list_proc ((type ARG1))
     (call fs_read_generic_proc_lnk_files (ARG1))
@@ -178,10 +185,12 @@
     (allow ARG1 devtmpfs manage_dir_perms))
 
 (macro fs_manage_devtmpfs_chr_files ((type ARG1))
-    (call manage_chr_files_pattern (ARG1 devtmpfs devtmpfs)))
+    (call fs_rw_devtmpfs_dirs (ARG1))
+    (allow ARG1 devtmpfs manage_chr_file_perms))
 
 (macro fs_manage_devtmpfs_blk_files ((type ARG1))
-    (call manage_blk_files_pattern (ARG1 devtmpfs devtmpfs)))
+    (call fs_rw_devtmpfs_dirs (ARG1))
+    (allow ARG1 devtmpfs manage_blk_file_perms))
 
 (macro fs_mounton_rootfs_dirs ((type ARG1))
     (allow ARG1 rootfs (dir (mounton))))
