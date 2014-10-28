@@ -47,6 +47,11 @@
 
 (call fs_associate_devpts (term_pty_type))
 
+(macro term_create_pty ((type ARG1)(type ARG2))
+    (call dev_rw_ptmx (ARG1))
+    (call fs_getattr_devpts (ARG1))
+    (call fs_devpts_filetrans (ARG1 ARG2 chr_file "*")))
+
 (macro term_login_pty_type ((type ARG1))
     (call term_pty_type (ARG1))
     (typeattributeset term_server_pty_type ARG1))

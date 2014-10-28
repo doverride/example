@@ -450,6 +450,9 @@
 (macro file_rw_etc_dirs ((type ARG1))
     (allow ARG1 etc rw_dir_perms))
 
+(macro file_list_etc ((type ARG1))
+    (allow ARG1 etc list_dir_perms))
+
 (macro file_search_etc ((type ARG1))
     (allow ARG1 etc search_dir_perms))
 

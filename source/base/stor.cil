@@ -91,48 +91,40 @@
 
 (macro stor_manage_fixed_disk ((type ARG1))
     (allow ARG1 self (capability (mknod)))
-    (call fs_rw_devtmpfs_dirs (ARG1))
     (allow ARG1 fixed_disk_dev manage_blk_file_perms)
     (allow ARG1 fixed_disk_dev manage_chr_file_perms)
     (typeattributeset can_read_fixed_disk ARG1)
     (typeattributeset can_write_fixed_disk ARG1))
 
 (macro stor_read_fixed_disk ((type ARG1))
-    (call fs_search_devtmpfs (ARG1))
     (allow ARG1 fixed_disk_dev read_chr_file_perms)
     (allow ARG1 fixed_disk_dev read_blk_file_perms)
     (typeattributeset can_read_fixed_disk ARG1))
 
 (macro stor_write_fixed_disk ((type ARG1))
-    (call fs_search_devtmpfs (ARG1))
     (allow ARG1 fixed_disk_dev write_chr_file_perms)
     (allow ARG1 fixed_disk_dev write_blk_file_perms)
     (typeattributeset can_write_fixed_disk ARG1))
 
 (macro stor_manage_fuse ((type ARG1))
     (allow ARG1 self (capability (mknod)))
-    (call fs_rw_devtmpfs_dirs (ARG1))
     (allow ARG1 fuse_dev manage_chr_file_perms))
 
 (macro stor_manage_removable ((type ARG1))
     (allow ARG1 self (capability (mknod)))
-    (call fs_rw_devtmpfs_dirs (ARG1))
     (allow ARG1 removable_dev manage_blk_file_perms))
 
 (macro stor_manage_scsi_generic ((type ARG1))
     (allow ARG1 self (capability (mknod)))
-    (call fs_rw_devtmpfs_dirs (ARG1))
     (allow ARG1 fixed_disk_dev manage_chr_file_perms)
     (typeattributeset can_read_scsi_generic ARG1)
     (typeattributeset can_write_scsi_generic ARG1))
 
 (macro stor_read_scsi_generic ((type ARG1))
-    (call fs_search_devtmpfs (ARG1))
     (allow ARG1 scsi_generic_dev read_chr_file_perms)
     (typeattributeset can_read_scsi_generic ARG1))
 
 (macro stor_write_scsi_generic ((type ARG1))
-    (call fs_search_devtmpfs (ARG1))
     (allow ARG1 scsi_generic_dev write_chr_file_perms)
     (typeattributeset can_write_scsi_generic ARG1))
 
