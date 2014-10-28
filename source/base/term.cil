@@ -1,6 +1,35 @@
 (typeattribute term_pty_type)
 (typeattribute term_serial_type)
+(typeattribute term_server_pty_type)
 (typeattribute term_tty_type)
+
+(block term_login_pty_object_template
+    (blockabstract term_login_pty_object_template)
+
+    (type dev_object)
+    (call term_login_pty_type (dev_object))
+)
+
+(block term_pty_object_template
+    (blockabstract term_pty_object_template)
+
+    (type dev_object)
+    (call term_pty_type (dev_object))
+)
+
+(block term_serial_object_template
+    (blockabstract term_serial_object_template)
+
+    (type dev_object)
+    (call term_serial_type (dev_object))
+)
+
+(block term_tty_object_template
+    (blockabstract term_tty_object_template)
+
+    (type dev_object)
+    (call term_tty_type (dev_object))
+)
 
 (type tty_dev)
 (call term_serial_type (tty_dev))
@@ -17,6 +46,10 @@
 (filecon "/dev/vport[0-9]p[0-9]+" char virtio_dev)
 
 (call fs_associate_devpts (term_pty_type))
+
+(macro term_login_pty_type ((type ARG1))
+    (call term_pty_type (ARG1))
+    (typeattributeset term_server_pty_type ARG1))
 
 (macro term_pty_type ((type ARG1))
     (call dev_type (ARG1))

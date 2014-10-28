@@ -1,9 +1,9 @@
 (typeattribute app_subject_type)
 (typeattribute app_exec_file_type)
 
-(block app
-    (blockabstract app)
-        (blockinherit entry)
+(block app_template
+    (blockabstract app_template)
+        (blockinherit subject_entry_template)
 
         (call app_subject_type (common_subject))
         (call app_exec_file_type (bin_object))

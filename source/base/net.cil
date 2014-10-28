@@ -16,50 +16,50 @@
 
 (typeattribute net_unconfined_type)
 
-(block ephemeral_port_object
-    (blockabstract ephemeral_port_object)
+(block net_ephemeral_port_object_template
+    (blockabstract net_ephemeral_port_object_template)
     (type ephemeral_port_object)
     (call net_ephemeral_port_type (ephemeral_port_object))
 )
 
-(block reserved_port_object
-    (blockabstract reserved_port_object)
+(block net_reserved_port_object_template
+    (blockabstract net_reserved_port_object_template)
     (type reserved_port_object)
     (call net_reserved_port_type (reserved_port_object))
 )
 
-(block hi_reserved_port_object
-    (blockabstract hi_reserved_port_object)
+(block net_hi_reserved_port_object_template
+    (blockabstract net_hi_reserved_port_object_template)
     (type hi_reserved_port_object)
     (call net_hi_reserved_port_type (hi_reserved_port_object))
 )
 
-(block unreserved_port_object
-    (blockabstract unreserved_port_object)
+(block net_unreserved_port_object_template
+    (blockabstract net_unreserved_port_object_template)
     (type unreserved_port_object)
     (call net_unreserved_port_type (unreserved_port_object))
 )
 
-(block node_object
-    (blockabstract node_object)
+(block net_node_object_template
+    (blockabstract net_node_object_template)
     (type node_object)
     (call net_node_type (node_object))
 )
 
-(block if_object
-    (blockabstract if_object)
+(block net_if_object_template
+    (blockabstract net_if_object_template)
     (type if_object)
     (call net_if_type (if_object))
 )
 
-(block packet_object
-    (blockabstract packet_object)
+(block net_packet_object_template
+    (blockabstract net_packet_object_template)
     (type packet_object)
     (call net_packet_type (packet_object))
 )
 
-(block peer_object
-    (blockabstract peer_object)
+(block net_peer_object_template
+    (blockabstract net_peer_object_template)
     (type peer_object)
     (call net_peer_type (peer_object))
 )

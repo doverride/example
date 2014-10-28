@@ -3,7 +3,7 @@
 (typeattribute sysctl_file_type)
 
 (block sysctl
-    (blockinherit systemd_daemon)
+    (blockinherit systemd_daemon_template)
 
     (call app_subject_type (common_subject))
     (call app_exec_file_type (common_subject))
@@ -17,7 +17,7 @@
     (context unit_sysctl (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*systemd-sysctl.*" file unit_sysctl)
 
-    (blockinherit etc_object)
+    (blockinherit file_etc_object_template)
 
     (context etc_sysctl (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/sysctl\.conf" file etc_sysctl)

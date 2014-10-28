@@ -19,8 +19,22 @@
 (typeattribute sys_unconfined_type)
 (typeattribute sys_sysctl_type)
 
+(block sys_proc_object_template
+    (blockabstract sys_proc_object_template)
+
+    (type proc_object)
+    (call sys_proc_type (proc_object))
+)
+
+(block sys_sysctl_object_template
+    (blockabstract sys_sysctl_object_template)
+
+    (type sysctl_object)
+    (call sys_sysctl_type (sysctl_object))
+)
+
 (block load_kernel_module
-    (blockinherit bool_object)
+    (blockinherit sec_bool_object_template)
 
     (context load_kernel_module (sys.u sys.r bool_object
         (systemlow systemlow)))
@@ -32,7 +46,7 @@
     (user u)
     (role r)
 
-    (blockinherit common_subject)
+    (blockinherit subject_common_template)
 
     (call sys_roletype (common_subject))
     (call sys_userrole (u))
@@ -40,7 +54,7 @@
     (userlevel u systemlow)
     (userrange u (systemlow systemhigh))
 
-    (blockinherit var_log_object_single_file)
+    (blockinherit file_maintains_single_var_log_file_template)
 
     (context var_log_sys (u r var_log_object
         (systemlow systemlow)))

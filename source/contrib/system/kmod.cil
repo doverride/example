@@ -3,7 +3,7 @@
 (typeattribute kmod_file_type)
 
 (block kmod
-    (blockinherit systemd_daemon)
+    (blockinherit systemd_daemon_template)
     (roletype kmod_role common_subject)
 
     (context bin_kmod (sys.u sys.r bin_object (systemlow systemlow)))
@@ -12,19 +12,19 @@
     (context unit_kmod (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*kmod-static-nodes.*" file unit_kmod)
 
-    (blockinherit etc_object)
+    (blockinherit file_etc_object_template)
 
     (context etc_kmod (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/depmod\.d(/.*)?" any etc_kmod)
     (filecon "/etc/modprobe\.d(/.*)?" any etc_kmod)
     (filecon "/usr/lib/modules/modprobe\.conf" file etc_kmod)
 
-    (blockinherit run_object)
+    (blockinherit file_run_object_template)
 
     (context run_kmod (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/run/tmpfiles\.d/kmod\.conf" file run_kmod)
 
-    (blockinherit usr_object)
+    (blockinherit file_usr_object_template)
 
     (context usr_kmod (sys.u sys.r usr_object (systemlow systemlow)))
     (filecon "/usr/lib/modules/[^/]+/modules\..+" file usr_kmod)

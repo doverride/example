@@ -13,8 +13,8 @@
 
 (typeattribute auth_unconfined_type)
 
-(block pam_object
-    (blockabstract pam_object)
+(block auth_pam_object_template
+    (blockabstract auth_pam_object_template)
         (type pam_object)
         (call auth_pam_etc_file_type (pam_object))
 )
@@ -23,7 +23,7 @@
     (call unconfined (auth_subject_type)))
 
 (block authconfig
-    (blockinherit app)
+    (blockinherit app_template)
     (typeattributeset auth_subject_type common_subject)
 
     (roletype authconfig_role common_subject)
@@ -32,7 +32,7 @@
     (filecon "/usr/sbin/authconfig" file bin_authconfig)
     (filecon "/usr/share/authconfig/authconfig\.py" file bin_authconfig)
 
-    (blockinherit pam_object)
+    (blockinherit auth_pam_object_template)
 
     (context pam_authconfig (sys.u sys.r pam_object (systemlow systemlow)))
     (filecon "/etc/pam\.d/fingerprint-auth-ac" file pam_authconfig)
@@ -41,13 +41,13 @@
     (filecon "/etc/pam\.d/smartcard-auth-ac" file pam_authconfig)
     (filecon "/etc/pam\.d/system-auth-ac" file pam_authconfig)
 
-    (blockinherit etc_object)
+    (blockinherit file_etc_object_template)
     (typeattributeset auth_file_type etc_object)
 
     (context etc_authconfig (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/sysconfig/authconfig" file etc_authconfig)
 
-    (blockinherit var_lib_object)
+    (blockinherit file_var_lib_object_template)
     (typeattributeset auth_file_type var_lib_object)
 
     (context var_lib_authconfig (sys.u sys.r var_lib_object (systemlow systemlow)))
@@ -55,7 +55,7 @@
 )
 
 (block chkpwd
-    (blockinherit systemd_daemon_no_unit)
+    (blockinherit systemd_daemon_no_unit_template)
     (typeattributeset auth_subject_type common_subject)
 
     (roletype chkpwd_role chkpwd.common_subject)
@@ -67,7 +67,7 @@
 )
 
 (block nsswitch
-    (blockinherit etc_object)
+    (blockinherit file_etc_object_template)
     (typeattributeset auth_file_type etc_object)
 
     (context etc_nsswitch (sys.u sys.r etc_object (systemlow systemlow)))
@@ -75,13 +75,13 @@
 )
 
 (block pam
-    (blockinherit system_entry)
+    (blockinherit subject_system_entry_template)
     (typeattributeset auth_subject_type common_subject)
 
     (context bin_pam (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/pam_timestamp_check" file bin_pam)
 
-    (blockinherit run_object)
+    (blockinherit file_run_object_template)
     (typeattributeset auth_file_type run_object)
 
     (context run_pam (sys.u sys.r run_object (systemlow systemlow)))
@@ -89,13 +89,13 @@
 )
 
 (block pam_console
-    (blockinherit systemd_daemon_no_unit)
+    (blockinherit systemd_daemon_no_unit_template)
     (typeattributeset auth_subject_type common_subject)
 
     (context bin_pam_console (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/pam_console_apply" file bin_pam_console)
 
-    (blockinherit run_object)
+    (blockinherit file_run_object_template)
     (typeattributeset auth_file_type run_object)
 
     (context run_pam_console (sys.u sys.r run_object (systemlow systemlow)))
@@ -103,7 +103,7 @@
 )
 
 (block updpwd
-    (blockinherit app)
+    (blockinherit app_template)
     (typeattributeset auth_subject_type common_subject)
 
     (roleattributeset updpwd_role sys.r)
@@ -115,7 +115,7 @@
 )
 
 (block utempter
-    (blockinherit app)
+    (blockinherit app_template)
     (typeattributeset auth_subject_type common_subject)
 
     (roletype utempter_role common_subject)
@@ -125,7 +125,7 @@
 )
 
 (block password
-    (blockinherit etc_object)
+    (blockinherit file_etc_object_template)
     (typeattributeset auth_file_type etc_object)
 
     (context etc_password (sys.u sys.r etc_object (systemlow systemlow)))
@@ -139,7 +139,7 @@
 )
 
 (block faillog
-    (blockinherit var_log_object)
+    (blockinherit file_var_log_object_template)
     (typeattributeset auth_file_type var_log_object)
 
     (context var_log_faillog (sys.u sys.r var_log_object (systemlow systemlow)))
@@ -147,7 +147,7 @@
     (filecon "/var/log/faillog" file var_log_faillog)
     (filecon "/var/log/tallylog" file var_log_faillog)
 
-    (blockinherit run_object)
+    (blockinherit file_run_object_template)
     (typeattributeset auth_file_type run_object)
 
     (context run_faillog (sys.u sys.r run_object (systemlow systemlow)))
@@ -155,7 +155,7 @@
 )
 
 (block lastlog
-    (blockinherit var_log_object)
+    (blockinherit file_var_log_object_template)
     (typeattributeset auth_file_type var_log_object)
 
     (context var_log_lastlog (sys.u sys.r var_log_object (systemlow systemlow)))
@@ -163,7 +163,7 @@
 )
 
 (block wtmp
-    (blockinherit var_log_object)
+    (blockinherit file_var_log_object_template)
     (typeattributeset auth_file_type var_log_object)
 
     (context var_log_wtmp (sys.u sys.r var_log_object (systemlow systemlow)))
@@ -171,7 +171,7 @@
 )
 
 (block shadow
-    (blockinherit auth_object)
+    (blockinherit file_auth_object_template)
 
     (context auth_shadow (sys.u sys.r auth_object (systemlow systemlow)))
     (filecon "/etc/group\.lock" file auth_shadow)

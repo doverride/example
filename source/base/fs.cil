@@ -1,3 +1,9 @@
+(block fs_object_template
+    (blockabstract fs_object_template)
+        (type fs_object)
+        (call fs_type (fs_object))
+)
+
 (sid fs)
 
 (typeattribute fs_type)

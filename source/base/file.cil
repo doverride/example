@@ -25,14 +25,14 @@
 
 (typeattribute file_unconfined_type)
 
-(block auth_object
-    (blockabstract auth_object)
+(block file_auth_object_template
+    (blockabstract file_auth_object_template)
         (type auth_object)
         (call file_auth_type (auth_object))
 )
 
 (block execmod_all_except
-    (blockinherit bool_object)
+    (blockinherit sec_bool_object_template)
 
     (context execmod_all_except (sys.u sys.r bool_object
         (systemlow systemlow)))
@@ -40,34 +40,34 @@
         execmod_all_except)
 )
 
-(block boot_object
-    (blockabstract boot_object)
+(block file_boot_object_template
+    (blockabstract file_boot_object_template)
         (type boot_object)
         (call file_boot_type (boot_object))
 )
 
-(block etc_object
-    (blockabstract etc_object)
+(block file_etc_object_template
+    (blockabstract file_etc_object_template)
         (type etc_object)
         (call file_boot_type (etc_object))
 )
 
-(block file_object
-    (blockabstract file_object)
+(block file_object_template
+    (blockabstract file_object_template)
         (type file_object)
         (call file_type (file_object))
 )
 
 
-(block run_object
-    (blockabstract run_object)
+(block file_run_object_template
+    (blockabstract file_run_object_template)
         (type run_object)
         (call file_run_type (run_object))
 )
 
-(block run_object_all_files
-    (blockabstract run_object_all_files)
-        (blockinherit run_object)
+(block file_maintains_run_objects_template
+    (blockabstract file_maintains_run_objects_template)
+        (blockinherit file_run_object_template)
 
         (allow common_subject run_object manage_file_perms)
         (allow common_subject run_object manage_dir_perms)
@@ -78,90 +78,96 @@
         (call file_run_filetrans (common_subject run_object dir "*"))
 )
 
-(block run_object_dir_file
-    (blockabstract run_object_dir_file)
-        (blockinherit run_object)
+(block file_maintains_run_dirs_and_files_template
+    (blockabstract file_maintains_run_dirs_and_files_template)
+        (blockinherit file_run_object_template)
 
         (allow common_subject run_object manage_file_perms)
         (allow common_subject run_object manage_dir_perms)
         (call file_run_filetrans (common_subject run_object dir "*"))
 )
 
-(block run_object_single_file
-    (blockabstract run_object_single_file)
-        (blockinherit run_object)
+(block file_maintains_single_run_file_template
+    (blockabstract file_maintains_single_run_file_template)
+        (blockinherit file_run_object_template)
 
         (allow common_subject run_object manage_file_perms)
         (call file_run_filetrans (common_subject run_object file "*"))
 )
 
-(block run_lock_object
-    (blockabstract run_lock_object)
+(block file_run_lock_object_template
+    (blockabstract file_run_lock_object_template)
         (type run_lock_object)
         (call file_lock_type (run_lock_object))
 )
 
-(block usr_object
-    (blockabstract usr_object)
+(block file_sec_object_template
+    (blockabstract file_sec_object_template)
+        (type sec_object)
+        (call file_sec_type (sec_object))
+)
+
+(block file_usr_object_template
+    (blockabstract file_usr_object_template)
         (type usr_object)
         (call file_usr_type (usr_object))
 )
 
-(block var_object
-    (blockabstract var_object)
+(block file_var_object_template
+    (blockabstract file_var_object_template)
         (type var_object)
         (call file_var_type (var_object))
 )
 
-(block var_cache_object
-    (blockabstract var_cache_object)
+(block file_var_cache_object_template
+    (blockabstract file_var_cache_object_template)
         (type var_cache_object)
         (call file_cache_type (var_cache_object))
 )
 
-(block var_lib_object
-    (blockabstract var_lib_object)
+(block file_var_lib_object_template
+    (blockabstract file_var_lib_object_template)
         (type var_lib_object)
         (call file_lib_type (var_lib_object))
 )
 
-(block var_log_object
-    (blockabstract var_log_object)
+(block file_var_log_object_template
+    (blockabstract file_var_log_object_template)
         (type var_log_object)
         (call file_log_type (var_log_object))
 )
 
-(block var_log_object_single_file
-    (blockabstract var_log_object_single_file)
-        (blockinherit var_log_object)
+(block file_maintains_single_var_log_file_template
+    (blockabstract file_maintains_single_var_log_file_template)
+        (blockinherit file_var_log_object_template)
 
         (allow common_subject var_log_object manage_file_perms)
         (call file_var_log_filetrans (common_subject var_log_object file "*"))
 )
 
-(block var_log_object_dir_file
-    (blockabstract var_log_object_dir_file)
-        (blockinherit var_log_object)
+(block file_maintains_var_log_dirs_and_files_template
+    (blockabstract file_maintains_var_log_dirs_and_files_template)
+        (blockinherit file_var_log_object_template)
 
         (allow common_subject var_log_object manage_file_perms)
         (allow common_subject var_log_object manage_dir_perms)
         (call file_var_log_filetrans (common_subject var_log_object dir "*"))
 )
 
-(block var_spool_object
-    (blockabstract var_spool_object)
+(block file_var_spool_object_template
+    (blockabstract file_var_spool_object_template)
         (type var_spool_object)
         (call file_spool_type (var_spool_object))
 )
 
-(block var_tmp_object
-    (blockabstract var_tmp_object)
+(block file_var_tmp_object_template
+    (blockabstract file_var_tmp_object_template)
         (type var_tmp_object)
         (call file_tmp_type (var_tmp_object))
 )
 
-(block tmpfs_object
-    (blockabstract tmpfs_object)
+(block file_tmpfs_object_template
+    (blockabstract file_tmpfs_object_template)
         (type tmpfs_object)
         (call file_tmpfs_type (tmpfs_object))
 )

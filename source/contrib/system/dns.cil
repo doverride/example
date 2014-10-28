@@ -1,7 +1,7 @@
 (typeattribute dns_resolv_client_type)
 
 (block dns
-    (blockinherit reserved_port_object)
+    (blockinherit net_reserved_port_object_template)
 
     (context reserved_port_dns (sys.u sys.r reserved_port_object
         (systemlow systemlow)))
@@ -10,7 +10,7 @@
 )
 
 (block dnssec
-    (blockinherit unreserved_port_object)
+    (blockinherit net_unreserved_port_object_template)
 
     (context unreserved_port_dnssec (sys.u sys.r unreserved_port_object
         (systemlow systemlow)))
@@ -19,7 +19,7 @@
 )
 
 (block mdns
-    (blockinherit unreserved_port_object)
+    (blockinherit net_unreserved_port_object_template)
 
     (context unreserved_port_mdns (sys.u sys.r unreserved_port_object
         (systemlow systemlow)))
@@ -28,7 +28,7 @@
 )
 
 (block resolv
-    (blockinherit etc_object)
+    (blockinherit file_etc_object_template)
 
     (context etc_resolv (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/resolv\.conf.*" file etc_resolv)
