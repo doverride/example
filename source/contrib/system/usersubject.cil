@@ -124,7 +124,7 @@
     (call usersubject_generic_bin_template (user.r user.common_subject))
 
     (context user_bin (user.u user.r home_object (systemlow systemlow)))
-    (filecon "/home/joe/bin" symlink user_bin)
+    (filecon "/home/joe/\.bin(/.*)?" any user_bin)
 
     (call bin_type (home_object))
 )
@@ -295,12 +295,12 @@
 
 (macro usersubject_home_user_filetrans_bin ((role ARG1)(type ARG2))
     (call usersubject_home_user_filetrans
-        (ARG1 ARG2 user_bin.home_object dir "bin"))
+        (ARG1 ARG2 user_bin.home_object dir ".bin"))
     (roletype ARG1 user_bin.home_object))
 
 (macro usersubject_home_user_filetrans_cert ((role ARG1)(type ARG2))
     (call usersubject_home_user_filetrans
-        (ARG1 ARG2 user_cert.home_object dir "pki"))
+        (ARG1 ARG2 user_cert.home_object dir ".pki"))
     (roletype ARG1 user_cert.home_object))
 
 (macro usersubject_home_user_filetrans_terminfo ((role ARG1)(type ARG2))
