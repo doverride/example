@@ -171,15 +171,7 @@
 (macro usersubject_common_login_type ((user ARG1)(role ARG2)(type ARG3))
     (call usersubject_common_type (ARG1 ARG2 ARG3))
     (roleallow sys.r ARG3)
-    (typeattributeset usersubject_common_login_type ARG3)
-
-    (call usersubject_generic_home_template (ARG2 ARG3))
-    (call usersubject_generic_bin_template (ARG2 ARG3))
-    (call usersubject_generic_cert_template (ARG2 ARG3))
-    (call usersubject_generic_terminfo_template (ARG2 ARG3))
-    (call usersubject_generic_terminals_template (ARG2 ARG3))
-    (call usersubject_generic_tmpfs_template (ARG2 ARG3))
-    (call usersubject_generic_mail_spool_template (ARG2 ARG3)))
+    (typeattributeset usersubject_common_login_type ARG3))
 
 (macro usersubject_mls ((user ARG1)(level ARG2)(level ARG3)(level ARG4))
     (userlevel ARG1 ARG3)
