@@ -101,6 +101,9 @@
     (blockinherit usersubject_mail_spool_object_template)
     (call usersubject_generic_mail_spool_template (r common_subject))
 
+    (context var_spool_user (user.u user.r var_spool_object (systemlow mls_systemhigh)))
+    (filecon "/var/spool/mail/joe" file var_spool_user)
+
     (blockinherit usersubject_tmpfs_object_template)
     (call usersubject_generic_tmpfs_template (r common_subject))
 
