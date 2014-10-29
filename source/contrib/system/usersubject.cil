@@ -1,0 +1,320 @@
+(typeattribute usersubject_type)
+(typeattribute usersubject_common_type)
+
+(typeattribute usersubject_common_login_type)
+
+(typeattribute usersubject_home_type)
+(typeattribute usersubject_tmpfs_type)
+(typeattribute usersubject_mail_spool_type)
+
+(typeattribute usersubject_pty_type)
+(typeattribute usersubject_tty_type)
+
+(block usersubject_template
+    (blockabstract usersubject_template)
+        (blockinherit subject_template)
+
+        (user u)
+        (userrole u r)
+
+        (role r)
+        (roletype r subject)
+
+        (typeattributeset usersubject_type subject)
+)
+
+(block usersubject_common_template
+    (blockabstract usersubject_common_template)
+        (blockinherit subject_common_template)
+
+        (user u)
+        (userrole u r)
+
+        (role r)
+        (roletype r common_subject)
+
+        (typeattributeset usersubject_common_type common_subject)
+)
+
+(block usersubject_common_login_template
+    (blockabstract usersubject_common_login_template)
+        (blockinherit usersubject_common_template)
+
+        (roleallow sys.r r)
+
+        (typeattributeset usersubject_common_login_type common_subject)
+)
+
+(block usersubject_home_object_template
+    (blockabstract usersubject_home_object_template)
+        (type home_object)
+        (call usersubject_home_type (home_object))
+)
+
+(block usersubject_tmpfs_object_template
+    (blockabstract usersubject_tmpfs_object_template)
+        (blockinherit file_tmpfs_object_template)
+
+        (typeattributeset usersubject_tmpfs_type tmpfs_object)
+)
+
+(block usersubject_mail_spool_object_template
+    (blockabstract usersubject_mail_spool_object_template)
+        (blockinherit file_var_spool_object_template)
+
+        (typeattributeset usersubject_mail_spool_type var_spool_object)
+)
+
+(block usersubject_pty_object_template
+    (blockabstract usersubject_pty_object_template)
+        (blockinherit term_pty_object_template)
+
+        (typeattributeset usersubject_pty_type pty_object)
+)
+
+(block usersubject_tty_object_template
+    (blockabstract usersubject_tty_object_template)
+        (blockinherit term_tty_object_template)
+
+        (typeattributeset usersubject_tty_type tty_object)
+)
+
+(type home_user)
+(call file_type (home_user))
+
+(context home_user (user.u user.r home_user (systemlow mls_systemhigh)))
+(filecon "/home/joe" dir home_user)
+
+(block user
+    (blockinherit usersubject_common_login_template)
+
+    (call usersubject_mls (u systemlow systemlow systemhigh))
+
+    (blockinherit usersubject_home_object_template)
+    (call usersubject_generic_home_template (r common_subject))
+
+    (context user (user.u user.r home_object (systemlow systemlow)))
+    (filecon "/home/joe/.*" any user)
+
+    (roletype r run) ; hack for /run/sudo
+ 
+    (blockinherit usersubject_mail_spool_object_template)
+    (call usersubject_generic_mail_spool_template (r common_subject))
+
+    (blockinherit usersubject_tmpfs_object_template)
+    (call usersubject_generic_tmpfs_template (r common_subject))
+
+    (blockinherit usersubject_pty_object_template)
+    (call usersubject_generic_pty_template (r common_subject))
+
+    (blockinherit usersubject_tty_object_template)
+    (call usersubject_generic_tty_template (r common_subject))
+
+    (call auth_run_chkpwd (common_subject r))
+
+    (optional user_optional_unconfined
+        (call unconfined (common_subject)))
+)
+
+(block user_bin
+    (blockinherit usersubject_home_object_template)
+    (call usersubject_generic_bin_template (user.r user.common_subject))
+
+    (context user_bin (user.u user.r home_object (systemlow systemlow)))
+    (filecon "/home/joe/bin" symlink user_bin)
+
+    (call bin_type (home_object))
+)
+
+(block user_cert
+    (blockinherit usersubject_home_object_template)
+    (call usersubject_generic_cert_template (user.r user.common_subject))
+
+    (context user_cert (user.u user.r home_object (systemlow systemlow)))
+    (filecon "/home/joe/\.pki(/.*)?" any user_cert)
+
+    (call miscfiles_cert_type (home_object))
+)
+
+(block user_terminfo
+    (blockinherit usersubject_home_object_template)
+    (call usersubject_generic_terminfo_template (user.r user.common_subject))
+
+    (context user_terminfo (user.u user.r home_object (systemlow systemlow)))
+    (filecon "/home/joe/\.terminfo" file user_terminfo)
+
+    (call miscfiles_terminfo_type (home_object))
+)
+
+(call bin_entry (usersubject_common_type))
+(call bin_shell_entry (usersubject_common_type))
+
+(call subject_user_exemption_target (usersubject_common_type))
+
+(macro usersubject_type ((user ARG1)(role ARG2)(type ARG3))
+    (call subject_type (ARG3))
+    (userrole ARG1 ARG2)
+    (roletype ARG2 ARG3)
+    (typeattributeset usersubject_type ARG3))
+
+(macro usersubject_common_type ((user ARG1)(role ARG2)(type ARG3))
+    (call subject_common_type (ARG3))
+    (userrole ARG1 ARG2)
+    (roletype ARG2 ARG3)
+    (typeattributeset usersubject_common_type ARG3)
+
+    (call auth_run_chkpwd (ARG3 ARG2)))
+
+(macro usersubject_common_login_type ((user ARG1)(role ARG2)(type ARG3))
+    (call usersubject_common_type (ARG1 ARG2 ARG3))
+    (roleallow sys.r ARG3)
+    (typeattributeset usersubject_common_login_type ARG3)
+
+    (call usersubject_generic_home_template (ARG2 ARG3))
+    (call usersubject_generic_bin_template (ARG2 ARG3))
+    (call usersubject_generic_cert_template (ARG2 ARG3))
+    (call usersubject_generic_terminfo_template (ARG2 ARG3))
+    (call usersubject_generic_terminals_template (ARG2 ARG3))
+    (call usersubject_generic_tmpfs_template (ARG2 ARG3))
+    (call usersubject_generic_mail_spool_template (ARG2 ARG3)))
+
+(macro usersubject_mls ((user ARG1)(level ARG2)(level ARG3)(level ARG4))
+    (userlevel ARG1 ARG3)
+    (userrange ARG1 (ARG3 ARG4)))
+
+(macro usersubject_home_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset usersubject_home_type ARG1))
+
+(macro usersubject_tmpfs_type ((type ARG1))
+    (call file_tmpfs_type (ARG1))
+    (typeattributeset usersubject_tmpfs_type ARG1))
+
+(macro usersubject_mail_spool_type ((type ARG1))
+    (call file_spool_type (ARG1))
+    (typeattributeset usersubject_mail_spool_type ARG1))
+
+(macro usersubject_use_all_pty_objects ((type ARG1))
+    (allow ARG1 usersubject_pty_type rw_term_perms))
+
+(macro usersubject_use_all_tty_objects ((type ARG1))
+    (allow ARG1 usersubject_tty_type rw_term_perms))
+
+(macro usersubject_use_inherited_all_pty_objects ((type ARG1))
+    (allow ARG1 usersubject_pty_type rw_inherited_term_perms))
+
+(macro usersubject_use_inherited_all_tty_objects ((type ARG1))
+    (allow ARG1 usersubject_tty_type rw_inherited_term_perms))
+
+(macro usersubject_use_generic_pty_objects ((type ARG1))
+    (allow ARG1 user.pty_object rw_term_perms))
+
+(macro usersubject_use_generic_tty_objects ((type ARG1))
+    (allow ARG1 user.tty_object rw_term_perms))
+
+(macro usersubject_use_inherited_generic_pty_objects ((type ARG1))
+    (allow ARG1 user.pty_object rw_inherited_term_perms))
+
+(macro usersubject_use_inherited_generic_tty_objects ((type ARG1))
+    (allow ARG1 user.tty_object rw_inherited_term_perms))
+
+(macro usersubject_use_generic_terminals ((type ARG1))
+    (allow ARG1 user.pty_object rw_term_perms)
+    (allow ARG1 user.tty_object rw_term_perms))
+
+(macro usersubject_use_generic_inherited_terminals ((type ARG1))
+    (allow ARG1 user.pty_object rw_inherited_term_perms)
+    (allow ARG1 user.tty_object rw_inherited_term_perms))
+
+(macro usersubject_use_all_terminals ((type ARG1))
+    (allow ARG1 usersubject_pty_type rw_term_perms)
+    (allow ARG1 usersubject_tty_type rw_term_perms))
+
+(macro usersubject_use_all_inherited_terminals ((type ARG1))
+    (allow ARG1 usersubject_pty_type rw_inherited_term_perms)
+    (allow ARG1 usersubject_tty_type rw_inherited_term_perms))
+
+(macro usersubject_generic_pty_template ((role ARG1)(type ARG2))
+    (call term_user_pty (ARG2 user.pty_object))
+    (roletype ARG1 user.pty_object))
+
+(macro usersubject_generic_tty_template ((role ARG1)(type ARG2))
+    (call term_user_tty (ARG2 user.tty_object))
+    (roletype ARG1 user.tty_object))
+
+(macro usersubject_generic_terminals_template ((role ARG1)(type ARG2))
+    (call usersubject_generic_pty_template (ARG1 ARG2))
+    (call usersubject_generic_tty_template (ARG1 ARG2)))
+
+(macro usersubject_generic_tmpfs_template ((role ARG1)(type ARG2))
+    (allow ARG2 user.tmpfs_object (all_file_objects
+        (not_mounton_entrypoint_and_execmod)))
+    (roletype ARG1 user.tmpfs_object)
+    (call fs_tmpfs_filetrans
+        (ARG2 user.tmpfs_object all_file_objects "*")))
+
+(macro usersubject_generic_mail_spool_template ((role ARG1)(type ARG2))
+    (allow ARG2 user.var_spool_object rw_file_perms)
+    (roletype ARG1 user.var_spool_object))
+
+(macro usersubject_generic_home_template ((role ARG1)(type ARG2))
+    (allow ARG2 user.home_object (all_file_objects
+        (not_mounton_entrypoint_and_execmod)))
+    (call usersubject_home_user_filetrans_user (ARG1 ARG2)))
+
+(macro usersubject_generic_bin_template ((role ARG1)(type ARG2))
+    (allow ARG2 user_bin.home_object (all_file_objects
+        (not_mounton_entrypoint_and_execmod)))
+    (roletype ARG1 user_bin.home_object)
+    (call usersubject_home_user_filetrans_bin (ARG1 ARG2)))
+
+(macro usersubject_generic_cert_template ((role ARG1)(type ARG2))
+    (allow ARG2 user_cert.home_object (all_file_objects
+        (not_mounton_entrypoint_and_execmod)))
+    (roletype ARG1 user_cert.home_object)
+    (call usersubject_home_user_filetrans_cert (ARG1 ARG2)))
+
+(macro usersubject_generic_terminfo_template ((role ARG1)(type ARG2))
+    (allow ARG2 user_terminfo.home_object
+        all_file_perms_except_mounton_execmod_and_entrypoint)
+    (roletype ARG1 user_terminfo.home_object)
+    (call usersubject_home_user_filetrans_terminfo (ARG1 ARG2))) 
+
+(macro usersubject_home_user_filetrans ((role ARG1)(type ARG2)(type ARG3)
+    (class ARG4)(name ARG5))
+    (call file_type_transition_pattern (ARG2 home_user ARG3 ARG4 ARG5))
+    (roletype ARG1 home_user))
+
+(macro usersubject_home_user_filetrans_user ((role ARG1)(type ARG2))
+    (call usersubject_home_user_filetrans
+    (ARG1 ARG2 user.home_object all_file_objects "*"))
+    (roletype ARG1 user.home_object))
+
+(macro usersubject_home_user_filetrans_bin ((role ARG1)(type ARG2))
+    (call usersubject_home_user_filetrans
+        (ARG1 ARG2 user_bin.home_object dir "bin"))
+    (roletype ARG1 user_bin.home_object))
+
+(macro usersubject_home_user_filetrans_cert ((role ARG1)(type ARG2))
+    (call usersubject_home_user_filetrans
+        (ARG1 ARG2 user_cert.home_object dir "pki"))
+    (roletype ARG1 user_cert.home_object))
+
+(macro usersubject_home_user_filetrans_terminfo ((role ARG1)(type ARG2))
+    (call usersubject_home_user_filetrans
+        (ARG1 ARG2 user_terminfo.home_object file ".terminfo"))
+    (roletype ARG1 user_terminfo.home_object))
+
+(macro usersubject_pty_type ((type ARG1))
+    (call term_pty_type (ARG1))
+    (typeattributeset usersubject_pty_type ARG1))
+
+(macro usersubject_tty_type ((type ARG1))
+    (call term_tty_type (ARG1))
+    (typeattributeset usersubject_tty_type ARG1))
+
+(macro usersubject_dynamic_subtrans_all_common_login_subjects ((type ARG1))
+    (call dynamic_subject_type_transition_pattern (ARG1 usersubject_common_login_type)))
+
+(macro usersubject_shell_manual_subtrans_all_common_login_subjects ((type ARG1))
+    (call bin_shell_manual_subtrans (ARG1 usersubject_common_login_type)))

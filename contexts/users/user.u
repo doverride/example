@@ -1,0 +1,2 @@
+user.r:user.common_subject user.r:user.common_subject
+sys.r:sshd.common_subject user.r:user.common_subject

@@ -1,3 +1,5 @@
+(boolean console_login true)
+
 (typeattribute term_pty_type)
 (typeattribute term_serial_type)
 (typeattribute term_server_pty_type)
@@ -23,6 +25,21 @@
     (type tty_object)
     (call term_tty_type (tty_object))
 )
+
+(block console_login
+    (blockinherit sec_bool_object_template)
+
+    (context console_login (sys.u sys.r bool_object
+        (systemlow systemlow)))
+    (genfscon "selinuxfs" "/booleans/console_login"
+        console_login)
+)
+
+(type console_dev)
+(call dev_type (console_dev))
+
+(context console_dev (sys.u sys.r console_dev (systemlow systemlow)))
+(filecon "/dev/console" char console_dev)
 
 (type tty_dev)
 (call term_serial_type (tty_dev))
@@ -62,5 +79,10 @@
     (typeattributeset term_tty_type ARG1))
 
 (macro term_user_pty ((type ARG1)(type ARG2))
-    (call term_pty_type (ARG2))
     (typechange ARG1 term_server_pty_type chr_file ARG2))
+
+(macro term_user_tty ((type ARG1)(type ARG2))
+    (typechange ARG1 tty_dev chr_file ARG2)
+        (booleanif console_login
+            (true
+                (typechange ARG1 console_dev chr_file ARG2))))

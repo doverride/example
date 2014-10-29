@@ -488,6 +488,12 @@
     (call file_type (ARG1))
     (typeattributeset file_spool_type ARG1))
 
+(macro file_var_spool_filetrans ((type ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call file_search_var (ARG1))
+    (call file_type_transition_pattern
+        (ARG1 var_spool ARG2 ARG3 ARG4)))
+
 (macro file_tmp_type ((type ARG1))
     (call file_type (ARG1))
     (typeattributeset file_tmp_type ARG1))

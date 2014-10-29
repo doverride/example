@@ -120,9 +120,9 @@
 
     (allow common_subject sshd_key.etc_object read_file_perms)
 
-    (optional sshd_optional_joe
-        (call joe_shell_manual_subtrans (common_subject))
-        (call joe_dynamic_subtrans (common_subject)))
+    (optional sshd_optional_usersubject
+        (call usersubject_dynamic_subtrans_all_common_login_subjects (common_subject))
+        (call usersubject_shell_manual_subtrans_all_common_login_subjects (common_subject)))
 
     (optional sshd_optional_unconfined
         (call unconfined (common_subject)))

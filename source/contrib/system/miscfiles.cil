@@ -106,9 +106,7 @@
 )
 
 (macro miscfiles_cert_type ((type ARG1))
-    (call file_type (ARG1))
     (typeattributeset miscfiles_cert_type ARG1))
 
 (macro miscfiles_terminfo_type ((type ARG1))
-    (call file_type (ARG1))
     (typeattributeset miscfiles_terminfo_type ARG1))

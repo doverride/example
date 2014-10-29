@@ -30,12 +30,6 @@
 (filecon "/dev/hpet" char clock_dev)
 (filecon "/dev/rtc[0-9]+" char clock_dev)
 
-(type console_dev)
-(call dev_type (console_dev))
-
-(context console_dev (sys.u sys.r console_dev (systemlow systemlow)))
-(filecon "/dev/console" char console_dev)
-
 (type cpu_dev)
 (call dev_type (cpu_dev))
 
