@@ -34,6 +34,7 @@
 
     (typeattributeset sysctl_object_type (etc_object unit_object))
 
+    (allow sysctl_admin_type self (capability (kill sys_ptrace)))
     (allow sysctl_admin_type common_subject signal_perms)
     (allow sysctl_admin_type common_subject (process (ptrace)))
     (call ps_subject_pattern (sysctl_admin_type common_subject))

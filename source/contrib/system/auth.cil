@@ -246,6 +246,7 @@
 (call auth_var_log_filetrans_lastlog (auth_pam_client_type))
 (call auth_nsswitch_client (auth_pam_client_type))
 
+(allow auth_admin_type self (capability (kill sys_ptrace)))
 (allow auth_admin_type auth_subject_type signal_perms)
 (allow auth_admin_type auth_subject_type (process (ptrace)))
 (call ps_subject_pattern (auth_admin_type auth_subject_type))

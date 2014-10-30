@@ -51,6 +51,7 @@
     (typeattributeset plymouth_object_type (etc_object var_lib_object run_object
         var_spool_object unit_object))
 
+    (allow plymouth_admin_type self (capability (kill sys_ptrace)))
     (allow plymouth_admin_type plymouth_subject_type signal_perms)
     (allow plymouth_admin_type plymouth_subject_type (process (ptrace)))
     (call ps_subject_pattern (plymouth_admin_type plymouth_subject_type))

@@ -33,6 +33,7 @@
 
     (typeattributeset kmod_object_type (etc_object usr_object run_object unit_object))
 
+    (allow kmod_admin_type self (capability (kill sys_ptrace)))
     (allow kmod_admin_type common_subject signal_perms)
     (allow kmod_admin_type common_subject (process (ptrace)))
     (call ps_subject_pattern (kmod_admin_type common_subject))
