@@ -23,6 +23,7 @@
 (typeattribute file_tmp_type)
 (typeattribute file_tmpfs_type)
 
+(roleattribute file_unconfined_role)
 (typeattribute file_unconfined_type)
 
 (block file_auth_object_template
@@ -371,6 +372,8 @@
 (allow file_unconfined_type file_except (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 
+(roletype file_unconfined_role file_except)
+
 (call file_execmod_all_except (file_unconfined_type))
 
 (macro file_exception ((type ARG1))
@@ -518,5 +521,6 @@
 (macro file_execmod_all_except_uncond ((type ARG1))
     (allow ARG1 file_except (file (execmod))))
 
-(macro file_unconfined ((type ARG1))
-    (typeattributeset file_unconfined_type ARG1))
+(macro file_unconfined ((role ARG1)(type ARG2))
+    (roleattributeset file_unconfined_role ARG1)
+    (typeattributeset file_unconfined_type ARG2))

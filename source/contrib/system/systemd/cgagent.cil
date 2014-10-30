@@ -5,7 +5,7 @@
     (filecon "/usr/lib/systemd/systemd-cgroups-agent" file bin_cgagent)
 
     (optional cgagent_optional_unconfined
-        (call unconfined (common_subject)))
+        (call unconfined (sys.r common_subject)))
 )
 
 (macro cgagent_auto_subtrans ((type ARG1))

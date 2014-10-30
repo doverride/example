@@ -1,9 +1,11 @@
 (boolean ssh_priv_user_login false)
 
-(typeattribute ssh_admin_type)
 (typeattribute ssh_object_type)
 (typeattribute ssh_unit_object_type)
 (typeattribute ssh_subject_type)
+
+(roleattribute ssh_admin_role)
+(typeattribute ssh_admin_type)
 
 (block ssh_priv_user_login
     (blockinherit sec_bool_object_template)
@@ -125,7 +127,7 @@
         (call usersubject_shell_manual_subtrans_all_common_login_subjects (common_subject)))
 
     (optional sshd_optional_unconfined
-        (call unconfined (common_subject)))
+        (call unconfined (sys.r common_subject)))
 )
 
 (block sshd_keygen
@@ -138,7 +140,7 @@
     (filecon "/usr/lib/systemd/system/[^/]*sshd-keygen.*" file unit_sshd_keygen)
 
     (optional sshd_keygen_optional_subject
-        (call unconfined (common_subject)))
+        (call unconfined (sys.r common_subject)))
 )
 
 (block sshd_key
@@ -155,7 +157,7 @@
     (allow common_subject sshd.common_subject (fifo_file (write)))
 
     (optional sshd_net_optional_unconfined
-        (call unconfined (common_subject)))
+        (call unconfined (sys.r common_subject)))
 )
 
 (typeattributeset ssh_object_type ssh_unit_object_type)
@@ -166,6 +168,8 @@
 (allow ssh_admin_type ssh_unit_object_type (service (all)))
 (allow ssh_admin_type ssh_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
+(roletype ssh_admin_role ssh_object_type)
 
-(macro ssh_admin ((type ARG1))
-    (typeattributeset ssh_admin_type ARG1))
+(macro ssh_admin ((role ARG1)(type ARG2))
+    (roleattributeset ssh_admin_role ARG1)
+    (typeattributeset ssh_admin_type ARG2))

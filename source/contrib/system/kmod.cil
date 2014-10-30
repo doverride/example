@@ -1,6 +1,8 @@
 (roleattribute kmod_role)
-(typeattribute kmod_admin_type)
 (typeattribute kmod_object_type)
+
+(roleattribute kmod_admin_role)
+(typeattribute kmod_admin_type)
 
 (block kmod
     (blockinherit systemd_daemon_template)
@@ -37,9 +39,10 @@
     (allow kmod_admin_type unit_object (service (all)))
     (allow kmod_admin_type kmod_object_type (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
+    (roletype kmod_admin_role kmod_object_type)
 
     (optional kmod_optional_unconfined
-        (call unconfined (common_subject)))
+        (call unconfined (kmod_role common_subject)))
 )
 
 (macro kmod_auto_subtrans ((type ARG1))
@@ -50,5 +53,6 @@
     (call kmod_auto_subtrans (ARG1))
     (roleattributeset kmod_role (ARG2)))
 
-(macro kmod_admin ((type ARG1))
-    (typeattributeset kmod_admin_type ARG1))
+(macro kmod_admin ((role ARG1)(type ARG2))
+    (roleattributeset kmod_admin_role ARG1)
+    (typeattributeset kmod_admin_type ARG2))

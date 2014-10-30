@@ -1,7 +1,10 @@
 (roleattribute plymouth_role)
-(typeattribute plymouth_admin_type)
+
 (typeattribute plymouth_subject_type)
 (typeattribute plymouth_object_type)
+
+(roleattribute plymouth_admin_role)
+(typeattribute plymouth_admin_type)
 
 (block plymouth
     (blockinherit systemd_daemon_no_unit_template)
@@ -12,7 +15,7 @@
     (filecon "/usr/bin/plymouth" file bin_plymouth)
 
     (optional plymouth_optional_unconfined
-        (call unconfined (common_subject)))
+        (call unconfined (plymouth_role common_subject)))
 )
 
 (block plymouthd
@@ -54,9 +57,10 @@
     (allow plymouth_admin_type unit_object (service (all)))
     (allow plymouth_admin_type plymouth_object_type (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
+    (roletype plymouth_admin_role plymouth_object_type)
 
     (optional plymouthd_optional_unconfined
-        (call unconfined (common_subject)))
+        (call unconfined (sys.r common_subject)))
 )
 
 (macro plymouth_exec ((type ARG1))
@@ -78,5 +82,6 @@
     (call file_search_run (ARG1))
     (call manage_files_pattern (ARG1 plymouthd.run_object plymouthd.run_object)))
 
-(macro plymouth_admin ((type ARG1))
-    (typeattributeset plymouth_admin_type ARG1))
+(macro plymouth_admin ((role ARG1)(type ARG2))
+    (roleattributeset plymouth_admin_role ARG1)
+    (typeattributeset plymouth_admin_type ARG2))

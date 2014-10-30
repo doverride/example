@@ -112,7 +112,7 @@
         (call systemd_send_signal (common_subject)))
 
     ; (optional sys_optional_unconfined
-        ; (call unconfined (common_subject))
+        ; (call unconfined (sys.r common_subject))
             ; (optional sys_optional_systemd
                 ; (call systemd_auto_subtrans (common_subject))))
 )

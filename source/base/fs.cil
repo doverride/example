@@ -7,6 +7,7 @@
 (sid fs)
 
 (typeattribute fs_type)
+
 (typeattribute fs_unconfined_type)
 
 (type aio)

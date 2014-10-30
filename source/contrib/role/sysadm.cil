@@ -27,5 +27,5 @@
     (filecon "/var/spool/mail/root" file var_spool_sysadm)
 
     (optional sysadm_optional_unconfined
-        (call unconfined (common_subject)))
+        (call unconfined (r common_subject)))
 )

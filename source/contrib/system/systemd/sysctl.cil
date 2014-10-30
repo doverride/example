@@ -1,6 +1,9 @@
 (roleattribute sysctl_role)
-(typeattribute sysctl_admin_type)
+
 (typeattribute sysctl_object_type)
+
+(roleattribute sysctl_admin_role)
+(typeattribute sysctl_admin_type)
 
 (block sysctl
     (blockinherit systemd_daemon_template)
@@ -37,9 +40,10 @@
     (allow sysctl_admin_type unit_object (service (all)))
     (allow sysctl_admin_type sysctl_object_type (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
+    (roletype sysctl_admin_role sysctl_object_type)
 
     (optional sysctl_optional_unconfined
-        (call unconfined (common_subject)))
+        (call unconfined (sysctl_role common_subject)))
 )
 
 (macro sysctl_exec ((type ARG1))
@@ -53,5 +57,6 @@
     (call sysctl_auto_subtrans (ARG1))
     (roleattributeset sysctl_role (ARG2)))
 
-(macro sysctl_admin ((type ARG1))
-    (typeattributeset sysctl_admin_type ARG1))
+(macro sysctl_admin ((role ARG1)(type ARG2))
+    (roleattributeset sysctl_admin_role ARG1)
+    (typeattributeset sysctl_admin_type ARG2))

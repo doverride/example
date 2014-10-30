@@ -8,6 +8,8 @@
 (typeattribute subject_type)
 (typeattribute subject_common_type)
 (typeattribute subject_entry_type)
+
+(roleattribute subject_unconfined_role)
 (typeattribute subject_unconfined_type)
 
 (typeattribute can_change_object_identity)
@@ -201,6 +203,10 @@
 (call subject_object_identity_change_exemption (subject_unconfined_type))
 (call subject_uncond_exemption (subject_unconfined_type))
 
+(allow subject_unconfined_type subject_entry_type (file (entrypoint)))
+
+(roletype subject_unconfined_role subject_type)
+
 (macro subject_type ((type ARG1))
     (typeattributeset subject_type ARG1))
 
@@ -296,5 +302,6 @@
 (macro subject_ptrace_all_uncond ((type ARG1))
     (allow ARG1 subject_type (process (ptrace))))
 
-(macro subject_unconfined ((type ARG1))
-    (typeattributeset subject_unconfined_type ARG1))
+(macro subject_unconfined ((role ARG1)(type ARG2))
+    (roleattributeset subject_unconfined_role ARG1)
+    (typeattributeset subject_unconfined_type ARG2))

@@ -42,7 +42,7 @@
     (allow common_subject self (process (setsched)))
 
     (optional systemd_optional_unconfined
-        (call unconfined (common_subject)))
+        (call unconfined (sys.r common_subject)))
 )
 
 (macro systemd_unit_type ((type ARG1))

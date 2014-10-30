@@ -1,3 +1,4 @@
+(roleattribute unconfined_role)
 (typeattribute unconfined_type)
 
 (allow unconfined_type subject_common_type (dbus (all)))
@@ -14,12 +15,13 @@
 (allow unconfined_type self
     all_fifo_file_perms_except_mounton_and_execmod)
 
-(call dev_unconfined (unconfined_type))
-(call file_unconfined (unconfined_type))
+(call dev_unconfined (unconfined_role unconfined_type))
+(call file_unconfined (unconfined_role unconfined_type))
+(call subject_unconfined (unconfined_role unconfined_type))
+
 (call fs_unconfined (unconfined_type))
 (call net_unconfined (unconfined_type))
 (call sec_unconfined (unconfined_type))
-(call subject_unconfined (unconfined_type))
 (call sys_unconfined (unconfined_type))
 
 (optional unconfined_optional_auth
@@ -28,5 +30,6 @@
 (optional unconfined_optional_stor
     (call stor_unconfined (unconfined_type)))
 
-(macro unconfined ((type ARG1))
-    (typeattributeset unconfined_type ARG1))
+(macro unconfined ((role ARG1)(type ARG2))
+    (roleattributeset unconfined_role ARG1)
+    (typeattributeset unconfined_type ARG2))

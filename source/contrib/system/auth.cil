@@ -7,9 +7,11 @@
 (typeattribute auth_nsswitch_client_type)
 (typeattribute auth_pam_client_type)
 (typeattribute auth_pam_etc_file_type)
-(typeattribute auth_admin_type)
-(typeattribute auth_file_type)
+(typeattribute auth_object_type)
 (typeattribute auth_subject_type)
+
+(roleattribute auth_admin_role)
+(typeattribute auth_admin_type)
 
 (typeattribute auth_unconfined_type)
 
@@ -20,7 +22,7 @@
 )
 
 (optional auth_optional_unconfined
-    (call unconfined (auth_subject_type)))
+    (call unconfined (sys.r auth_subject_type)))
 
 (block authconfig
     (blockinherit app_template)
@@ -42,13 +44,13 @@
     (filecon "/etc/pam\.d/system-auth-ac" file pam_authconfig)
 
     (blockinherit file_etc_object_template)
-    (typeattributeset auth_file_type etc_object)
+    (typeattributeset auth_object_type etc_object)
 
     (context etc_authconfig (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/sysconfig/authconfig" file etc_authconfig)
 
     (blockinherit file_var_lib_object_template)
-    (typeattributeset auth_file_type var_lib_object)
+    (typeattributeset auth_object_type var_lib_object)
 
     (context var_lib_authconfig (sys.u sys.r var_lib_object (systemlow systemlow)))
     (filecon "/var/lib/authconfig(/.*)?" any var_lib_authconfig)
@@ -68,7 +70,7 @@
 
 (block nsswitch
     (blockinherit file_etc_object_template)
-    (typeattributeset auth_file_type etc_object)
+    (typeattributeset auth_object_type etc_object)
 
     (context etc_nsswitch (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/nsswitch\.conf.*" file etc_nsswitch)
@@ -82,7 +84,7 @@
     (filecon "/usr/sbin/pam_timestamp_check" file bin_pam)
 
     (blockinherit file_run_object_template)
-    (typeattributeset auth_file_type run_object)
+    (typeattributeset auth_object_type run_object)
 
     (context run_pam (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/sepermit(/.*)?" any run_pam)
@@ -96,7 +98,7 @@
     (filecon "/usr/sbin/pam_console_apply" file bin_pam_console)
 
     (blockinherit file_run_object_template)
-    (typeattributeset auth_file_type run_object)
+    (typeattributeset auth_object_type run_object)
 
     (context run_pam_console (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/console(/.*)?" any run_pam_console)
@@ -126,7 +128,7 @@
 
 (block password
     (blockinherit file_etc_object_template)
-    (typeattributeset auth_file_type etc_object)
+    (typeattributeset auth_object_type etc_object)
 
     (context etc_password (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/passwd\.lock" file etc_password)
@@ -140,7 +142,7 @@
 
 (block faillog
     (blockinherit file_var_log_object_template)
-    (typeattributeset auth_file_type var_log_object)
+    (typeattributeset auth_object_type var_log_object)
 
     (context var_log_faillog (sys.u sys.r var_log_object (systemlow systemlow)))
     (filecon "/var/log/btmp.*" file var_log_faillog)
@@ -148,7 +150,7 @@
     (filecon "/var/log/tallylog" file var_log_faillog)
 
     (blockinherit file_run_object_template)
-    (typeattributeset auth_file_type run_object)
+    (typeattributeset auth_object_type run_object)
 
     (context run_faillog (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/faillock(/.*)?" any run_faillog)
@@ -156,7 +158,7 @@
 
 (block lastlog
     (blockinherit file_var_log_object_template)
-    (typeattributeset auth_file_type var_log_object)
+    (typeattributeset auth_object_type var_log_object)
 
     (context var_log_lastlog (sys.u sys.r var_log_object (systemlow systemlow)))
     (filecon "/var/log/lastlog" file var_log_lastlog)
@@ -164,7 +166,7 @@
 
 (block wtmp
     (blockinherit file_var_log_object_template)
-    (typeattributeset auth_file_type var_log_object)
+    (typeattributeset auth_object_type var_log_object)
 
     (context var_log_wtmp (sys.u sys.r var_log_object (systemlow systemlow)))
     (filecon "/var/log/wtmp.*" file var_log_wtmp)
@@ -191,7 +193,7 @@
 (filecon "/etc/pam\.d(/.*)?" any etc_pam)
 (filecon "/etc/security(/.*)?" any etc_pam)
 
-(typeattributeset auth_file_type (auth_pam_etc_file_type))
+(typeattributeset auth_object_type (auth_pam_etc_file_type))
 
 (typeattribute can_read_shadow_passwords)
 (typeattribute not_can_read_shadow_passwords)
@@ -247,8 +249,9 @@
 (allow auth_admin_type auth_subject_type signal_perms)
 (allow auth_admin_type auth_subject_type (process (ptrace)))
 (call ps_subject_pattern (auth_admin_type auth_subject_type))
-(allow auth_admin_type auth_file_type (all_file_objects
+(allow auth_admin_type auth_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
+(roletype auth_admin_role auth_object_type)
 (call auth_unconfined (auth_admin_type))
 
 (allow auth_unconfined_type self (passwd (all)))
@@ -402,11 +405,12 @@
 (macro auth_etc_filetrans_passwd ((type ARG1)(name ARG2))
     (call file_etc_filetrans (ARG1 password.etc_object file ARG2)))
 
-(macro auth_manage_shadow ((type ARG1))
-    (call file_rw_etc_dirs (ARG1))
-    (allow ARG1 shadow.auth_object manage_file_perms)
-    (typeattributeset can_read_shadow_passwords ARG1)
-    (typeattributeset can_write_shadow_passwords ARG1))
+(macro auth_manage_shadow ((role ARG1)(type ARG2))
+    (call file_rw_etc_dirs (ARG2))
+    (allow ARG2 shadow.auth_object manage_file_perms)
+    (roletype ARG1 shadow.auth_object)
+    (typeattributeset can_read_shadow_passwords ARG2)
+    (typeattributeset can_write_shadow_passwords ARG2))
 
 (macro auth_dontaudit_read_shadow ((type ARG1))
     (dontaudit ARG1 shadow.auth_object read_file_perms))
@@ -438,8 +442,9 @@
 (macro auth_pam_client ((type ARG1))
     (typeattributeset auth_pam_client_type ARG1))
 
-(macro auth_admin ((type ARG1))
-    (typeattributeset auth_admin_type ARG1))
+(macro auth_admin ((role ARG1)(type ARG2))
+    (roleattributeset auth_admin_role ARG1)
+    (typeattributeset auth_admin_type ARG2))
 
 (macro auth_unconfined ((type ARG1))
     (typeattributeset auth_unconfined_type ARG1))

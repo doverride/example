@@ -1,8 +1,10 @@
 (sid devnull)
 
 (typeattribute dev_type)
-(typeattribute dev_unconfined_type)
 (typeattribute dev_stor_type)
+
+(roleattribute dev_unconfined_role)
+(typeattribute dev_unconfined_type)
 
 (block dev_object_template
     (blockabstract dev_object_template)
@@ -235,6 +237,8 @@
 (allow dev_unconfined_type dev_except_storage
     all_chr_file_perms_except_mounton_and_execmod)
 
+(roletype dev_unconfined_role dev_except_storage)
+
 (macro dev_type ((type ARG1))
     (call sys_object_type (ARG1))
     (typeattributeset dev_type ARG1))
@@ -272,8 +276,9 @@
     (allow ARG1 memory_dev write_chr_file_perms)
     (typeattributeset can_write_memory ARG1))
 
-(macro dev_unconfined ((type ARG1))
-    (typeattributeset dev_unconfined_type ARG1))
+(macro dev_unconfined ((role ARG1)(type ARG2))
+    (roleattributeset dev_unconfined_role ARG1)
+    (typeattributeset dev_unconfined_type ARG2))
 
 (context null_dev (sys.u sys.r null_dev (systemlow systemlow)))
 

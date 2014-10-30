@@ -27,5 +27,5 @@
     (filecon "/var/spool/mail/joe" file var_spool_user)
 
     (optional user_optional_unconfined
-        (call unconfined (common_subject)))
+        (call unconfined (r common_subject)))
 )
