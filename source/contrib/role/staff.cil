@@ -39,7 +39,7 @@
         (call sysadm_send_signal (common_subject))
         (call sysadm_shell_manual_subtrans (common_subject))
 
-        (call sysadm_roleallow (staff.u))
+        (call sysadm_userrole (staff.u))
         (call sysadm_roleallow (staff.r))
 
         (call sysadm_send_signal (staff.common_subject))
