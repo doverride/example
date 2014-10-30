@@ -97,18 +97,18 @@
     (call can_exec (ARG1 sudo.bin_object)))
 
 (macro sudo_role_template ((role ARG1)(type ARG2)(type ARG3))
-        (roleattributeset sudo_role ARG1)
-        (roletype ARG1 ARG3)
+    (roleattributeset sudo_role ARG1)
+    (roletype ARG1 ARG3)
 
-        (call auto_subject_type_transition_pattern (ARG2 sudo.bin_object ARG3))
+    (call auto_subject_type_transition_pattern (ARG2 sudo.bin_object ARG3))
 
-        (allow ARG3 ARG2 (process (signal)))
-        (allow ARG3 ARG2 (key (search create link write)))
+    (allow ARG3 ARG2 (process (signal)))
+    (allow ARG3 ARG2 (key (search create link write)))
 
-        (call bin_auto_subtrans (ARG3 ARG2))
-        (call bin_shell_auto_subtrans (ARG3 ARG2))
+    (call bin_auto_subtrans (ARG3 ARG2))
+    (call bin_shell_auto_subtrans (ARG3 ARG2))
 
-        (call auth_run_chkpwd (ARG3 ARG1))
+    (call auth_run_chkpwd (ARG3 ARG1))
 )
 
 (macro sudo_send_signal ((type ARG1))
