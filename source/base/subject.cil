@@ -42,7 +42,7 @@
     (blockabstract subject_system_entry_template)
         (blockinherit subject_entry_template)
 
-        (roletype sys.r common_subject)
+        (call sys_roletype (common_subject))
 )
 
 (block execheap
@@ -89,8 +89,6 @@
     (genfscon "selinuxfs" "/booleans/ptrace_all"
         ptrace_all)
 )
-
-(call sys_roletype (subject_type))
 
 (typeattribute not_subject_entry_type)
 (typeattributeset not_subject_entry_type (not

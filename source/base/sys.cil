@@ -343,6 +343,9 @@
     (call sys_object_type (ARG1))
     (typeattributeset sys_proc_type ARG1))
 
+(macro sys_roleallow ((role ARG1))
+    (roleallow sys.r ARG1))
+
 (macro sys_roletype ((type ARG1))
     (roletype sys.r ARG1))
 

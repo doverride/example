@@ -71,7 +71,7 @@
         (blockinherit subject_common_template)
         (typeattributeset ssh_subject_type common_subject)
 
-        (roletype sys.r common_subject)
+        (call sys_roletype (common_subject))
 
         (allow common_subject self (capability (sys_chroot setuid setgid)))
         (allow common_subject self (process (setrlimit)))
