@@ -3,9 +3,6 @@
 
     (call usersubject_mls (u systemlow systemlow systemhigh))
 
-    (roletype r run) ; hack for /run/sudo
-    (call auth_run_chkpwd (common_subject r)) ; hack for /run/sudo
-
     (context home_user (u r home_user (systemlow mls_systemhigh)))
     (filecon "/home/.*" dir home_user)
 

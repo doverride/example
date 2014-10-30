@@ -151,6 +151,12 @@
     (call file_spool_type (ARG1))
     (typeattributeset usersubject_mail_spool_type ARG1))
 
+(macro usersubject_relabel_all_pty_objects ((type ARG1))
+    (allow ARG1 usersubject_pty_type relabel_chr_file_perms))
+
+(macro usersubject_relabel_all_tty_objects ((type ARG1))
+    (allow ARG1 usersubject_tty_type relabel_chr_file_perms))
+
 (macro usersubject_use_all_pty_objects ((type ARG1))
     (allow ARG1 usersubject_pty_type rw_term_perms))
 
@@ -162,6 +168,12 @@
 
 (macro usersubject_use_all_inherited_tty_objects ((type ARG1))
     (allow ARG1 usersubject_tty_type rw_inherited_term_perms))
+
+(macro usersubject_relabel_generic_pty_objects ((type ARG1))
+    (allow ARG1 user.pty_object relabel_chr_file_perms))
+
+(macro usersubject_relabel_generic_tty_objects ((type ARG1))
+    (allow ARG1 user.tty_object relabel_chr_file_perms))
 
 (macro usersubject_use_generic_pty_objects ((type ARG1))
     (allow ARG1 user.pty_object rw_term_perms))
@@ -175,21 +187,29 @@
 (macro usersubject_use_inherited_generic_tty_objects ((type ARG1))
     (allow ARG1 user.tty_object rw_inherited_term_perms))
 
+(macro usersubject_relabel_generic_terminals ((type ARG1))
+    (call usersubject_relabel_generic_pty_objects (ARG1))
+    (call usersubject_relabel_generic_tty_objects (ARG1)))
+
 (macro usersubject_use_generic_terminals ((type ARG1))
-    (allow ARG1 user.pty_object rw_term_perms)
-    (allow ARG1 user.tty_object rw_term_perms))
+    (call usersubject_use_generic_pty_objects (ARG1))
+    (call usersubject_use_generic_tty_objects (ARG1)))
 
 (macro usersubject_use_generic_inherited_terminals ((type ARG1))
-    (allow ARG1 user.pty_object rw_inherited_term_perms)
-    (allow ARG1 user.tty_object rw_inherited_term_perms))
+    (call usersubject_use_inherited_generic_pty_objects (ARG1))
+    (call usersubject_use_inherited_generic_tty_objects (ARG1)))
+
+(macro usersubject_relabel_all_terminals ((type ARG1))
+    (call usersubject_relabel_all_pty_objects (ARG1))
+    (call usersubject_relabel_all_tty_objects (ARG1)))
 
 (macro usersubject_use_all_terminals ((type ARG1))
-    (allow ARG1 usersubject_pty_type rw_term_perms)
-    (allow ARG1 usersubject_tty_type rw_term_perms))
+    (call usersubject_use_all_pty_objects (ARG1))
+    (call usersubject_use_all_tty_objects (ARG1)))
 
 (macro usersubject_use_all_inherited_terminals ((type ARG1))
-    (allow ARG1 usersubject_pty_type rw_inherited_term_perms)
-    (allow ARG1 usersubject_tty_type rw_inherited_term_perms))
+    (call usersubject_use_all_inherited_pty_objects (ARG1))
+    (call usersubject_use_all_inherited_tty_objects (ARG1)))
 
 (macro usersubject_generic_object_template ((role ARG1)(type ARG2))
     (call usersubject_generic_bin_template (ARG1 ARG2))

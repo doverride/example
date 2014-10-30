@@ -299,3 +299,7 @@
     (type ARG3)(class ARG4)(name ARG5))
     (allow ARG1 ARG2 rw_dir_perms)
     (typetransition ARG1 ARG2 ARG4 ARG5 ARG3))
+
+(macro file_role_transition_pattern ((role ARG1)(type ARG2)
+    (role ARG3)(class ARG4))
+    (roletransition ARG1 ARG2 ARG4 ARG3))

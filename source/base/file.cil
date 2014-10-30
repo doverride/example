@@ -444,6 +444,9 @@
     (call file_type_transition_pattern
         (ARG1 run ARG2 ARG3 ARG4)))
 
+(macro file_run_roletrans ((role ARG1)(role ARG2))
+    (call file_role_transition_pattern (ARG1 run ARG2 dir)))
+
 (macro file_read_generic_usr_files ((type ARG1))
     (call read_files_pattern (ARG1 usr usr)))
 

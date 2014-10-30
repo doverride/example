@@ -3,9 +3,6 @@
 
     (call usersubject_mls (u systemlow systemlow systemhigh))
 
-    (roletype r run) ; hack for /run/sudo
-    (call auth_run_chkpwd (common_subject r)) ; hack for /run/sudo
-
     (context home_sysadm (u r home_user (systemlow mls_systemhigh)))
     (filecon "/root" dir home_sysadm)
 
@@ -26,6 +23,27 @@
     (context var_spool_sysadm (u r user.var_spool_object (systemlow mls_systemhigh)))
     (filecon "/var/spool/mail/root" file var_spool_sysadm)
 
+    (optional sysadm_optional_sudo
+        (call sudo_send_signal (common_subject))
+        (optional sysadm_optional_staff
+            (call staff_rw_inherited_fifo_file (common_subject))
+            (call staff_use_fd (common_subject))))
+
     (optional sysadm_optional_unconfined
         (call unconfined (r common_subject)))
 )
+
+(macro sysadm_roleallow ((role ARG1))
+    (roleallow ARG1 sysadm.r))
+
+(macro sysadm_userrole ((user ARG1))
+    (userrole ARG1 sysadm.r))
+
+(macro sysadm_send_signal ((type ARG1))
+    (allow ARG1 sysadm.common_subject (process (signal))))
+
+(macro sysadm_manage_keyring ((type ARG1))
+    (allow ARG1 sysadm.common_subject (key (create search link write))))
+
+(macro sysadm_shell_manual_subtrans ((type ARG1))
+    (call bin_shell_manual_subtrans (ARG1 sysadm.common_subject)))

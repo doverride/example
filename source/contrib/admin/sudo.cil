@@ -1,0 +1,123 @@
+(roleattribute sudo_role)
+
+(roleattribute sudo_admin_role)
+(typeattribute sudo_admin_type)
+
+(typeattribute sudo_subject_type)
+(typeattribute sudo_object_type)
+
+(roleattribute visudo_role)
+(typeattribute visudo_subject_type)
+
+(block sudo_subject_template
+    (blockabstract sudo_subject_template)
+        (blockinherit app_subject_template)
+
+        (typeattributeset sudo_subject_type common_subject)
+)
+
+(block sudo_visudo_subject_template
+    (blockabstract sudo_visudo_subject_template)
+        (blockinherit app_subject_template)
+
+        (typeattributeset visudo_subject_type common_subject)
+)
+
+(block sudo
+    (blockinherit bin_object_template)
+
+    (call app_entry (sudo_subject_type bin_object))
+
+    (context bin_sudo (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/sudo" file bin_sudo)
+
+    (blockinherit file_etc_object_template)
+    (typeattributeset sudo_object_type etc_object)
+
+    (context etc_sudo (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/sudoers" file etc_sudo)
+    (filecon "/etc/sudoers\.tmp" file etc_sudo)
+    (filecon "/etc/sudoers\.d(/.*)?" any etc_sudo)
+
+    (blockinherit auth_pam_object_template)
+    (typeattributeset sudo_object_type pam_object)
+
+    (context pam_sudo (sys.u sys.r pam_object (systemlow systemlow)))
+    (filecon "/etc/pam\.d/sudo" file pam_sudo)
+    (filecon "/etc/pam\.d/sudo-i" file pam_sudo)
+
+    (blockinherit file_var_object_template)
+    (typeattributeset sudo_object_type var_object)
+
+    (context var_sudo (sys.u sys.r var_object (systemlow systemlow)))
+    (filecon "/var/db/sudo(/.*)?" any var_sudo)
+
+    (blockinherit file_run_object_template)
+    (typeattributeset sudo_object_type run_object)
+
+    (context run_sudo (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/sudo(/.*)?" any run_sudo)
+)
+
+(block visudo
+    (blockinherit app_template)
+
+    (context bin_visudo (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/visudo" file bin_visudo)
+
+    (call file_etc_filetrans (common_subject sudo.etc_object file "*"))
+
+    (optional visudo_optional_unconfined
+        (call unconfined (visudo_role common_subject)))
+)
+
+(allow sudo_subject_type self (process (setsched)))
+
+(allow sudo_subject_type sudo.run_object manage_dir_perms)
+(allow sudo_subject_type sudo.run_object manage_file_perms)
+(call file_run_filetrans (sudo_subject_type sudo.run_object dir "sudo"))
+
+(call file_run_roletrans (sudo_role sys.r)) ; FIXME
+
+(call subject_role_change_exemption (sudo_subject_type))
+
+(call usersubject_relabel_all_terminals (sudo_subject_type))
+
+(optional sudo_optional_unconfined
+    (call unconfined (sudo_role sudo_subject_type)))
+
+(allow sudo_admin_type sudo_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype sudo_admin_role sudo_object_type)
+
+(macro sudo_subject_type ((type ARG1))
+    (typeattributeset sudo_subject_type ARG1))
+
+(macro sudo_exec ((type ARG1))
+    (call can_exec (ARG1 sudo.bin_object)))
+
+(macro sudo_role_template ((role ARG1)(type ARG2)(type ARG3))
+        (roleattributeset sudo_role ARG1)
+        (roletype ARG1 ARG3)
+
+        (call auto_subject_type_transition_pattern (ARG2 sudo.bin_object ARG3))
+
+        (allow ARG3 ARG2 (process (signal)))
+        (allow ARG3 ARG2 (key (search create link write)))
+
+        (call bin_auto_subtrans (ARG3 ARG2))
+        (call bin_shell_auto_subtrans (ARG3 ARG2))
+
+        (call auth_run_chkpwd (ARG3 ARG1))
+)
+
+(macro sudo_send_signal ((type ARG1))
+    (allow ARG1 sudo_subject_type (process (signal))))
+
+(macro sudo_visudo_role_template ((role ARG1)(type ARG2)(type ARG3))
+    (call auto_subject_type_transition_pattern (ARG2 visudo.bin_object ARG3))
+    (call bin_auto_subtrans (ARG3 ARG2)))
+
+(macro sudo_admin ((role ARG1)(type ARG2))
+    (roleattributeset sudo_admin_role ARG1)
+    (typeattributeset sudo_admin_type ARG2))

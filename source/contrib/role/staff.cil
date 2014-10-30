@@ -3,9 +3,6 @@
 
     (call usersubject_mls (u systemlow systemlow systemhigh))
 
-    (roletype r run) ; hack for /run/sudo
-    (call auth_run_chkpwd (common_subject r)) ; hack for /run/sudo
-
     (context home_staff (u r home_user (systemlow mls_systemhigh)))
     (filecon "/home/john" dir home_staff)
 
@@ -29,3 +26,28 @@
     (optional staff_optional_unconfined
         (call unconfined (r common_subject)))
 )
+
+(optional staff_optional_sudo
+    (block staff_sudo
+        (blockinherit sudo_subject_template)
+
+        (call sudo_role_template (staff.r staff.common_subject common_subject))
+
+        (call sys_userrole (staff.u)) ; FIXME: /run/sudo roletrans
+
+        (call sysadm_manage_keyring (common_subject))
+        (call sysadm_send_signal (common_subject))
+        (call sysadm_shell_manual_subtrans (common_subject))
+
+        (call sysadm_roleallow (staff.u))
+        (call sysadm_roleallow (staff.r))
+
+        (call sysadm_send_signal (staff.common_subject))
+    )
+)
+
+(macro staff_rw_inherited_fifo_file ((type ARG1))
+    (allow ARG1 staff.common_subject rw_inherited_fifo_file_perms))
+
+(macro staff_use_fd ((type ARG1))
+    (allow ARG1 staff.common_subject (fd (use))))
