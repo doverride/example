@@ -45,6 +45,15 @@
         (typeattributeset usersubject_common_login_type common_subject)
 )
 
+(block usersubject_object_template
+    (blockabstract usersubject_object_template)
+        (blockinherit usersubject_home_object_template)
+        (blockinherit usersubject_mail_spool_object_template)
+        (blockinherit usersubject_tmpfs_object_template)
+        (blockinherit usersubject_pty_object_template)
+        (blockinherit usersubject_tty_object_template)
+)
+
 (block usersubject_home_object_template
     (blockabstract usersubject_home_object_template)
         (type home_object)
@@ -82,69 +91,24 @@
 (type home_user)
 (call file_type (home_user))
 
-(context home_user (user.u user.r home_user (systemlow mls_systemhigh)))
-(filecon "/home/joe" dir home_user)
-
 (block user
-    (blockinherit usersubject_common_login_template)
-
-    (call usersubject_mls (u systemlow systemlow systemhigh))
-
-    (blockinherit usersubject_home_object_template)
-    (call usersubject_generic_home_template (r common_subject))
-
-    (context user (user.u user.r home_object (systemlow systemlow)))
-    (filecon "/home/joe/.*" any user)
-
-    (roletype r run) ; hack for /run/sudo
- 
-    (blockinherit usersubject_mail_spool_object_template)
-    (call usersubject_generic_mail_spool_template (r common_subject))
-
-    (context var_spool_user (user.u user.r var_spool_object (systemlow mls_systemhigh)))
-    (filecon "/var/spool/mail/joe" file var_spool_user)
-
-    (blockinherit usersubject_tmpfs_object_template)
-    (call usersubject_generic_tmpfs_template (r common_subject))
-
-    (blockinherit usersubject_pty_object_template)
-    (call usersubject_generic_pty_template (r common_subject))
-
-    (blockinherit usersubject_tty_object_template)
-    (call usersubject_generic_tty_template (r common_subject))
-
-    (call auth_run_chkpwd (common_subject r))
-
-    (optional user_optional_unconfined
-        (call unconfined (common_subject)))
+    (blockinherit usersubject_object_template)
 )
 
 (block user_bin
     (blockinherit usersubject_home_object_template)
-    (call usersubject_generic_bin_template (user.r user.common_subject))
-
-    (context user_bin (user.u user.r home_object (systemlow systemlow)))
-    (filecon "/home/joe/\.bin(/.*)?" any user_bin)
 
     (call bin_type (home_object))
 )
 
 (block user_cert
     (blockinherit usersubject_home_object_template)
-    (call usersubject_generic_cert_template (user.r user.common_subject))
-
-    (context user_cert (user.u user.r home_object (systemlow systemlow)))
-    (filecon "/home/joe/\.pki(/.*)?" any user_cert)
 
     (call miscfiles_cert_type (home_object))
 )
 
 (block user_terminfo
     (blockinherit usersubject_home_object_template)
-    (call usersubject_generic_terminfo_template (user.r user.common_subject))
-
-    (context user_terminfo (user.u user.r home_object (systemlow systemlow)))
-    (filecon "/home/joe/\.terminfo" file user_terminfo)
 
     (call miscfiles_terminfo_type (home_object))
 )
@@ -195,10 +159,10 @@
 (macro usersubject_use_all_tty_objects ((type ARG1))
     (allow ARG1 usersubject_tty_type rw_term_perms))
 
-(macro usersubject_use_inherited_all_pty_objects ((type ARG1))
+(macro usersubject_use_all_inherited_pty_objects ((type ARG1))
     (allow ARG1 usersubject_pty_type rw_inherited_term_perms))
 
-(macro usersubject_use_inherited_all_tty_objects ((type ARG1))
+(macro usersubject_use_all_inherited_tty_objects ((type ARG1))
     (allow ARG1 usersubject_tty_type rw_inherited_term_perms))
 
 (macro usersubject_use_generic_pty_objects ((type ARG1))
@@ -228,6 +192,16 @@
 (macro usersubject_use_all_inherited_terminals ((type ARG1))
     (allow ARG1 usersubject_pty_type rw_inherited_term_perms)
     (allow ARG1 usersubject_tty_type rw_inherited_term_perms))
+
+(macro usersubject_generic_object_template ((role ARG1)(type ARG2))
+    (call usersubject_generic_bin_template (ARG1 ARG2))
+    (call usersubject_generic_cert_template (ARG1 ARG2))
+    (call usersubject_generic_terminfo_template (ARG1 ARG2))
+    (call usersubject_generic_home_template (ARG1 ARG2))
+    (call usersubject_generic_mail_spool_template (ARG1 ARG2))
+    (call usersubject_generic_tmpfs_template (ARG1 ARG2))
+    (call usersubject_generic_pty_template (ARG1 ARG2))
+    (call usersubject_generic_tty_template (ARG1 ARG2)))
 
 (macro usersubject_generic_pty_template ((role ARG1)(type ARG2))
     (call term_user_pty (ARG2 user.pty_object))

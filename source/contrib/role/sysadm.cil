@@ -1,0 +1,31 @@
+(block sysadm
+    (blockinherit usersubject_common_login_template)
+
+    (call usersubject_mls (u systemlow systemlow systemhigh))
+
+    (roletype r run) ; hack for /run/sudo
+    (call auth_run_chkpwd (common_subject r)) ; hack for /run/sudo
+
+    (context home_sysadm (u r home_user (systemlow mls_systemhigh)))
+    (filecon "/root" dir home_sysadm)
+
+    (call usersubject_generic_object_template (r common_subject))
+
+    (context sysadm_bin (u r user_bin.home_object (systemlow systemlow)))
+    (filecon "/root/\.bin(/.*)?" any sysadm_bin)
+
+    (context sysadm_cert (u r user_cert.home_object (systemlow systemlow)))
+    (filecon "/root/\.pki(/.*)?" any sysadm_cert)
+
+    (context sysadm_terminfo (u r user_terminfo.home_object (systemlow systemlow)))
+    (filecon "/root/\.terminfo" file sysadm_terminfo)
+
+    (context sysadm (u r user.home_object (systemlow systemlow)))
+    (filecon "/root/.*" any sysadm)
+
+    (context var_spool_sysadm (u r user.var_spool_object (systemlow mls_systemhigh)))
+    (filecon "/var/spool/mail/root" file var_spool_sysadm)
+
+    (optional sysadm_optional_unconfined
+        (call unconfined (common_subject)))
+)

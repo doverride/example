@@ -1,3 +1,4 @@
 sys.u:sys.u
-root:user.u
+root:sysadm.u
+john:staff.u
 __default__:user.u

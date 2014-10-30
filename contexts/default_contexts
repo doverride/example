@@ -1,2 +1,2 @@
 sys.r:systemd.common_subject sys.r:systemd.common_subject
-sys.r:sshd.common_subject sys.r:systemd.common_subject
+sys.r:sshd.common_subject user.r:user.common_subject

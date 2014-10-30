@@ -1,0 +1,2 @@
+staff.r:staff.common_subject staff.r:staff.common_subject
+sys.r:sshd.common_subject staff.r:staff.common_subject
