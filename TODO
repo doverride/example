@@ -1,2 +1,7 @@
 * ideally add a never allow mechanism for execmod and ptrace
     access is governed through macro's but there is no neverallow rule enforcing the use of them, too complicated
+
+* (roletype sys.r sys_object_type) in sys.cil is not optimal
+    ideally "usersubject_object_type" (which would be associated with all usersubject object types) would be excluded because
+    system generally has no business with user objects. This will not fly though because for example /run/UID/systemd is created
+    with sys.u:sys.r:...
