@@ -297,9 +297,11 @@
 (macro subject_ptrace_all ((type ARG1))
     (booleanif ptrace_all
         (true
+            (allow ARG1 self (capability (sys_ptrace)))
             (allow ARG1 subject_type (process (ptrace))))))
 
 (macro subject_ptrace_all_uncond ((type ARG1))
+    (allow ARG1 self (capability (sys_ptrace)))
     (allow ARG1 subject_type (process (ptrace))))
 
 (macro subject_unconfined ((role ARG1)(type ARG2))
