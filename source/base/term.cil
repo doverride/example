@@ -5,29 +5,29 @@
 (typeattribute term_server_pty_type)
 (typeattribute term_tty_type)
 
-(block term_login_pty_object_template
-    (blockabstract term_login_pty_object_template)
+(block term_login_pty_object_block
+    (blockabstract term_login_pty_object_block)
 
     (type pty_object)
     (call term_login_pty_type (pty_object))
 )
 
-(block term_pty_object_template
-    (blockabstract term_pty_object_template)
+(block term_pty_object_block
+    (blockabstract term_pty_object_block)
 
     (type pty_object)
     (call term_pty_type (pty_object))
 )
 
-(block term_tty_object_template
-    (blockabstract term_tty_object_template)
+(block term_tty_object_block
+    (blockabstract term_tty_object_block)
 
     (type tty_object)
     (call term_tty_type (tty_object))
 )
 
 (block console_login
-    (blockinherit sec_bool_object_template)
+    (blockinherit sec_bool_object_block)
 
     (context console_login (sys.u sys.r bool_object
         (systemlow systemlow)))

@@ -5,6 +5,3 @@
     ideally "usersubject_object_type" (which would be associated with all usersubject object types) would be excluded because
     system generally has no business with user objects. This will not fly though because for example /run/UID/systemd is created
     with sys.u:sys.r:...
-
-* rename all blockabstract identifiers to use "block" as their suffix instead of "template"
-    they are no substitution for templates

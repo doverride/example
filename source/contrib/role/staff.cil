@@ -1,5 +1,5 @@
 (block staff
-    (blockinherit usersubject_common_login_template)
+    (blockinherit usersubject_common_login_block)
 
     (call usersubject_mls (u systemlow systemlow systemhigh))
 
@@ -29,7 +29,7 @@
 
 (optional staff_optional_sudo
     (block staff_sudo
-        (blockinherit sudo_subject_template)
+        (blockinherit sudo_subject_block)
 
         (call sudo_role_template (staff.r staff.common_subject common_subject))
 

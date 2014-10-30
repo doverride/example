@@ -1,5 +1,5 @@
 (in user
-    (blockinherit usersubject_common_login_template)
+    (blockinherit usersubject_common_login_block)
 
     (call usersubject_mls (u systemlow systemlow systemhigh))
 

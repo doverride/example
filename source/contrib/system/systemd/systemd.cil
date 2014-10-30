@@ -3,38 +3,38 @@
 (typeattribute systemd_socket_activated_object_type)
 (typeattribute systemd_socket_activated_subect_type)
 
-(block systemd_unit_object_template
-    (blockabstract systemd_unit_object_template)
+(block systemd_unit_object_block
+    (blockabstract systemd_unit_object_block)
         (type unit_object)
         (call systemd_unit_type (unit_object))
 )
 
-(block systemd_daemon_no_unit_template
-    (blockabstract systemd_daemon_no_unit_template)
-        (blockinherit subject_system_entry_template)
+(block systemd_daemon_no_unit_block
+    (blockabstract systemd_daemon_no_unit_block)
+        (blockinherit subject_system_entry_block)
 
         (call auto_subject_type_transition_pattern (systemd.common_subject bin_object common_subject))
         (typeattributeset systemd_daemon_type common_subject)
 )
 
-(block systemd_daemon_template
-    (blockabstract systemd_daemon_template)
-        (blockinherit systemd_daemon_no_unit_template)
-        (blockinherit systemd_unit_object_template)
+(block systemd_daemon_block
+    (blockabstract systemd_daemon_block)
+        (blockinherit systemd_daemon_no_unit_block)
+        (blockinherit systemd_unit_object_block)
 
         (call auto_subject_type_transition_pattern (systemd.common_subject bin_object common_subject))
         (typeattributeset systemd_daemon_type common_subject)
 )
 
-(block systemd_daemon_socket_activated_template
-    (blockabstract systemd_daemon_socket_activated_template)
-        (blockinherit systemd_daemon_template)
+(block systemd_daemon_socket_activated_block
+    (blockabstract systemd_daemon_socket_activated_block)
+        (blockinherit systemd_daemon_block)
 
         (call systemd_socket_activated_subject_type (common_subject))
 )
 
 (block systemd
-    (blockinherit subject_system_entry_template)
+    (blockinherit subject_system_entry_block)
 
     (context bin_systemd (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/systemd" file bin_systemd)

@@ -9,29 +9,29 @@
 (roleattribute visudo_role)
 (typeattribute visudo_subject_type)
 
-(block sudo_subject_template
-    (blockabstract sudo_subject_template)
-        (blockinherit app_subject_template)
+(block sudo_subject_block
+    (blockabstract sudo_subject_block)
+        (blockinherit app_subject_block)
 
         (typeattributeset sudo_subject_type common_subject)
 )
 
-(block sudo_visudo_subject_template
-    (blockabstract sudo_visudo_subject_template)
-        (blockinherit app_subject_template)
+(block sudo_visudo_subject_block
+    (blockabstract sudo_visudo_subject_block)
+        (blockinherit app_subject_block)
 
         (typeattributeset visudo_subject_type common_subject)
 )
 
 (block sudo
-    (blockinherit bin_object_template)
+    (blockinherit bin_object_block)
 
     (call app_entry (sudo_subject_type bin_object))
 
     (context bin_sudo (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/sudo" file bin_sudo)
 
-    (blockinherit file_etc_object_template)
+    (blockinherit file_etc_object_block)
     (typeattributeset sudo_object_type etc_object)
 
     (context etc_sudo (sys.u sys.r etc_object (systemlow systemlow)))
@@ -39,20 +39,20 @@
     (filecon "/etc/sudoers\.tmp" file etc_sudo)
     (filecon "/etc/sudoers\.d(/.*)?" any etc_sudo)
 
-    (blockinherit auth_pam_object_template)
+    (blockinherit auth_pam_object_block)
     (typeattributeset sudo_object_type pam_object)
 
     (context pam_sudo (sys.u sys.r pam_object (systemlow systemlow)))
     (filecon "/etc/pam\.d/sudo" file pam_sudo)
     (filecon "/etc/pam\.d/sudo-i" file pam_sudo)
 
-    (blockinherit file_var_object_template)
+    (blockinherit file_var_object_block)
     (typeattributeset sudo_object_type var_object)
 
     (context var_sudo (sys.u sys.r var_object (systemlow systemlow)))
     (filecon "/var/db/sudo(/.*)?" any var_sudo)
 
-    (blockinherit file_run_object_template)
+    (blockinherit file_run_object_block)
     (typeattributeset sudo_object_type run_object)
 
     (context run_sudo (sys.u sys.r run_object (systemlow systemlow)))
@@ -60,7 +60,7 @@
 )
 
 (block visudo
-    (blockinherit app_template)
+    (blockinherit app_block)
 
     (context bin_visudo (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/visudo" file bin_visudo)

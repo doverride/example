@@ -1,5 +1,5 @@
-(block fs_object_template
-    (blockabstract fs_object_template)
+(block fs_object_block
+    (blockabstract fs_object_block)
         (type fs_object)
         (call fs_type (fs_object))
 )

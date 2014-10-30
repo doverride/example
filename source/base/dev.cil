@@ -6,8 +6,8 @@
 (roleattribute dev_unconfined_role)
 (typeattribute dev_unconfined_type)
 
-(block dev_object_template
-    (blockabstract dev_object_template)
+(block dev_object_block
+    (blockabstract dev_object_block)
 
     (type dev_object)
     (call dev_type (dev_object))

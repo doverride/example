@@ -1,7 +1,7 @@
 (typeattribute bin_type)
 
-(block bin_object_template
-    (blockabstract bin_object_template)
+(block bin_object_block
+    (blockabstract bin_object_block)
         (type bin_object)
         (call bin_type (bin_object))
 )
@@ -42,7 +42,7 @@
 (filecon "/usr/src/kernels/[^/]*/scripts/.*" file bin)
 
 (block shell
-    (blockinherit bin_object_template)
+    (blockinherit bin_object_block)
 
     (context shell (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/d?ash" file shell)

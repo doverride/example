@@ -1,5 +1,5 @@
 (block cgagent
-    (blockinherit subject_system_entry_template)
+    (blockinherit subject_system_entry_block)
 
     (context bin_cgagent (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/systemd-cgroups-agent" file bin_cgagent)

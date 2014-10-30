@@ -23,22 +23,22 @@
 (typeattribute sys_unconfined_type)
 (typeattribute sys_sysctl_type)
 
-(block sys_proc_object_template
-    (blockabstract sys_proc_object_template)
+(block sys_proc_object_block
+    (blockabstract sys_proc_object_block)
 
     (type proc_object)
     (call sys_proc_type (proc_object))
 )
 
-(block sys_sysctl_object_template
-    (blockabstract sys_sysctl_object_template)
+(block sys_sysctl_object_block
+    (blockabstract sys_sysctl_object_block)
 
     (type sysctl_object)
     (call sys_sysctl_type (sysctl_object))
 )
 
 (block load_kernel_module
-    (blockinherit sec_bool_object_template)
+    (blockinherit sec_bool_object_block)
 
     (context load_kernel_module (sys.u sys.r bool_object
         (systemlow systemlow)))
@@ -50,7 +50,7 @@
     (user u)
     (role r)
 
-    (blockinherit subject_common_template)
+    (blockinherit subject_common_block)
 
     (roletype r common_subject)
     (userrole u r)
@@ -58,7 +58,7 @@
     (userlevel u systemlow)
     (userrange u (systemlow systemhigh))
 
-    (blockinherit file_maintains_single_var_log_file_template)
+    (blockinherit file_maintains_single_var_log_file_block)
 
     (context var_log_sys (u r var_log_object
         (systemlow systemlow)))
@@ -274,7 +274,7 @@
 (allow sys_unconfined_type unlabeled (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 
-(roletype sys.r sys_object_type)
+(roletype sys.r sys_object_type) ; FIXME
 (roletype sys.r sys_subject_type)
 
 (roleallow sys.r sys_roleallow_role)

@@ -10,9 +10,9 @@
 (typeattribute usersubject_pty_type)
 (typeattribute usersubject_tty_type)
 
-(block usersubject_template
-    (blockabstract usersubject_template)
-        (blockinherit subject_template)
+(block usersubject_block
+    (blockabstract usersubject_block)
+        (blockinherit subject_block)
 
         (user u)
         (userrole u r)
@@ -23,9 +23,9 @@
         (typeattributeset usersubject_type subject)
 )
 
-(block usersubject_common_template
-    (blockabstract usersubject_common_template)
-        (blockinherit subject_common_template)
+(block usersubject_common_block
+    (blockabstract usersubject_common_block)
+        (blockinherit subject_common_block)
 
         (user u)
         (userrole u r)
@@ -36,54 +36,54 @@
         (typeattributeset usersubject_common_type common_subject)
 )
 
-(block usersubject_common_login_template
-    (blockabstract usersubject_common_login_template)
-        (blockinherit usersubject_common_template)
+(block usersubject_common_login_block
+    (blockabstract usersubject_common_login_block)
+        (blockinherit usersubject_common_block)
 
         (call sys_roleallow_role (r))
 
         (typeattributeset usersubject_common_login_type common_subject)
 )
 
-(block usersubject_object_template
-    (blockabstract usersubject_object_template)
-        (blockinherit usersubject_home_object_template)
-        (blockinherit usersubject_mail_spool_object_template)
-        (blockinherit usersubject_tmpfs_object_template)
-        (blockinherit usersubject_pty_object_template)
-        (blockinherit usersubject_tty_object_template)
+(block usersubject_object_block
+    (blockabstract usersubject_object_block)
+        (blockinherit usersubject_home_object_block)
+        (blockinherit usersubject_mail_spool_object_block)
+        (blockinherit usersubject_tmpfs_object_block)
+        (blockinherit usersubject_pty_object_block)
+        (blockinherit usersubject_tty_object_block)
 )
 
-(block usersubject_home_object_template
-    (blockabstract usersubject_home_object_template)
+(block usersubject_home_object_block
+    (blockabstract usersubject_home_object_block)
         (type home_object)
         (call usersubject_home_type (home_object))
 )
 
-(block usersubject_tmpfs_object_template
-    (blockabstract usersubject_tmpfs_object_template)
-        (blockinherit file_tmpfs_object_template)
+(block usersubject_tmpfs_object_block
+    (blockabstract usersubject_tmpfs_object_block)
+        (blockinherit file_tmpfs_object_block)
 
         (typeattributeset usersubject_tmpfs_type tmpfs_object)
 )
 
-(block usersubject_mail_spool_object_template
-    (blockabstract usersubject_mail_spool_object_template)
-        (blockinherit file_var_spool_object_template)
+(block usersubject_mail_spool_object_block
+    (blockabstract usersubject_mail_spool_object_block)
+        (blockinherit file_var_spool_object_block)
 
         (typeattributeset usersubject_mail_spool_type var_spool_object)
 )
 
-(block usersubject_pty_object_template
-    (blockabstract usersubject_pty_object_template)
-        (blockinherit term_pty_object_template)
+(block usersubject_pty_object_block
+    (blockabstract usersubject_pty_object_block)
+        (blockinherit term_pty_object_block)
 
         (typeattributeset usersubject_pty_type pty_object)
 )
 
-(block usersubject_tty_object_template
-    (blockabstract usersubject_tty_object_template)
-        (blockinherit term_tty_object_template)
+(block usersubject_tty_object_block
+    (blockabstract usersubject_tty_object_block)
+        (blockinherit term_tty_object_block)
 
         (typeattributeset usersubject_tty_type tty_object)
 )
@@ -92,23 +92,23 @@
 (call file_type (home_user))
 
 (block user
-    (blockinherit usersubject_object_template)
+    (blockinherit usersubject_object_block)
 )
 
 (block user_bin
-    (blockinherit usersubject_home_object_template)
+    (blockinherit usersubject_home_object_block)
 
     (call bin_type (home_object))
 )
 
 (block user_cert
-    (blockinherit usersubject_home_object_template)
+    (blockinherit usersubject_home_object_block)
 
     (call miscfiles_cert_type (home_object))
 )
 
 (block user_terminfo
-    (blockinherit usersubject_home_object_template)
+    (blockinherit usersubject_home_object_block)
 
     (call miscfiles_terminfo_type (home_object))
 )

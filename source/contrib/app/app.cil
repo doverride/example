@@ -1,16 +1,16 @@
 (typeattribute app_subject_type)
 (typeattribute app_exec_object_type)
 
-(block app_subject_template
-    (blockabstract app_subject_template)
-        (blockinherit subject_common_template)
+(block app_subject_block
+    (blockabstract app_subject_block)
+        (blockinherit subject_common_block)
 
         (typeattributeset app_subject_type common_subject)
 )
 
-(block app_template
-    (blockabstract app_template)
-        (blockinherit subject_entry_template)
+(block app_block
+    (blockabstract app_block)
+        (blockinherit subject_entry_block)
 
         (call app_subject_type (common_subject))
         (call app_exec_object_type (bin_object))

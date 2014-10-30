@@ -1,7 +1,7 @@
 (typeattribute stor_unconfined_type)
 
-(block stor_object_template
-    (blockabstract stor_object_template)
+(block stor_object_block
+    (blockabstract stor_object_block)
 
     (type dev_object)
     (call dev_stor_object (dev_object))

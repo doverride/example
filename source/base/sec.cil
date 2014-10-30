@@ -5,8 +5,8 @@
 (typeattribute sec_bool_type)
 (typeattribute sec_unconfined_type)
 
-(block sec_bool_object_template
-    (blockabstract sec_bool_object_template)
+(block sec_bool_object_block
+    (blockabstract sec_bool_object_block)
 
     (type bool_object)
     (call sec_bool_type (bool_object))
@@ -21,7 +21,7 @@
 (genfscon "securityfs" "/" securityfs)
 
 (block load_policy
-    (blockinherit sec_bool_object_template)
+    (blockinherit sec_bool_object_block)
 
     (context load_policy (sys.u sys.r bool_object
         (systemlow systemlow)))

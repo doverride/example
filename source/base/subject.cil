@@ -20,35 +20,35 @@
 (typeattribute uncond_exempt)
 (typeattribute user_target)
 
-(block subject_template
-    (blockabstract subject_template)
+(block subject_block
+    (blockabstract subject_block)
         (type subject)
         (call subject_type (subject))
 )
 
-(block subject_common_template
-    (blockabstract subject_common_template)
+(block subject_common_block
+    (blockabstract subject_common_block)
         (type common_subject)
         (call subject_common_type (common_subject))
 )
 
-(block subject_entry_template
-    (blockabstract subject_entry_template)
-        (blockinherit bin_object_template)
-        (blockinherit subject_common_template)
+(block subject_entry_block
+    (blockabstract subject_entry_block)
+        (blockinherit bin_object_block)
+        (blockinherit subject_common_block)
 
         (call subject_entry (common_subject bin_object))
 )
 
-(block subject_system_entry_template
-    (blockabstract subject_system_entry_template)
-        (blockinherit subject_entry_template)
+(block subject_system_entry_block
+    (blockabstract subject_system_entry_block)
+        (blockinherit subject_entry_block)
 
         (call sys_subject_type (common_subject))
 )
 
 (block execheap
-    (blockinherit sec_bool_object_template)
+    (blockinherit sec_bool_object_block)
 
     (context execheap (sys.u sys.r bool_object
         (systemlow systemlow)))
@@ -57,7 +57,7 @@
 )
 
 (block execmem
-    (blockinherit sec_bool_object_template)
+    (blockinherit sec_bool_object_block)
 
     (context execmem (sys.u sys.r bool_object
         (systemlow systemlow)))
@@ -66,7 +66,7 @@
 )
 
 (block execstack
-    (blockinherit sec_bool_object_template)
+    (blockinherit sec_bool_object_block)
 
     (context execstack (sys.u sys.r bool_object
         (systemlow systemlow)))
@@ -75,7 +75,7 @@
 )
 
 (block mmap_low
-    (blockinherit sec_bool_object_template)
+    (blockinherit sec_bool_object_block)
 
     (context mmap_low (sys.u sys.r bool_object
         (systemlow systemlow)))
@@ -84,7 +84,7 @@
 )
 
 (block ptrace_all
-    (blockinherit sec_bool_object_template)
+    (blockinherit sec_bool_object_block)
 
     (context ptrace_all (sys.u sys.r bool_object
         (systemlow systemlow)))
