@@ -13,8 +13,12 @@
 (sid unlabeled)
 (sid file)
 
-(typeattribute sys_mountpoint_type)
+(roleattribute sys_roleallow_role)
+
 (typeattribute sys_object_type)
+(typeattribute sys_subject_type)
+
+(typeattribute sys_mountpoint_type)
 (typeattribute sys_proc_type)
 (typeattribute sys_unconfined_type)
 (typeattribute sys_sysctl_type)
@@ -48,8 +52,8 @@
 
     (blockinherit subject_common_template)
 
-    (call sys_roletype (common_subject))
-    (call sys_userrole (u))
+    (roletype r common_subject)
+    (userrole u r)
 
     (userlevel u systemlow)
     (userrange u (systemlow systemhigh))
@@ -121,8 +125,9 @@
 (allow invalid self list_dir_perms)
 (allow invalid self read_lnk_file_perms)
 
+(roletype sys.r invalid)
+
 (call sys_mountpoint_type (invalid)) ; FIXME
-(call sys_roletype (invalid))
 
 (call fs_associate_fs (invalid))
 (call fs_associate_tmpfs (invalid))
@@ -269,7 +274,10 @@
 (allow sys_unconfined_type unlabeled (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 
-(call sys_roletype (sys_object_type))
+(roletype sys.r sys_object_type)
+(roletype sys.r sys_subject_type)
+
+(roleallow sys.r sys_roleallow_role)
 
 (typeattribute can_load_kernel_module)
 (typeattribute not_can_load_kernel_module)
@@ -325,6 +333,9 @@
 (macro sys_object_type ((type ARG1))
     (typeattributeset sys_object_type ARG1))
 
+(macro sys_subject_type ((type ARG1))
+    (typeattributeset sys_subject_type ARG1))
+
 (macro sys_mountpoint_type ((type ARG1))
     (typeattributeset sys_mountpoint_type ARG1))
 
@@ -343,11 +354,8 @@
     (call sys_object_type (ARG1))
     (typeattributeset sys_proc_type ARG1))
 
-(macro sys_roleallow ((role ARG1))
-    (roleallow sys.r ARG1))
-
-(macro sys_roletype ((type ARG1))
-    (roletype sys.r ARG1))
+(macro sys_roleallow_role ((role ARG1))
+    (roleattributeset sys_roleallow_role ARG1))
 
 (macro sys_sysctl_type ((type ARG1))
     (call sys_object_type (ARG1))

@@ -40,7 +40,7 @@
     (blockabstract usersubject_common_login_template)
         (blockinherit usersubject_common_template)
 
-        (call sys_roleallow (r))
+        (call sys_roleallow_role (r))
 
         (typeattributeset usersubject_common_login_type common_subject)
 )
@@ -132,7 +132,7 @@
 
 (macro usersubject_common_login_type ((user ARG1)(role ARG2)(type ARG3))
     (call usersubject_common_type (ARG1 ARG2 ARG3))
-    (call sys_roleallow (ARG3))
+    (call sys_roleallow_role (ARG2))
     (typeattributeset usersubject_common_login_type ARG3))
 
 (macro usersubject_mls ((user ARG1)(level ARG2)(level ARG3)(level ARG4))
