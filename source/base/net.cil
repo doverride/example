@@ -28,6 +28,15 @@
     (call net_reserved_port_type (reserved_port_object))
 )
 
+(block net_maintains_tcp_reserved_listening_port_block
+    (blockabstract net_maintains_tcp_reserved_listening_port_block)
+        (blockinherit net_reserved_port_object_block)
+
+    (allow common_subject self (capability (net_bind_service)))
+    (allow common_subject self create_tcp_stream_socket_perms)
+    (allow common_subject reserved_port_object (tcp_socket (name_bind)))
+)
+
 (block net_hi_reserved_port_object_block
     (blockabstract net_hi_reserved_port_object_block)
     (type hi_reserved_port_object)
