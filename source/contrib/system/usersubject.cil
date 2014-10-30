@@ -128,9 +128,7 @@
     (call subject_common_type (ARG3))
     (userrole ARG1 ARG2)
     (roletype ARG2 ARG3)
-    (typeattributeset usersubject_common_type ARG3)
-
-    (call auth_run_chkpwd (ARG3 ARG2)))
+    (typeattributeset usersubject_common_type ARG3))
 
 (macro usersubject_common_login_type ((user ARG1)(role ARG2)(type ARG3))
     (call usersubject_common_type (ARG1 ARG2 ARG3))
