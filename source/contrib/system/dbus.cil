@@ -1,0 +1,117 @@
+(roleattribute dbus_admin_role)
+(typeattribute dbus_admin_type)
+
+(typeattribute dbus_etc_file_type)
+
+(typeattribute dbus_object_type)
+(typeattribute dbus_subject_type)
+
+(typeattribute dbus_system_client_type)
+(typeattribute dbus_unconfined_type)
+
+(block dbus_object_block
+    (blockabstract dbus_object_block)
+        (type dbus_object)
+        (call dbus_etc_file_type (dbus_object))
+)
+
+(block dbusd
+    (blockinherit systemd_daemon_socket_activated_block)
+    (typeattributeset dbus_subject_type common_subject)
+
+    (context bin_dbusd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/dbus-daemon" file bin_dbusd)
+
+    (context unit_dbusd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*dbus.*" file unit_dbusd)
+
+    (blockinherit file_run_object_block)
+    (typeattributeset dbus_object_type run_object)
+
+    (call systemd_socket_activated_object_type (run_object))
+
+    (context run_dbusd (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/dbus(/.*)?" any run_dbusd)
+
+    (blockinherit file_var_lib_object_block)
+    (typeattributeset dbus_object_type var_lib_object)
+
+    (context var_lib_dbusd (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/dbus(/.*)?" any var_lib_dbusd)
+
+    (allow common_subject self (process (signal getcap setcap setrlimit)))
+    (allow common_subject self (capability (setgid setuid)))
+    (allow common_subject self create_netlink_selinux_socket_perms)
+    (allow common_subject self (unix_stream_socket (listen accept)))
+
+    (allow common_subject run_object manage_dir_perms)
+    (call file_run_filetrans (common_subject run_object dir "*"))
+
+    (allow common_subject var_lib_object manage_dir_perms)
+    (call file_var_lib_filetrans (common_subject var_lib_object dir "*"))
+
+    (allow dbus_system_client_type self (dbus (send_msg)))
+    (allow dbus_system_client_type common_subject (dbus (send_msg)))
+
+    (allow common_subject dbus_system_client_type (dbus (send_msg)))
+
+    (call dbus_read_generic_config_files (dbus_system_client_type)) ; FIXME
+    (call dbus_read_var_lib_files (dbus_system_client_type))
+    (call dbus_stream_connect_system (dbus_system_client_type))
+
+    (optional dbus_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(type etc_dbus)
+(call file_etc_type (etc_dbus))
+(typeattributeset dbus_etc_file_type etc_dbus)
+
+(context etc_dbus (sys.u sys.r etc_dbus (systemlow systemlow)))
+(filecon "/etc/dbus-1(/.*)?" any etc_dbus)
+
+(typeattributeset dbus_object_type dbus_etc_file_type)
+
+(allow dbus_admin_type self (capability (kill sys_ptrace)))
+(allow dbus_admin_type dbus_subject_type signal_perms)
+(allow dbus_admin_type dbus_subject_type (process (ptrace)))
+(call ps_subject_pattern (dbus_admin_type dbus_subject_type))
+(allow dbus_admin_type dbusd.unit_object (service (all)))
+(allow dbus_admin_type dbus_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype dbus_admin_role dbus_object_type)
+
+(allow dbus_unconfined_type self (dbus (acquire_svc)))
+(allow dbus_unconfined_type dbusd.common_subject (dbus (all)))
+
+(allow dbus_unconfined_type dbus_unconfined_type (dbus (send_msg)))
+(allow dbusd.common_subject dbus_unconfined_type (dbus (send_msg)))
+(allow dbus_system_client_type dbus_unconfined_type (dbus (send_msg)))
+
+(macro dbus_etc_file_type ((type ARG1))
+    (call file_etc_type (ARG1))
+    (typeattributeset dbus_etc_file_type ARG1))
+
+(macro dbus_read_generic_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 etc_dbus etc_dbus)))
+
+(macro dbus_read_var_lib_files ((type ARG1))
+    (call file_search_var_lib (ARG1))
+    (call read_files_pattern
+        (ARG1 dbusd.var_lib_object dbusd.var_lib_object)))
+
+(macro dbus_stream_connect_system ((type ARG1))
+    (call file_search_run (ARG1))
+    (call stream_connect_pattern
+        (ARG1 dbusd.run_object dbusd.run_object dbusd.common_subject)))
+
+(macro dbus_system_client ((type ARG1))
+    (typeattributeset dbus_system_client_type ARG1))
+
+(macro dbus_admin ((role ARG1)(type ARG2))
+    (roleattributeset dbus_admin_role ARG1)
+    (typeattributeset dbus_admin_type ARG2))
+
+(macro dbus_unconfined ((type ARG1))
+    (typeattributeset dbus_unconfined_type ARG1))

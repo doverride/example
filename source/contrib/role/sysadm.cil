@@ -26,7 +26,7 @@
     (optional sysadm_optional_sudo
         (call sudo_send_signal (common_subject))
         (optional sysadm_optional_staff
-            (call staff_rw_inherited_fifo_file (common_subject))
+            (call staff_rw_inherited_fifo_files (common_subject))
             (call staff_use_fd (common_subject))))
 
     (optional sysadm_optional_unconfined

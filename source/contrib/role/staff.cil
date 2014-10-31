@@ -44,7 +44,7 @@
     )
 )
 
-(macro staff_rw_inherited_fifo_file ((type ARG1))
+(macro staff_rw_inherited_fifo_files ((type ARG1))
     (allow ARG1 staff.common_subject rw_inherited_fifo_file_perms))
 
 (macro staff_use_fd ((type ARG1))

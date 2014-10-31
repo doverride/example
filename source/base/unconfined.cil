@@ -1,8 +1,6 @@
 (roleattribute unconfined_role)
 (typeattribute unconfined_type)
 
-(allow unconfined_type subject_common_type (dbus (all)))
-
 (allow unconfined_type self
     all_capability_perms_except_sys_module_and_sys_nice)
 (allow unconfined_type self
@@ -23,6 +21,9 @@
 
 (optional unconfined_optional_auth
     (call auth_unconfined (unconfined_type)))
+
+(optional unconfined_optional_dbus
+    (call dbus_unconfined (unconfined_type)))
 
 (optional unconfined_optional_stor
     (call stor_unconfined (unconfined_type)))
