@@ -33,8 +33,6 @@
 
         (call sudo_role_template (staff.r staff.common_subject common_subject))
 
-        (call sys_userrole (staff.u)) ; FIXME: /run/sudo roletrans
-
         (call sysadm_manage_keyring (common_subject))
         (call sysadm_send_signal (common_subject))
         (call sysadm_shell_manual_subtrans (common_subject))

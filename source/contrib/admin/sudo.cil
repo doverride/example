@@ -77,8 +77,6 @@
 (allow sudo_subject_type sudo.run_object manage_file_perms)
 (call file_run_filetrans (sudo_subject_type sudo.run_object dir "sudo"))
 
-(call file_run_roletrans (sudo_role sys.r)) ; FIXME
-
 (call subject_role_change_exemption (sudo_subject_type))
 
 (call usersubject_relabel_all_terminals (sudo_subject_type))
