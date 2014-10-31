@@ -109,6 +109,8 @@
 (filecon "/usr/lib/systemd/user(/.*)?" any systemd_unit)
 (filecon "/usr/lib/systemd/ntp-units\.d(/.*)?" any systemd_unit)
 
+(call fs_associate_tmpfs (systemd_unit))
+
 (typeattributeset systemd_unit_object_type systemd_object_type)
 
 (allow systemd_admin_type self (capability (kill sys_ptrace)))
