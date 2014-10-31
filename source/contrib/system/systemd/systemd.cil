@@ -91,7 +91,7 @@
 
     (allow common_subject systemd_daemon_subject_type (process (signull)))
 
-    (call systemd_rw_unix_stream_socket (systemd_daemon_subject_type))
+    (call systemd_rw_unix_stream_sockets (systemd_daemon_subject_type))
     (call systemd_read_state (systemd_daemon_subject_type))
 
     (optional systemd_optional_unconfined
@@ -153,7 +153,7 @@
     (allow ARG1 systemd.common_subject list_dir_perms)
     (allow ARG1 systemd.common_subject read_lnk_file_perms))
 
-(macro systemd_rw_unix_stream_socket ((type ARG1))
+(macro systemd_rw_unix_stream_sockets ((type ARG1))
     (allow ARG1 systemd.common_subject rw_unix_stream_socket_perms))
 
 (macro systemd_send_sigchld ((type ARG1))
