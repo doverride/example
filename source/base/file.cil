@@ -439,6 +439,9 @@
     (call file_type (ARG1))
     (typeattributeset file_run_type ARG1))
 
+(macro file_del_entry_generic_run ((type ARG1))
+    (allow ARG1 run del_entry_dir_perms))
+
 (macro file_run_filetrans ((type ARG1)(type ARG2)
     (class ARG3)(name ARG4))
     (call file_type_transition_pattern
