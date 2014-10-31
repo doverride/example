@@ -49,7 +49,7 @@
     (context etc_authconfig (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/sysconfig/authconfig" file etc_authconfig)
 
-    (blockinherit file_var_lib_object_block)
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
     (typeattributeset auth_object_type var_lib_object)
 
     (context var_lib_authconfig (sys.u sys.r var_lib_object (systemlow systemlow)))
@@ -83,7 +83,7 @@
     (context bin_pam (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/pam_timestamp_check" file bin_pam)
 
-    (blockinherit file_run_object_block)
+    (blockinherit file_maintains_run_dirs_and_files_block)
     (typeattributeset auth_object_type run_object)
 
     (context run_pam (sys.u sys.r run_object (systemlow systemlow)))
@@ -97,7 +97,7 @@
     (context bin_pam_console (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/pam_console_apply" file bin_pam_console)
 
-    (blockinherit file_run_object_block)
+    (blockinherit file_maintains_run_dirs_and_files_block)
     (typeattributeset auth_object_type run_object)
 
     (context run_pam_console (sys.u sys.r run_object (systemlow systemlow)))
