@@ -132,6 +132,15 @@
         (call file_lib_type (var_lib_object))
 )
 
+(block file_maintains_var_lib_dirs_and_files_block
+    (blockabstract file_maintains_var_lib_dirs_and_files_block)
+        (blockinherit file_var_lib_object_block)
+
+        (allow common_subject var_lib_object manage_file_perms)
+        (allow common_subject var_lib_object manage_dir_perms)
+        (call file_var_lib_filetrans (common_subject var_lib_object dir "*"))
+)
+
 (block file_var_log_object_block
     (blockabstract file_var_log_object_block)
         (type var_log_object)

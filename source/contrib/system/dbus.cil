@@ -33,7 +33,7 @@
     (context run_dbusd (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/dbus(/.*)?" any run_dbusd)
 
-    (blockinherit file_var_lib_object_block)
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
     (typeattributeset dbus_object_type var_lib_object)
 
     (context var_lib_dbusd (sys.u sys.r var_lib_object (systemlow systemlow)))
@@ -46,9 +46,6 @@
 
     (allow common_subject run_object manage_dir_perms)
     (call file_run_filetrans (common_subject run_object dir "*"))
-
-    (allow common_subject var_lib_object manage_dir_perms)
-    (call file_var_lib_filetrans (common_subject var_lib_object dir "*"))
 
     (allow dbus_system_client_type self (dbus (send_msg)))
     (allow dbus_system_client_type common_subject (dbus (send_msg)))
