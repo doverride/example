@@ -53,17 +53,67 @@
         (call file_boot_type (etc_object))
 )
 
+(block file_maintains_single_etc_file_block
+    (blockabstract file_maintains_single_etc_file_block)
+        (blockinherit file_etc_object_block)
+
+        (allow common_subject etc_object read_file_perms)
+
+        (call file_search_etc (common_subject))
+)
+
+(block file_maintains_etc_dirs_and_files_block
+    (blockabstract file_maintains_etc_dirs_and_files_block)
+        (blockinherit file_etc_object_block)
+
+        (allow common_subject etc_object read_file_perms)
+        (allow common_subject etc_object search_dir_perms)
+
+        (call file_search_etc (common_subject))
+)
+
+(block file_maintains_etc_objects_block
+    (blockabstract file_maintains_etc_objects_block)
+        (blockinherit file_etc_object_block)
+
+        (allow common_subject etc_object manage_file_perms)
+        (allow common_subject etc_object manage_dir_perms)
+        (allow common_subject etc_object manage_lnk_file_perms)
+        (allow common_subject etc_object manage_sock_file_perms)
+        (allow common_subject etc_object manage_fifo_file_perms)
+
+        (call file_search_etc (common_subject))
+)
+
 (block file_object_block
     (blockabstract file_object_block)
         (type file_object)
         (call file_type (file_object))
 )
 
-
 (block file_run_object_block
     (blockabstract file_run_object_block)
         (type run_object)
         (call file_run_type (run_object))
+)
+
+(block file_maintains_single_run_file_block
+    (blockabstract file_maintains_single_run_file_block)
+        (blockinherit file_run_object_block)
+
+        (allow common_subject run_object manage_file_perms)
+
+        (call file_run_filetrans (common_subject run_object file "*"))
+)
+
+(block file_maintains_run_dirs_and_files_block
+    (blockabstract file_maintains_run_dirs_and_files_block)
+        (blockinherit file_run_object_block)
+
+        (allow common_subject run_object manage_file_perms)
+        (allow common_subject run_object manage_dir_perms)
+
+        (call file_run_filetrans (common_subject run_object dir "*"))
 )
 
 (block file_maintains_run_objects_block
@@ -79,27 +129,41 @@
         (call file_run_filetrans (common_subject run_object dir "*"))
 )
 
-(block file_maintains_run_dirs_and_files_block
-    (blockabstract file_maintains_run_dirs_and_files_block)
-        (blockinherit file_run_object_block)
-
-        (allow common_subject run_object manage_file_perms)
-        (allow common_subject run_object manage_dir_perms)
-        (call file_run_filetrans (common_subject run_object dir "*"))
-)
-
-(block file_maintains_single_run_file_block
-    (blockabstract file_maintains_single_run_file_block)
-        (blockinherit file_run_object_block)
-
-        (allow common_subject run_object manage_file_perms)
-        (call file_run_filetrans (common_subject run_object file "*"))
-)
-
 (block file_run_lock_object_block
     (blockabstract file_run_lock_object_block)
         (type run_lock_object)
         (call file_lock_type (run_lock_object))
+)
+
+(block file_maintains_single_run_lock_file_block
+    (blockabstract file_maintains_single_run_lock_file_block)
+        (blockinherit file_run_lock_object_block)
+
+        (allow common_subject run_lock_object manage_file_perms)
+        (call file_run_lock_filetrans (common_subject run_lock_object file "*"))
+)
+
+(block file_maintains_run_lock_dirs_and_files_block
+    (blockabstract file_maintains_run_lock_dirs_and_files_block)
+        (blockinherit file_run_lock_object_block)
+
+        (allow common_subject run_lock_object manage_file_perms)
+        (allow common_subject run_lock_object manage_dir_perms)
+
+        (call file_run_lock_filetrans (common_subject run_lock_object dir "*"))
+)
+
+(block file_maintains_run_lock_objects_block
+    (blockabstract file_maintains_run_lock_objects_block)
+        (blockinherit file_run_lock_object_block)
+
+        (allow common_subject run_lock_object manage_file_perms)
+        (allow common_subject run_lock_object manage_dir_perms)
+        (allow common_subject run_lock_object manage_lnk_file_perms)
+        (allow common_subject run_lock_object manage_sock_file_perms)
+        (allow common_subject run_lock_object manage_fifo_file_perms)
+
+        (call file_run_lock_filetrans (common_subject run_lock_object dir "*"))
 )
 
 (block file_sec_object_block
@@ -120,10 +184,73 @@
         (call file_var_type (var_object))
 )
 
+(block file_maintains_single_var_file_block
+    (blockabstract file_maintains_single_var_file_block)
+        (blockinherit file_var_object_block)
+
+        (allow common_subject var_object manage_file_perms)
+        (call file_var_filetrans (common_subject var_object file "*"))
+)
+
+(block file_maintains_var_dirs_and_files_block
+    (blockabstract file_maintains_var_dirs_and_files_block)
+        (blockinherit file_var_object_block)
+
+        (allow common_subject var_object manage_file_perms)
+        (allow common_subject var_object manage_dir_perms)
+
+        (call file_var_filetrans (common_subject var_object dir "*"))
+)
+
+(block file_maintains_var_objects_block
+    (blockabstract file_maintains_var_objects_block)
+        (blockinherit file_var_object_block)
+
+        (allow common_subject var_object manage_file_perms)
+        (allow common_subject var_object manage_dir_perms)
+        (allow common_subject var_object manage_lnk_file_perms)
+        (allow common_subject var_object manage_sock_file_perms)
+        (allow common_subject var_object manage_fifo_file_perms)
+
+        (call file_var_filetrans (common_subject var_object dir "*"))
+)
+
 (block file_var_cache_object_block
     (blockabstract file_var_cache_object_block)
         (type var_cache_object)
         (call file_cache_type (var_cache_object))
+)
+
+(block file_maintains_single_var_cache_file_block
+    (blockabstract file_maintains_single_var_cache_file_block)
+        (blockinherit file_var_cache_object_block)
+
+        (allow common_subject var_cache_object manage_file_perms)
+
+        (call file_var_cache_filetrans (common_subject var_cache_object file "*"))
+)
+
+(block file_maintains_var_cache_dirs_and_files_block
+    (blockabstract file_maintains_var_cache_dirs_and_files_block)
+        (blockinherit file_var_cache_object_block)
+
+        (allow common_subject var_cache_object manage_file_perms)
+        (allow common_subject var_cache_object manage_dir_perms)
+
+        (call file_var_cache_filetrans (common_subject var_cache_object dir "*"))
+)
+
+(block file_maintains_var_cache_objects_block
+    (blockabstract file_maintains_var_cache_objects_block)
+        (blockinherit file_var_cache_object_block)
+
+        (allow common_subject var_cache_object manage_file_perms)
+        (allow common_subject var_cache_object manage_dir_perms)
+        (allow common_subject var_cache_object manage_lnk_file_perms)
+        (allow common_subject var_cache_object manage_sock_file_perms)
+        (allow common_subject var_cache_object manage_fifo_file_perms)
+
+        (call file_var_cache_filetrans (common_subject var_cache_object dir "*"))
 )
 
 (block file_var_lib_object_block
@@ -132,12 +259,35 @@
         (call file_lib_type (var_lib_object))
 )
 
+(block file_maintains_single_var_lib_file_block
+    (blockabstract file_maintains_single_var_lib_file_block)
+        (blockinherit file_var_lib_object_block)
+
+        (allow common_subject var_lib_object manage_file_perms)
+
+        (call file_var_lib_filetrans (common_subject var_lib_object file "*"))
+)
+
 (block file_maintains_var_lib_dirs_and_files_block
     (blockabstract file_maintains_var_lib_dirs_and_files_block)
         (blockinherit file_var_lib_object_block)
 
         (allow common_subject var_lib_object manage_file_perms)
         (allow common_subject var_lib_object manage_dir_perms)
+
+        (call file_var_lib_filetrans (common_subject var_lib_object dir "*"))
+)
+
+(block file_maintains_var_lib_objects_block
+    (blockabstract file_maintains_var_lib_objects_block)
+        (blockinherit file_var_lib_object_block)
+
+        (allow common_subject var_lib_object manage_file_perms)
+        (allow common_subject var_lib_object manage_dir_perms)
+        (allow common_subject var_lib_object manage_lnk_file_perms)
+        (allow common_subject var_lib_object manage_sock_file_perms)
+        (allow common_subject var_lib_object manage_fifo_file_perms)
+
         (call file_var_lib_filetrans (common_subject var_lib_object dir "*"))
 )
 
@@ -152,6 +302,7 @@
         (blockinherit file_var_log_object_block)
 
         (allow common_subject var_log_object manage_file_perms)
+
         (call file_var_log_filetrans (common_subject var_log_object file "*"))
 )
 
@@ -161,6 +312,20 @@
 
         (allow common_subject var_log_object manage_file_perms)
         (allow common_subject var_log_object manage_dir_perms)
+
+        (call file_var_log_filetrans (common_subject var_log_object dir "*"))
+)
+
+(block file_maintains_var_log_objects_block
+    (blockabstract file_maintains_var_log_objects_block)
+        (blockinherit file_var_log_object_block)
+
+        (allow common_subject var_log_object manage_file_perms)
+        (allow common_subject var_log_object manage_dir_perms)
+        (allow common_subject var_log_object manage_lnk_file_perms)
+        (allow common_subject var_log_object manage_sock_file_perms)
+        (allow common_subject var_log_object manage_fifo_file_perms)
+
         (call file_var_log_filetrans (common_subject var_log_object dir "*"))
 )
 
@@ -170,10 +335,74 @@
         (call file_spool_type (var_spool_object))
 )
 
+(block file_maintains_single_var_spool_file_block
+    (blockabstract file_maintains_single_var_spool_file_block)
+        (blockinherit file_var_spool_object_block)
+
+        (allow common_subject var_spool_object manage_file_perms)
+
+        (call file_var_spool_filetrans (common_subject var_spool_object file "*"))
+)
+
+(block file_maintains_var_spool_dirs_and_files_block
+    (blockabstract file_maintains_var_spool_dirs_and_files_block)
+        (blockinherit file_var_spool_object_block)
+
+        (allow common_subject var_spool_object manage_file_perms)
+        (allow common_subject var_spool_object manage_dir_perms)
+
+        (call file_var_spool_filetrans (common_subject var_spool_object dir "*"))
+)
+
+(block file_maintains_var_spool_objects_block
+    (blockabstract file_maintains_var_spool_objects_block)
+        (blockinherit file_var_spool_object_block)
+
+        (allow common_subject var_spool_object manage_file_perms)
+        (allow common_subject var_spool_object manage_dir_perms)
+        (allow common_subject var_spool_object manage_lnk_file_perms)
+        (allow common_subject var_spool_object manage_sock_file_perms)
+        (allow common_subject var_spool_object manage_fifo_file_perms)
+
+        (call file_var_spool_filetrans (common_subject var_spool_object dir "*"))
+)
+
 (block file_var_tmp_object_block
     (blockabstract file_var_tmp_object_block)
         (type var_tmp_object)
         (call file_tmp_type (var_tmp_object))
+)
+
+(block file_maintains_single_var_tmp_file_block
+    (blockabstract file_maintains_single_var_tmp_file_block)
+        (blockinherit file_var_tmp_object_block)
+
+        (allow common_subject var_tmp_object manage_file_perms)
+
+        (call file_var_tmp_filetrans (common_subject var_tmp_object file "*"))
+)
+
+(block file_maintains_var_tmp_dirs_and_files_block
+    (blockabstract file_maintains_var_tmp_dirs_and_files_block)
+        (blockinherit file_var_tmp_object_block)
+
+        (allow common_subject var_tmp_object manage_file_perms)
+        (allow common_subject var_tmp_object manage_dir_perms)
+
+        (call file_var_tmp_filetrans (common_subject var_tmp_object dir "*"))
+)
+
+(block file_maintains_var_tmp_objects_block
+    (blockabstract file_maintains_var_tmp_objects_block)
+        (blockinherit file_var_tmp_object_block)
+
+        (allow common_subject var_tmp_object manage_file_perms)
+        (allow common_subject var_tmp_object manage_dir_perms)
+        (allow common_subject var_tmp_object manage_lnk_file_perms)
+        (allow common_subject var_tmp_object manage_sock_file_perms)
+        (allow common_subject var_tmp_object manage_fifo_file_perms)
+
+        (call file_var_tmp_filetrans (common_subject var_tmp_object dir "*"))
 )
 
 (block file_tmpfs_object_block
@@ -410,6 +639,12 @@
     (call file_type (ARG1))
     (typeattributeset file_cache_type ARG1))
 
+(macro file_var_cache_filetrans ((type ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call file_search_var (ARG1))
+    (call file_type_transition_pattern
+        (ARG1 var_cache ARG2 ARG3 ARG4)))
+
 (macro file_etc_type ((type ARG1))
     (call file_type (ARG1))
     (typeattributeset file_etc_type ARG1))
@@ -433,15 +668,21 @@
     (call file_type (ARG1))
     (typeattributeset file_lock_type ARG1))
 
+(macro file_run_lock_filetrans ((type ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call file_search_run (ARG1))
+    (call file_type_transition_pattern
+        (ARG1 run_lock ARG2 ARG3 ARG4)))
+
+(macro file_log_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_log_type ARG1))
+
 (macro file_var_log_filetrans ((type ARG1)(type ARG2)
     (class ARG3)(name ARG4))
     (call file_search_var (ARG1))
     (call file_type_transition_pattern
         (ARG1 var_log ARG2 ARG3 ARG4)))
-
-(macro file_log_type ((type ARG1))
-    (call file_type (ARG1))
-    (typeattributeset file_log_type ARG1))
 
 (macro file_mnt_type ((type ARG1))
     (call file_type (ARG1))
@@ -461,9 +702,6 @@
     (class ARG3)(name ARG4))
     (call file_type_transition_pattern
         (ARG1 run ARG2 ARG3 ARG4)))
-
-(macro file_run_roletrans ((role ARG1)(role ARG2))
-    (call file_role_transition_pattern (ARG1 run ARG2 dir)))
 
 (macro file_read_generic_etc_files ((type ARG1))
     (call read_files_pattern (ARG1 etc etc)))
@@ -531,6 +769,12 @@
     (call file_type (ARG1))
     (typeattributeset file_tmp_type ARG1))
 
+(macro file_var_tmp_filetrans ((type ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call file_search_var (ARG1))
+    (call file_type_transition_pattern
+        (ARG1 var_tmp ARG2 ARG3 ARG4)))
+
 (macro file_tmpfs_type ((type ARG1))
     (call file_type (ARG1))
     (typeattributeset file_tmpfs_type ARG1))
@@ -542,6 +786,11 @@
 (macro file_var_type ((type ARG1))
     (call file_type (ARG1))
     (typeattributeset file_var_type ARG1))
+
+(macro file_var_filetrans ((type ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call file_type_transition_pattern
+        (ARG1 var ARG2 ARG3 ARG4)))
 
 (macro file_execmod_all_except ((type ARG1))
     (booleanif execmod_all_except
