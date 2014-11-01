@@ -6,7 +6,9 @@
 (typeattribute auth_login_program_type)
 (typeattribute auth_nsswitch_client_type)
 (typeattribute auth_pam_client_type)
+
 (typeattribute auth_pam_etc_file_type)
+
 (typeattribute auth_object_type)
 (typeattribute auth_subject_type)
 

@@ -1,0 +1,88 @@
+(roleattribute polkit_role)
+
+(roleattribute polkit_admin_role)
+(typeattribute polkit_admin_type)
+
+(typeattribute polkit_agent_subject_type)
+
+(typeattribute polkit_etc_file_type)
+
+(typeattribute polkit_object_type)
+(typeattribute polkit_subject_type)
+
+(block polkit_object_block
+    (blockabstract polkit_object_block)
+        (type polkit_object)
+        (call polkit_etc_file_type (polkit_object))
+)
+
+(block polkitd
+    (blockinherit systemd_daemon_block)
+    (typeattributeset polkit_object_type unit_object)
+    (typeattributeset polkit_subject_type common_subject)
+
+    (context bin_polkitd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/polkit-1/polkitd" file bin_polkitd)
+
+    (context unit_polkitd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*polkit.*" file unit_polkitd)
+
+    (blockinherit dbus_object_block)
+    (typeattributeset polkit_object_type dbus_object)
+
+    (context dbus_polkitd (sys.u sys.r dbus_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.PolicyKit1\.conf" file dbus_polkitd)
+
+    (blockinherit auth_pam_object_block)
+    (typeattributeset polkit_object_type pam_object)
+
+    (context pam_polkitd (sys.u sys.r pam_object (systemlow systemlow)))
+    (filecon "/etc/pam\.d/polkit-1" file pam_polkitd)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+    (typeattributeset polkit_object_type var_lib_object)
+
+    (context var_lib_polkitd (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/polkit-1(/.*)?" any var_lib_polkitd)
+
+    (allow common_subject self (process (getsched setsched)))
+    (allow common_subject self (capability (setuid setgid)))
+    (allow common_subject self rw_fifo_file_perms)
+
+    (optional polkitd_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(type etc_polkit)
+(call file_etc_type (etc_polkit))
+(typeattributeset polkit_etc_file_type etc_polkit)
+
+(context etc_polkit (sys.u sys.r etc_polkit (systemlow systemlow)))
+(filecon "/etc/polkit-1(/.*)?" any etc_polkit)
+
+(typeattributeset polkit_object_type polkit_etc_file_type)
+
+(allow polkit_admin_type self (capability (kill sys_ptrace)))
+(allow polkit_admin_type polkit_subject_type signal_perms)
+(allow polkit_admin_type polkit_subject_type (process (ptrace)))
+(call ps_subject_pattern (polkit_admin_type polkit_subject_type))
+(allow polkit_admin_type polkitd.unit_object (service (all)))
+(allow polkit_admin_type polkit_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype polkit_admin_role polkit_object_type)
+
+(macro polkit_etc_file_type ((type ARG1))
+    (call file_etc_type (ARG1))
+    (typeattributeset polkit_etc_file_type ARG1))
+
+(macro polkit_read_generic_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 etc_polkit etc_polkit)))
+
+(macro polkit_read_all_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 etc_polkit polkit_etc_file_type)))
+
+(macro polkit_admin ((role ARG1)(type ARG2))
+    (roleattributeset polkit_admin_role ARG1)
+    (typeattributeset polkit_admin_type ARG2))

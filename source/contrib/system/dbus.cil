@@ -17,6 +17,7 @@
 
 (block dbusd
     (blockinherit systemd_daemon_socket_activated_block)
+    (typeattributeset dbus_object_type unit_object)
     (typeattributeset dbus_subject_type common_subject)
 
     (context bin_dbusd (sys.u sys.r bin_object (systemlow systemlow)))
