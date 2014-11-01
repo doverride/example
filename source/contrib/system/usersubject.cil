@@ -300,6 +300,12 @@
     (call term_tty_type (ARG1))
     (typeattributeset usersubject_tty_type ARG1))
 
+(macro usersubject_use_fd_all_common_subjects ((type ARG1))
+    (allow ARG1 usersubject_common_type (fd (use))))
+
+(macro usersubject_rw_inherited_fifo_files_all_common_subjects ((type ARG1))
+    (allow ARG1 usersubject_common_type rw_inherited_fifo_file_perms))
+
 (macro usersubject_dynamic_subtrans_all_common_login_subjects ((type ARG1))
     (call dynamic_subject_type_transition_pattern (ARG1 usersubject_common_login_type)))
 

@@ -78,6 +78,9 @@
     (call term_serial_type (ARG1))
     (typeattributeset term_tty_type ARG1))
 
+(macro term_use_inherited_unallocated_tts ((type ARG1))
+    (allow ARG1 tty_dev rw_inherited_term_perms))
+
 (macro term_user_pty ((type ARG1)(type ARG2))
     (typechange ARG1 term_server_pty_type chr_file ARG2))
 

@@ -16,6 +16,11 @@
         (call app_exec_object_type (bin_object))
 )
 
+(optional app_optional_usersubject
+    (call usersubject_rw_inherited_fifo_files_all_common_subjects (app_subject_type))
+    (call usersubject_use_all_inherited_terminals (app_subject_type))
+    (call usersubject_use_fd_all_common_subjects (app_subject_type)))
+
 (macro app_subject_type ((type ARG1))
     (typeattributeset app_subject_type ARG1))
 

@@ -339,16 +339,20 @@
 (macro sys_mountpoint_type ((type ARG1))
     (typeattributeset sys_mountpoint_type ARG1))
 
-(macro sys_dontaudit_audit_access_mountpoint_dir ((type ARG1))
+(macro sys_dontaudit_audit_access_mountpoint_dirs ((type ARG1))
     (dontaudit ARG1 sys_mountpoint_type (dir (audit_access))))
 
-(macro sys_list_mountpoint ((type ARG1))
+(macro sys_list_mountpoints ((type ARG1))
     (allow ARG1 sys_mountpoint_type list_dir_perms))
 
-(macro sys_mounton_mountpoint_dir ((type ARG1))
-    (call sys_dontaudit_audit_access_mountpoint_dir (ARG1))
-    (call sys_list_mountpoint (ARG1))
+(macro sys_mounton_mountpoint_dirs ((type ARG1))
+    (call sys_dontaudit_audit_access_mountpoint_dirs (ARG1))
+    (call sys_list_mountpoints (ARG1))
+    (call sys_setattr_mountpoint_dirs (ARG1))
     (allow ARG1 sys_mountpoint_type (dir (mounton))))
+
+(macro sys_setattr_mountpoint_dirs ((type ARG1))
+    (allow ARG1 sys_mountpoint_type (dir (setattr))))
 
 (macro sys_proc_type ((type ARG1))
     (call sys_object_type (ARG1))
@@ -428,6 +432,9 @@
 (macro sys_search_vm_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (allow ARG1 vm_sysctl search_dir_perms))
+
+(macro sys_setsched ((type ARG1))
+    (allow ARG1 sys.common_subject (process (setsched))))
 
 (macro sys_recvfrom_unlabeled_tcp_socket ((type ARG1))
     (allow ARG1 unlabeled (tcp_socket (recvfrom))))

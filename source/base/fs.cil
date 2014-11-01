@@ -186,6 +186,9 @@
     (call fs_read_generic_proc_lnk_files (ARG1))
     (allow ARG1 proc list_dir_perms))
 
+(macro fs_list_sysfs ((type ARG1))
+    (allow ARG1 sysfs list_dir_perms))
+
 (macro fs_manage_devtmpfs_dirs ((type ARG1))
     (allow ARG1 devtmpfs manage_dir_perms))
 
@@ -197,6 +200,18 @@
     (call fs_rw_devtmpfs_dirs (ARG1))
     (allow ARG1 devtmpfs manage_blk_file_perms))
 
+(macro fs_getattr_all_fs ((type ARG1))
+    (allow ARG1 fs_type (filesystem (getattr))))
+
+(macro fs_mount_all ((type ARG1))
+    (allow ARG1 fs_type (filesystem (mount))))
+
+(macro fs_remount_all ((type ARG1))
+    (allow ARG1 fs_type (filesystem (remount))))
+
+(macro fs_unmount_all ((type ARG1))
+    (allow ARG1 fs_type (filesystem (unmount))))
+
 (macro fs_mounton_rootfs_dirs ((type ARG1))
     (allow ARG1 rootfs (dir (mounton))))
 
@@ -205,6 +220,12 @@
 
 (macro fs_read_generic_proc_lnk_files ((type ARG1))
     (allow ARG1 proc read_lnk_file_perms))
+
+(macro fs_read_sysfs_files ((type ARG1))
+    (call read_files_pattern (ARG1 sysfs sysfs)))
+
+(macro fs_read_sysfs_lnk_files ((type ARG1))
+    (allow ARG1 sysfs read_lnk_file_perms))
 
 (macro fs_rw_devtmpfs_dirs ((type ARG1))
     (allow ARG1 devtmpfs rw_dir_perms))
