@@ -60,11 +60,35 @@
         (call usersubject_home_type (home_object))
 )
 
+(block usersubject_maintains_home_objects_block
+    (blockabstract usersubject_maintains_home_objects_block)
+        (blockinherit usersubject_home_object_block)
+
+        (allow common_subject home_object (all_file_objects
+            (not_mounton_entrypoint_and_execmod)))
+
+        (call usersubject_home_user_filetrans
+            (r common_subject home_object all_file_objects "*"))
+)
+
 (block usersubject_tmpfs_object_block
     (blockabstract usersubject_tmpfs_object_block)
         (blockinherit file_tmpfs_object_block)
 
         (typeattributeset usersubject_tmpfs_type tmpfs_object)
+)
+
+(block usersubject_maintains_tmpfs_objects_block
+    (blockabstract usersubject_maintains_tmpfs_objects_block)
+        (blockinherit usersubject_tmpfs_object_block)
+
+        (allow common_subject tmpfs_object (all_file_objects
+            (not_mounton_entrypoint_and_execmod)))
+
+        (roletype r tmpfs_object)
+
+        (call fs_tmpfs_filetrans
+            (common_subject tmpfs_object all_file_objects "*"))
 )
 
 (block usersubject_mail_spool_object_block
@@ -74,6 +98,15 @@
         (typeattributeset usersubject_mail_spool_type var_spool_object)
 )
 
+(block usersubject_maintains_mail_spool_object_block
+    (blockabstract usersubject_maintains_mail_spool_object_block)
+        (blockinherit usersubject_mail_spool_object_block)
+
+        (allow common_subject var_spool_object rw_file_perms)
+
+        (roletype r var_spool_object)
+)
+
 (block usersubject_pty_object_block
     (blockabstract usersubject_pty_object_block)
         (blockinherit term_pty_object_block)
@@ -81,11 +114,29 @@
         (typeattributeset usersubject_pty_type pty_object)
 )
 
+(block usersubject_maintains_pty_object_block
+    (blockabstract usersubject_maintains_pty_object_block)
+        (blockinherit usersubject_pty_object_block)
+
+        (call term_user_pty (common_subject pty_object))
+
+        (roletype r pty_object)
+)
+
 (block usersubject_tty_object_block
     (blockabstract usersubject_tty_object_block)
         (blockinherit term_tty_object_block)
 
         (typeattributeset usersubject_tty_type tty_object)
+)
+
+(block usersubject_maintains_tty_object_block
+    (blockabstract usersubject_maintains_tty_object_block)
+        (blockinherit usersubject_tty_object_block)
+
+        (call term_user_tty (common_subject tty_object))
+
+        (roletype r tty_object)
 )
 
 (type home_user)
