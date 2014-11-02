@@ -3,8 +3,8 @@
 (roleattribute sudo_admin_role)
 (typeattribute sudo_admin_type)
 
-(typeattribute sudo_subject_type)
 (typeattribute sudo_object_type)
+(typeattribute sudo_subject_type)
 
 (roleattribute visudo_role)
 (typeattribute visudo_subject_type)
@@ -132,7 +132,7 @@
         (ARG2 visudo.bin_object ARG3))
     (call bin_auto_subtrans (ARG3 ARG2))
     (call sudo_etc_filetrans_etc_sudo
-        (ARG1 ARG2 file "*")))
+        (ARG1 ARG3 file "*")))
 
 (macro sudo_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
