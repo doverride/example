@@ -1,0 +1,124 @@
+(roleattribute ntp_role)
+
+(roleattribute ntp_admin_role)
+(typeattribute ntp_admin_type)
+
+(typeattribute ntp_object_type)
+(typeattribute ntp_subject_type)
+
+(block ntp
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset ntp_subject_type common_subject)
+
+    (roletype ntp_role common_subject)
+
+    (context bin_ntp (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/chronyc" file bin_ntp)
+    (filecon "/usr/libexec/chrony-helper" file bin_ntp)
+
+    (optional ntp_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional ntp_optional_unconfined
+        (call unconfined (ntp_role common_subject)))
+)
+
+(block ntp_cmdmon
+    (blockinherit net_reserved_port_object_block)
+
+    (context port_ntp_cmdmon (sys.u sys.r reserved_port_object
+        (systemlow systemlow)))
+    (portcon "tcp" 323 port_ntp_cmdmon)
+    (portcon "udp" 323 port_ntp_cmdmon)
+)
+
+(block ntpd
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset ntp_object_type unit_object)
+    (typeattributeset ntp_subject_type common_subject)
+
+    (context bin_ntpd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/chronyd" file bin_ntpd)
+
+    (context unit_ntpd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*chrony-wait.*" file unit_ntpd)
+    (filecon "/usr/lib/systemd/system/[^/]*chronyd.*" file unit_ntpd)
+
+    (blockinherit file_etc_object_block)
+
+    (typeattributeset ntp_object_type etc_object)
+
+    (context etc_ntpd (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/chrony\.conf" file etc_ntpd)
+    (filecon "/etc/chrony\.keys" file etc_ntpd)
+    (filecon "/etc/sysconfig/chronyd" file etc_ntpd)
+
+    (blockinherit systemd_maintains_single_pid_file_block)
+
+    (typeattributeset ntp_object_type run_object)
+
+    (context run_ntpd (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/chronyd\.pid" file run_ntpd)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset ntp_object_type var_lib_object)
+
+    (context var_lib_ntpd (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/chrony(/.*)?" any var_lib_ntpd)
+
+    (blockinherit file_maintains_var_log_dirs_and_files_block)
+
+    (typeattributeset ntp_object_type var_log_object)
+
+    (context var_log_ntpd (sys.u sys.r var_log_object (systemlow systemlow)))
+    (filecon "/var/log/chrony(/.*)?" any var_log_ntpd)
+
+    (blockinherit net_maintains_udp_reserved_listening_port_block)
+
+    (context port_ntpd (sys.u sys.r reserved_port_object (systemlow systemlow)))
+    (portcon "tcp" 123 port_ntpd)
+    (portcon "udp" 123 port_ntpd)
+
+    (optional ntpd_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow ntp_admin_type self (capability (kill sys_ptrace)))
+(allow ntp_admin_type ssh_subject_type signal_perms)
+(allow ntp_admin_type ssh_subject_type (process (ptrace)))
+(call ps_subject_pattern (ntp_admin_type ntp_subject_type))
+(allow ntp_admin_type ntpd.unit_object (service (all)))
+(allow ntp_admin_type ntp_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype ntp_admin_role ntp_object_type)
+
+(macro ntp_exec ((type ARG1))
+    (call can_exec (ARG1 ntp.common_subject)))
+
+(macro ntp_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 ntp.bin_object ntp.common_subject)))
+
+(macro ntp_run ((type ARG1)(role ARG2))
+    (call ntp_auto_subtrans (ARG1))
+    (roleattributeset ntp_role ARG2))
+
+(macro ntp_udp_bind_ntpd_port ((type ARG1))
+    (allow ARG1 self (capability (net_bind_service)))
+    (allow ARG1 self create_udp_socket_perms)
+    (allow ARG1 ntpd.reserved_port_object
+        (udp_socket (name_bind))))
+
+(macro ntp_udp_bind_ntp_cmdmon_port ((type ARG1))
+    (allow ARG1 self (capability (net_bind_service)))
+    (allow ARG1 self create_udp_socket_perms)
+    (allow ARG1 ntp_cmdmon.reserved_port_object
+        (udp_socket (name_bind))))
+
+(macro ntp_admin ((role ARG1)(type ARG2))
+    (roleattributeset ntp_admin_role ARG1)
+    (typeattributeset ntp_admin_type ARG2))
