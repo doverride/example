@@ -88,8 +88,8 @@
 )
 
 (allow ntp_admin_type self (capability (kill sys_ptrace)))
-(allow ntp_admin_type ssh_subject_type signal_perms)
-(allow ntp_admin_type ssh_subject_type (process (ptrace)))
+(allow ntp_admin_type ntp_subject_type signal_perms)
+(allow ntp_admin_type ntp_subject_type (process (ptrace)))
 (call ps_subject_pattern (ntp_admin_type ntp_subject_type))
 (allow ntp_admin_type ntpd.unit_object (service (all)))
 (allow ntp_admin_type ntp_object_type (all_file_objects
