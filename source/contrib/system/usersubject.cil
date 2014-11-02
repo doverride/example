@@ -60,8 +60,8 @@
         (call usersubject_home_type (home_object))
 )
 
-(block usersubject_maintains_home_objects_block
-    (blockabstract usersubject_maintains_home_objects_block)
+(block usersubject_maintains_home_files_block
+    (blockabstract usersubject_maintains_home_files_block)
         (blockinherit usersubject_home_object_block)
 
         (allow common_subject home_object (all_file_objects
@@ -78,8 +78,8 @@
         (typeattributeset usersubject_tmpfs_type tmpfs_object)
 )
 
-(block usersubject_maintains_tmpfs_objects_block
-    (blockabstract usersubject_maintains_tmpfs_objects_block)
+(block usersubject_maintains_tmpfs_files_block
+    (blockabstract usersubject_maintains_tmpfs_files_block)
         (blockinherit usersubject_tmpfs_object_block)
 
         (allow common_subject tmpfs_object (all_file_objects
@@ -98,8 +98,8 @@
         (typeattributeset usersubject_mail_spool_type var_spool_object)
 )
 
-(block usersubject_maintains_mail_spool_object_block
-    (blockabstract usersubject_maintains_mail_spool_object_block)
+(block usersubject_maintains_single_mail_spool_file_block
+    (blockabstract usersubject_maintains_single_mail_spool_file_block)
         (blockinherit usersubject_mail_spool_object_block)
 
         (allow common_subject var_spool_object rw_file_perms)
