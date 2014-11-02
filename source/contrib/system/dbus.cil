@@ -9,6 +9,15 @@
 (typeattribute dbus_system_client_type)
 (typeattribute dbus_unconfined_type)
 
+(block dbus_maintains_single_dbus_file_block
+    (blockabstract dbus_maintains_single_dbus_file_block)
+        (blockinherit dbus_object_block)
+
+        (allow common_subject dbus_object read_file_perms)
+
+        (call dbus_search_config (common_subject))
+)
+
 (block dbus_object_block
     (blockabstract dbus_object_block)
         (type dbus_object)
@@ -27,6 +36,7 @@
     (filecon "/usr/lib/systemd/system/[^/]*dbus.*" file unit_dbusd)
 
     (blockinherit file_run_object_block)
+
     (typeattributeset dbus_object_type run_object)
 
     (call systemd_socket_activated_object_type (run_object))
@@ -35,6 +45,7 @@
     (filecon "/var/run/dbus(/.*)?" any run_dbusd)
 
     (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
     (typeattributeset dbus_object_type var_lib_object)
 
     (context var_lib_dbusd (sys.u sys.r var_lib_object (systemlow systemlow)))
@@ -98,6 +109,10 @@
     (call file_search_var_lib (ARG1))
     (call read_files_pattern
         (ARG1 dbusd.var_lib_object dbusd.var_lib_object)))
+
+(macro dbus_search_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 etc_dbus search_dir_perms))
 
 (macro dbus_stream_connect_system ((type ARG1))
     (call file_search_run (ARG1))

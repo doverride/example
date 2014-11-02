@@ -22,13 +22,16 @@
         (typeattributeset ssh_unit_object_type unit_object)
         (typeattributeset ssh_subject_type common_subject)
 
-        (blockinherit file_etc_object_block)
+        (blockinherit file_maintains_etc_dirs_and_files_block)
+
         (typeattributeset ssh_object_type etc_object)
 
-        (blockinherit auth_pam_object_block)
+        (blockinherit auth_maintains_single_pam_file_block)
+
         (typeattributeset ssh_object_type pam_object)
 
         (blockinherit file_maintains_single_run_file_block)
+
         (typeattributeset ssh_object_type run_object)
 
         (blockinherit ssh_sshd_pty_object_block)

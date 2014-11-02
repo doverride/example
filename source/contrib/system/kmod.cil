@@ -6,6 +6,7 @@
 
 (block kmod
     (blockinherit systemd_daemon_block)
+
     (typeattributeset kmod_object_type unit_object)
 
     (roletype kmod_role common_subject)
@@ -16,7 +17,8 @@
     (context unit_kmod (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*kmod-static-nodes.*" file unit_kmod)
 
-    (blockinherit file_etc_object_block)
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
     (typeattributeset kmod_object_type etc_object)
 
     (context etc_kmod (sys.u sys.r etc_object (systemlow systemlow)))
@@ -25,29 +27,31 @@
     (filecon "/usr/lib/modules/modprobe\.conf" file etc_kmod)
 
     (blockinherit file_run_object_block)
+
     (typeattributeset kmod_object_type run_object)
 
     (context run_kmod (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/run/tmpfiles\.d/kmod\.conf" file run_kmod)
 
     (blockinherit file_usr_object_block)
+
     (typeattributeset kmod_object_type usr_object)
 
     (context usr_kmod (sys.u sys.r usr_object (systemlow systemlow)))
     (filecon "/usr/lib/modules/[^/]+/modules\..+" file usr_kmod)
 
-    (allow kmod_admin_type self (capability (kill sys_ptrace)))
-    (allow kmod_admin_type common_subject signal_perms)
-    (allow kmod_admin_type common_subject (process (ptrace)))
-    (call ps_subject_pattern (kmod_admin_type common_subject))
-    (allow kmod_admin_type unit_object (service (all)))
-    (allow kmod_admin_type kmod_object_type (all_file_objects
-        (not_mounton_entrypoint_and_execmod)))
-    (roletype kmod_admin_role kmod_object_type)
-
     (optional kmod_optional_unconfined
         (call unconfined (kmod_role common_subject)))
 )
+
+(allow kmod_admin_type self (capability (kill sys_ptrace)))
+(allow kmod_admin_type kmod.common_subject signal_perms)
+(allow kmod_admin_type kmod.common_subject (process (ptrace)))
+(call ps_subject_pattern (kmod_admin_type kmod.common_subject))
+(allow kmod_admin_type kmod.unit_object (service (all)))
+(allow kmod_admin_type kmod_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype kmod_admin_role kmod_object_type)
 
 (macro kmod_auto_subtrans ((type ARG1))
     (call auto_subject_type_transition_pattern

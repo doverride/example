@@ -47,7 +47,7 @@
     (filecon "/usr/lib/systemd/system/[^/]*chrony-wait.*" file unit_ntpd)
     (filecon "/usr/lib/systemd/system/[^/]*chronyd.*" file unit_ntpd)
 
-    (blockinherit file_etc_object_block)
+    (blockinherit file_maintains_etc_dirs_and_files_block)
 
     (typeattributeset ntp_object_type etc_object)
 
