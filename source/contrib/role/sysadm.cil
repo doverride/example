@@ -33,6 +33,15 @@
         (call unconfined (r common_subject)))
 )
 
+(optional sysadm_optional_visudo
+    (block sysadm_visudo
+        (blockinherit sudo_visudo_subject_block)
+
+        (call sudo_role_template_visudo
+            (sysadm.r sysadm.common_subject common_subject))
+    )
+)
+
 (macro sysadm_roleallow ((role ARG1))
     (roleallow ARG1 sysadm.r))
 

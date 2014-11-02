@@ -32,6 +32,7 @@
     (filecon "/usr/bin/sudo" file bin_sudo)
 
     (blockinherit file_etc_object_block)
+
     (typeattributeset sudo_object_type etc_object)
 
     (context etc_sudo (sys.u sys.r etc_object (systemlow systemlow)))
@@ -40,6 +41,7 @@
     (filecon "/etc/sudoers\.d(/.*)?" any etc_sudo)
 
     (blockinherit auth_pam_object_block)
+
     (typeattributeset sudo_object_type pam_object)
 
     (context pam_sudo (sys.u sys.r pam_object (systemlow systemlow)))
@@ -47,12 +49,14 @@
     (filecon "/etc/pam\.d/sudo-i" file pam_sudo)
 
     (blockinherit file_var_object_block)
+
     (typeattributeset sudo_object_type var_object)
 
     (context var_sudo (sys.u sys.r var_object (systemlow systemlow)))
     (filecon "/var/db/sudo(/.*)?" any var_sudo)
 
     (blockinherit file_run_object_block)
+
     (typeattributeset sudo_object_type run_object)
 
     (context run_sudo (sys.u sys.r run_object (systemlow systemlow)))
@@ -60,15 +64,12 @@
 )
 
 (block visudo
-    (blockinherit app_block)
+    (blockinherit bin_object_block)
+
+    (call app_entry (visudo_subject_type bin_object))
 
     (context bin_visudo (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/visudo" file bin_visudo)
-
-    (call file_etc_filetrans (common_subject sudo.etc_object file "*"))
-
-    (optional visudo_optional_unconfined
-        (call unconfined (visudo_role common_subject)))
 )
 
 (allow sudo_subject_type self (process (setsched)))
@@ -77,12 +78,25 @@
 (allow sudo_subject_type sudo.run_object manage_file_perms)
 (call file_run_filetrans (sudo_subject_type sudo.run_object dir "sudo"))
 
+(allow sudo_subject_type sudo.var_object manage_dir_perms)
+(allow sudo_subject_type sudo.var_object manage_file_perms)
+(call file_var_filetrans (sudo_subject_type sudo.var_object dir "sudo"))
+
 (call subject_role_change_exemption (sudo_subject_type))
+
+(call sudo_read_config_files (sudo_subject_type))
+(call sudo_read_pam_config_files (sudo_subject_type))
 
 (call usersubject_relabel_all_terminals (sudo_subject_type))
 
 (optional sudo_optional_unconfined
     (call unconfined (sudo_role sudo_subject_type)))
+
+(call manage_files_pattern
+    (visudo_subject_type sudo.etc_object sudo.etc_object))
+
+(optional visudo_optional_unconfined
+    (call unconfined (visudo_role visudo_subject_type)))
 
 (allow sudo_admin_type sudo_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
@@ -91,6 +105,9 @@
 (macro sudo_subject_type ((type ARG1))
     (typeattributeset sudo_subject_type ARG1))
 
+(macro sudo_visudo_subject_type ((type ARG1))
+    (typeattributeset visudo_subject_type ARG1))
+
 (macro sudo_exec ((type ARG1))
     (call can_exec (ARG1 sudo.bin_object)))
 
@@ -98,7 +115,8 @@
     (roleattributeset sudo_role ARG1)
     (roletype ARG1 ARG3)
 
-    (call auto_subject_type_transition_pattern (ARG2 sudo.bin_object ARG3))
+    (call auto_subject_type_transition_pattern
+        (ARG2 sudo.bin_object ARG3))
 
     (allow ARG3 ARG2 (process (signal)))
     (allow ARG3 ARG2 (key (search create link write)))
@@ -109,12 +127,29 @@
     (call auth_run_chkpwd (ARG3 ARG1))
 )
 
+(macro sudo_role_template_visudo ((role ARG1)(type ARG2)(type ARG3))
+    (call auto_subject_type_transition_pattern
+        (ARG2 visudo.bin_object ARG3))
+    (call bin_auto_subtrans (ARG3 ARG2))
+    (call sudo_etc_filetrans_etc_sudo
+        (ARG1 ARG2 file "*")))
+
+(macro sudo_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern
+        (ARG1 sudo.etc_object sudo.etc_object)))
+
+(macro sudo_etc_filetrans_etc_sudo ((role ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call file_etc_filetrans (ARG2 sudo.etc_object ARG3 ARG4))
+    (roletype ARG1 sudo.etc_object))
+
+(macro sudo_read_pam_config_files ((type ARG1))
+    (call auth_search_pam_config (ARG1))
+    (allow ARG1 sudo.pam_object read_file_perms))
+
 (macro sudo_send_signal ((type ARG1))
     (allow ARG1 sudo_subject_type (process (signal))))
-
-(macro sudo_visudo_role_template ((role ARG1)(type ARG2)(type ARG3))
-    (call auto_subject_type_transition_pattern (ARG2 visudo.bin_object ARG3))
-    (call bin_auto_subtrans (ARG3 ARG2)))
 
 (macro sudo_admin ((role ARG1)(type ARG2))
     (roleattributeset sudo_admin_role ARG1)
