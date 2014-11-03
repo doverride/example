@@ -21,7 +21,7 @@
 
 (macro hostname_auto_subtrans ((type ARG1))
     (call auto_subject_type_transition_pattern
-        (ARG1 hostname_exec.bin_object hostname.common_subject)))
+        (ARG1 hostname.bin_object hostname.common_subject)))
 
 (macro hostname_run ((type ARG1)(role ARG2))
     (call hostname_auto_subtrans (ARG1))
