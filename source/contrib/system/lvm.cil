@@ -111,15 +111,15 @@
     (call file_etc_type (ARG1))
     (typeattributeset lvm_etc_file_type ARG1))
 
-(macro lvm_exec_lvm ((type ARG1))
+(macro lvm_exec ((type ARG1))
     (call can_exec (ARG1 lvm.bin_object)))
 
-(macro lvm_auto_subtrans_lvm ((type ARG1))
+(macro lvm_auto_subtrans ((type ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 lvm.bin_object lvm.common_subject)))
 
-(macro lvm_run_lvm ((type ARG1)(role ARG2))
-    (call lvm_auto_subtrans_lvm (ARG1))
+(macro lvm_run ((type ARG1)(role ARG2))
+    (call lvm_auto_subtrans (ARG1))
     (roleattributeset lvm_role (ARG2)))
 
 (macro lvm_search_config ((type ARG1))
