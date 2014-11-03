@@ -1,7 +1,7 @@
 (in user
     (blockinherit usersubject_common_login_block)
 
-    (call usersubject_mls (u systemlow systemlow systemhigh))
+    (call usersubject_mls_template (u systemlow systemlow systemhigh))
 
     (context home_user (u r home_user (systemlow mls_systemhigh)))
     (filecon "/home/.*" dir home_user)
