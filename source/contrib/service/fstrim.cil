@@ -1,0 +1,48 @@
+(roleattribute fstrim_role)
+
+(roleattribute fstrim_admin_role)
+(typeattribute fstrim_admin_type)
+
+(typeattribute fstrim_object_type)
+
+(block fstrim
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset fstrim_object_type unit_object)
+
+    (roletype fstrim_role common_subject)
+
+    (context bin_fstrim (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/fstrim.*" file bin_fstrim)
+
+    (context unit_fstrim (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*fstrim.*" file unit_fstrim)
+
+    (optional fstrim_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional fstrim_optional_unconfined
+        (call unconfined (fstrim_role common_subject)))
+)
+
+(allow fstrim_admin_type self (capability (kill sys_ptrace)))
+(allow fstrim_admin_type fstrim.common_subject signal_perms)
+(allow fstrim_admin_type fstrim.common_subject (process (ptrace)))
+(call ps_subject_pattern (fstrim_admin_type fstrim.common_subject))
+(allow fstrim_admin_type fstrim.unit_object (service (all)))
+(allow fstrim_admin_type fstrim_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype fstrim_admin_role fstrim_object_type)
+
+(macro fstrim_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 fstrim.bin_object fstrim.common_subject)))
+
+(macro fstrim_run ((type ARG1)(role ARG2))
+    (call fstrim_auto_subtrans (ARG1))
+    (roleattributeset fstrim_role (ARG2)))
+
+(macro fstrim_admin ((role ARG1)(type ARG1))
+    (roleattributeset fstrim_admin_role ARG1)
+    (typeattributeset fstrim_admin_type ARG2))
