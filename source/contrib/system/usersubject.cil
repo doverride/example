@@ -47,11 +47,11 @@
 
 (block usersubject_object_block
     (blockabstract usersubject_object_block)
-        (blockinherit usersubject_home_object_block)
-        (blockinherit usersubject_mail_spool_object_block)
-        (blockinherit usersubject_tmpfs_object_block)
-        (blockinherit usersubject_pty_object_block)
-        (blockinherit usersubject_tty_object_block)
+        (blockinherit usersubject_maintains_home_files_block)
+        (blockinherit usersubject_maintains_single_mail_spool_file_block)
+        (blockinherit usersubject_maintains_tmpfs_files_block)
+        (blockinherit usersubject_maintains_pty_object_block)
+        (blockinherit usersubject_maintains_tty_object_block)
 )
 
 (block usersubject_home_object_block
