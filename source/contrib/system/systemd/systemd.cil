@@ -89,8 +89,6 @@
     (allow common_subject systemd_pid_object_type delete_file_perms)
     (allow common_subject systemd_pid_object_type read_file_perms)
 
-    (allow common_subject systemd_daemon_subject_type (process (signull)))
-
     (call systemd_rw_unix_stream_sockets (systemd_daemon_subject_type))
     (call systemd_read_state (systemd_daemon_subject_type))
 
