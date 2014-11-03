@@ -1,0 +1,28 @@
+(roleattribute dracut_admin_role)
+(typeattribute dracut_admin_type)
+
+(block dracut_initramfs_restore
+    (blockinherit systemd_daemon_block)
+
+    (context bin_dracut_initramfs_restore (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/dracut/dracut-initramfs-restore" file bin_dracut_initramfs_restore)
+
+    (context unit_dracut_initramfs_restore (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/dracut/modules\.d/.*/dracut-shutdown\.service" file unit_dracut_initramfs_restore)
+
+    (optional dracut_initramfs_restore_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow dracut_admin_type self (capability (kill sys_ptrace)))
+(allow dracut_admin_type dracut_initramfs_restore.common_subject signal_perms)
+(allow dracut_admin_type dracut_initramfs_restore.common_subject (process (ptrace)))
+(call ps_subject_pattern (dracut_admin_type dracut_initramfs_restore.common_subject))
+(allow dracut_admin_type dracut_initramfs_restore.unit_object (service (all)))
+(allow dracut_admin_type dracut_initramfs_restore.unit_object
+    (all_file_objects (not_mounton_entrypoint_and_execmod)))
+(roletype dracut_admin_role dracut_initramfs_restore.unit_object)
+
+(macro dracut_admin ((role ARG1)(type ARG2))
+    (roleattributeset dracut_admin_role ARG1)
+    (typeattributeset dracut_admin_type ARG2))
