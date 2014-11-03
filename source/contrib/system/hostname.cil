@@ -1,0 +1,28 @@
+(roleattribute hostname_role)
+
+(block hostname
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (roletype hostname_role common_subject)
+
+    (context bin_hostname (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/hostname" file bin_hostname)
+
+    (optional hostname_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional hostname_optional_unconfined
+        (call unconfined (hostname_role common_subject)))
+)
+
+(macro hostname_exec ((type ARG1))
+    (call can_exec (ARG1 hostname.bin_object)))
+
+(macro hostname_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 hostname_exec.bin_object hostname.common_subject)))
+
+(macro hostname_run ((type ARG1)(role ARG2))
+    (call hostname_auto_subtrans (ARG1))
+    (roleattributeset hostname_role (ARG2)))
