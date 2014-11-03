@@ -86,10 +86,8 @@
     (allow common_subject systemd_socket_activated_object_type
         relabel_sock_file_perms)
 
-    (call read_files_pattern
-        (common_subject systemd_pid_object_type systemd_pid_object_type))
-    (call delete_files_pattern
-        (common_subject systemd_pid_object_type systemd_pid_object_type))
+    (allow common_subject systemd_pid_object_type delete_file_perms)
+    (allow common_subject systemd_pid_object_type read_file_perms)
 
     (allow common_subject systemd_daemon_subject_type (process (signull)))
 
