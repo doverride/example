@@ -1,0 +1,23 @@
+(roleattribute pcitools_role)
+
+(block pcitools
+    (blockinherit app_block)
+
+    (roletype pcitools_role common_subject)
+
+    (context bin_pcitools (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/lspci" file bin_pcitools)
+    (filecon "/usr/sbin/setpci" file bin_pcitools)
+    (filecon "/usr/sbin/update-pciids" file bin_pcitools)
+
+    (optional pcitools_optional_unconfined
+        (call unconfined (pcitools_role common_subject)))
+)
+
+(macro pcitools_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 pcitools.bin_object pcitools.common_subject)))
+
+(macro pcitools_run ((type ARG1)(role ARG2))
+    (call pcitools_auto_subtrans (ARG1))
+    (typeattributeset pcitools_role ARG2))
