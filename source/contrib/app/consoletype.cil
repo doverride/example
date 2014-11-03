@@ -1,0 +1,24 @@
+(roleattribute consoletype_role)
+
+(block consoletype
+    (blockinherit app_block)
+
+    (roletype consoletype_role common_subject)
+
+    (context bin_consoletype (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/consoletype" file bin_consoletype)
+
+    (optional consoletype_optional_unconfined
+        (call unconfined (consoletype_role common_subject)))
+)
+
+(macro consoletype_exec ((type ARG1))
+    (call can_exec (ARG1 consoletype.bin_object)))
+
+(macro consoletype_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 consoletype.bin_object consoletype.common_subject)))
+
+(macro consoletype_run ((type ARG1)(role ARG2))
+    (call consoletype_auto_subtrans (ARG1))
+    (roleattributeset consoletype_role (ARG2)))
