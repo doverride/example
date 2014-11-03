@@ -1,0 +1,34 @@
+(roleattribute hwclock_role)
+
+(block hwclock
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (roletype hwclock_role common_subject)
+
+    (context bin_hwclock (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/hwclock" file bin_hwclock)
+
+    (blockinherit file_maintains_single_etc_file_block)
+
+    (context etc_hwclock (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/adjtime" file etc_hwclock)
+
+    (optional hwclock_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional hwclock_optional_unconfined
+        (call unconfined (hwclock_role common_subject)))
+)
+
+(macro hwclock_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 hwclock.bin_object hwclock.common_subject)))
+
+(macro hwclock_run ((type ARG1)(role ARG2))
+    (call hwclock_auto_subtrans (ARG1))
+    (roleattributeset hwclock_role (ARG2)))
+
+(macro hwclock_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 hwclock.etc_object read_file_perms))
