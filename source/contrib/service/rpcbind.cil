@@ -1,0 +1,55 @@
+(roleattribute rpcbind_admin_role)
+(typeattribute rpcbind_admin_type)
+
+(typeattribute rpcbind_object_type)
+
+(block rpcbind
+    (blockinherit systemd_daemon_socket_activated_block)
+
+    (typeattributeset rpcbind_object_type unit_object)
+
+    (context bin_rpcbind (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/rpcbind" file bin_rpcbind)
+
+    (context unit_rpcbind (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*rpcbind.*" file unit_rpcbind)
+
+    (blockinherit file_maintains_single_etc_file_block)
+
+    (typeattributeset rpcbind_object_type etc_object)
+
+    (context etc_rpcbind (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/sysconfig/rpcbind" file etc_rpcbind)
+
+    (blockinherit file_maintains_single_run_sock_file_block)
+
+    (typeattributeset rpcbind_object_type run_object)
+
+    (call systemd_socket_activated_object_type (run_object))
+
+    (context run_rpcbind (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/rpcbind\.sock" socket run_rpcbind)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset rpcbind_object_type var_lib_object)
+
+    (context var_lib_rpcbind (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/rpcbind(/.*)?" any var_lib_rpcbind)
+
+    (optional rpcbind_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow rpcbind_admin_type self (capability (kill sys_ptrace)))
+(allow rpcbind_admin_type rpcbind.common_subject signal_perms)
+(allow rpcbind_admin_type rpcbind.common_subject (process (ptrace)))
+(call ps_subject_pattern (rpcbind_admin_type rpcbind.common_subject))
+(allow rpcbind_admin_type rpcbind.unit_object (service (all)))
+(allow rpcbind_admin_type rpcbind_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype rpcbind_admin_role rpcbind_object_type)
+
+(macro rpcbind_admin ((role ARG1)(type ARG2))
+    (roleattributeset rpcbind_admin_role ARG1)
+    (typeattributeset rpcbind_admin_type ARG2))
