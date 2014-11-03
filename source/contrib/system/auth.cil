@@ -214,6 +214,7 @@
 
 (type etc_pam)
 (call file_etc_type (etc_pam))
+
 (typeattributeset auth_pam_etc_file_type etc_pam)
 
 (context etc_pam (sys.u sys.r etc_pam (systemlow systemlow)))

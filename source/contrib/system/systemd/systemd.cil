@@ -29,6 +29,8 @@
 (block systemd_unit_object_block
     (blockabstract systemd_unit_object_block)
         (type unit_object)
+        (call file_type (unit_object))
+
         (call systemd_unit_object_type (unit_object))
 )
 
@@ -131,11 +133,9 @@
     status start stop undefined enable disable reload)))
 
 (macro systemd_unit_object_type ((type ARG1))
-    (call file_type (ARG1))
     (typeattributeset systemd_unit_object_type ARG1))
 
 (macro systemd_pid_object_type ((type ARG1))
-    (call file_run_type (ARG1))
     (typeattributeset systemd_pid_object_type ARG1))
 
 (macro systemd_auto_subtrans ((type ARG1))
