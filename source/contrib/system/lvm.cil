@@ -34,6 +34,8 @@
     (filecon "/usr/lib/systemd/system/blk-availability.*" file unit_lvm)
     (filecon "/usr/lib/systemd/system/lvm2-.*" file unit_lvm)
 
+    (allow common_subject self (process (setsched)))
+
     (call subject_object_identity_change_exemption (common_subject))
 
     (optional lvm_optional_app
