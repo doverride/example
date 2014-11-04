@@ -106,6 +106,17 @@
         (call file_run_filetrans (common_subject run_object file "*"))
 )
 
+(block file_maintains_run_file_and_sock_file_block
+    (blockabstract file_maintains_run_file_and_sock_file_block)
+        (blockinherit file_run_object_block)
+
+        (allow common_subject run_object manage_file_perms)
+        (allow common_subject run_object manage_sock_file_perms)
+
+        (call file_run_filetrans (common_subject run_object file "*"))
+        (call file_run_filetrans (common_subject run_object sock_file "*"))
+)
+
 (block file_maintains_single_run_sock_file_block
     (blockabstract file_maintains_single_run_sock_file_block)
         (blockinherit file_run_object_block)

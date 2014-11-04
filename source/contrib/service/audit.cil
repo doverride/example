@@ -1,0 +1,204 @@
+(roleattribute auditctl_role)
+(roleattribute augenrules_role)
+
+(roleattribute audit_admin_role)
+(typeattribute audit_admin_type)
+
+(typeattribute audit_client_subject_type)
+
+(typeattribute audit_audisp_daemon_type)
+
+(typeattribute audit_object_type)
+(typeattribute audit_subject_type)
+
+(block audit_audisp_daemon_block
+    (blockabstract audit_audisp_daemon_block)
+        (blockinherit subject_system_entry_block)
+
+        (call auto_subject_type_transition_pattern (audispd.common_subject bin_object common_subject))
+        (typeattributeset audit_audisp_daemon_type common_subject)
+)
+
+(block audispd
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset audit_subject_type common_subject)
+
+    (context bin_audispd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/audispd" file bin_audispd)
+
+    (blockinherit file_maintains_single_run_sock_file_block)
+
+    (typeattributeset audit_object_type run_object)
+
+    (context run_audispd (sys.u sys.r run_object (mls_systemhigh mls_systemhigh)))
+    (filecon "/var/run/audispd_events" socket run_audispd)
+
+    (allow common_subject audit_audisp_daemon_type (process (sigkill sigstop signull signal)))
+
+    (optional audispd_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(block auditd
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset audit_object_type unit_object)
+    (typeattributeset audit_subject_type common_subject)
+
+    (context bin_auditd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/auditd" file bin_auditd)
+
+    (context unit_auditd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*auditd.*" file unit_auditd)
+
+    (blockinherit file_maintains_run_file_and_sock_file_block)
+
+    (typeattributeset audit_object_type run_object)
+
+    (context run_auditd (sys.u sys.r run_object (mls_systemhigh mls_systemhigh)))
+    (filecon "/var/run/auditd\.pid" file run_auditd)
+    (filecon "/var/run/auditd_sock" socket run_auditd)
+    (filecon "/var/run/audit_events" socket run_auditd)
+
+    (allow common_subject self (process (setsched)))
+    (allow common_subject self (capability (audit_control sys_nice sys_resource)))
+    (allow common_subject self create_netlink_audit_socket_perms)
+
+    (call file_var_log_filetrans (common_subject var_log_audit dir "*"))
+
+    (call audit_auto_subtrans_audispd (common_subject))
+
+    (optional auditd_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(block auditctl
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset audit_subject_type common_subject)
+
+    (roletype auditctl_role common_subject)
+
+    (context bin_auditctl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/auditctl" file bin_auditctl)
+
+    (optional auditctl_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional auditctl_optional_unconfined
+        (call unconfined (auditctl_role common_subject)))
+)
+
+(block augenrules
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset audit_subject_type common_subject)
+
+    (roletype augenrules_role common_subject)
+
+    (context bin_augenrules (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/augenrules" file bin_augenrules)
+
+    (optional augenrules_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional augenrules_optional_unconfined
+        (call unconfined (augenrules_role common_subject)))
+)
+
+(type etc_audisp)
+(call file_sec_type (etc_audisp))
+
+(typeattributeset audit_object_type etc_audisp)
+
+(context etc_audisp (sys.u sys.r etc_audisp (mls_systemhigh mls_systemhigh)))
+(filecon "/etc/audisp(/.*)?" any etc_audisp)
+
+(type etc_audit)
+(call file_sec_type (etc_audit))
+
+(typeattributeset audit_object_type etc_audit)
+
+(context etc_audit (sys.u sys.r etc_audit (mls_systemhigh mls_systemhigh)))
+(filecon "/etc/audit(/.*)?" any etc_audit)
+
+(type var_log_audit)
+(call file_sec_type (var_log_audit))
+(call sys_mountpoint_type (var_log_audit))
+
+(typeattributeset audit_object_type var_log_audit)
+
+(context var_log_audit (sys.u sys.r var_log_audit (mls_systemhigh mls_systemhigh)))
+(filecon "/var/log/audit(/.*)?" any var_log_audit)
+
+(call audit_rw_audispd_unix_stream_sockets (audit_audisp_daemon_type))
+(call audit_use_fd_auditd (audit_audisp_daemon_type))
+
+(allow audit_client_subject_type self (capability (audit_write)))
+(allow audit_client_subject_type self r_netlink_audit_socket_perms)
+(allow audit_client_subject_type self (netlink_audit_socket (nlmsg_relay)))
+
+(typeattributeset audit_subject_type audit_audisp_daemon_type)
+
+(allow audit_admin_type self (capability (kill sys_ptrace)))
+(allow audit_admin_type audit_subject_type signal_perms)
+(allow audit_admin_type audit_subject_type (process (ptrace)))
+(call ps_subject_pattern (audit_admin_type audit_subject_type))
+(allow audit_admin_type auditd.unit_object (service (all)))
+(allow audit_admin_type audit_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype audit_admin_role audit_object_type)
+
+(macro audit_client ((type ARG1))
+    (typeattributeset audit_client_subject_type (ARG1)))
+
+(macro audit_set_loginuid ((type ARG1))
+    (allow ARG1 self (capability (audit_control)))
+    (allow ARG1 self r_netlink_audit_socket_perms)
+    (allow ARG1 self (netlink_audit_socket (nlmsg_relay))))
+
+(macro audit_set_tty_audit ((type ARG1))
+    (allow ARG1 self r_netlink_audit_socket_perms)
+    (allow ARG1 self (netlink_audit_socket (nlmsg_tty_audit))))
+
+(macro audit_set_parameters ((type ARG1))
+    (allow ARG1 self (capability (audit_write audit_control)))
+    (allow ARG1 self create_netlink_audit_socket_perms)
+    (allow ARG1 self (netlink_audit_socket (nlmsg_relay))))
+
+(macro audit_auto_subtrans_audispd ((type ARG1))
+    (call audit_send_signal_audispd (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 audispd.bin_object audispd.common_subject)))
+
+(macro audit_auto_subtrans_auditctl ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 auditctl.bin_object auditctl.common_subject)))
+
+(macro audit_run_auditctl ((type ARG1)(role ARG2))
+    (call audit_auto_subtrans_auditctl (ARG1))
+    (roleattributeset auditctl_role (ARG2)))
+
+(macro audit_auto_subtrans_augenrules ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 augenrules.bin_object augenrules.common_subject)))
+
+(macro audit_run_augenrules ((type ARG1)(role ARG2))
+    (call audit_auto_subtrans_augenrules (ARG1))
+    (roleattributeset augenrules_role (ARG2)))
+
+(macro audit_rw_audispd_unix_stream_sockets ((type ARG1))
+    (allow ARG1 audispd.common_subject rw_unix_stream_socket_perms))
+
+(macro audit_send_signal_audispd ((type ARG1))
+    (allow ARG1 audispd.common_subject (process (signal))))
+
+(macro audit_use_fd_auditd ((type ARG1))
+    (allow ARG1 auditd.common_subject (fd (use))))
+
+(macro audit_admin ((role ARG1)(type ARG2))
+    (roleattributeset audit_admin_role ARG1)
+    (typeattributeset audit_admin_type ARG2))
