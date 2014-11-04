@@ -616,6 +616,8 @@
 (filecon "/var/spool/.*" any var_spool)
 (filecon "/var/spool" dir var_spool)
 
+(filecon "/var/mail" symlink var_spool)
+
 (type var_tmp)
 (call file_tmp_type (var_tmp))
 (call sys_mountpoint_type (var_tmp))
