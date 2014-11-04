@@ -70,9 +70,6 @@
 
     (typeattributeset lvm_object_type run_object)
 
-    (call systemd_pid_object_type (run_object))
-    (call systemd_socket_activated_object_type (run_object))
-
     (context run_lvmetad (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/lvm(/.*)?" any run_lvmetad)
     (filecon "/var/run/lvmetad\.pid" file run_lvmetad)
@@ -83,6 +80,17 @@
 
     (context run_lock_lvmetad (sys.u sys.r run_lock_object (systemlow systemlow)))
     (filecon "/run/lock/lvm(/.*)?" any run_lock_lvmetad)
+
+    (call systemd_pid_object_type (run_object))
+
+    (allow common_subject run_object manage_file_perms)
+    (call file_run_filetrans (common_subject run_object file "*"))
+
+    (call systemd_socket_activated_object_type (run_object))
+
+    (allow common_subject run_object manage_dir_perms)
+    (allow common_subject run_object manage_sock_file_perms)
+    (call file_run_filetrans (common_subject run_object dir "*"))
 
     (optional lvmetad_optional_unconfined
         (call unconfined (sys.r common_subject)))
