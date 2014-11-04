@@ -40,11 +40,11 @@
     (filecon "/etc/sudoers\.tmp" file etc_sudo)
     (filecon "/etc/sudoers\.d(/.*)?" any etc_sudo)
 
-    (blockinherit auth_pam_object_block)
+    (blockinherit auth_pam_etc_object_block)
 
-    (typeattributeset sudo_object_type pam_object)
+    (typeattributeset sudo_object_type pam_etc_object)
 
-    (context pam_sudo (sys.u sys.r pam_object (systemlow systemlow)))
+    (context pam_sudo (sys.u sys.r pam_etc_object (systemlow systemlow)))
     (filecon "/etc/pam\.d/sudo" file pam_sudo)
     (filecon "/etc/pam\.d/sudo-i" file pam_sudo)
 
@@ -146,7 +146,7 @@
 
 (macro sudo_read_pam_config_files ((type ARG1))
     (call auth_search_pam_config (ARG1))
-    (allow ARG1 sudo.pam_object read_file_perms))
+    (allow ARG1 sudo.pam_etc_object read_file_perms))
 
 (macro sudo_send_signal ((type ARG1))
     (allow ARG1 sudo_subject_type (process (signal))))

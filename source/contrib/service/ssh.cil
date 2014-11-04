@@ -26,9 +26,9 @@
 
         (typeattributeset ssh_object_type etc_object)
 
-        (blockinherit auth_maintains_single_pam_file_block)
+        (blockinherit auth_maintains_single_pam_etc_file_block)
 
-        (typeattributeset ssh_object_type pam_object)
+        (typeattributeset ssh_object_type pam_etc_object)
 
         (blockinherit file_maintains_single_run_file_block)
 
@@ -109,7 +109,7 @@
     (filecon "/etc/ssh(/.*)?" any etc_sshd)
     (filecon "/etc/sysconfig/sshd" file etc_sshd)
 
-    (context pam_sshd (sys.u sys.r pam_object (systemlow systemlow)))
+    (context pam_sshd (sys.u sys.r pam_etc_object (systemlow systemlow)))
     (filecon "/etc/pam\.d/sshd" file pam_sshd)
 
     (context run_sshd (sys.u sys.r run_object (systemlow systemlow)))

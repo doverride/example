@@ -17,19 +17,19 @@
 
 (typeattribute auth_unconfined_type)
 
-(block auth_maintains_single_pam_file_block
-    (blockabstract auth_maintains_single_pam_file_block)
-        (blockinherit auth_pam_object_block)
+(block auth_maintains_single_pam_etc_file_block
+    (blockabstract auth_maintains_single_pam_etc_file_block)
+        (blockinherit auth_pam_etc_object_block)
 
-        (allow common_subject pam_object read_file_perms)
+        (allow common_subject pam_etc_object read_file_perms)
 
         (call auth_search_pam_config (common_subject))
 )
 
-(block auth_pam_object_block
-    (blockabstract auth_pam_object_block)
-        (type pam_object)
-        (call auth_pam_etc_file_type (pam_object))
+(block auth_pam_etc_object_block
+    (blockabstract auth_pam_etc_object_block)
+        (type pam_etc_object)
+        (call auth_pam_etc_file_type (pam_etc_object))
 )
 
 (optional auth_optional_unconfined
@@ -46,9 +46,9 @@
     (filecon "/usr/sbin/authconfig" file bin_authconfig)
     (filecon "/usr/share/authconfig/authconfig\.py" file bin_authconfig)
 
-    (blockinherit auth_maintains_single_pam_file_block)
+    (blockinherit auth_maintains_single_pam_etc_file_block)
 
-    (context pam_authconfig (sys.u sys.r pam_object (systemlow systemlow)))
+    (context pam_authconfig (sys.u sys.r pam_etc_object (systemlow systemlow)))
     (filecon "/etc/pam\.d/fingerprint-auth-ac" file pam_authconfig)
     (filecon "/etc/pam\.d/password-auth-ac" file pam_authconfig)
     (filecon "/etc/pam\.d/postlogin-ac" file pam_authconfig)
@@ -394,7 +394,7 @@
 
 (macro auth_read_authconfig_pam_config_files ((type ARG1))
     (call file_search_etc (ARG1))
-    (call read_files_pattern (ARG1 etc_pam authconfig.pam_object)))
+    (call read_files_pattern (ARG1 etc_pam authconfig.pam_etc_object)))
 
 (macro auth_list_pam_config ((type ARG1))
     (call file_search_etc (ARG1))

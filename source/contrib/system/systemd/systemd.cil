@@ -1,3 +1,5 @@
+(roleattribute systemctl_role)
+
 (roleattribute systemd_admin_role)
 (typeattribute systemd_admin_type)
 
@@ -9,6 +11,11 @@
 (typeattribute systemd_socket_activated_object_type)
 (typeattribute systemd_socket_activated_subject_type)
 (typeattribute systemd_pid_object_type)
+
+(typeattribute systemd_systemctl_client_type)
+
+(typeattribute systemd_run_object_type)
+(typeattribute systemd_var_lib_object_type)
 
 (typeattribute systemd_unconfined_type)
 
@@ -26,12 +33,94 @@
         (typeattributeset systemd_pid_object_type run_object)
 )
 
+(block systemd_maintains_single_run_file_block
+    (blockabstract systemd_maintains_single_run_file_block)
+        (blockinherit systemd_run_object_block)
+
+        (allow common_subject systemd_run_object manage_file_perms)
+
+        (call systemd_run_filetrans (common_subject systemd_run_object file "*"))
+)
+
+(block systemd_maintains_run_dirs_and_files_block
+    (blockabstract systemd_maintains_run_dirs_and_files_block)
+        (blockinherit systemd_run_object_block)
+
+        (allow common_subject systemd_run_object manage_file_perms)
+        (allow common_subject systemd_run_object manage_dir_perms)
+
+        (call systemd_run_filetrans (common_subject systemd_run_object dir "*"))
+)
+
+(block systemd_maintains_run_objects_block
+    (blockabstract systemd_maintains_run_objects_block)
+        (blockinherit systemd_run_object_block)
+
+        (allow common_subject systemd_run_object manage_file_perms)
+        (allow common_subject systemd_run_object manage_dir_perms)
+        (allow common_subject systemd_run_object manage_lnk_file_perms)
+        (allow common_subject systemd_run_object manage_sock_file_perms)
+        (allow common_subject systemd_run_object manage_fifo_file_perms)
+
+        (call systemd_run_filetrans (common_subject systemd_run_object dir "*"))
+)
+
+(block systemd_run_object_block
+    (blockabstract systemd_run_object_block)
+        (type systemd_run_object)
+        (call file_run_type (systemd_run_object))
+
+        (call systemd_run_object_type (systemd_run_object))
+)
+
 (block systemd_unit_object_block
     (blockabstract systemd_unit_object_block)
         (type unit_object)
         (call file_type (unit_object))
 
         (call systemd_unit_object_type (unit_object))
+)
+
+(block systemd_maintains_single_var_lib_file_block
+    (blockabstract systemd_maintains_single_var_lib_file_block)
+        (blockinherit systemd_var_lib_object_block)
+
+        (allow common_subject systemd_var_lib_object manage_file_perms)
+
+        (call systemd_var_lib_filetrans (common_subject systemd_var_lib_object file "*"))
+)
+
+(block systemd_maintains_var_lib_dirs_and_files_block
+    (blockabstract systemd_maintains_var_lib_dirs_and_files_block)
+        (blockinherit systemd_var_lib_object_block)
+
+        (allow common_subject systemd_var_lib_object manage_file_perms)
+        (allow common_subject systemd_var_lib_object manage_dir_perms)
+
+        (call systemd_var_lib_filetrans (common_subject systemd_var_lib_object dir "*"))
+)
+
+(block systemd_maintains_var_lib_objects_block
+    (blockabstract systemd_maintains_var_lib_objects_block)
+        (blockinherit systemd_var_lib_object_block)
+
+        (allow common_subject systemd_var_lib_object manage_file_perms)
+        (allow common_subject systemd_var_lib_object manage_dir_perms)
+        (allow common_subject systemd_var_lib_object manage_lnk_file_perms)
+        (allow common_subject systemd_var_lib_object manage_sock_file_perms)
+        (allow common_subject systemd_var_lib_object manage_fifo_file_perms)
+
+        (call systemd_var_lib_filetrans (common_subject systemd_var_lib_object dir "*"))
+)
+
+
+
+(block systemd_var_lib_object_block
+    (blockabstract systemd_var_lib_object_block)
+        (type systemd_var_lib_object)
+        (call file_var_lib_type (systemd_var_lib_object))
+
+        (call systemd_var_lib_object_type (systemd_var_lib_object))
 )
 
 (block systemd_daemon_no_unit_block
@@ -66,6 +155,28 @@
     (context bin_systemd (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/systemd" file bin_systemd)
 
+    (blockinherit auth_maintains_single_pam_etc_file_block)
+
+    (context pam_systemd (sys.u sys.r pam_etc_object (systemlow systemlow)))
+    (filecon "/etc/pam\.d/systemd-user" file pam_systemd)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (context dbus_systemd (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.systemd1\.conf" file dbus_systemd)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (context etc_systemd (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/systemd(/.*)?" any etc_systemd)
+    (filecon "/etc/yum/protected\.d/systemd\.conf" file etc_systemd)
+    (filecon "/etc/xdg/systemd(/.*)?" any etc_systemd)
+
+    (blockinherit polkit_maintains_single_etc_file_block)
+
+    (context polkit_systemd (sys.u sys.r polkit_etc_object (systemlow systemlow)))
+    (filecon "/usr/share/polkit-1/actions/[^/]*systemd1\.policy" file polkit_systemd)
+
     (allow common_subject self (process (setsched)))
 
     (allow common_subject systemd_socket_activated_subject_type
@@ -96,6 +207,69 @@
         (call unconfined (sys.r common_subject)))
 )
 
+(block systemd_helper
+    (blockinherit bin_object_block)
+
+    (context bin_systemd_helper (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/[^/]*" file bin_systemd_helper)
+    (filecon "/usr/lib/systemd/system-generators/[^/]*" file bin_systemd_helper)
+    (filecon "/etc/mcelog/mcelog\.setup" file bin_systemd_helper) ; BUG
+)
+
+(block systemctl
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset systemd_systemctl_client_type common_subject)
+
+    (roletype systemctl_role common_subject)
+
+    (context bin_systemctl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/systemctl" file bin_systemctl)
+
+    (optional systemctl_optional_app
+        (call app_subject_type (common_subject))
+        (call app_exec_object_type (common_subject)))
+
+    (optional systemctl_optional_unconfined
+        (call unconfined (systemctl_role common_subject)))
+)
+
+(block systemd_daemon
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (call bin_entry (common_subject))
+    (call bin_shell_entry (common_subject))
+
+    (call bin_auto_subtrans (systemd.common_subject common_subject))
+    (call bin_shell_auto_subtrans (systemd.common_subject common_subject))
+
+    (call systemd_send_signal (common_subject))
+    (call systemd_send_signal_all_systemd_daemon_subjects (common_subject))
+
+    (optional systemd_daemon_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(block systemd_kexec
+    (blockinherit systemd_unit_object_block)
+
+    (context unit_systemd_kexec (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*systemd-kexec.*" file unit_systemd_kexec)
+)
+
+(block systemd_power
+    (blockinherit systemd_unit_object_block)
+
+    (context unit_systemd_power (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*halt.*" file unit_systemd_power)
+    (filecon "/usr/lib/systemd/system/[^/]*hibernate.*" file unit_systemd_power)
+    (filecon "/usr/lib/systemd/system/[^/]*power.*" file unit_systemd_power)
+    (filecon "/usr/lib/systemd/system/[^/]*reboot.*" file unit_systemd_power)
+    (filecon "/usr/lib/systemd/system/[^/]*sleep.*" file unit_systemd_power)
+    (filecon "/usr/lib/systemd/system/[^/]*shutdown.*" file unit_systemd_power)
+    (filecon "/usr/lib/systemd/system/[^/]*suspend.*" file unit_systemd_power)
+)
+
 (type systemd_unit)
 (call file_type (systemd_unit))
 
@@ -108,9 +282,42 @@
 (filecon "/usr/lib/systemd/user(/.*)?" any systemd_unit)
 (filecon "/usr/lib/systemd/ntp-units\.d(/.*)?" any systemd_unit)
 
+(allow systemd.common_subject systemd_unit manage_dir_perms)
+(allow systemd.common_subject systemd_unit manage_file_perms)
+(allow systemd.common_subject systemd_unit manage_lnk_file_perms)
+(call systemd_run_filetrans (systemd.common_subject systemd_unit dir "generator"))
+(call systemd_run_filetrans (systemd.common_subject systemd_unit dir "generator.early"))
+(call systemd_run_filetrans (systemd.common_subject systemd_unit dir "system"))
+
 (call fs_associate_tmpfs (systemd_unit))
 
-(typeattributeset systemd_unit_object_type systemd_object_type)
+(type run_systemd)
+(call file_run_type (run_systemd))
+
+(typeattributeset systemd_object_type run_systemd)
+
+(context run_systemd (sys.u sys.r run_systemd (systemlow systemlow)))
+(filecon "/var/run/systemd(/.*)?" any run_systemd)
+
+(allow systemd.common_subject run_systemd manage_file_perms)
+(allow systemd.common_subject run_systemd manage_dir_perms)
+(allow systemd.common_subject run_systemd manage_sock_file_perms)
+(call file_run_filetrans (systemd.common_subject run_systemd dir "systemd"))
+
+(type var_lib_systemd)
+(call file_lib_type (var_lib_systemd))
+
+(typeattributeset systemd_object_type var_lib_systemd)
+
+(context var_lib_systemd (sys.u sys.r var_lib_systemd (systemlow systemlow)))
+(filecon "/var/lib/systemd(/.*)?" any var_lib_systemd)
+
+(allow systemd.common_subject var_lib_systemd manage_file_perms)
+(allow systemd.common_subject var_lib_systemd manage_dir_perms)
+(allow systemd.common_subject var_lib_systemd manage_sock_file_perms)
+(call file_var_lib_filetrans (systemd.common_subject var_lib_systemd dir "systemd"))
+
+(typeattributeset systemd_object_type systemd_unit_object_type)
 
 (allow systemd_admin_type self (capability (kill sys_ptrace)))
 (allow systemd_admin_type systemd_subject_type signal_perms)
@@ -127,11 +334,17 @@
 (allow systemd_unconfined_type systemd.common_subject (system (halt reboot
     status start stop undefined enable disable reload)))
 
+(macro systemd_pid_object_type ((type ARG1))
+    (typeattributeset systemd_pid_object_type ARG1))
+
+(macro systemd_run_object_type ((type ARG1))
+    (typeattributeset systemd_run_object_type ARG1))
+
 (macro systemd_unit_object_type ((type ARG1))
     (typeattributeset systemd_unit_object_type ARG1))
 
-(macro systemd_pid_object_type ((type ARG1))
-    (typeattributeset systemd_pid_object_type ARG1))
+(macro systemd_var_lib_object_type ((type ARG1))
+    (typeattributeset systemd_var_lib_object_type ARG1))
 
 (macro systemd_auto_subtrans ((type ARG1))
     (call auto_subject_type_transition_pattern
@@ -143,6 +356,22 @@
         (ARG1 systemd.common_subject))
     (typetransition ARG1 systemd.bin_object process "*" systemd.common_subject))
 
+(macro systemd_exec_systemctl ((type ARG1))
+    (call can_exec (ARG1 systemctl.bin_object))
+    (call systemd_systemctl_client_type (ARG1)))
+
+(macro systemd_systemctl_client_type ((type ARG1))
+    (typeattributeset systemd_systemctl_client_type ARG1))
+
+(macro systemd_auto_subtrans_systemctl ((type ARG1))
+    (call systemd_send_signal_systemctl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 systemctl.bin_object systemctl.common_subject)))
+
+(macro systemd_run_systemctl ((type ARG1)(role ARG2))
+    (call systemd_auto_subtrans_systemctl (ARG1))
+    (roleattributeset systemctl_role (ARG2)))
+
 (macro systemd_getattr_exec_files ((type ARG1))
     (allow ARG1 systemd.bin_object (file (getattr))))
 
@@ -150,6 +379,11 @@
     (allow ARG1 systemd.common_subject read_file_perms)
     (allow ARG1 systemd.common_subject list_dir_perms)
     (allow ARG1 systemd.common_subject read_lnk_file_perms))
+
+(macro systemd_run_filetrans ((type ARG1)(type ARG2)(class ARG3)(name ARG4))
+    (call file_search_run (ARG1))
+    (call file_type_transition_pattern
+        (ARG1 run_systemd ARG2 ARG3 ARG4)))
 
 (macro systemd_rw_unix_stream_sockets ((type ARG1))
     (allow ARG1 systemd.common_subject rw_unix_stream_socket_perms))
@@ -160,6 +394,12 @@
 (macro systemd_send_signal ((type ARG1))
     (allow ARG1 systemd.common_subject (process (signal))))
 
+(macro systemd_send_signal_all_systemd_daemon_subjects ((type ARG1))
+    (allow ARG1 systemd_daemon_subject_type (process (signal))))
+
+(macro systemd_send_signal_systemctl ((type ARG1))
+    (allow ARG1 systemctl.common_subject (process (signal))))
+
 (macro systemd_socket_activated ((type ARG1)(type ARG2))
     (call systemd_socket_activated_object_type (ARG2))
     (call systemd_socket_activated_subject_type (ARG1)))
@@ -169,6 +409,11 @@
 
 (macro systemd_socket_activated_subject_type ((type ARG1))
     (typeattributeset systemd_socket_activated_subject_type ARG1))
+
+(macro systemd_var_lib_filetrans ((type ARG1)(type ARG2)(class ARG3)(name ARG4))
+    (call file_search_var_lib (ARG1))
+    (call file_type_transition_pattern
+        (ARG1 var_lib_systemd ARG2 ARG3 ARG4)))
 
 (macro systemd_admin ((role ARG1)(type ARG2))
     (roleattributeset systemd_admin_role ARG1)

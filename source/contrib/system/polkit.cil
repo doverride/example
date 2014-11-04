@@ -10,19 +10,19 @@
 (typeattribute polkit_object_type)
 (typeattribute polkit_subject_type)
 
-(block polkit_maintains_single_polkit_file_block
-    (blockabstract polkit_maintains_single_polkit_file_block)
-        (blockinherit polkit_object_block)
+(block polkit_maintains_single_etc_file_block
+    (blockabstract polkit_maintains_single_etc_file_block)
+        (blockinherit polkit_etc_object_block)
 
-        (allow common_subject polkit_object read_file_perms)
+        (allow common_subject polkit_etc_object read_file_perms)
 
         (call polkit_search_config (common_subject))
 )
 
-(block polkit_object_block
-    (blockabstract polkit_object_block)
-        (type polkit_object)
-        (call polkit_etc_file_type (polkit_object))
+(block polkit_etc_object_block
+    (blockabstract polkit_etc_object_block)
+        (type polkit_etc_object)
+        (call polkit_etc_file_type (polkit_etc_object))
 )
 
 (block polkitd
@@ -37,18 +37,18 @@
     (context unit_polkitd (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*polkit.*" file unit_polkitd)
 
-    (blockinherit dbus_maintains_single_dbus_file_block)
+    (blockinherit dbus_maintains_single_etc_file_block)
 
-    (typeattributeset polkit_object_type dbus_object)
+    (typeattributeset polkit_object_type dbus_etc_object)
 
-    (context dbus_polkitd (sys.u sys.r dbus_object (systemlow systemlow)))
+    (context dbus_polkitd (sys.u sys.r dbus_etc_object (systemlow systemlow)))
     (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.PolicyKit1\.conf" file dbus_polkitd)
 
-    (blockinherit auth_maintains_single_pam_file_block)
+    (blockinherit auth_maintains_single_pam_etc_file_block)
 
-    (typeattributeset polkit_object_type pam_object)
+    (typeattributeset polkit_object_type pam_etc_object)
 
-    (context pam_polkitd (sys.u sys.r pam_object (systemlow systemlow)))
+    (context pam_polkitd (sys.u sys.r pam_etc_object (systemlow systemlow)))
     (filecon "/etc/pam\.d/polkit-1" file pam_polkitd)
 
     (blockinherit file_maintains_var_lib_dirs_and_files_block)

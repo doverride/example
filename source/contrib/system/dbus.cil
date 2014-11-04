@@ -9,19 +9,19 @@
 (typeattribute dbus_system_client_type)
 (typeattribute dbus_unconfined_type)
 
-(block dbus_maintains_single_dbus_file_block
-    (blockabstract dbus_maintains_single_dbus_file_block)
-        (blockinherit dbus_object_block)
+(block dbus_maintains_single_etc_file_block
+    (blockabstract dbus_maintains_single_etc_file_block)
+        (blockinherit dbus_etc_object_block)
 
-        (allow common_subject dbus_object read_file_perms)
+        (allow common_subject dbus_etc_object read_file_perms)
 
         (call dbus_search_config (common_subject))
 )
 
-(block dbus_object_block
-    (blockabstract dbus_object_block)
-        (type dbus_object)
-        (call dbus_etc_file_type (dbus_object))
+(block dbus_etc_object_block
+    (blockabstract dbus_etc_object_block)
+        (type dbus_etc_object)
+        (call dbus_etc_file_type (dbus_etc_object))
 )
 
 (block dbusd
