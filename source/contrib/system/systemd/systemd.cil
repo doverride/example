@@ -113,8 +113,6 @@
         (call systemd_var_lib_filetrans (common_subject systemd_var_lib_object dir "*"))
 )
 
-
-
 (block systemd_var_lib_object_block
     (blockabstract systemd_var_lib_object_block)
         (type systemd_var_lib_object)
@@ -171,11 +169,6 @@
     (filecon "/etc/systemd(/.*)?" any etc_systemd)
     (filecon "/etc/yum/protected\.d/systemd\.conf" file etc_systemd)
     (filecon "/etc/xdg/systemd(/.*)?" any etc_systemd)
-
-    (blockinherit polkit_maintains_single_etc_file_block)
-
-    (context polkit_systemd (sys.u sys.r polkit_etc_object (systemlow systemlow)))
-    (filecon "/usr/share/polkit-1/actions/[^/]*systemd1\.policy" file polkit_systemd)
 
     (allow common_subject self (process (setsched)))
 
