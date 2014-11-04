@@ -389,9 +389,33 @@
 (macro sys_request_load_module ((type ARG1))
     (allow ARG1 sys.common_subject (system (module_request))))
 
+(macro sys_rw_all_sysctl ((type ARG1))
+    (call sys_rw_crypto_sysctl (ARG1))
+    (call sys_rw_dev_sysctl (ARG1))
+    (call sys_rw_fs_sysctl (ARG1))
+    (call sys_rw_generic_sysctl (ARG1))
+    (call sys_rw_kernel_sysctl (ARG1))
+    (call sys_rw_net_sysctl (ARG1))
+    (call sys_rw_security_sysctl (ARG1))
+    (call sys_rw_usermodehelper_sysctl (ARG1))
+    (call sys_rw_vm_sysctl (ARG1))
+    (call sys_rw_vm_overcommit_sysctl (ARG1)))
+
+(macro sys_rw_dev_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (call rw_files_pattern (ARG1 dev_sysctl dev_sysctl)))
+
+(macro sys_rw_crypto_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (call rw_files_pattern (ARG1 crypto_sysctl crypto_sysctl)))
+
 (macro sys_rw_fs_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (call rw_files_pattern (ARG1 fs_sysctl fs_sysctl)))
+
+(macro sys_rw_generic_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (allow ARG1 sysctl rw_file_perms))
 
 (macro sys_rw_kernel_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
@@ -420,6 +444,10 @@
 (macro sys_rw_vm_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (call rw_files_pattern (ARG1 vm_sysctl vm_sysctl)))
+
+(macro sys_rw_vm_overcommit_sysctl ((type ARG1))
+    (call sys_search_vm_sysctl (ARG1))
+    (allow ARG1 vm_overcommit_sysctl rw_file_perms))
 
 (macro sys_search_sysctl ((type ARG1))
     (call fs_search_proc (ARG1))

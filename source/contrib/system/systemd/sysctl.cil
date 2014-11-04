@@ -27,11 +27,7 @@
     (filecon "/etc/sysctl\.conf" file etc_sysctl)
     (filecon "/etc/sysctl\.d(/.*)?" any etc_sysctl)
 
-    (call sys_rw_fs_sysctl (common_subject))
-    (call sys_rw_kernel_sysctl (common_subject))
-    (call sys_rw_net_sysctl (common_subject))
-    (call sys_rw_security_sysctl (common_subject))
-    (call sys_rw_usermodehelper_sysctl (common_subject))
+    (call sys_rw_all_sysctl (common_subject))
 
     (optional sysctl_optional_app
         (call app_subject_type (common_subject))
