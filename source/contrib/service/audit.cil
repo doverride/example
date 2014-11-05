@@ -15,8 +15,7 @@
     (blockabstract audit_audisp_daemon_block)
         (blockinherit subject_system_entry_block)
 
-        (call auto_subject_type_transition_pattern (audispd.common_subject bin_object common_subject))
-        (typeattributeset audit_audisp_daemon_type common_subject)
+        (call audit_audisp_daemon (common_subject bin_object))
 )
 
 (block audispd
@@ -154,6 +153,13 @@
 
 (macro audit_client ((type ARG1))
     (typeattributeset audit_client_subject_type (ARG1)))
+
+(macro audit_audisp_daemon ((type ARG1)(type ARG2))
+    (call auto_subject_type_transition_pattern (audispd.common_subject ARG2 ARG1))
+    (call audit_audisp_daemon_type (ARG1)))
+
+(macro audit_audisp_daemon_type ((type ARG1))
+    (typeattributeset audit_audisp_daemon_type ARG1))
 
 (macro audit_set_loginuid ((type ARG1))
     (allow ARG1 self (capability (audit_control)))

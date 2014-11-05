@@ -125,8 +125,7 @@
     (blockabstract systemd_daemon_no_unit_block)
         (blockinherit subject_system_entry_block)
 
-        (call auto_subject_type_transition_pattern (systemd.common_subject bin_object common_subject))
-        (typeattributeset systemd_daemon_subject_type common_subject)
+        (call systemd_daemon (common_subject bin_object))
 )
 
 (block systemd_daemon_block
@@ -134,8 +133,7 @@
         (blockinherit systemd_daemon_no_unit_block)
         (blockinherit systemd_unit_object_block)
 
-        (call auto_subject_type_transition_pattern (systemd.common_subject bin_object common_subject))
-        (typeattributeset systemd_daemon_subject_type common_subject)
+        (call systemd_daemon (common_subject bin_object))
 )
 
 (block systemd_daemon_socket_activated_block
@@ -226,7 +224,7 @@
         (call unconfined (systemctl_role common_subject)))
 )
 
-(block systemd_daemon
+(block systemd_generic
     (blockinherit systemd_daemon_no_unit_block)
 
     (call bin_entry (common_subject))
@@ -337,6 +335,13 @@
 
 (macro systemd_var_lib_object_type ((type ARG1))
     (typeattributeset systemd_var_lib_object_type ARG1))
+
+(macro systemd_daemon ((type ARG1)(type ARG2))
+    (call auto_subject_type_transition_pattern (systemd.common_subject ARG2 ARG1))
+    (call systemd_daemon_subject_type (ARG1)))
+
+(macro systemd_daemon_subject_type ((type ARG1))
+    (typeattributeset systemd_daemon_subject_type ARG1))
 
 (macro systemd_auto_subtrans ((type ARG1))
     (call auto_subject_type_transition_pattern
