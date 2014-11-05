@@ -71,6 +71,8 @@
     (allow common_subject self create_unix_stream_socket_perms)
     (allow common_subject self (capability2 (block_suspend syslog)))
 
+    (allow common_subject var_log_object (file (write)))
+
     (call sys_request_load_module (common_subject))
 
     (call dev_manage_all (common_subject)) ; FIXME
