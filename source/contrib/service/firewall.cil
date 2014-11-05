@@ -1,0 +1,84 @@
+(roleattribute firewallcmd_role)
+
+(roleattribute firewall_admin_role)
+(typeattribute firewall_admin_type)
+
+(typeattribute firewall_object_type)
+(typeattribute firewall_subject_type)
+
+(block firewallcmd
+    (blockinherit app_block)
+
+    (roletype firewallcmd_role common_subject)
+
+    (typeattributeset firewall_subject_type common_subject)
+
+    (context bin_firewallcmd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/firewall-cmd" file bin_firewallcmd)
+    (filecon "/usr/bin/firewall-offline-cmd" file bin_firewallcmd)
+
+    (optional firewallcmd_optional_unconfined
+        (call unconfined (firewallcmd_role common_subject)))
+)
+
+(block firewalld
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset firewall_subject_type common_subject)
+
+    (context bin_firewalld (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/firewalld" file bin_firewalld)
+
+    (context unit_firewalld (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*firewalld.*" file unit_firewalld)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset firewall_object_type etc_object)
+
+    (context etc_firewalld (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/firewalld(/.*)?" any etc_firewalld)
+    (filecon "/etc/sysconfig/firewalld" file etc_firewalld)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset firewall_object_type dbus_etc_object)
+
+    (context dbus_firewalld (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/FirewallD\.conf" file dbus_firewalld)
+
+    (blockinherit file_maintains_single_var_log_file_block)
+
+    (typeattributeset firewall_object_type var_log_object)
+
+    (context var_log_firewalld (sys.u sys.r var_log_object (systemlow systemlow)))
+    (filecon "/var/log/firewalld.*" file var_log_firewalld)
+
+    (blockinherit file_maintains_single_tmpfs_file_block)
+
+    (typeattributeset firewall_object_type tmpfs_object)
+
+    (optional firewalld_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow firewall_admin_type self (capability (kill sys_ptrace)))
+(allow firewall_admin_type firewall_subject_type signal_perms)
+(allow firewall_admin_type firewall_subject_type (process (ptrace)))
+(call ps_subject_pattern (firewall_admin_type firewall_subject_type))
+(allow firewall_admin_type firewalld.unit_object (service (all)))
+(allow firewall_admin_type firewall_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype firewall_admin_role firewall_object_type)
+
+(macro firewall_auto_subtrans_firewallcmd ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 firewallcmd.bin_object firewallcmd.common_subject)))
+
+(macro firewall_run_firewallcmd ((type ARG1)(role ARG2))
+    (call firewall_auto_subtrans_firewallcmd (ARG1))
+    (roleattributeset firewallcmd_role ARG2))
+
+(macro firewall_admin ((role ARG1)(type ARG2))
+    (roleattributeset firewall_admin_role ARG1)
+    (typeattributeset firewall_admin_type ARG2))
