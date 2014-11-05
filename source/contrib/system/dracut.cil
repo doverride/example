@@ -1,8 +1,12 @@
 (roleattribute dracut_admin_role)
 (typeattribute dracut_admin_type)
 
+(typeattribute dracut_object_type)
+
 (block dracut_initramfs_restore
     (blockinherit systemd_daemon_block)
+
+    (typeattributeset dracut_object_type unit_object)
 
     (context bin_dracut_initramfs_restore (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/lib/dracut/dracut-initramfs-restore" file bin_dracut_initramfs_restore)
@@ -14,14 +18,30 @@
         (call unconfined (sys.r common_subject)))
 )
 
+(block initramfs
+    (blockinherit file_var_lib_object_block)
+
+    (typeattributeset dracut_object_type var_lib_object)
+
+    (context var_lib_initramfs (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/initramfs(/.*)?" any var_lib_initramfs)
+
+    (blockinherit file_run_object_block)
+
+    (typeattributeset dracut_object_type run_object)
+
+    (context run_initramfs (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/initramfs(/.*)?" any run_initramfs)
+)
+
 (allow dracut_admin_type self (capability (kill sys_ptrace)))
 (allow dracut_admin_type dracut_initramfs_restore.common_subject signal_perms)
 (allow dracut_admin_type dracut_initramfs_restore.common_subject (process (ptrace)))
 (call ps_subject_pattern (dracut_admin_type dracut_initramfs_restore.common_subject))
 (allow dracut_admin_type dracut_initramfs_restore.unit_object (service (all)))
-(allow dracut_admin_type dracut_initramfs_restore.unit_object
+(allow dracut_admin_type dracut_object_type
     (all_file_objects (not_mounton_entrypoint_and_execmod)))
-(roletype dracut_admin_role dracut_initramfs_restore.unit_object)
+(roletype dracut_admin_role dracut_object_type)
 
 (macro dracut_admin ((role ARG1)(type ARG2))
     (roleattributeset dracut_admin_role ARG1)
