@@ -1,0 +1,68 @@
+(roleattribute bootloader_role)
+
+(roleattribute bootloader_admin_role)
+(typeattribute bootloader_admin_type)
+
+(typeattribute bootloader_object_type)
+
+(block bootloader
+    (blockinherit subject_system_entry_block)
+
+    (roletype bootloader_role common_subject)
+
+    (context bin_bootloader (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/grub2-.*" file bin_bootloader)
+    (filecon "/usr/sbin/grubby" file bin_bootloader)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset bootloader_object_type etc_object)
+
+    (context etc_bootloader (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/default/grub" file etc_bootloader)
+    (filecon "/etc/grub\.d" dir etc_bootloader)
+    (filecon "/etc/grub\.d/README" file etc_bootloader)
+    (filecon "/etc/grub2-efi\.cfg" symlink etc_bootloader)
+    (filecon "/etc/prelink\.conf\.d/grub2\.conf" file etc_bootloader)
+
+    (blockinherit file_maintains_single_var_log_file_block)
+
+    (typeattributeset bootloader_object_type var_log_object)
+
+    (context var_log_bootloader (sys.u sys.r var_log_object (systemlow systemlow)))
+    (filecon "/var/log/grubby" file var_log_bootloader)
+
+    (blockinherit file_maintains_tmpfs_dirs_and_files_block)
+
+    (typeattributeset bootloader_object_type tmpfs_object)
+
+    (optional bootloader_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional bootloader_optional_unconfined
+        (call unconfined (bootloader_role common_subject)))
+)
+
+(allow bootloader_admin_type self (capability (kill sys_ptrace)))
+(allow bootloader_admin_type bootloader.common_subject signal_perms)
+(allow bootloader_admin_type bootloader.common_subject (process (ptrace)))
+(call ps_subject_pattern (bootloader_admin_type bootloader.common_subject))
+(allow bootloader_admin_type bootloader_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype bootloader_admin_role bootloader_object_type)
+
+(macro bootloader_exec ((type ARG1))
+    (call can_exec (ARG1 bootloader.bin_object)))
+
+(macro bootloader_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 bootloader.bin_object bootloader.common_subject)))
+
+(macro bootloader_run ((type ARG1)(role ARG2))
+    (call bootloader_auto_subtrans (ARG1))
+    (roleattributeset bootloader_role (ARG2)))
+
+(macro bootloader_admin ((role ARG1)(type ARG2))
+    (roleattributeset bootloader_admin_role ARG1)
+    (typeattributeset bootloader_admin_type ARG2))

@@ -342,7 +342,11 @@
     (blockabstract file_maintains_single_var_log_file_block)
         (blockinherit file_var_log_object_block)
 
-        (allow common_subject var_log_object manage_file_perms)
+        (allow common_subject var_log_object read_file_perms)
+        (allow common_subject var_log_object append_file_perms)
+        (allow common_subject var_log_object delete_file_perms)
+        (allow common_subject var_log_object create_file_perms)
+        (allow common_subject var_log_object (file (setattr)))
 
         (call file_var_log_filetrans (common_subject var_log_object file "*"))
 )
@@ -351,7 +355,12 @@
     (blockabstract file_maintains_var_log_dirs_and_files_block)
         (blockinherit file_var_log_object_block)
 
-        (allow common_subject var_log_object manage_file_perms)
+        (allow common_subject var_log_object read_file_perms)
+        (allow common_subject var_log_object append_file_perms)
+        (allow common_subject var_log_object delete_file_perms)
+        (allow common_subject var_log_object create_file_perms)
+        (allow common_subject var_log_object (file (setattr)))
+
         (allow common_subject var_log_object manage_dir_perms)
 
         (call file_var_log_filetrans (common_subject var_log_object dir "*"))
@@ -361,7 +370,12 @@
     (blockabstract file_maintains_var_log_objects_block)
         (blockinherit file_var_log_object_block)
 
-        (allow common_subject var_log_object manage_file_perms)
+        (allow common_subject var_log_object read_file_perms)
+        (allow common_subject var_log_object append_file_perms)
+        (allow common_subject var_log_object delete_file_perms)
+        (allow common_subject var_log_object create_file_perms)
+        (allow common_subject var_log_object (file (setattr)))
+
         (allow common_subject var_log_object manage_dir_perms)
         (allow common_subject var_log_object manage_lnk_file_perms)
         (allow common_subject var_log_object manage_sock_file_perms)
@@ -450,6 +464,38 @@
     (blockabstract file_tmpfs_object_block)
         (type tmpfs_object)
         (call file_tmpfs_type (tmpfs_object))
+)
+
+(block file_maintains_single_tmpfs_file_block
+    (blockabstract file_maintains_single_tmpfs_file_block)
+        (blockinherit file_tmpfs_object_block)
+
+        (allow common_subject tmpfs_object manage_file_perms)
+
+        (call fs_tmpfs_filetrans (common_subject tmpfs_object file "*"))
+)
+
+(block file_maintains_tmpfs_dirs_and_files_block
+    (blockabstract file_maintains_tmpfs_dirs_and_files_block)
+        (blockinherit file_tmpfs_object_block)
+
+        (allow common_subject tmpfs_object manage_file_perms)
+        (allow common_subject tmpfs_object manage_dir_perms)
+
+        (call fs_tmpfs_filetrans (common_subject tmpfs_object dir "*"))
+)
+
+(block file_maintains_tmpfs_objects_block
+    (blockabstract file_maintains_tmpfs_objects_block)
+        (blockinherit file_tmpfs_object_block)
+
+        (allow common_subject tmpfs_object manage_file_perms)
+        (allow common_subject tmpfs_object manage_dir_perms)
+        (allow common_subject tmpfs_object manage_lnk_file_perms)
+        (allow common_subject tmpfs_object manage_sock_file_perms)
+        (allow common_subject tmpfs_object manage_fifo_file_perms)
+
+        (call fs_tmpfs_filetrans (common_subject tmpfs_object dir "*"))
 )
 
 (type boot)
