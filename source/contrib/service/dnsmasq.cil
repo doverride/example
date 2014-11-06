@@ -1,0 +1,61 @@
+(roleattribute dnsmasq_admin_role)
+(typeattribute dnsmasq_admin_type)
+
+(typeattribute dnsmasq_object_type)
+
+(block dnsmasq
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset dnsmasq_object_type unit_object)
+
+    (context bin_dnsmasq (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/dnsmasq" file bin_dnsmasq)
+
+    (context unit_dnsmasq (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*dnsmasq.*" file unit_dnsmasq)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset dnsmasq_object_type etc_object)
+
+    (context etc_dnsmasq (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/dnsmasq\.conf" file etc_dnsmasq)
+    (filecon "/etc/dnsmasq\.d(/.*)?" any etc_dnsmasq)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset dnsmasq_object_type dbus_etc_object)
+
+    (context dbus_dnsmasq (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/dnsmasq\.conf" file dbus_dnsmasq)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset dnsmasq_object_type var_lib_object)
+
+    (context var_lib_dnsmasq (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/dnsmasq(/.*)?" any var_lib_dnsmasq)
+
+    (allow common_subject self (capability (net_raw setgid setuid)))
+    (allow common_subject self (process (setcap)))
+
+    (optional dnsmasq_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow dnsmasq_admin_type self (capability (kill sys_ptrace)))
+(allow dnsmasq_admin_type dnsmasq.common_subject signal_perms)
+(allow dnsmasq_admin_type dnsmasq.common_subject (process (ptrace)))
+(call ps_subject_pattern (dnsmasq_admin_type dnsmasq.common_subject))
+(allow dnsmasq_admin_type dnsmasq.unit_object (service (all)))
+(allow dnsmasq_admin_type dnsmasq_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype dnsmasq_admin_role dnsmasq_object_type)
+
+(macro dnsmasq_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 dnsmasq.bin_object dnsmasq.common_subject)))
+
+(macro dnsmasq_admin ((role ARG1)(type ARG2))
+    (roleattributeset dnsmasq_admin_role ARG1)
+    (typeattributeset dnsmasq_admin_type ARG2))
