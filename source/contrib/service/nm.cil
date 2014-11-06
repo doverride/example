@@ -1,0 +1,152 @@
+(roleattribute nmcli_role)
+
+(roleattribute nm_admin_role)
+(typeattribute nm_admin_type)
+
+(typeattribute nm_object_type)
+(typeattribute nm_subject_type)
+
+(block nm
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset nm_object_type unit_object)
+    (typeattributeset nm_subject_type common_subject)
+
+    (context bin_nm (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/nm-dispatcher\.action" file bin_nm)
+    (filecon "/usr/sbin/NetworkManager" file bin_nm)
+
+    (context unit_nm (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*NetworkManager.*" file unit_nm)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset nm_object_type etc_object)
+
+    (context etc_nm (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/NetworkManager(/.*)?" any etc_nm)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset nm_object_type dbus_etc_object)
+
+    (context dbus_nm (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/nm-avahi-autoipd\.conf" file dbus_nm)
+    (filecon "/etc/dbus-1/system\.d/nm-dispatcher\.conf" file dbus_nm)
+    (filecon "/etc/dbus-1/system\.d/nm-ifcfg-rh\.conf" file dbus_nm)
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.NetworkManager\.conf" file dbus_nm)
+
+    (blockinherit file_maintains_run_dirs_and_sock_files_block)
+
+    (typeattributeset nm_object_type run_object)
+
+    (context run_nm (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/NetworkManager(/.*)?" any run_nm)
+    (filecon "/var/run/netreport(/.*)?" any run_nm)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset nm_object_type var_lib_object)
+
+    (context var_lib_nm (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/NetworkManager(/.*)?" any var_lib_nm)
+
+    (call iptools_auto_subtrans (common_subject))
+
+    (call mount_exec (common_subject))
+
+    (call nettools_auto_subtrans (common_subject))
+
+    (call dhcp_auto_subtrans_dhclient (common_subject))
+
+    (optional nm_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(block nm_disp
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset nm_subject_type common_subject)
+
+    (context bin_nm_disp (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/nm-dispatcher" file bin_nm_disp)
+
+    (call iptools_exec (common_subject))
+
+    (call mount_exec (common_subject))
+
+    (call dhcp_auto_subtrans_dhclient (common_subject))
+
+    (optional nm_disp_optional_ntp
+        (call ntp_auto_subtrans (common_subject)))
+
+    (optional nm_disp_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(block nm_online
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset nm_subject_type common_subject)
+
+    (context bin_nm_online (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/nm-online" file bin_nm_online)
+
+    (optional nm_online_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(block nmcli
+    (blockinherit app_block)
+
+    (typeattributeset nm_subject_type common_subject)
+
+    (roletype nmcli_role common_subject)
+
+    (context bin_nmcli (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/nmcli" file bin_nmcli)
+    (filecon "/usr/bin/nmtui" file bin_nmcli)
+    (filecon "/usr/bin/nmtui-connect" file bin_nmcli)
+    (filecon "/usr/bin/nmtui-edit" file bin_nmcli)
+    (filecon "/usr/bin/nmtui-hostname" file bin_nmcli)
+
+    (optional nmcli_optional_unconfined
+        (call unconfined (nmcli_role common_subject)))
+)
+
+(block nm_helper
+    (blockinherit bin_object_block)
+
+    (context bin_nm_helper (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/etc/NetworkManager/dispatcher\.d/.*" file bin_nm_helper)
+    (filecon "/usr/libexec/nm-dhcp-helper" file bin_nm_helper)
+)
+
+(allow nm_admin_type self (capability (kill sys_ptrace)))
+(allow nm_admin_type nm_subject_type signal_perms)
+(allow nm_admin_type nm_subject_type (process (ptrace)))
+(call ps_subject_pattern (nm_admin_type nm_subject_type))
+(allow nm_admin_type nm.unit_object (service (all)))
+(allow nm_admin_type nm_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype nm_admin_role nm_object_type)
+
+(macro nm_exec_helper ((type ARG1))
+    (call can_exec (ARG1 nm_helper.bin_object)))
+
+(macro nm_auto_subtrans_nmcli ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 nmcli.bin_object nmcli.common_subject)))
+
+(macro nm_run_nmcli ((type ARG1)(role ARG2))
+    (call nm_auto_subtrans_nmcli (ARG1))
+    (roleattributeset nmcli_role (ARG2)))
+
+(macro nm_stream_connect ((type ARG1))
+    (call file_search_run (ARG1))
+    (call stream_connect_pattern
+        (ARG1 nm.run_object nm.run_object nm.common_subject)))
+
+(macro nm_admin ((role ARG1)(type ARG2))
+    (roleattributeset nm_admin_role ARG1)
+    (typeattributeset nm_admin_type ARG2))

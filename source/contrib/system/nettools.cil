@@ -1,23 +1,24 @@
+(roleattribute arp_role)
 (roleattribute nettools_role)
+(roleattribute ping_role)
+(roleattribute traceroute_role)
+
+(roleattribute nettools_admin_role)
+(typeattribute nettools_admin_type)
+
+(typeattribute nettools_subject_type)
 
 (block nettools
-    (blockinherit systemd_daemon_no_unit_block)
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset nettools_subject_type common_subject)
 
     (roletype nettools_role common_subject)
 
     (context bin_nettools (sys.u sys.r bin_object (systemlow systemlow)))
-    (filecon "/usr/sbin/ethtool" file bin_nettools)
-    (filecon "/usr/sbin/ifconfig" file bin_nettools)
-    (filecon "/usr/sbin/ip" file bin_nettools)
-    (filecon "/usr/sbin/iw" file bin_nettools)
-    (filecon "/usr/sbin/iwconfig" file bin_nettools)
-    (filecon "/usr/sbin/iwpriv" file bin_nettools)
-    (filecon "/usr/sbin/tc" file bin_nettools)
-
-    (blockinherit file_maintains_etc_dirs_and_files_block)
-
-    (context etc_nettools (sys.u sys.r etc_object (systemlow systemlow)))
-    (filecon "/etc/iproute2(/.*)?" any etc_nettools)
+    (filecon "/usr/bin/netstat" file bin_nettools)
+    (filecon "/usr/sbin/arping" file bin_nettools)
+    (filecon "/usr/sbin/tcpdump" file bin_nettools)
 
     (optional nettools_optional_app
         (call app_exec_object_type (bin_object))
@@ -26,6 +27,74 @@
     (optional nettools_optional_unconfined
         (call unconfined (nettools_role common_subject)))
 )
+
+(block ping
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset nettools_subject_type common_subject)
+
+    (roletype ping_role common_subject)
+
+    (context bin_ping (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/ping" file bin_ping)
+
+    (optional ping_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional ping_optional_unconfined
+        (call unconfined (ping_role common_subject)))
+)
+
+(block traceroute
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset nettools_subject_type common_subject)
+
+    (roletype traceroute_role common_subject)
+
+    (context bin_traceroute (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/traceroute" file bin_traceroute)
+    (filecon "/usr/bin/tcptraceroute" file bin_traceroute)
+    (filecon "/usr/bin/nmap" file bin_traceroute)
+
+    (optional traceroute_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional traceroute_optional_unconfined
+        (call unconfined (traceroute_role common_subject)))
+)
+
+(block arp
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset nettools_subject_type common_subject)
+
+    (roletype arp_role common_subject)
+
+    (context bin_arp (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/arp" file bin_arp)
+
+    (context unit_arp (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*arp-ethers.*" file unit_arp)
+
+    (optional arp_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional arp_optional_unconfined
+        (call unconfined (arp_role common_subject)))
+)
+
+(allow nettools_admin_type self (capability (kill sys_ptrace)))
+(allow nettools_admin_type nettools_subject_type signal_perms)
+(allow nettools_admin_type nettools_subject_type (process (ptrace)))
+(call ps_subject_pattern (nettools_admin_type nettools_subject_type))
+(allow nettools_admin_type arp.unit_object (service (all)))
+(allow nettools_admin_type arp.unit_object (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype nettools_admin_role arp.unit_object)
 
 (macro nettools_exec ((type ARG1))
     (call can_exec (ARG1 nettools.bin_object)))
@@ -37,3 +106,40 @@
 (macro nettools_run ((type ARG1)(role ARG2))
     (call nettools_auto_subtrans (ARG1))
     (roleattributeset nettools_role (ARG2)))
+
+(macro nettools_exec_ping ((type ARG1))
+    (call can_exec (ARG1 ping.bin_object)))
+
+(macro nettools_auto_subtrans_ping ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 ping.bin_object common_subject)))
+
+(macro nettools_run_ping ((type ARG1)(role ARG2))
+    (call nettools_auto_subtrans_ping (ARG1))
+    (roleattributeset ping_role (ARG2)))
+
+(macro nettools_exec_traceroute ((type ARG1))
+    (call can_exec (ARG1 traceroute.bin_object)))
+
+(macro nettools_auto_subtrans_traceroute ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 traceroute.bin_object traceroute.common_subject)))
+
+(macro nettools_run_traceroute ((type ARG1)(role ARG2))
+    (call nettools_auto_subtrans_traceroute (ARG1))
+    (roleattributeset traceroute_role (ARG2)))
+
+(macro nettools_exec_arp ((type ARG1))
+    (call can_exec (ARG1 arp.bin_object)))
+
+(macro nettools_auto_subtrans_arp ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 arp.bin_object arp.common_subject)))
+
+(macro nettools_run_arp ((type ARG1)(role ARG2))
+    (call nettools_auto_subtrans_arp (ARG1))
+    (roleattributeset arp_role (ARG2)))
+
+(macro nettools_admin ((role ARG1)(type ARG2))
+    (roleattributeset nettools_admin_role ARG1)
+    (typeattributeset nettools_admin_type ARG2))

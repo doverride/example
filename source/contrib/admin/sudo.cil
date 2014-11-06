@@ -112,11 +112,12 @@
     (call can_exec (ARG1 sudo.bin_object)))
 
 (macro sudo_role_template ((role ARG1)(type ARG2)(type ARG3))
-    (roleattributeset sudo_role ARG1)
-    (roletype ARG1 ARG3)
-
     (call auto_subject_type_transition_pattern
         (ARG2 sudo.bin_object ARG3))
+
+    (roletype ARG1 ARG3)
+
+    (roleattributeset sudo_role ARG1)
 
     (allow ARG3 ARG2 (process (signal)))
     (allow ARG3 ARG2 (key (search create link write)))
