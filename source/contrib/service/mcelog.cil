@@ -1,0 +1,49 @@
+(roleattribute mcelog_admin_role)
+(typeattribute mcelog_admin_type)
+
+(typeattribute mcelog_object_type)
+
+(block mcelog
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset mcelog_object_type unit_object)
+
+    (context bin_mcelog (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/mcelog" file bin_mcelog)
+
+    (context unit_mcelog (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*mcelog.*" file unit_mcelog)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset mcelog_object_type etc_object)
+
+    (context etc_mcelog (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/mcelog(/.*)?" any etc_mcelog)
+
+    (blockinherit file_maintains_run_files_and_sock_files_block)
+
+    (typeattributeset mcelog_object_type run_object)
+
+    (context run_mcelog (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/mcelog-client" socket run_mcelog)
+    (filecon "/var/run/mcelog\.pid" file run_mcelog)
+
+    (allow common_subject self (capability (sys_admin)))
+
+    (optional mcelog_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow mcelog_admin_type self (capability (kill sys_ptrace)))
+(allow mcelog_admin_type mcelog.common_subject signal_perms)
+(allow mcelog_admin_type mcelog.common_subject (process (ptrace)))
+(call ps_subject_pattern (mcelog_admin_type mcelog.common_subject))
+(allow mcelog_admin_type mcelog.unit_object (service (all)))
+(allow mcelog_admin_type mcelog_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype mcelog_admin_role mcelog_object_type)
+
+(macro mcelog_admin ((role ARG1)(type ARG2))
+    (roleattributeset mcelog_admin_role ARG1)
+    (typeattributeset mcelog_admin_type ARG2))
