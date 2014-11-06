@@ -1,0 +1,49 @@
+(roleattribute mandb_admin_role)
+(typeattribute mandb_admin_type)
+
+(typeattribute mandb_object_type)
+
+(block mandb
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset mandb_object_type unit_object)
+
+    (context bin_mandb (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/mandb" file bin_mandb)
+
+    (context unit_mandb (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*man-db.*" file unit_mandb)
+
+    (blockinherit file_maintains_single_etc_file_block)
+
+    (typeattributeset mandb_object_type etc_object)
+
+    (context etc_mandb (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/man_db\.conf" file etc_mandb)
+    (filecon "/etc/sysconfig/man-db" file etc_mandb)
+
+    (blockinherit file_maintains_var_cache_dirs_and_files_block)
+
+    (typeattributeset mandb_object_type var_cache_object)
+
+    (context var_cache_mandb (sys.u sys.r var_cache_object (systemlow systemlow)))
+    (filecon "/var/cache/man(/.*)?" any var_cache_mandb)
+
+    (allow common_subject self (capability (fsetid)))
+
+    (optional mandb_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow mandb_admin_type self (capability (kill sys_ptrace)))
+(allow mandb_admin_type mandb.common_subject signal_perms)
+(allow mandb_admin_type mandb.common_subject (process (ptrace)))
+(call ps_subject_pattern (mandb_admin_type mandb.common_subject))
+(allow mandb_admin_type mandb.unit_object (service (all)))
+(allow mandb_admin_type mandb_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype mandb_admin_role mandb_object_type)
+
+(macro mandb_admin ((role ARG1)(type ARG2))
+    (roleattributeset mandb_admin_role ARG1)
+    (typeattributeset mandb_admin_type ARG2))
