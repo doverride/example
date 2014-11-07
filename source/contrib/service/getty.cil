@@ -1,0 +1,37 @@
+(roleattribute getty_admin_role)
+(typeattribute getty_admin_type)
+
+(block getty
+    (blockinherit systemd_daemon_block)
+
+    (context bin_getty (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/agetty" file bin_getty)
+
+    (context unit_getty (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*getty.*" file unit_getty)
+
+    (allow common_subject self (capability (chown fsetid sys_tty_config sys_admin)))
+
+    (booleanif console_login
+        (true
+            (call term_setattr_console (common_subject))
+            (call term_use_console (common_subject)))
+        (false
+            (call term_dontaudit_use_console (common_subject))))
+
+    (optional getty_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow getty_admin_type self (capability (kill sys_ptrace)))
+(allow getty_admin_type getty.common_subject signal_perms)
+(allow getty_admin_type getty.common_subject (process (ptrace)))
+(call ps_subject_pattern (getty_admin_type getty.common_subject))
+(allow getty_admin_type getty.unit_object (service (all)))
+(allow getty_admin_type getty.unit_object (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype getty_admin_role getty.unit_object)
+
+(macro getty_admin ((role ARG1)(type ARG2))
+    (roleattributeset getty_admin_role ARG1)
+    (typeattributeset getty_admin_type ARG2))
