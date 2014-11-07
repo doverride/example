@@ -1,0 +1,58 @@
+(roleattribute login_admin_role)
+(typeattribute login_admin_type)
+
+(typeattribute login_object_type)
+(typeattribute login_subject_type)
+
+(block login
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset login_subject_type common_subject)
+
+    (context bin_login (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/login" file bin_login)
+
+    (blockinherit auth_maintains_single_pam_etc_file_block)
+
+    (typeattributeset login_object_type pam_etc_object)
+
+    (context pam_login (sys.u sys.r pam_etc_object (systemlow systemlow)))
+    (filecon "/etc/pam\.d/login" file pam_login)
+
+    (optional login_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(block sulogin
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset login_object_type unit_object)
+    (typeattributeset login_subject_type common_subject)
+
+    (context bin_sulogin (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/sulogin" file bin_sulogin)
+    (filecon "/usr/sbin/sushell" file bin_sulogin)
+
+    (context unit_sulogin (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*emergency.*" file unit_sulogin)
+
+    (optional sulogin_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow login_admin_type self (capability (kill sys_ptrace)))
+(allow login_admin_type login_subject_type signal_perms)
+(allow login_admin_type login_subject_type (process (ptrace)))
+(call ps_subject_pattern (login_admin_type login_subject_type))
+(allow login_admin_type sulogin.unit_object (service (all)))
+(allow login_admin_type login_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype login_admin_role login_object_type)
+
+(macro login_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 login.bin_object login.common_subject)))
+
+(macro login_admin ((role ARG1)(type ARG2))
+    (roleattributeset login_admin_role ARG1)
+    (typeattributeset login_admin_type ARG2))
