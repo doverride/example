@@ -242,6 +242,9 @@
 (macro fs_search_sysfs ((type ARG1))
     (allow ARG1 sysfs search_dir_perms))
 
+(macro fs_search_tmpfs ((type ARG1))
+    (allow ARG1 tmpfs search_dir_perms))
+
 (macro fs_unconfined ((type ARG1))
     (typeattributeset fs_unconfined_type ARG1))
 

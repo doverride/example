@@ -6,6 +6,9 @@
     system generally has no business with user objects. This will not fly though because for example /run/UID/systemd is created
     with sys.u:sys.r:...
 
+    took care of /run/UID/systemd by associating sys.r with systemd.user_tmpfs_object, so unless there are anymore of these exceptions,
+    i should be able to make this work
+
 * the priv_user_login and ssh_priv_user_login booleans are empty
     login programs are allowed to manual subject type transition to all login user subjects on shell files
     differentiate between priv and unpriv login users and make priv user login conditional

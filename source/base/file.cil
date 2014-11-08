@@ -823,6 +823,10 @@
     (call file_read_run_lnk_files (ARG1))
     (call search_dirs_pattern (ARG1 var run)))
 
+(macro file_search_run_user ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 run_user search_dir_perms))
+
 (macro file_search_var ((type ARG1))
     (allow ARG1 var search_dir_perms))
 
