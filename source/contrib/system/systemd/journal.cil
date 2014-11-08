@@ -56,6 +56,8 @@
 
     (call sys_mountpoint_type (var_log_object))
 
+    (call fs_associate_tmpfs (var_log_object))
+
     (context var_log_journald (sys.u sys.r var_log_object (systemlow mls_systemhigh)))
     (filecon "/var/log/journal(/.*)?" any var_log_journald)
     (filecon "/var/run/log(/.*)?" any var_log_journald)
