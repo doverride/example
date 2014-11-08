@@ -128,5 +128,5 @@
     (typeattributeset journal_client_type ARG1))
 
 (macro journal_admin ((role ARG1)(type ARG2))
-    (typeattributeset journal_admin_role ARG1)
+    (roleattributeset journal_admin_role ARG1)
     (typeattributeset journal_admin_type ARG2))
