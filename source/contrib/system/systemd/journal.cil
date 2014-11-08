@@ -112,6 +112,9 @@
 
 (macro journal_exec_journalctl ((type ARG1))
     (call can_exec (ARG1 journalctl.bin_object))
+    (call journal_journalctl_client_type (ARG1)))
+
+(macro journal_journalctl_client_type ((type ARG1))
     (typeattributeset journalctl_client_type ARG1))
 
 (macro journal_auto_subtrans_journalctl ((type ARG1))

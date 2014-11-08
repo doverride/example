@@ -12,7 +12,7 @@
 (typeattribute systemd_socket_activated_subject_type)
 (typeattribute systemd_pid_object_type)
 
-(typeattribute systemd_systemctl_client_type)
+(typeattribute systemctl_client_type)
 
 (typeattribute systemd_run_object_type)
 (typeattribute systemd_var_lib_object_type)
@@ -231,7 +231,8 @@
 (block systemctl
     (blockinherit systemd_daemon_no_unit_block)
 
-    (typeattributeset systemd_systemctl_client_type common_subject)
+    (typeattributeset systemctl_client_type common_subject)
+    (typeattributeset systemd_subject_type common_subject)
 
     (roletype systemctl_role common_subject)
 
@@ -380,7 +381,7 @@
     (call systemd_systemctl_client_type (ARG1)))
 
 (macro systemd_systemctl_client_type ((type ARG1))
-    (typeattributeset systemd_systemctl_client_type ARG1))
+    (typeattributeset systemctl_client_type ARG1))
 
 (macro systemd_auto_subtrans_systemctl ((type ARG1))
     (call systemd_send_signal_systemctl (ARG1))

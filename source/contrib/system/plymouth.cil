@@ -82,9 +82,13 @@
 
 (macro plymouth_exec ((type ARG1))
     (call can_exec (ARG1 plymouth.bin_object))
+    (call plymouth_client_type (ARG1)))
+
+(macro plymouth_client_type ((type ARG1))
     (typeattributeset plymouth_client_type ARG1))
 
 (macro plymouth_auto_subtrans ((type ARG1))
+    (call plymouth_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 plymouth.bin_object plymouth.common_subject)))
 
@@ -101,6 +105,9 @@
     (call file_search_run (ARG1))
     (call manage_files_pattern
         (ARG1 plymouthd.run_object plymouthd.run_object)))
+
+(macro plymouth_send_signal ((type ARG1))
+    (allow ARG1 plymouth.common_subject (process (signal))))
 
 (macro plymouth_admin ((role ARG1)(type ARG2))
     (roleattributeset plymouth_admin_role ARG1)

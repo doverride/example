@@ -102,9 +102,13 @@
 
 (macro udev_exec_udevadm ((type ARG1))
     (call can_exec (ARG1 udevadm.bin_object))
+    (call udev_udevadm_client_type (ARG1)))
+
+(macro udev_udevadm_client_type ((type ARG1))
     (typeattributeset udevadm_client_type ARG1))
 
 (macro udev_auto_subtrans_udevadm ((type ARG1))
+    (call udev_send_signal_udevadm (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 udevadm.bin_object udevadm.common_subject)))
 
@@ -119,6 +123,9 @@
 (macro udev_read_run_files ((type ARG1))
     (call file_search_run (ARG1))
     (call read_files_pattern (ARG1 udevd.run_object udevd.run_object)))
+
+(macro udev_send_signal_udevadm ((type ARG1))
+    (allow ARG1 udevadm.common_subject (process (signal))))
 
 (macro udev_stream_connect_udevd ((type ARG1))
     (call file_search_run (ARG1))
