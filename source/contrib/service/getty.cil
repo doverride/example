@@ -12,6 +12,8 @@
 
     (allow common_subject self (capability (chown fsetid sys_tty_config sys_admin)))
 
+    (call login_auto_subtrans (common_subject))
+
     (booleanif console_login
         (true
             (call term_setattr_console (common_subject))

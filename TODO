@@ -5,3 +5,7 @@
     ideally "usersubject_object_type" (which would be associated with all usersubject object types) would be excluded because
     system generally has no business with user objects. This will not fly though because for example /run/UID/systemd is created
     with sys.u:sys.r:...
+
+* the priv_user_login and ssh_priv_user_login booleans are empty
+    login programs are allowed to manual subject type transition to all login user subjects on shell files
+    differentiate between priv and unpriv login users and make priv user login conditional
