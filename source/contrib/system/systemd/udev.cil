@@ -81,8 +81,8 @@
 
 (allow udev_client_type self create_netlink_kobject_uevent_socket_perms)
 
-(call udev_read_config_files(udev_client_type))
-(call udev_read_run_files(udev_client_type))
+(call udev_read_config_files (udev_client_type))
+(call udev_read_run_files (udev_client_type))
 
 (call dev_read_urandom (udevadm_client_type))
 
