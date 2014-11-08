@@ -370,6 +370,12 @@
 (macro sys_userrole ((user ARG1))
     (userrole ARG1 sys.r))
 
+(macro sys_dgram_send ((type ARG1))
+    (allow ARG1 sys.common_subject (unix_dgram_socket (sendto))))
+
+(macro sys_stream_connect ((type ARG1))
+    (allow ARG1 sys.common_subject (unix_stream_socket (connectto))))
+
 (macro sys_dump_kernel ((type ARG1))
     (call fs_search_proc (ARG1))
     (allow ARG1 self (capability (sys_rawio)))

@@ -52,6 +52,17 @@
         (call systemd_run_filetrans (common_subject systemd_run_object dir "*"))
 )
 
+(block systemd_maintains_run_dirs_files_and_sock_files_block
+    (blockabstract systemd_maintains_run_dirs_files_and_sock_files_block)
+        (blockinherit systemd_run_object_block)
+
+        (allow common_subject systemd_run_object manage_file_perms)
+        (allow common_subject systemd_run_object manage_dir_perms)
+        (allow common_subject systemd_run_object manage_sock_file_perms)
+
+        (call systemd_run_filetrans (common_subject systemd_run_object dir "*"))
+)
+
 (block systemd_maintains_run_objects_block
     (blockabstract systemd_maintains_run_objects_block)
         (blockinherit systemd_run_object_block)
@@ -116,7 +127,7 @@
 (block systemd_var_lib_object_block
     (blockabstract systemd_var_lib_object_block)
         (type systemd_var_lib_object)
-        (call file_var_lib_type (systemd_var_lib_object))
+        (call file_lib_type (systemd_var_lib_object))
 
         (call systemd_var_lib_object_type (systemd_var_lib_object))
 )
@@ -392,6 +403,10 @@
     (call file_search_run (ARG1))
     (call file_type_transition_pattern
         (ARG1 run_systemd ARG2 ARG3 ARG4)))
+
+(macro systemd_search_run ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 run_systemd search_dir_perms))
 
 (macro systemd_rw_unix_stream_sockets ((type ARG1))
     (allow ARG1 systemd.common_subject rw_unix_stream_socket_perms))

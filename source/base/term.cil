@@ -87,6 +87,9 @@
 (macro term_use_console ((type ARG1))
     (allow ARG1 console_dev rw_term_perms))
 
+(macro term_write_console ((type ARG1))
+    (allow ARG1 console_dev write_chr_file_perms))
+
 (macro term_use_inherited_unallocated_tts ((type ARG1))
     (allow ARG1 tty_dev rw_inherited_term_perms))
 

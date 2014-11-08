@@ -1,0 +1,132 @@
+(roleattribute journalctl_role)
+
+(roleattribute journal_admin_role)
+(typeattribute journal_admin_type)
+
+(typeattribute journal_client_type)
+(typeattribute journalctl_client_type)
+
+(typeattribute journal_object_type)
+(typeattribute journal_subject_type)
+
+(block journalctl
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset journal_subject_type common_subject)
+    (typeattributeset journalctl_client_type common_subject)
+
+    (roletype journalctl_role common_subject)
+
+    (context bin_journalctl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/journalctl" file bin_journalctl)
+
+    (optional journalctl_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional journalctl_optional_unconfined
+        (call unconfined (journalctl_role common_subject)))
+)
+
+(block journald
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset journal_object_type unit_object)
+    (typeattributeset journal_subject_type common_subject)
+
+    (context bin_journald (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-journald" file bin_journald)
+    (filecon "/usr/lib/systemd/systemd-kmsg-syslogd" file bin_journald)
+
+    (context unit_journald (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*syslog.*" file unit_journald)
+    (filecon "/usr/lib/systemd/system/[^/]*systemd-journal.*" file unit_journald)
+
+    (blockinherit file_etc_object_block)
+
+    (typeattributeset journal_object_type etc_object)
+
+    (context etc_journald (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/rsyslog\.d/listen\.conf" file etc_journald)
+    (filecon "/etc/systemd/journald\.conf" file etc_journald)
+
+    (blockinherit file_maintains_var_log_dirs_and_files_block)
+
+    (typeattributeset journal_object_type var_log_object)
+
+    (call sys_mountpoint_type (var_log_object))
+
+    (context var_log_journald (sys.u sys.r var_log_object (systemlow mls_systemhigh)))
+    (filecon "/var/log/journal(/.*)?" any var_log_journald)
+    (filecon "/var/run/log(/.*)?" any var_log_journald)
+
+    (call file_run_filetrans (common_subject var_log_object dir "log"))
+
+    (blockinherit systemd_maintains_run_dirs_files_and_sock_files_block)
+
+    (typeattributeset journal_object_type systemd_run_object)
+
+    (context run_systemd_journald (sys.u sys.r systemd_run_object (systemlow mls_systemhigh)))
+    (filecon "/var/run/systemd/journal(/.*)?" any run_systemd_journald)
+
+    (blockinherit systemd_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset journal_object_type systemd_var_lib_object)
+
+    (context var_lib_journald (sys.u sys.r systemd_var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/systemd/catalog(/.*)?" any var_lib_journald)
+
+    (allow common_subject self (capability (setgid setuid sys_admin sys_ptrace)))
+    (allow common_subject self (process (getcap)))
+
+    (optional journald_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow journal_client_type self (capability (net_admin))) ; FIXME
+(allow journal_client_type self (unix_dgram_socket (sendto)))
+
+(call dgram_send_pattern
+    (journal_client_type journald.systemd_run_object journald.systemd_run_object journald.common_subject))
+
+(call sys_dgram_send (journal_client_type))
+(call sys_stream_connect (journal_client_type))
+
+(call fs_read_devtmpfs_lnk_files (journal_client_type))
+
+(call term_write_console (journal_client_type))
+(call term_dontaudit_use_console (journal_client_type))
+
+(call systemd_search_run (journal_client_type))
+
+(allow journal_admin_type self (capability (kill sys_ptrace)))
+(allow journal_admin_type journal_subject_type signal_perms)
+(allow journal_admin_type journal_subject_type (process (ptrace)))
+(call ps_subject_pattern (journal_admin_type journal_subject_type))
+(allow journal_admin_type journald.unit_object (service (all)))
+(allow journal_admin_type journal_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype journal_admin_role journal_object_type)
+
+(macro journal_exec_journalctl ((type ARG1))
+    (call can_exec (ARG1 journalctl.bin_object))
+    (typeattributeset journalctl_client_type ARG1))
+
+(macro journal_auto_subtrans_journalctl ((type ARG1))
+    (call journal_send_signal_journalctl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 journalctl.bin_object journalctl.common_subject)))
+
+(macro journal_run_journalctl ((type ARG1)(role ARG2))
+    (call journal_auto_subtrans_journalctl (ARG1))
+    (roleattributeset journalctl_role (ARG2)))
+
+(macro journal_send_signal_journalctl ((type ARG1))
+    (allow ARG1 journalctl.common_subject (process (signal))))
+
+(macro journal_client ((type ARG1))
+    (typeattributeset journal_client_type ARG1))
+
+(macro journal_admin ((role ARG1)(type ARG2))
+    (typeattributeset journal_admin_role ARG1)
+    (typeattributeset journal_admin_type ARG2))
