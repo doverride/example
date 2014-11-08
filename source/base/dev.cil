@@ -259,6 +259,9 @@
     (allow ARG1 memory_dev read_chr_file_perms)
     (typeattributeset can_read_memory ARG1))
 
+(macro dev_read_urandom ((type ARG1))
+    (allow ARG1 urandom_dev read_chr_file_perms))
+
 (macro dev_rw_devtty ((type ARG1))
     (allow ARG1 devtty_dev rw_chr_file_perms))
 

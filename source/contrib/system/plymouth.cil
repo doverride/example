@@ -1,5 +1,7 @@
 (roleattribute plymouth_role)
 
+(typeattribute plymouth_client_type)
+
 (typeattribute plymouth_subject_type)
 (typeattribute plymouth_object_type)
 
@@ -9,6 +11,7 @@
 (block plymouth
     (blockinherit systemd_daemon_no_unit_block)
 
+    (typeattributeset plymouth_client_type common_subject)
     (typeattributeset plymouth_subject_type common_subject)
 
     (roletype plymouth_role common_subject)
@@ -78,7 +81,8 @@
 (roletype plymouth_admin_role plymouth_object_type)
 
 (macro plymouth_exec ((type ARG1))
-    (call can_exec (ARG1 plymouth.bin_object)))
+    (call can_exec (ARG1 plymouth.bin_object))
+    (typeattributeset plymouth_client_type ARG1))
 
 (macro plymouth_auto_subtrans ((type ARG1))
     (call auto_subject_type_transition_pattern
