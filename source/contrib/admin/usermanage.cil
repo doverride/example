@@ -154,6 +154,10 @@
 (macro usermanage_passwd_subject_type ((type ARG1))
     (typeattributeset passwd_subject_type ARG1))
 
+(macro usermanage_exec_chfn ((type ARG1))
+    (call can_exec (ARG1 chfn.bin_object))
+    (call usermanage_chfn_subject_type (ARG1)))
+
 (macro usermanage_role_template_chfn ((role ARG1)(type ARG2)(type ARG3))
     (call auto_subject_type_transition_pattern
         (ARG2 chfn.bin_object ARG3))
@@ -163,6 +167,10 @@
     (roleattributeset chfn_role ARG1)
 
     (allow ARG3 ARG2 (process (signal))))
+
+(macro usermanage_exec_passwd ((type ARG1))
+    (call can_exec (ARG1 passwd.bin_object))
+    (call usermanage_passwd_subject_type (ARG1)))
 
 (macro usermanage_role_template_passwd ((role ARG1)(type ARG2)(type ARG3))
     (call auto_subject_type_transition_pattern
