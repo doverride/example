@@ -1,0 +1,31 @@
+(roleattribute initctl_admin_role)
+(typeattribute initctl_admin_type)
+
+(block initctl
+    (blockinherit systemd_daemon_socket_activated_no_unit_block)
+
+    (context bin_initctl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-initctl" file bin_initctl)
+
+    (blockinherit systemd_maintains_run_dirs_and_fifo_files_block)
+
+    (call systemd_socket_activated_object_type (systemd_run_object))
+
+    (context run_initctl (sys.u sys.r systemd_run_object (systemlow systemlow)))
+    (filecon "/var/run/systemd/initctl(/.*)?" any run_initctl)
+
+    (optional initctl_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow initctl_admin_type self (capability (kill sys_ptrace)))
+(allow initctl_admin_type initctl.common_subject signal_perms)
+(allow initctl_admin_type initctl.common_subject (process (ptrace)))
+(call ps_subject_pattern (initctl_admin_type initctl.common_subject))
+(allow initctl_admin_type initctl.systemd_run_object (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype initctl_admin_role initctl.systemd_run_object)
+
+(macro initctl_admin ((role ARG1)(type ARG2))
+    (roleattributeset initctl_admin_role ARG1)
+    (typeattributeset initctl_admin_type ARG2))

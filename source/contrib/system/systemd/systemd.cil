@@ -52,6 +52,16 @@
         (call systemd_run_filetrans (common_subject systemd_run_object dir "*"))
 )
 
+(block systemd_maintains_run_dirs_and_fifo_files_block
+    (blockabstract systemd_maintains_run_dirs_and_fifo_files_block)
+        (blockinherit systemd_run_object_block)
+
+        (allow common_subject systemd_run_object manage_fifo_file_perms)
+        (allow common_subject systemd_run_object manage_dir_perms)
+
+        (call systemd_run_filetrans (common_subject systemd_run_object dir "*"))
+)
+
 (block systemd_maintains_run_dirs_files_and_sock_files_block
     (blockabstract systemd_maintains_run_dirs_files_and_sock_files_block)
         (blockinherit systemd_run_object_block)
@@ -150,6 +160,13 @@
 (block systemd_daemon_socket_activated_block
     (blockabstract systemd_daemon_socket_activated_block)
         (blockinherit systemd_daemon_block)
+
+        (call systemd_socket_activated_subject_type (common_subject))
+)
+
+(block systemd_daemon_socket_activated_no_unit_block
+    (blockabstract systemd_daemon_socket_activated_no_unit_block)
+        (blockinherit systemd_daemon_no_unit_block)
 
         (call systemd_socket_activated_subject_type (common_subject))
 )
