@@ -27,6 +27,18 @@
         (call unconfined (r common_subject)))
 )
 
+(block staff_chfn
+    (blockinherit usermanage_chfn_subject_block)
+
+    (call usermanage_role_template_chfn (staff.r staff.common_subject common_subject))
+)
+
+(block staff_passwd
+    (blockinherit usermanage_passwd_subject_block)
+
+    (call usermanage_role_template_passwd (staff.r staff.common_subject common_subject))
+)
+
 (optional staff_optional_sudo
     (block staff_sudo
         (blockinherit sudo_subject_block)

@@ -1,0 +1,197 @@
+(roleattribute cracklib_role)
+(roleattribute groupadd_role)
+(roleattribute useradd_role)
+
+(roleattribute chfn_role)
+(roleattribute passwd_role)
+
+(typeattribute chfn_subject_type)
+(typeattribute passwd_subject_type)
+
+(roleattribute usermanage_admin_role)
+(typeattribute usermanage_admin_type)
+
+(typeattribute usermanage_object_type)
+(typeattribute usermanage_subject_type)
+
+(block usermanage_chfn_subject_block
+    (blockabstract usermanage_chfn_subject_block)
+        (blockinherit app_subject_block)
+
+        (call usermanage_chfn_subject_type (common_subject))
+)
+
+(block usermanage_passwd_subject_block
+    (blockabstract usermanage_passwd_subject_block)
+        (blockinherit app_subject_block)
+
+        (call usermanage_passwd_subject_type (common_subject))
+)
+
+(block chfn
+    (blockinherit bin_object_block)
+
+    (call app_entry (chfn_subject_type bin_object))
+
+    (context bin_chfn (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/chfn" file bin_chfn)
+    (filecon "/usr/bin/chsh" file bin_chfn)
+
+    (blockinherit auth_pam_etc_object_block)
+
+    (typeattributeset usermanage_object_type pam_etc_object)
+
+    (context pam_etc_chfn (sys.u sys.r pam_etc_object (systemlow systemlow)))
+    (filecon "/etc/pam\.d/chfn" file pam_etc_chfn)
+    (filecon "/etc/pam\.d/chsh" file pam_etc_chfn)
+)
+
+(block passwd
+    (blockinherit bin_object_block)
+
+    (call app_entry (passwd_subject_type bin_object))
+
+    (context bin_passwd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/passwd" file bin_passwd)
+
+    (blockinherit auth_pam_etc_object_block)
+
+    (typeattributeset usermanage_object_type pam_etc_object)
+
+    (context pam_etc_passwd (sys.u sys.r pam_etc_object (systemlow systemlow)))
+    (filecon "/etc/pam\.d/passwd" file pam_etc_passwd)
+)
+
+(block cracklib
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset usermanage_subject_type common_subject)
+
+    (roletype cracklib_role common_subject)
+
+    (context bin_cracklib (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/cracklib-check" file bin_cracklib)
+    (filecon "/usr/sbin/cracklib-format" file bin_cracklib)
+    (filecon "/usr/sbin/cracklib-packer" file bin_cracklib)
+    (filecon "/usr/sbin/cracklib-unpacker" file bin_cracklib)
+    (filecon "/usr/sbin/create-cracklib-dict" file bin_cracklib)
+
+    (blockinherit file_maintains_var_cache_dirs_and_files_block)
+
+    (typeattributeset usermanage_object_type var_cache_object)
+
+    (context var_cache_cracklib (sys.u sys.r var_cache_object (systemlow systemlow)))
+    (filecon "/var/cache/cracklib(/.*)?" any var_cache_cracklib)
+
+    (optional cracklib_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional cracklib_optional_unconfined
+        (call unconfined (cracklib_role common_subject)))
+)
+
+(block useradd
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset usermanage_subject_type common_subject)
+
+    (roletype useradd_role common_subject)
+
+    (context bin_useradd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/useradd" file bin_useradd)
+    (filecon "/usr/sbin/userdel" file bin_useradd)
+    (filecon "/usr/sbin/usermod" file bin_useradd)
+    (filecon "/usr/sbin/newusers" file bin_useradd)
+
+    (blockinherit file_maintains_single_etc_file_block)
+
+    (typeattributeset usermanage_object_type etc_object)
+
+    (context etc_useradd (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/default/useradd" file etc_useradd)
+
+    (optional useradd_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional useradd_optional_unconfined
+        (call unconfined (useradd_role common_subject)))
+)
+
+(block groupadd
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset usermanage_subject_type common_subject)
+
+    (roletype groupadd_role common_subject)
+
+    (context bin_groupadd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/groupadd" file bin_groupadd)
+    (filecon "/usr/sbin/groupdel" file bin_groupadd)
+    (filecon "/usr/sbin/groupmod" file bin_groupadd)
+    (filecon "/usr/sbin/gpasswd" file bin_groupadd)
+
+    (optional groupadd_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional groupadd_optional_unconfined
+        (call unconfined (groupadd_role common_subject)))
+)
+
+(allow usermanage_admin_type self (capability (kill sys_ptrace)))
+(allow usermanage_admin_type usermanage_subject_type signal_perms)
+(allow usermanage_admin_type usermanage_subject_type (process (ptrace)))
+(call ps_subject_pattern (usermanage_admin_type usermanage_subject_type))
+(allow usermanage_admin_type usermanage_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype usermanage_admin_role usermanage_object_type)
+
+(macro usermanage_chfn_subject_type ((type ARG1))
+    (typeattributeset chfn_subject_type ARG1))
+
+(macro usermanage_passwd_subject_type ((type ARG1))
+    (typeattributeset passwd_subject_type ARG1))
+
+(macro usermanage_role_template_chfn ((role ARG1)(type ARG2)(type ARG3))
+    (call auto_subject_type_transition_pattern
+        (ARG2 chfn.bin_object ARG3))
+
+    (roletype ARG1 ARG3)
+
+    (roleattributeset chfn_role ARG1)
+
+    (allow ARG3 ARG2 (process (signal))))
+
+(macro usermanage_role_template_passwd ((role ARG1)(type ARG2)(type ARG3))
+    (call auto_subject_type_transition_pattern
+        (ARG2 passwd.bin_object ARG3))
+
+    (roletype ARG1 ARG3)
+
+    (roleattributeset passwd_role ARG1)
+
+    (allow ARG3 ARG2 (process (signal)))
+
+    (call auth_run_chkpwd (ARG3 ARG1)))
+
+(macro usermanage_auto_subtrans_groupadd ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 groupadd.bin_object groupadd.common_subject)))
+
+(macro usermanage_run_groupadd ((type ARG1)(role ARG2))
+    (call usermanage_auto_subtrans_groupadd (ARG1))
+    (roleattributeset groupadd_role ARG2))
+
+(macro usermanage_auto_subtrans_useradd ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 useradd.bin_object useradd.common_subject)))
+
+(macro usermanage_run_useradd ((type ARG1)(role ARG2))
+    (call usermanage_auto_subtrans_useradd (ARG1))
+    (roleattributeset useradd_role ARG2))
+
+(macro usermanage_admin ((role ARG1)(type ARG2))
+    (roleattributeset usermanage_admin_role ARG1)
+    (typeattributeset usermanage_admin_type ARG2))

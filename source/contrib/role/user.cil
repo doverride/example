@@ -26,3 +26,15 @@
     (optional user_optional_unconfined
         (call unconfined (r common_subject)))
 )
+
+(block user_chfn
+    (blockinherit usermanage_chfn_subject_block)
+
+    (call usermanage_role_template_chfn (user.r user.common_subject common_subject))
+)
+
+(block user_passwd
+    (blockinherit usermanage_passwd_subject_block)
+
+    (call usermanage_role_template_passwd (user.r user.common_subject common_subject))
+)

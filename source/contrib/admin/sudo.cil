@@ -13,14 +13,14 @@
     (blockabstract sudo_subject_block)
         (blockinherit app_subject_block)
 
-        (typeattributeset sudo_subject_type common_subject)
+        (call sudo_subject_type (common_subject))
 )
 
 (block sudo_visudo_subject_block
     (blockabstract sudo_visudo_subject_block)
         (blockinherit app_subject_block)
 
-        (typeattributeset visudo_subject_type common_subject)
+        (call sudo_visudo_subject_type (common_subject))
 )
 
 (block sudo
@@ -131,7 +131,15 @@
 (macro sudo_role_template_visudo ((role ARG1)(type ARG2)(type ARG3))
     (call auto_subject_type_transition_pattern
         (ARG2 visudo.bin_object ARG3))
+
+    (roletype ARG1 ARG3)
+
+    (roleattributeset visudo_role ARG1)
+
+    (allow ARG3 ARG2 (process (signal)))
+
     (call bin_auto_subtrans (ARG3 ARG2))
+
     (call sudo_etc_filetrans_etc_sudo
         (ARG1 ARG3 file "*")))
 
