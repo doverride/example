@@ -1,0 +1,29 @@
+(roleattribute utmp_admin_role)
+(typeattribute utmp_admin_type)
+
+(block utmp
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (context bin_utmp (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-update-utmp" file bin_utmp)
+
+    (blockinherit file_maintains_single_run_file_block)
+
+    (context run_utmp (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/utmp" file run_utmp)
+
+    (optional utmp_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow utmp_admin_type self (capability (kill sys_ptrace)))
+(allow utmp_admin_type utmp.common_subject signal_perms)
+(allow utmp_admin_type utmp.common_subject (process (ptrace)))
+(call ps_subject_pattern (utmp_admin_type utmp.common_subject))
+(allow utmp_admin_type utmp.run_object (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype utmp_admin_role utmp.run_object)
+
+(macro utmp_admin ((role ARG1)(type ARG2))
+    (roleattributeset utmp_admin_role ARG1)
+    (typeattributeset utmp_admin_type ARG2))
