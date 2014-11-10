@@ -2,6 +2,8 @@
 (typeattribute usersubject_common_type)
 
 (typeattribute usersubject_common_login_type)
+(typeattribute usersubject_priv_login_type)
+(typeattribute usersubject_unpriv_login_type)
 
 (typeattribute usersubject_home_type)
 (typeattribute usersubject_tmpfs_type)
@@ -20,7 +22,7 @@
         (role r)
         (roletype r subject)
 
-        (typeattributeset usersubject_type subject)
+        (call usersubject_type (subject))
 )
 
 (block usersubject_common_block
@@ -33,7 +35,8 @@
         (role r)
         (roletype r common_subject)
 
-        (typeattributeset usersubject_common_type common_subject)
+        (call usersubject_common_type (common_subject))
+
 )
 
 (block usersubject_common_login_block
@@ -42,7 +45,16 @@
 
         (call sys_roleallow_role (r))
 
-        (typeattributeset usersubject_common_login_type common_subject)
+        (call usersubject_common_login_type (common_subject))
+)
+
+(block usersubject_priv_login_block
+    (blockabstract usersubject_priv_login_block)
+        (blockinherit usersubject_common_block)
+
+        (call sys_roleallow_role (r))
+
+        (call usersubject_priv_login_type (common_subject))
 )
 
 (block usersubject_object_block
@@ -76,7 +88,7 @@
         (type user_tmpfs_object)
         (call file_tmpfs_type (user_tmpfs_object))
 
-        (typeattributeset usersubject_tmpfs_type user_tmpfs_object)
+        (call usersubject_tmpfs_type (user_tmpfs_object))
 )
 
 (block usersubject_maintains_tmpfs_files_block
@@ -96,7 +108,7 @@
     (blockabstract usersubject_mail_spool_object_block)
         (blockinherit file_var_spool_object_block)
 
-        (typeattributeset usersubject_mail_spool_type var_spool_object)
+        (call usersubject_mail_spool_type (var_spool_object))
 )
 
 (block usersubject_maintains_single_mail_spool_file_block
@@ -170,6 +182,9 @@
 
 (call subject_user_exemption_target (usersubject_common_type))
 
+(typeattributeset usersubject_unpriv_login_type
+    (and (usersubject_common_login_type) (not (usersubject_priv_login_type))))
+
 (macro usersubject_base_template ((user ARG1)(role ARG2)(type ARG3))
     (call subject_type (ARG3))
     (call usersubject_type (ARG3))
@@ -195,6 +210,10 @@
 
 (macro usersubject_common_login_type ((type ARG1))
     (typeattributeset usersubject_common_login_type ARG1))
+
+(macro usersubject_priv_login_type ((type ARG1))
+    (call usersubject_common_login_type (ARG1))
+    (typeattributeset usersubject_priv_login_type ARG1))
 
 (macro usersubject_mls_template ((user ARG1)(level ARG2)(level ARG3)(level ARG4))
     (userlevel ARG1 ARG3)
@@ -370,5 +389,11 @@
 (macro usersubject_dynamic_subtrans_all_common_login_subjects ((type ARG1))
     (call dynamic_subject_type_transition_pattern (ARG1 usersubject_common_login_type)))
 
+(macro usersubject_dynamic_subtrans_all_unpriv_login_subjects ((type ARG1))
+    (call dynamic_subject_type_transition_pattern (ARG1 usersubject_unpriv_login_type)))
+
 (macro usersubject_shell_manual_subtrans_all_common_login_subjects ((type ARG1))
     (call bin_shell_manual_subtrans (ARG1 usersubject_common_login_type)))
+
+(macro usersubject_shell_manual_subtrans_all_unpriv_login_subjects ((type ARG1))
+    (call bin_shell_manual_subtrans (ARG1 usersubject_unpriv_login_type)))

@@ -130,9 +130,13 @@
 
     (allow common_subject sshd_key.etc_object read_file_perms)
 
-    (optional sshd_optional_usersubject
-        (call usersubject_dynamic_subtrans_all_common_login_subjects (common_subject))
-        (call usersubject_shell_manual_subtrans_all_common_login_subjects (common_subject)))
+    (booleanif ssh_priv_user_login
+        (true
+            (call usersubject_dynamic_subtrans_all_common_login_subjects (common_subject))
+            (call usersubject_shell_manual_subtrans_all_common_login_subjects (common_subject)))
+        (false
+            (call usersubject_dynamic_subtrans_all_unpriv_login_subjects (common_subject))
+            (call usersubject_shell_manual_subtrans_all_unpriv_login_subjects (common_subject))))
 
     (optional sshd_optional_unconfined
         (call unconfined (sys.r common_subject)))

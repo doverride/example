@@ -12,3 +12,5 @@
 * the priv_user_login and ssh_priv_user_login booleans are empty
     login programs are allowed to manual subject type transition to all login user subjects on shell files
     differentiate between priv and unpriv login users and make priv user login conditional
+
+    took care of priv_user_login and ssh_priv_user_login: need to test it

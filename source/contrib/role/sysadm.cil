@@ -1,5 +1,5 @@
 (block sysadm
-    (blockinherit usersubject_common_login_block)
+    (blockinherit usersubject_priv_login_block)
 
     (call usersubject_mls_template (u systemlow systemlow systemhigh))
 
