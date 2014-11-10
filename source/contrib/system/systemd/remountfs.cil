@@ -1,0 +1,24 @@
+(typeattribute remountfs_admin_type)
+
+(block remountfs
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (context bin_remountfs (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-remount-fs" file bin_remountfs)
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call mount_auto_subtrans (common_subject))
+
+    (optional remountfs_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow remountfs_admin_type remountfs.common_subject signal_perms)
+(allow remountfs_admin_type remountfs.common_subject (process (ptrace)))
+(call ps_subject_pattern (remountfs_admin_type remountfs.common_subject))
+
+(macro remountfs_admin ((type ARG1))
+    (typeattributeset remountfs_admin_type ARG1))
