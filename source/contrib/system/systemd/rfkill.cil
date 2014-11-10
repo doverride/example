@@ -1,0 +1,30 @@
+(roleattribute rfkill_admin_role)
+(typeattribute rfkill_admin_type)
+
+(block rfkill
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (context bin_rfkill (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-rfkill" file bin_rfkill)
+
+    (blockinherit systemd_maintains_var_lib_dirs_and_files_block)
+
+    (context systemd_var_lib_rfkill (sys.u sys.r systemd_var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/systemd/rfkill(/.*)?" any systemd_var_lib_rfkill)
+
+    (call journal_client (common_subject))
+
+    (optional rfkill_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow rfkill_admin_type rfkill.common_subject signal_perms)
+(allow rfkill_admin_type rfkill.common_subject (process (ptrace)))
+(call ps_subject_pattern (rfkill_admin_type rfkill.common_subject))
+(allow rfkill_admin_type rfkill.systemd_var_lib_object (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype rfkill_admin_role rfkill.systemd_var_lib_object)
+
+(macro rfkill_admin ((role ARG1)(type ARG2))
+    (roleattributeset rfkill_admin_role ARG1)
+    (typeattributeset rfkill_admin_type ARG2))
