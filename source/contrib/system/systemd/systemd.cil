@@ -118,8 +118,6 @@
         (call file_type (unit_object))
 
         (call systemd_unit_object_type (unit_object))
-
-        (context systemd_unit (sys.u sys.r unit_object (systemlow systemlow)))
 )
 
 (block systemd_maintains_single_var_lib_file_block
