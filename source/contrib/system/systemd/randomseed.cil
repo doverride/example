@@ -1,0 +1,33 @@
+(roleattribute randomseed_admin_role)
+(typeattribute randomseed_admin_type)
+
+(block randomseed
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (context bin_randomseed (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-random-seed" file bin_randomseed)
+
+    (blockinherit systemd_maintains_single_var_lib_file_block)
+
+    (context var_lib_randomseed (sys.u sys.r systemd_var_lib_object
+        (mls_systemhigh mls_systemhigh)))
+    (filecon "/var/lib/systemd/random-seed" file var_lib_randomseed)
+
+    (call dev_rw_urandom (common_subject))
+
+    (call journal_client (common_subject))
+
+    (optional randomseed_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow randomseed_admin_type randomseed.common_subject signal_perms)
+(allow randomseed_admin_type randomseed.common_subject (process (ptrace)))
+(call ps_subject_pattern (randomseed_admin_type randomseed.common_subject))
+(allow randomseed_admin_type randomseed.systemd_var_lib_object (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype randomseed_admin_role randomseed.systemd_var_lib_object)
+
+(macro randomseed_admin ((role ARG1)(type ARG2))
+    (roleattributeset randomseed_admin_role ARG1)
+    (typeattributeset randomseed_admin_type ARG2))
