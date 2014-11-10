@@ -14,3 +14,6 @@
     differentiate between priv and unpriv login users and make priv user login conditional
 
     took care of priv_user_login and ssh_priv_user_login: need to test it
+
+* there are a lot of redundant (context ...) statements that could be removed (low priority)
+    the question is which ones to remove without being inconsistent, some are easier than others
