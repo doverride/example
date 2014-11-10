@@ -63,7 +63,7 @@
     (allow common_subject self rw_fifo_file_perms)
     (allow common_subject self create_netlink_kobject_uevent_socket_perms)
     (allow common_subject self (netlink_route_socket (nlmsg_write)))
-    (allow common_subject self create_netlink_socket_perms) ; crda
+    (allow common_subject self create_netlink_socket_perms)
 
     (optional udevd_optional_unconfined
         (call unconfined (sys.r common_subject)))
