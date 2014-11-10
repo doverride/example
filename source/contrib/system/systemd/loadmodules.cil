@@ -1,0 +1,30 @@
+(roleattribute loadmodules_admin_role)
+(typeattribute loadmodules_admin_type)
+
+(block loadmodules
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (context bin_loadmodules (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-modules-load" file bin_loadmodules)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (context etc_loadmodules (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/modules-load\.d(/.*)?" any etc_loadmodules)
+
+    (call journal_client (common_subject))
+
+    (optional loadmodules_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow loadmodules_admin_type loadmodules.common_subject signal_perms)
+(allow loadmodules_admin_type loadmodules.common_subject (process (ptrace)))
+(call ps_subject_pattern (loadmodules_admin_type loadmodules.common_subject))
+(allow loadmodules_admin_type loadmodules.etc_object (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype loadmodules_admin_role loadmodules.etc_object)
+
+(macro loadmodules_admin ((role ARG1)(type ARG1))
+    (roleattributeset loadmodules_admin_role ARG1)
+    (typeattributeset loadmodules_admin_type ARG2))
