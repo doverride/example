@@ -1,0 +1,108 @@
+(roleattribute tmpfiles_role)
+
+(roleattribute tmpfiles_admin_role)
+(typeattribute tmpfiles_admin_type)
+
+(typeattribute tmpfiles_manageable_object_type)
+(typeattribute tmpfiles_manageable_object_exception_type)
+
+(typeattribute tmpfiles_relabelable_object_type)
+(typeattribute tmpfiles_relabelable_object_exception_type)
+
+(typeattribute tmpfiles_client_type)
+
+(typeattribute tmpfiles_object_type)
+
+(block tmpfiles
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset tmpfiles_client_type common_subject)
+
+    (roletype tmpfiles_role common_subject)
+
+    (context bin_tmpfiles (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/systemd-tmpfiles" file bin_tmpfiles)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset tmpfiles_object_type etc_object)
+
+    (context etc_tmpfiles (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/tmpfiles\.d(/.*)?" any etc_tmpfiles)
+
+    (blockinherit file_maintains_run_dirs_and_files_block)
+
+    (typeattributeset tmpfiles_object_type run_object)
+
+    (context run_tmpfiles (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/tmpfiles\.d(/.*)?" any run_tmpfiles)
+
+    (allow common_subject self (capability (fowner fsetid dac_override chown)))
+    (allow common_subject self (process (getcap setfscreate)))
+
+    (call dev_manage_all (common_subject))
+    (call dev_relabel_all (common_subject))
+
+    (call fs_manage_devtmpfs_dirs (common_subject))
+    (call fs_manage_devtmpfs_lnk_files (common_subject))
+
+    (call journal_client (common_subject))
+
+    (optional tmpfiles_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional tmpfiles_optional_unconfined
+        (call unconfined (tmpfiles_role common_subject)))
+)
+
+(call file_spec_except (tmpfiles_manageable_object_type
+    tmpfiles_manageable_object_exception_type))
+
+(allow tmpfiles.common_subject tmpfiles_manageable_object_type
+    (all_file_objects (manage)))
+
+(call file_spec_except (tmpfiles_relabelable_object_type
+    tmpfiles_relabelable_object_exception_type))
+
+(allow tmpfiles.common_subject tmpfiles_relabelable_object_type
+    (all_file_objects (relabel)))
+
+(allow tmpfiles_admin_type self (capability (kill sys_ptrace)))
+(allow tmpfiles_admin_type tmpfiles.common_subject signal_perms)
+(allow tmpfiles_admin_type tmpfiles.common_subject (process (ptrace)))
+(call ps_subject_pattern (tmpfiles_admin_type tmpfiles.common_subject))
+(allow tmpfiles_admin_type tmpfiles_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype tmpfiles_admin_role tmpfiles_object_type)
+
+(macro tmpfiles_exec ((type ARG1))
+    (call can_exec (ARG1 tmpfiles.bin_object))
+    (call tmpfiles_client_type (ARG1)))
+
+(macro tmpfiles_client_type ((type ARG1))
+    (typeattributeset tmpfiles_client_type ARG1))
+
+(macro tmpfiles_auto_subtrans ((type ARG1))
+    (call tmpfiles_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 tmpfiles.bin_object tmpfiles.common_subject)))
+
+(macro tmpfiles_run ((type ARG1)(role ARG2))
+    (call tmpfiles_auto_subtrans (ARG1))
+    (roleattributeset tmpfiles_role (ARG2)))
+
+(macro tmpfiles_manageable_object_exception ((type ARG1))
+    (call file_spec_exception
+        (tmpfiles_manageable_object_exception_type ARG1)))
+
+(macro tmpfiles_relabelable_object_exception ((type ARG1))
+    (call file_spec_exception
+        (tmpfiles_relabelable_object_exception_type ARG1)))
+
+(macro tmpfiles_send_signal ((type ARG1))
+    (allow ARG1 tmpfiles.common_subject (process (signal))))
+
+(macro tmpfiles_admin ((role ARG1)(type ARG2))
+    (roleattributeset tmpfiles_admin_role ARG1)
+    (typeattributeset tmpfiles_admin_type ARG2))

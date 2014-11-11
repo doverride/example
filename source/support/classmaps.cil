@@ -1,4 +1,5 @@
-(classmap all_file_objects (not_mounton_entrypoint_and_execmod))
+(classmap all_file_objects (not_mounton_entrypoint_and_execmod manage relabel))
+
 (classmapping all_file_objects not_mounton_entrypoint_and_execmod
     all_file_perms_except_mounton_execmod_and_entrypoint)
 (classmapping all_file_objects not_mounton_entrypoint_and_execmod
@@ -14,7 +15,24 @@
 (classmapping all_file_objects not_mounton_entrypoint_and_execmod
     all_fifo_file_perms_except_mounton_and_execmod)
 
+(classmapping all_file_objects manage manage_file_perms)
+(classmapping all_file_objects manage manage_dir_perms)
+(classmapping all_file_objects manage manage_lnk_file_perms)
+(classmapping all_file_objects manage manage_chr_file_perms)
+(classmapping all_file_objects manage manage_blk_file_perms)
+(classmapping all_file_objects manage manage_sock_file_perms)
+(classmapping all_file_objects manage manage_fifo_file_perms)
+
+(classmapping all_file_objects relabel relabel_file_perms)
+(classmapping all_file_objects relabel relabel_dir_perms)
+(classmapping all_file_objects relabel relabel_lnk_file_perms)
+(classmapping all_file_objects relabel relabel_chr_file_perms)
+(classmapping all_file_objects relabel relabel_blk_file_perms)
+(classmapping all_file_objects relabel relabel_sock_file_perms)
+(classmapping all_file_objects relabel relabel_fifo_file_perms)
+
 (classmap dir_file (mounton))
+
 (classmapping dir_file mounton
     (dir (mounton)))
 (classmapping dir_file mounton

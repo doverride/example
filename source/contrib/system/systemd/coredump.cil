@@ -56,7 +56,7 @@
 (allow coredump_admin_type self (capability (kill sys_ptrace)))
 (allow coredump_admin_type coredump_subject_type signal_perms)
 (allow coredump_admin_type coredump_subject_type (process (ptrace)))
-(call ps_subject_pattern (coredump_admin_type coredump.common_subject))
+(call ps_subject_pattern (coredump_admin_type coredump_subject_type))
 (allow coredump_admin_type coredump_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype coredump_admin_role coredump_object_type)

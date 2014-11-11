@@ -89,12 +89,22 @@
     (call stor_manage_removable (ARG1))
     (call stor_manage_scsi_generic (ARG1)))
 
+(macro stor_relabel_all ((type ARG1))
+    (call stor_relabel_fixed_disk (ARG1))
+    (call stor_relabel_fuse (ARG1))
+    (call stor_relabel_removable (ARG1))
+    (call stor_relabel_scsi_generic (ARG1)))
+
 (macro stor_manage_fixed_disk ((type ARG1))
     (allow ARG1 self (capability (mknod)))
     (allow ARG1 fixed_disk_dev manage_blk_file_perms)
     (allow ARG1 fixed_disk_dev manage_chr_file_perms)
     (typeattributeset can_read_fixed_disk ARG1)
     (typeattributeset can_write_fixed_disk ARG1))
+
+(macro stor_relabel_fixed_disk ((type ARG1))
+    (allow ARG1 fixed_disk_dev relabel_blk_file_perms)
+    (allow ARG1 fixed_disk_dev relabel_chr_file_perms))
 
 (macro stor_read_fixed_disk ((type ARG1))
     (allow ARG1 fixed_disk_dev read_chr_file_perms)
@@ -110,15 +120,24 @@
     (allow ARG1 self (capability (mknod)))
     (allow ARG1 fuse_dev manage_chr_file_perms))
 
+(macro stor_relabel_fuse ((type ARG1))
+    (allow ARG1 fuse_dev relabel_chr_file_perms))
+
 (macro stor_manage_removable ((type ARG1))
     (allow ARG1 self (capability (mknod)))
     (allow ARG1 removable_dev manage_blk_file_perms))
+
+(macro stor_relabel_removable ((type ARG1))
+    (allow ARG1 removable_dev relabel_blk_file_perms))
 
 (macro stor_manage_scsi_generic ((type ARG1))
     (allow ARG1 self (capability (mknod)))
     (allow ARG1 fixed_disk_dev manage_chr_file_perms)
     (typeattributeset can_read_scsi_generic ARG1)
     (typeattributeset can_write_scsi_generic ARG1))
+
+(macro stor_relabel_scsi_generic ((type ARG1))
+    (allow ARG1 fixed_disk_dev relabel_chr_file_perms))
 
 (macro stor_read_scsi_generic ((type ARG1))
     (allow ARG1 scsi_generic_dev read_chr_file_perms)

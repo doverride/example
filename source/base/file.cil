@@ -845,7 +845,7 @@
     (typeattributeset ARG1 (and (file_type)
         (not (file_auth_type file_sec_type file_exception ARG2)))))
 
-(macro files_spec_exception ((type ARG1)(type ARG2))
+(macro file_spec_exception ((type ARG1)(type ARG2))
     (typeattributeset ARG1 ARG2))
 
 (macro file_spool_type ((type ARG1))
