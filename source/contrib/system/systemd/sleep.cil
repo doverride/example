@@ -1,0 +1,21 @@
+(typeattribute sleep_admin_type)
+
+(block sleep
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (context bin_sleep (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-sleep" file bin_sleep)
+
+    (call journal_client (common_subject))
+
+    (optional sleep_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow sleep_admin_type self (capability (kill sys_ptrace)))
+(allow sleep_admin_type sleep.common_subject signal_perms)
+(allow sleep_admin_type sleep.common_subject (process (ptrace)))
+(call ps_subject_pattern (sleep_admin_type sleep.common_subject))
+
+(macro sleep_admin ((type ARG1))
+    (typeattributeset sleep_admin_type ARG1))
