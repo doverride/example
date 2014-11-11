@@ -1,0 +1,56 @@
+(roleattribute sysusers_role)
+
+(roleattribute sysusers_admin_role)
+(typeattribute sysusers_admin_type)
+
+(typeattribute sysusers_object_type)
+
+(block sysusers
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (roletype sysusers_role common_subject)
+
+    (context bin_sysusers (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/systemd-sysusers" file bin_sysusers)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset sysusers_object_type etc_object)
+
+    (context etc_sysusers (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/sysusers\.d(/.*)?" any etc_sysusers)
+
+    (blockinherit file_maintains_run_dirs_and_files_block)
+
+    (typeattributeset sysusers_object_type run_object)
+
+    (context run_sysusers (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/sysusers\.d(/.*)?" any run_sysusers)
+
+    (optional sysusers_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional sysusers_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow sysusers_admin_type self (capability (kill sys_ptrace)))
+(allow sysusers_admin_type sysusers.common_subject signal_perms)
+(allow sysusers_admin_type sysusers.common_subject (process (ptrace)))
+(call ps_subject_pattern (sysusers_admin_type sysusers.common_subject))
+(allow sysusers_admin_type sysusers_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype sysusers_admin_role sysusers_object_type)
+
+(macro sysusers_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 sysusers.bin_object sysusers.common_subject)))
+
+(macro sysusers_run ((type ARG1)(role ARG2))
+    (call sysusers_auto_subtrans (ARG1))
+    (roleattributeset sysusers_role ARG2))
+
+(macro sysusers_admin ((role ARG1)(type ARG2))
+    (typeattributeset sysusers_admin_role ARG1)
+    (typeattributeset sysusers_admin_type ARG2))

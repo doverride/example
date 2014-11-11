@@ -1,0 +1,89 @@
+(roleattribute coredumpctl_role)
+
+(roleattribute coredump_admin_role)
+(typeattribute coredump_admin_type)
+
+(typeattribute coredump_object_type)
+(typeattribute coredump_subject_type)
+
+(typeattribute coredumpctl_client_type)
+
+(block coredumpctl
+    (blockinherit app_block)
+
+    (typeattributeset coredump_subject_type common_subject)
+    (typeattributeset coredumpctl_client_type common_subject)
+
+    (roletype coredumpctl_role common_subject)
+
+    (context bin_coredumpctl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/coredumpctl" file bin_coredumpctl)
+
+    (optional coredumpctl_optional_unconfined
+        (call unconfined (coredumpctl_role common_subject)))
+)
+
+(block coredump
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset coredump_subject_type common_subject)
+
+    (context bin_coredump (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-coredump" file bin_coredump)
+
+    (blockinherit systemd_maintains_single_etc_file_block)
+
+    (typeattributeset coredump_object_type systemd_etc_object)
+
+    (context systemd_etc_coredump (sys.u sys.r systemd_etc_object (systemlow systemlow)))
+    (filecon "/etc/systemd/coredump\.conf" file systemd_etc_coredump)
+
+    (blockinherit systemd_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset coredump_object_type systemd_var_lib_object)
+
+    (context systemd_var_lib_coredump (sys.u sys.r systemd_var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/systemd/coredump(/.*)?" any systemd_var_lib_coredump)
+
+    (allow common_subject self (capability (setuid setgid sys_ptrace)))
+
+    (call journal_client (common_subject))
+
+    (optional coredump_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow coredump_admin_type self (capability (kill sys_ptrace)))
+(allow coredump_admin_type coredump_subject_type signal_perms)
+(allow coredump_admin_type coredump_subject_type (process (ptrace)))
+(call ps_subject_pattern (coredump_admin_type coredump.common_subject))
+(allow coredump_admin_type coredump_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype coredump_admin_role coredump_object_type)
+
+(macro coredump_exec_coredumpctl ((type ARG1))
+    (call can_exec (ARG1 coredumpctl.bin_object))
+    (call coredump_coredumpctl_client_type (ARG1)))
+
+(macro coredump_coredumpctl_client_type ((type ARG1))
+    (typeattributeset coredumpctl_client_type ARG1))
+
+(macro coredump_auto_subtrans_coredumpctl ((type ARG1))
+    (call coredump_send_signal_coredumpctl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 coredumpctl.bin_object coredumpctl.common_subject)))
+
+(macro coredump_run_coredumpctl ((type ARG1)(role ARG2))
+    (call coredump_auto_subtrans_coredumpctl (ARG1))
+    (roleattributeset coredumpctl_role (ARG2)))
+
+(macro coredump_auto_subtrans ((type ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 coredump.bin_object coredump.common_subject)))
+
+(macro coredump_send_signal_coredumpctl ((type ARG1))
+    (allow ARG1 coredumpctl.common_subject (process (signal))))
+
+(macro coredump_admin ((role ARG1)(type ARG2))
+    (roleattributeset coredump_admin_role ARG1)
+    (typeattributeset coredump_admin_type ARG2))

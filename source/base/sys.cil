@@ -95,8 +95,8 @@
     (optional sys_optional_cgagent
         (call cgagent_auto_subtrans (common_subject)))
 
-    ; (optional sys_optional coredump
-        ; (call coredump_auto_subtrans (common_subject)))
+    (optional sys_optional_coredump
+        (call coredump_auto_subtrans (common_subject)))
 
     (optional sys_optional_kmod
         (call kmod_auto_subtrans (common_subject)))
