@@ -1,0 +1,87 @@
+(roleattribute hostnamectl_role)
+
+(roleattribute hostnamed_admin_role)
+(typeattribute hostnamed_admin_type)
+
+(typeattribute hostnamed_object_type)
+(typeattribute hostnamed_subject_type)
+
+(typeattribute hostnamectl_client_type)
+
+(block hostnamectl
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset hostnamectl_client_type common_subject)
+    (typeattributeset hostnamed_subject_type common_subject)
+
+    (roletype hostnamectl_role common_subject)
+
+    (context bin_hostnamectl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/hostnamectl" file bin_hostnamectl)
+
+    (optional hostnamectl_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional hostnamectl_optional_unconfined
+        (call unconfined (hostnamectl_role common_subject)))
+)
+
+(block hostnamed
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset hostnamed_subject_type common_subject)
+
+    (context bin_hostnamed (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-hostnamed" file bin_hostnamed)
+
+    (blockinherit file_maintains_single_etc_file_block)
+
+    (typeattributeset hostnamed_object_type etc_object)
+
+    (context etc_hostnamed (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/hostname" file etc_hostnamed)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset hostnamed_object_type dbus_etc_object)
+
+    (context dbus_etc_hostnamed (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.hostname1\.conf" file dbus_etc_hostnamed)
+
+    (call journal_client (common_subject))
+
+    (optional hostnamed_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow hostnamed_admin_type self (capability (kill sys_ptrace)))
+(allow hostnamed_admin_type hostnamed_subject_type signal_perms)
+(allow hostnamed_admin_type hostnamed_subject_type (process (ptrace)))
+(call ps_subject_pattern (hostnamed_admin_type hostnamed_subject_type))
+(allow hostnamed_admin_type hostnamed_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype hostnamed_admin_role hostnamed_object_type)
+
+(macro hostnamed_exec_hostnamectl ((type ARG1))
+    (call can_exec (ARG1 hostnamectl.bin_object))
+    (call hostnamed_hostnamectl_client_type (ARG1)))
+
+(macro hostnamed_hostnamectl_client_type ((type ARG1))
+    (typeattributeset hostnamectl_client_type ARG1))
+
+(macro hostnamed_auto_subtrans_hostnamectl ((type ARG1))
+    (call hostnamed_send_signal_hostnamectl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 hostnamectl.bin_object hostnamectl.common_subject)))
+
+(macro hostnamed_run_hostnamectl ((type ARG1)(role ARG2))
+    (call hostnamed_auto_subtrans_hostnamectl (ARG1))
+    (roleattributeset hostnamectl_role (ARG2)))
+
+(macro hostnamed_send_signal_hostnamectl ((type ARG1))
+    (allow ARG1 hostnamectl.common_subject (process (signal))))
+
+(macro hostnamed_admin ((role ARG1)(type ARG2))
+    (roleattributeset hostnamed_admin_role ARG1)
+    (typeattributeset hostnamed_admin_type ARG2))
