@@ -17,3 +17,5 @@
 
 * there are a lot of redundant (context ...) statements that could be removed (low priority)
     the question is which ones to remove without being inconsistent, some are easier than others
+
+    There is a bug in secilc that prevents me from declaring contexts in blockbstracts if they are inherited on more than a single level
