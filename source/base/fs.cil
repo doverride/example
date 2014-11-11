@@ -231,6 +231,9 @@
 (macro fs_read_sysfs_files ((type ARG1))
     (call read_files_pattern (ARG1 sysfs sysfs)))
 
+(macro fs_rw_sysfs_files ((type ARG1))
+    (call rw_files_pattern (ARG1 sysfs sysfs)))
+
 (macro fs_read_sysfs_lnk_files ((type ARG1))
     (allow ARG1 sysfs read_lnk_file_perms))
 
