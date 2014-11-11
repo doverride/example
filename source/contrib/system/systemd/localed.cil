@@ -1,0 +1,91 @@
+(roleattribute localectl_role)
+
+(roleattribute localed_admin_role)
+(typeattribute localed_admin_type)
+
+(typeattribute localed_object_type)
+(typeattribute localed_subject_type)
+
+(typeattribute localectl_client_type)
+
+(block localectl
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset localectl_client_type common_subject)
+    (typeattributeset localed_subject_type common_subject)
+
+    (roletype localectl_role common_subject)
+
+    (context bin_localectl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/localectl" file bin_localectl)
+
+    (optional localectl_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional localectl_optional_unconfined
+        (call unconfined (localectl_role common_subject)))
+)
+
+(block localed
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset localed_subject_type common_subject)
+
+    (context bin_localed (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-localed" file bin_localed)
+
+    (blockinherit file_maintains_single_etc_file_block)
+
+    (typeattributeset localed_object_type etc_object)
+
+    (context etc_localed (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/locale\.conf" file etc_localed)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset localed_object_type dbus_etc_object)
+
+    (context dbus_etc_localed (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.locale1\.conf" file dbus_etc_localed)
+
+    (call journal_client (common_subject))
+
+    (optional localed_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow localed_admin_type self (capability (kill sys_ptrace)))
+(allow localed_admin_type localed_subject_type signal_perms)
+(allow localed_admin_type localed_subject_type (process (ptrace)))
+(call ps_subject_pattern (localed_admin_type localed_subject_type))
+(allow localed_admin_type localed_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype localed_admin_role localed_object_type)
+
+(macro localed_exec_localectl ((type ARG1))
+    (call can_exec (ARG1 localectl.bin_object))
+    (call localed_localectl_client_type (ARG1)))
+
+(macro localed_localectl_client_type ((type ARG1))
+    (typeattributeset localectl_client_type ARG1))
+
+(macro localed_auto_subtrans_localectl ((type ARG1))
+    (call localed_send_signal_localectl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 localectl.bin_object localectl.common_subject)))
+
+(macro localed_run_localectl ((type ARG1)(role ARG2))
+    (call localed_auto_subtrans_localectl (ARG1))
+    (roleattributeset localectl_role (ARG2)))
+
+(macro localed_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 localed.etc_object read_file_perms))
+
+(macro localed_send_signal_localectl ((type ARG1))
+    (allow ARG1 localectl.common_subject (process (signal))))
+
+(macro localed_admin ((role ARG1)(type ARG2))
+    (roleattributeset localed_admin_role ARG1)
+    (typeattributeset localed_admin_type ARG2))
