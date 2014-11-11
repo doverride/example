@@ -1,0 +1,113 @@
+(roleattribute askpwd_role)
+(roleattribute askpwdagent_role)
+
+(roleattribute askpwd_admin_role)
+(typeattribute askpwd_admin_type)
+
+(typeattribute askpwd_client_type)
+(typeattribute askpwdagent_client_type)
+
+(typeattribute askpwd_object_type)
+(typeattribute askpwd_subject_type)
+
+(block askpwd
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset askpwd_subject_type common_subject)
+    (typeattributeset askpwd_client_type common_subject)
+
+    (roletype askpwd_role common_subject)
+
+    (context bin_askpwd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/systemd-ask-password" file bin_askpwd)
+
+    (blockinherit systemd_maintains_run_dirs_and_files_block)
+
+    (typeattributeset askpwd_object_type systemd_run_object)
+
+    (context systemd_run_askpwd (sys.u sys.r systemd_run_object (systemlow systemlow)))
+    (filecon "/var/run/systemd/ask-password(/.*)?" any systemd_run_askpwd)
+
+    (optional askpwd_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional askpwd_optional_unconfined
+        (call unconfined (askpwd_role common_subject)))
+)
+
+(block askpwdagent
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset askpwd_subject_type common_subject)
+    (typeattributeset askpwdagent_client_type common_subject)
+
+    (roletype askpwdagent_role common_subject)
+
+    (context bin_askpwdagent (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/systemd-tty-ask-password-agent" file bin_askpwdagent)
+
+    (blockinherit systemd_maintains_run_dirs_and_fifo_files_block)
+
+    (typeattributeset askpwd_object_type systemd_run_object)
+
+    (context systemd_run_askpwdagent (sys.u sys.r systemd_run_object (systemlow systemlow)))
+    (filecon "/var/run/systemd/ask-password-block(/.*)?" any systemd_run_askpwdagent)
+
+    (optional askpwdagent_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional askpwdagent_optional_unconfined
+        (call unconfined (askpwdagent_role common_subject)))
+)
+
+(allow askpwd_admin_type self (capability (kill sys_ptrace)))
+(allow askpwd_admin_type askpwd_subject_type signal_perms)
+(allow askpwd_admin_type askpwd_subject_type (process (ptrace)))
+(call ps_subject_pattern (askpwd_admin_type askpwd_subject_type))
+(allow askpwd_admin_type askpwd_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype askpwd_admin_role askpwd_object_type)
+
+(macro askpwd_exec ((type ARG1))
+    (call can_exec (ARG1 askpwd.bin_object))
+    (call askpwd_client_type (ARG1)))
+
+(macro askpwd_client_type ((type ARG1))
+    (typeattributeset askpwd_client_type ARG1))
+
+(macro askpwd_auto_subtrans ((type ARG1))
+    (call askpwd_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 askpwd.bin_object askpwd.common_subject)))
+
+(macro askpwd_run ((type ARG1)(role ARG2))
+    (call askpwd_auto_subtrans (ARG1))
+    (roleattributeset askpwd_role (ARG2)))
+
+(macro askpwd_exec_askpwdagent ((type ARG1))
+    (call can_exec (ARG1 askwpdagent.bin_object))
+    (call askpwd_askpwdagent_client_type (ARG1)))
+
+(macro askpwd_askpwdagent_client_type ((type ARG1))
+    (typeattributeset askpwdagent_client_type ARG1))
+
+(macro askpwd_auto_subtrans_askpwdagent ((type ARG1))
+    (call askpwd_send_signal_askpwdagent (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 askpwdagent.bin_object askpwdagent.common_subject)))
+
+(macro askpwd_run_askpwdagent ((type ARG1)(role ARG2))
+    (call askpwd_auto_subtrans_askpwdagent (ARG1))
+    (roleattributeset askpwdagent_role (ARG2)))
+
+(macro askpwd_send_signal ((type ARG1))
+    (allow ARG1 askpwd.common_subject (process (signal))))
+
+(macro askpwd_send_signal_askpwdagent ((type ARG1))
+    (allow ARG1 askpwdagent.common_subject (process (signal))))
+
+(macro askpwd_admin ((role ARG1)(type ARG2))
+    (roleattributeset askpwd_admin_role ARG1)
+    (typeattributeset askpwd_admin_type ARG2))
