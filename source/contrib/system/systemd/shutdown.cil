@@ -1,0 +1,77 @@
+(roleattribute shutdown_admin_role)
+(typeattribute shutdown_admin_type)
+
+(typeattribute shutdown_subject_type)
+
+(block shutdown
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset shutdown_subject_type common_subject)
+
+    (context bin_shutdown (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-shutdown" file bin_shutdown)
+
+    (allow common_subject self (capability (sys_boot ipc_lock kill sys_admin
+        sys_chroot sys_ptrace dac_override)))
+    (allow common_subject self (process (setfscreate)))
+
+    (call sys_manual_subtrans (common_subject))
+    (call sys_send_sigchld (common_subject))
+    (call sys_setkeycreate (common_subject))
+    (call sys_setpgid (common_subject))
+    (call sys_share_state (common_subject))
+    (call sys_setsched (common_subject))
+    (call sys_use_fd (common_subject))
+
+    (call subject_getpgid_all_subjects (common_subject))
+    (call subject_read_all_subjects_state (common_subject))
+    (call subject_send_sigkill_all_subjects (common_subject))
+    (call subject_send_signal_all_subjects (common_subject))
+    (call subject_send_signull_all_subjects (common_subject))
+    (call subject_send_sigstop_all_subjects (common_subject))
+
+    (optional shutdown_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(block shutdownd
+    (blockinherit systemd_daemon_socket_activated_no_unit_block)
+
+    (typeattributeset shutdown_subject_type common_subject)
+
+    (context bin_shutdownd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-shutdownd" file bin_shutdownd)
+
+    (blockinherit systemd_maintains_run_dirs_and_files_block)
+
+    (context systemd_run_shutdownd (sys.u sys.r systemd_run_object (systemlow systemlow)))
+    (filecon "/var/run/systemd/shutdown(/.*)?" any systemd_run_shutdownd)
+    (filecon "/var/run/systemd/shutdownd" socket systemd_run_shutdownd)
+
+    (call systemd_socket_activated_object_type (systemd_run_object))
+
+    (allow common_subject systemd_run_object manage_sock_file_perms)
+    (call systemd_run_filetrans (common_subject systemd_run_object sock_file "*"))
+
+    (allow common_subject self (capability (dac_override sys_tty_config)))
+
+    (call journal_client (common_subject))
+
+    (optional shutdownd_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(macro shutdown_share_state ((type ARG1))
+    (allow ARG1 shutdown.common_subject (process (share))))
+
+(macro shutdown_send_sigchld ((type ARG1))
+    (allow ARG1 shutdown.common_subject (process (sigchld))))
+
+(macro shutdown_dgram_send_shutdownd ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (call dgram_send_pattern
+        (ARG1 shutdownd.run_object shutdownd.run_object shutdownd.common_subject)))
+
+(macro shutdown_admin ((role ARG1)(type ARG2))
+    (roleattributeset shutdown_admin_role ARG1)
+    (typeattributeset shutdown_admin_type ARG2))

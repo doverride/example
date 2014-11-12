@@ -105,9 +105,6 @@
         (call plymouth_manage_run_files (common_subject))
         (call plymouth_manage_var_lib_files (common_subject)))
 
-    ; (optional sys_optional_shutdown
-        ; (call shutdown_send_sigchld_shutdown (common_subject)))
-
     (optional sys_optional_systemd
         (call systemd_dynamic_subtrans (common_subject))
         (call systemd_getattr_exec_files (common_subject))
@@ -469,8 +466,26 @@
     (call sys_search_sysctl (ARG1))
     (allow ARG1 vm_sysctl search_dir_perms))
 
+(macro sys_send_sigchld ((type ARG1))
+    (allow ARG1 sys.common_subject (process (sigchld))))
+
+(macro sys_setkeycreate ((type ARG1))
+    (allow ARG1 sys.common_subject (process (setkeycreate))))
+
+(macro sys_setpgid ((type ARG1))
+    (allow ARG1 sys.common_subject (process (setpgid))))
+
 (macro sys_setsched ((type ARG1))
     (allow ARG1 sys.common_subject (process (setsched))))
+
+(macro sys_share_state ((type ARG1))
+    (allow ARG1 sys.common_subject (process (share))))
+
+(macro sys_manual_subtrans ((type ARG1))
+    (allow ARG1 sys.common_subject (process (transition))))
+
+(macro sys_use_fd ((type ARG1))
+    (allow ARG1 sys.common_subject (fd (use))))
 
 (macro sys_recvfrom_unlabeled_tcp_socket ((type ARG1))
     (allow ARG1 unlabeled (tcp_socket (recvfrom))))

@@ -213,6 +213,8 @@
 
     (allow common_subject self (process (setsched)))
 
+    (call shutdown_share_state (common_subject))
+
     (allow common_subject systemd_socket_activated_subject_type
         create_unix_dgram_stream_socket_perms)
     (allow common_subject systemd_socket_activated_subject_type
