@@ -1,0 +1,342 @@
+(roleattribute load_policy_role)
+(roleattribute secilc_role)
+(roleattribute setfiles_role)
+
+(roleattribute getsebool_role)
+(roleattribute setsebool_role)
+
+(roleattribute getenforce_role)
+(roleattribute setenforce_role)
+
+(roleattribute seutil_admin_role)
+(typeattribute seutil_admin_type)
+
+(typeattribute seutil_object_type)
+(typeattribute seutil_subject_type)
+
+(in load_policy
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset seutil_subject_type common_subject)
+
+    (roletype load_policy_role common_subject)
+
+    (context bin_load_policy (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/load_policy" file bin_load_policy)
+
+    (optional load_policy_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional load_policy_optional_unconfined
+        (call unconfined (load_policy_role common_subject)))
+)
+
+(block secilc
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset seutil_subject_type common_subject)
+    (typeattributeset can_write_binary_policy common_subject)
+
+    (roletype secilc_role common_subject)
+
+    (context bin_secilc (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/secilc" file bin_secilc)
+
+    (optional secilc_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional secilc_optional_unconfined
+        (call unconfined (secilc_role common_subject)))
+)
+
+(block setfiles
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset seutil_subject_type common_subject)
+    (typeattributeset can_relabelto_binary_policy common_subject)
+
+    (roletype setfiles_role common_subject)
+
+    (context bin_setfiles (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/setfiles" file bin_setfiles)
+
+    (allow common_subject self (capability (dac_override fowner)))
+
+    (call subject_object_identity_change_exemption (common_subject))
+
+    (optional setfiles_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional setfiles_optional_unconfined
+        (call unconfined (setfiles_role common_subject)))
+)
+
+(block getsebool
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset seutil_subject_type common_subject)
+
+    (roletype getsebool_role common_subject)
+
+    (context bin_getsebool (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/getsebool" file bin_getsebool)
+
+    (call journal_client (common_subject))
+
+    (optional getsebool_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional getsebool_optional_unconfined
+        (call unconfined (getsebool_role common_subject)))
+)
+
+(block setsebool
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset seutil_subject_type common_subject)
+
+    (roletype setsebool_role common_subject)
+
+    (context bin_setsebool (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/setsebool" file bin_setsebool)
+
+    (optional setsebool_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional setsebool_optional_unconfined
+        (call unconfined (setsebool_role common_subject)))
+)
+
+(block getenforce
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset seutil_subject_type common_subject)
+
+    (roletype getenforce_role common_subject)
+
+    (context bin_getenforce (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/getenforce" file bin_getenforce)
+
+    (optional getenforce_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional getenforce_optional_unconfined
+        (call unconfined (getenforce_role common_subject)))
+)
+
+(block setenforce
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset seutil_subject_type common_subject)
+
+    (roletype setenforce_role common_subject)
+
+    (context bin_setenforce (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/setenforce" file bin_setenforce)
+
+    (optional setenforce_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional setenforce_optional_unconfined
+        (call unconfined (setenforce_role common_subject)))
+)
+
+(type default_context)
+(call file_type (default_context))
+
+(typeattributeset seutil_object_type default_context)
+
+(context default_context (sys.u sys.r default_context (systemlow systemlow)))
+(filecon "/etc/selinux/([^/]*/)?contexts(/.*)?" any default_context)
+
+(type file_context)
+(call file_type (file_context))
+
+(typeattributeset seutil_object_type file_context)
+
+(context file_context (sys.u sys.r file_context (systemlow systemlow)))
+(filecon "/etc/selinux/([^/]*/)?contexts/files(/.*)?" any file_context)
+
+(type policy_conf)
+(call file_sec_type (policy_conf))
+
+(context policy_conf (sys.u sys.r policy_conf (mls_systemhigh mls_systemhigh)))
+(filecon "/etc/selinux/([^/]*/)?policy(/.*)?" any policy_conf)
+
+(type policy_src)
+(call file_type (policy_src))
+
+(typeattributeset seutil_object_type policy_src)
+
+(context policy_src (sys.u sys.r policy_src (systemlow systemlow)))
+(filecon "/etc/selinux/([^/]*/)?source(/.*)?" any policy_src)
+
+(type selinux_conf)
+(call file_etc_type (selinux_conf))
+
+(typeattributeset seutil_object_type policy_conf)
+
+(context selinux_conf (sys.u sys.r selinux_conf (systemlow systemlow)))
+(filecon "/etc/selinux(/.*)?" any selinux_conf)
+(filecon "/etc/selinux/([^/]*/)?seusers" file
+    (sys.u sys.r selinux_conf (mls_systemhigh mls_systemhigh)))
+(filecon "/etc/selinux/([^/]*/)?users(/.*)?" file
+    (sys.u sys.r selinux_conf (mls_systemhigh mls_systemhigh)))
+
+(typeattribute can_relabelto_binary_policy)
+(typeattribute not_can_relabelto_binary_policy)
+(typeattributeset not_can_relabelto_binary_policy
+    (not (can_relabelto_binary_policy)))
+(neverallow not_can_relabelto_binary_policy policy_conf (file (relabelto)))
+
+(typeattribute can_write_binary_policy)
+(typeattribute not_can_write_binary_policy)
+(typeattributeset not_can_write_binary_policy
+    (not (can_write_binary_policy)))
+(neverallow not_can_write_binary_policy policy_conf (file (create write)))
+
+(allow seutil_admin_type self (capability (kill sys_ptrace)))
+(allow seutil_admin_type seutil_subject_type signal_perms)
+(allow seutil_admin_type seutil_subject_type (process (ptrace)))
+(call ps_subject_pattern (seutil_admin_type seutil_subject_type))
+(allow seutil_admin_type seutil_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype seutil_admin_role seutil_object_type)
+
+(macro seutil_auto_subtrans_load_policy ((type ARG1))
+    (call seutil_send_signal_load_policy (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 load_policy.bin_object load_policy.common_subject)))
+
+(macro seutil_run_load_policy ((type ARG1)(role ARG2))
+    (call seutil_auto_subtrans_load_policy (ARG1))
+    (roleattributeset load_policy_role (ARG2)))
+
+(macro seutil_send_signal_load_policy ((type ARG1))
+    (allow ARG1 load_policy.common_subject (process (signal))))
+
+(macro seutil_auto_subtrans_getsebool ((type ARG1))
+    (call seutil_send_signal_getsebool (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 getsebool.bin_object getsebool.common_subject)))
+
+(macro seutil_run_getsebool ((type ARG1)(role ARG2))
+    (call seutil_auto_subtrans_getsebool (ARG1))
+    (roleattributeset getsebool_role (ARG2)))
+
+(macro seutil_send_signal_getsebool ((type ARG1))
+    (allow ARG1 getsebool.common_subject (process (signal))))
+
+(macro seutil_auto_subtrans_setsebool ((type ARG1))
+    (call seutil_send_signal_setsebool (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 setsebool.bin_object setsebool.common_subject)))
+
+(macro seutil_run_setsebool ((type ARG1)(role ARG2))
+    (call seutil_auto_subtrans_setsebool (ARG1))
+    (roleattributeset setsebool_role (ARG2)))
+
+(macro seutil_send_signal_setsebool ((type ARG1))
+    (allow ARG1 setsebool.common_subject (process (signal))))
+
+(macro seutil_auto_subtrans_getenforce ((type ARG1))
+    (call seutil_send_signal_getenforce (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 getenforce.bin_object getenforce.common_subject)))
+
+(macro seutil_run_getenforce ((type ARG1)(role ARG2))
+    (call seutil_auto_subtrans_getenforce (ARG1))
+    (roleattributeset getenforce_role (ARG2)))
+
+(macro seutil_send_signal_getenforce ((type ARG1))
+    (allow ARG1 getenforce.common_subject (process (signal))))
+
+(macro seutil_auto_subtrans_setenforce ((type ARG1))
+    (call seutil_send_signal_setenforce (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 setenforce.bin_object setenforce.common_subject)))
+
+(macro seutil_run_setenforce ((type ARG1)(role ARG2))
+    (call seutil_auto_subtrans_setenforce (ARG1))
+    (roleattributeset setenforce_role (ARG2)))
+
+(macro seutil_send_signal_setenforce ((type ARG1))
+    (allow ARG1 setenforce.common_subject (process (signal))))
+
+(macro seutil_exec_secilc ((type ARG1))
+    (call can_exec (ARG1 secilc.bin_object)))
+
+(macro seutil_auto_subtrans_secilc ((type ARG1))
+    (call seutil_send_signal_secilc (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 secilc.bin_object secilc.common_subject)))
+
+(macro seutil_run_secilc ((type ARG1)(role ARG2))
+    (call seutil_auto_subtrans_secilc (ARG1))
+    (roleattributeset secilc_role (ARG2)))
+
+(macro seutil_send_signal_secilc ((type ARG1))
+    (allow ARG1 secilc.common_subject (process (signal))))
+
+(macro seutil_auto_subtrans_setfiles ((type ARG1))
+    (call seutil_send_signal_setfiles (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 setfiles.bin_object setfiles.common_subject)))
+
+(macro seutil_run_setfiles ((type ARG1)(role ARG2))
+    (call seutil_auto_subtrans_setfiles (ARG1))
+    (roleattributeset setfiles_role (ARG2)))
+
+(macro seutil_send_signal_setfiles ((type ARG1))
+    (allow ARG1 setfiles.common_subject (process (signal))))
+
+(macro seutil_selinux_config_filetrans ((type ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call file_type_transition_pattern (ARG1 selinux_conf ARG2 ARG3 ARG4)))
+
+(macro seutil_search_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 selinux_conf search_dir_perms))
+
+(macro seutil_search_default_context ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (allow ARG1 default_context search_dir_perms))
+
+(macro seutil_write_policy_config_files ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (call write_files_pattern (ARG1 policy_conf policy_conf))
+    (typeattributeset can_write_binary_policy ARG1))
+
+(macro seutil_create_policy_config_files ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (call create_files_pattern (ARG1 policy_conf policy_conf))
+    (typeattributeset can_write_binary_policy ARG1))
+
+(macro seutil_manage_policy_config_files ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (call manage_files_pattern (ARG1 policy_conf policy_conf))
+    (typeattributeset can_write_binary_policy ARG1))
+
+(macro seutil_search_policy_config ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (allow ARG1 policy_conf search_dir_perms))
+
+(macro seutil_relabelto_policy_config_files ((type ARG1))
+    (call seutil_search_policy_config (ARG1))
+    (allow ARG1 policy_conf relabelto_file_perms)
+    (typeattributeset can_relabelto_binary_policy ARG1))
+
+(macro seutil_relabel_policy_config_files ((type ARG1))
+    (call seutil_relabelto_policy_config_files (ARG1))
+    (allow ARG1 policy_conf relabelfrom_file_perms))
+
+(macro seutil_admin ((role ARG1)(type ARG2))
+    (roleattributeset seutil_admin_role ARG1)
+    (typeattributeset seutil_admin_type ARG2))
