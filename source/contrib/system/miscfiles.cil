@@ -128,7 +128,7 @@
     (call file_search_usr (ARG1))
     (call read_files_pattern
         (ARG1 locale.file_object locale.file_object))
-    (optional miscfiles_read_localization_files
+    (optional miscfiles_read_localization_files_optional_localed
         (call localed_read_config_files (ARG1))))
 
 (macro miscfiles_list_factory ((type ARG1))
