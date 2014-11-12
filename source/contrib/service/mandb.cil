@@ -44,6 +44,19 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype mandb_admin_role mandb_object_type)
 
+(macro mandb_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 mandb.etc_object read_file_perms))
+
+(macro mandb_list_cache ((type ARG1))
+    (call file_search_var_cache (ARG1))
+    (allow ARG1 mandb.var_cache_object list_dir_perms))
+
+(macro mandb_read_cache_files ((type ARG1))
+    (call file_search_var_cache (ARG1))
+    (call read_files_pattern
+        (ARG1 mandb.var_cache_object mandb.var_cache_object)))
+
 (macro mandb_admin ((role ARG1)(type ARG2))
     (roleattributeset mandb_admin_role ARG1)
     (typeattributeset mandb_admin_type ARG2))

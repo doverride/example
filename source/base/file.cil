@@ -825,6 +825,9 @@
 (macro file_search_etc ((type ARG1))
     (allow ARG1 etc search_dir_perms))
 
+(macro file_search_var_cache ((type ARG1))
+    (call search_dirs_pattern (ARG1 var var_cache)))
+
 (macro file_search_var_lib ((type ARG1))
     (call search_dirs_pattern (ARG1 var var_lib)))
 

@@ -79,12 +79,12 @@
     (call localed_auto_subtrans_localectl (ARG1))
     (roleattributeset localectl_role (ARG2)))
 
+(macro localed_send_signal_localectl ((type ARG1))
+    (allow ARG1 localectl.common_subject (process (signal))))
+
 (macro localed_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 localed.etc_object read_file_perms))
-
-(macro localed_send_signal_localectl ((type ARG1))
-    (allow ARG1 localectl.common_subject (process (signal))))
 
 (macro localed_admin ((role ARG1)(type ARG2))
     (roleattributeset localed_admin_role ARG1)

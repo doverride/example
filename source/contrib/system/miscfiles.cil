@@ -110,3 +110,119 @@
 
 (macro miscfiles_terminfo_type ((type ARG1))
     (typeattributeset miscfiles_terminfo_type ARG1))
+
+(macro miscfiles_list_generic_cert ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 cert.etc_object list_dir_perms))
+
+(macro miscfiles_read_generic_cert_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern
+        (ARG1 cert.etc_object cert.etc_object)))
+
+(macro miscfiles_list_localization ((type ARG1))
+    (call file_search_usr (ARG1))
+    (allow ARG1 locale.file_object list_dir_perms))
+
+(macro miscfiles_read_localization_files ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call read_files_pattern
+        (ARG1 locale.file_object locale.file_object))
+    (optional miscfiles_read_localization_files
+        (call localed_read_config_files (ARG1))))
+
+(macro miscfiles_list_factory ((type ARG1))
+    (call file_search_usr (ARG1))
+    (allow ARG1 factory.file_object list_dir_perms))
+
+(macro miscfiles_read_factory_files ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call read_files_pattern
+        (ARG1 factory.usr_object factory.usr_object)))
+
+(macro miscfiles_list_fonts ((type ARG1))
+    (call file_search_usr (ARG1))
+    (allow ARG1 fonts.usr_object list_dir_perms))
+
+(macro miscfiles_read_fonts_files ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call read_files_pattern
+        (ARG1 fonts.usr_object fonts.usr_object)))
+
+(macro miscfiles_list_fonts_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 fonts.etc_object list_dir_perms))
+
+(macro miscfiles_read_fonts_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern
+        (ARG1 fonts.etc_object fonts.etc_object)))
+
+(macro miscfiles_list_fonts_cache ((type ARG1))
+    (call file_search_var_cache (ARG1))
+    (allow ARG1 fonts.var_cache_object list_dir_perms))
+
+(macro miscfiles_read_fonts_cache_files ((type ARG1))
+    (call file_search_var_cache (ARG1))
+    (call read_files_pattern
+        (ARG1 fonts.var_cache_object fonts.var_cache_object)))
+
+(macro miscfiles_setattr_fonts_cache_dirs ((type ARG1))
+    (allow ARG1 fonts.var_cache_object (dir (setattr))))
+
+(macro miscfiles_manage_fonts_cache ((type ARG1))
+    (call file_search_var_cache (ARG1))
+    (allow ARG1 fonts.var_cache_object manage_dir_perms)
+    (allow ARG1 fonts.var_cache_object manage_file_perms)
+    (allow ARG1 fonts.var_cache_object manage_lnk_file_perms))
+
+(macro miscfiles_list_hwdata ((type ARG1))
+    (call file_search_usr (ARG1))
+    (allow ARG1 hwdata.usr_object list_dir_perms))
+
+(macro miscfiles_read_hwdata_files ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call read_files_pattern
+        (ARG1 hwdata.usr_object hwdata.usr_object)))
+
+(macro miscfiles_list_man ((type ARG1))
+    (call file_search_usr (ARG1))
+    (allow ARG1 man.usr_object list_dir_perms))
+
+(macro miscfiles_read_man_files ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call read_files_pattern
+        (ARG1 man.usr_object man.usr_object))
+    (optional miscfiles_read_man_files_optional_mandb
+        (call mandb_read_config_files (ARG1))
+        (call mandb_read_cache_files (ARG1))))
+
+(macro miscfiles_list_modules ((type ARG1))
+    (call lib_search (ARG1))
+    (allow ARG1 modules.file_object list_dir_perms))
+
+(macro miscfiles_read_modules_files ((type ARG1))
+    (call lib_search (ARG1))
+    (call read_files_pattern
+        (ARG1 modules.file_object modules.file_object)))
+
+(macro miscfiles_manage_modules ((type ARG1))
+    (call lib_search (ARG1))
+    (allow ARG1 modules.file_object manage_dir_perms)
+    (allow ARG1 modules.file_object manage_file_perms)
+    (allow ARG1 modules.file_object manage_lnk_file_perms))
+
+(macro miscfiles_list_net_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 net.etc_object list_dir_perms))
+
+(macro miscfiles_read_net_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 net.etc_object net.etc_object)))
+
+(macro miscfiles_manage_net_config_files ((type ARG1))
+    (call file_rw_etc_dirs (ARG1))
+    (allow ARG1 net.etc_object manage_file_perms))
+
+(macro miscfiles_etc_filetrans_net_config ((type ARG1)(class ARG2)(name ARG3))
+    (call file_etc_filetrans (ARG1 net.etc_object ARG2 ARG3)))
