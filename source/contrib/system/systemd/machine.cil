@@ -1,0 +1,93 @@
+(roleattribute machinectl_role)
+
+(roleattribute machine_admin_role)
+(typeattribute machine_admin_type)
+
+(typeattribute machine_object_type)
+(typeattribute machine_subject_type)
+
+(typeattribute machinectl_client_type)
+
+(block machinectl
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset machine_subject_type common_subject)
+    (typeattributeset machinectl_client_type common_subject)
+
+    (roletype machinectl_role common_subject)
+
+    (context bin_machinectl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/machinectl" file bin_machinectl)
+
+    (optional machinectl_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+
+    (optional machinectl_optional_unconfined
+        (call unconfined (machinectl_role common_subject)))
+)
+
+(block machined
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset machine_subject_type common_subject)
+
+    (context bin_machined (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/systemd-machined" file bin_machined)
+
+    (blockinherit file_maintains_single_etc_file_block)
+
+    (typeattributeset machine_object_type etc_object)
+
+    (context etc_machined (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/machine-id" file etc_machined)
+    (filecon "/etc/machine-info" file etc_machined)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset machine_object_type dbus_etc_object)
+
+    (context dbus_etc_machined (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.machine1\.conf" file dbus_etc_machined)
+
+    (blockinherit systemd_maintains_run_dirs_and_files_block)
+
+    (typeattributeset machine_object_type systemd_run_object)
+
+    (context systemd_run_machined (sys.u sys.r systemd_run_object (systemlow systemlow)))
+    (filecon "/var/run/systemd/machines(/.*)?" any systemd_run_machined)
+
+    (optional machined_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow machine_admin_type self (capability (kill sys_ptrace)))
+(allow machine_admin_type machine_subject_type signal_perms)
+(allow machine_admin_type machine_subject_type (process (ptrace)))
+(call ps_subject_pattern (machine_admin_type machine_subject_type))
+(allow machine_admin_type machine_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype machine_admin_role machine_object_type)
+
+(macro machine_exec_machinectl ((type ARG1))
+    (call can_exec (ARG1 machinectl.bin_object))
+    (call machine_machinectl_client_type (ARG1)))
+
+(macro machine_machinectl_client_type ((type ARG1))
+    (typeattributeset machinectl_client_type ARG1))
+
+(macro machine_auto_subtrans_machinectl ((type ARG1))
+    (call machine_send_signal_machinectl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 machinectl.bin_object machinectl.common_subject)))
+
+(macro machine_run_machinectl ((type ARG1)(role ARG2))
+    (call machine_auto_subtrans_machinectl (ARG1))
+    (roleattributeset machinectl_role (ARG2)))
+
+(macro machine_send_signal_machinectl ((type ARG1))
+    (allow ARG1 machinectl.common_subject (process (signal))))
+
+(macro machine_admin ((role ARG1)(type ARG2))
+    (typeattributeset machine_admin_role ARG1)
+    (typeattributeset machine_admin_type ARG2))
