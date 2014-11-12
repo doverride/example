@@ -91,6 +91,21 @@
         (call file_type (file_object))
 )
 
+(block file_flag_object_block
+    (blockabstract file_flag_object_block)
+        (type flag_object)
+        (call file_type (flag_object))
+)
+
+(block file_maintains_single_flag_file_block
+    (blockabstract file_maintains_single_flag_file_block)
+        (blockinherit file_flag_object_block)
+
+        (allow common_subject flag_object manage_file_perms)
+
+        (call fs_rootfs_filetrans (common_subject flag_object file "*"))
+)
+
 (block file_run_object_block
     (blockabstract file_run_object_block)
         (type run_object)
