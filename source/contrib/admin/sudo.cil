@@ -160,6 +160,15 @@
 (macro sudo_send_signal ((type ARG1))
     (allow ARG1 sudo_subject_type (process (signal))))
 
+(macro sudo_send_sigchld ((type ARG1))
+    (allow ARG1 sudo_subject_type (process (sigchld))))
+
+(macro sudo_use_fd ((type ARG1))
+    (allow ARG1 sudo_subject_type (fd (use))))
+
+(macro sudo_rw_inherited_fifo_files ((type ARG1))
+    (allow ARG1 sudo_subject_type rw_inherited_fifo_file_perms))
+
 (macro sudo_admin ((role ARG1)(type ARG2))
     (roleattributeset sudo_admin_role ARG1)
     (typeattributeset sudo_admin_type ARG2))

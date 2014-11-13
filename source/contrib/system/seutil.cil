@@ -305,9 +305,17 @@
     (call file_search_etc (ARG1))
     (allow ARG1 selinux_conf search_dir_perms))
 
+(macro seutil_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 selinux_conf selinux_conf)))
+
 (macro seutil_search_default_context ((type ARG1))
     (call seutil_search_config (ARG1))
     (allow ARG1 default_context search_dir_perms))
+
+(macro seutil_read_default_context_files ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (call read_files_pattern (ARG1 default_context default_context)))
 
 (macro seutil_write_policy_config_files ((type ARG1))
     (call seutil_search_config (ARG1))

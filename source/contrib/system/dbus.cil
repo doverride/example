@@ -57,15 +57,6 @@
     (allow common_subject self create_netlink_selinux_socket_perms)
     (allow common_subject self (unix_stream_socket (listen accept)))
 
-    (allow dbus_system_client_type self (dbus (send_msg)))
-    (allow dbus_system_client_type common_subject (dbus (send_msg)))
-
-    (allow common_subject dbus_system_client_type (dbus (send_msg)))
-
-    (call dbus_read_generic_config_files (dbus_system_client_type)) ; FIXME
-    (call dbus_read_var_lib_files (dbus_system_client_type))
-    (call dbus_stream_connect_system (dbus_system_client_type))
-
     (optional dbus_optional_unconfined
         (call unconfined (sys.r common_subject)))
 )
@@ -78,6 +69,15 @@
 (filecon "/etc/dbus-1(/.*)?" any etc_dbus)
 
 (typeattributeset dbus_object_type dbus_etc_file_type)
+
+(allow dbus_system_client_type self (dbus (send_msg)))
+
+(allow dbus_system_client_type dbusd.common_subject (dbus (send_msg)))
+(allow dbusd.common_subject dbus_system_client_type (dbus (send_msg)))
+
+(call dbus_read_generic_config_files (dbus_system_client_type)) ; FIXME
+(call dbus_read_var_lib_files (dbus_system_client_type))
+(call dbus_stream_connect_system (dbus_system_client_type))
 
 (allow dbus_admin_type self (capability (kill sys_ptrace)))
 (allow dbus_admin_type dbus_subject_type signal_perms)

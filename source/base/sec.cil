@@ -73,10 +73,35 @@
     (call sys_object_type (ARG1))
     (typeattributeset sec_bool_type ARG1))
 
+(macro sec_compute_access_vector ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call rw_files_pattern (ARG1 securityfs securityfs))
+    (allow ARG1 securityfs (security (compute_av))))
+
 (macro sec_compute_create_context ((type ARG1))
     (call fs_search_sysfs (ARG1))
     (call rw_files_pattern (ARG1 securityfs securityfs))
     (allow ARG1 securityfs (security (compute_create))))
+
+(macro sec_compute_relabel_context ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call rw_files_pattern (ARG1 securityfs securityfs))
+    (allow ARG1 securityfs (security (compute_relabel))))
+
+(macro sec_set_check_req_prot ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call rw_files_pattern (ARG1 securityfs securityfs))
+    (allow ARG1 securityfs (security (setcheckreqprot))))
+
+(macro sec_compute_user_contexts ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call rw_files_pattern (ARG1 securityfs securityfs))
+    (allow ARG1 securityfs (security (compute_user))))
+
+(macro sec_validate_context ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call rw_files_pattern (ARG1 securityfs securityfs))
+    (allow ARG1 securityfs (security (check_context))))
 
 (macro sec_getattr_filesystems ((type ARG1))
     (allow ARG1 securityfs (filesystem (getattr))))

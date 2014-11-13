@@ -117,6 +117,11 @@
     (call systemd_search_run (ARG1))
     (allow ARG1 logind.systemd_run_object search_dir_perms))
 
+(macro logind_read_run_files ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (call read_files_pattern
+        (ARG1 logind.systemd_run_object logind.systemd_run_object)))
+
 (macro logind_send_signal_loginctl ((type ARG1))
     (allow ARG1 loginctl.common_subject (process (signal))))
 

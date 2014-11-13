@@ -247,16 +247,41 @@
 (allow auth_login_program_type self (capability (setuid setgid chown)))
 (allow auth_login_program_type self (process (setexec setsched)))
 
+(call sec_compute_user_contexts (auth_login_program_type))
+(call sec_compute_relabel_context (auth_login_program_type))
+(call sec_validate_context (auth_login_program_type))
+
 (call subject_identity_change_exemption (auth_login_program_type))
 (call subject_role_change_exemption (auth_login_program_type))
 (call subject_object_identity_change_exemption (auth_login_program_type))
 
 (call auth_pam_client (auth_login_program_type))
 
+(call dbus_system_client (auth_login_program_type))
+
+(call miscfiles_read_localization_files (auth_login_program_type))
+
+(call logind_client (auth_login_program_type))
+(call logind_read_run_files (auth_login_program_type))
+
+(call seutil_read_config_files (auth_login_program_type))
+(call seutil_read_default_context_files (auth_login_program_type))
+
+(call usersubject_create_keyring_all_common_login_subjects (auth_login_program_type))
+(call usersubject_send_signal_all_common_login_subjects (auth_login_program_type))
+
+(call utmp_rw_run_files (auth_login_program_type))
+
 (allow auth_nsswitch_client_type self create_unix_stream_socket_perms)
+
+(call file_list_run (auth_nsswitch_client_type))
 
 (call auth_read_nsswitch_config_files (auth_nsswitch_client_type))
 (call auth_read_passwd (auth_nsswitch_client_type))
+
+(call dns_resolv_client (auth_nsswitch_client_type))
+
+(call audit_client (auth_pam_client_type))
 
 (call auth_auto_subtrans_chkpwd (auth_pam_client_type))
 (call auth_auto_subtrans_updpwd (auth_pam_client_type))
@@ -273,6 +298,8 @@
 (call auth_rw_lastlog (auth_pam_client_type))
 (call auth_var_log_filetrans_lastlog (auth_pam_client_type))
 (call auth_nsswitch_client (auth_pam_client_type))
+
+(call journal_client (auth_pam_client_type))
 
 (allow auth_admin_type self (capability (kill sys_ptrace)))
 (allow auth_admin_type auth_subject_type signal_perms)

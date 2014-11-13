@@ -33,10 +33,20 @@
     (context run_audispd (sys.u sys.r run_object (mls_systemhigh mls_systemhigh)))
     (filecon "/var/run/audispd_events" socket run_audispd)
 
+    (allow common_subject self (process (setsched)))
+    (allow common_subject self (capability (sys_nice)))
+
     (allow common_subject audit_audisp_daemon_type (process (sigkill sigstop signull signal)))
+
+    (call bin_execute_shell_files (common_subject))
+
+    (call miscfiles_read_localization_files (common_subject))
 
     (call audit_list_audisp_config (common_subject))
     (call audit_read_audisp_config_files (common_subject))
+    (call audit_rw_auditd_unix_stream_sockets (common_subject))
+
+    (call journal_client (common_subject))
 
     (optional audispd_optional_unconfined
         (call unconfined (sys.r common_subject)))
@@ -67,6 +77,12 @@
     (allow common_subject self (capability (audit_control sys_nice sys_resource)))
     (allow common_subject self create_netlink_audit_socket_perms)
 
+    (call fs_getattr_fs (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call miscfiles_read_localization_files (common_subject))
+
     (call audit_auto_subtrans_audispd (common_subject))
     (call audit_create_var_log_files (common_subject))
     (call audit_delete_var_log_files (common_subject))
@@ -75,8 +91,7 @@
     (call audit_read_var_log_files (common_subject))
     (call audit_setattr_var_log_files (common_subject))
 
-    (optional auditd_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call journal_client (common_subject))
 )
 
 (block auditctl
@@ -89,7 +104,14 @@
     (context bin_auditctl (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/auditctl" file bin_auditctl)
 
+    (allow common_subject self (netlink_audit_socket (nlmsg_readpriv)))
+
+    (call file_getattr_all_files (common_subject))
+    (call file_getattr_all_dirs (common_subject))
+
+    (call audit_client (common_subject))
     (call audit_read_config_files (common_subject))
+    (call audit_set_parameters (common_subject))
 
     (optional auditctl_optional_app
         (call app_exec_object_type (bin_object))
@@ -243,6 +265,9 @@
 
 (macro audit_rw_audispd_unix_stream_sockets ((type ARG1))
     (allow ARG1 audispd.common_subject rw_unix_stream_socket_perms))
+
+(macro audit_rw_auditd_unix_stream_sockets ((type ARG1))
+    (allow ARG1 auditd.common_subject rw_unix_stream_socket_perms))
 
 (macro audit_send_signal_audispd ((type ARG1))
     (allow ARG1 audispd.common_subject (process (signal))))
