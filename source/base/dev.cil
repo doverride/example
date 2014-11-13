@@ -273,6 +273,9 @@
 (macro dev_rw_null ((type ARG1))
     (allow ARG1 null_dev rw_chr_file_perms))
 
+(macro dev_rw_inherited_ptmx ((type ARG1))
+    (allow ARG1 ptmx_dev rw_inherited_chr_file_perms))
+
 (macro dev_rw_ptmx ((type ARG1))
     (allow ARG1 ptmx_dev rw_chr_file_perms))
 
