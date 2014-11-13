@@ -40,7 +40,7 @@
 
     (call bin_execute_shell_files (common_subject))
 
-    (call miscfiles_read_localization_files (common_subject))
+    (call miscfiles_read_localization (common_subject))
 
     (call audit_list_audisp_config (common_subject))
     (call audit_read_audisp_config_files (common_subject))
@@ -81,7 +81,7 @@
 
     (call auth_nsswitch_client (common_subject))
 
-    (call miscfiles_read_localization_files (common_subject))
+    (call miscfiles_read_localization (common_subject))
 
     (call audit_auto_subtrans_audispd (common_subject))
     (call audit_create_var_log_files (common_subject))

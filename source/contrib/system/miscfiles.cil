@@ -120,6 +120,10 @@
     (call read_files_pattern
         (ARG1 cert.etc_object cert.etc_object)))
 
+(macro miscfiles_read_localization_lnk_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 locale.file_object read_lnk_file_perms))
+
 (macro miscfiles_list_localization ((type ARG1))
     (call file_search_usr (ARG1))
     (allow ARG1 locale.file_object list_dir_perms))
@@ -130,6 +134,10 @@
         (ARG1 locale.file_object locale.file_object))
     (optional miscfiles_read_localization_files_optional_localed
         (call localed_read_config_files (ARG1))))
+
+(macro miscfiles_read_localization ((type ARG1))
+    (call miscfiles_read_localization_files (ARG1))
+    (call miscfiles_read_localization_lnk_files (ARG1)))
 
 (macro miscfiles_list_factory ((type ARG1))
     (call file_search_usr (ARG1))

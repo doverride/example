@@ -259,7 +259,7 @@
 
 (call dbus_system_client (auth_login_program_type))
 
-(call miscfiles_read_localization_files (auth_login_program_type))
+(call miscfiles_read_localization (auth_login_program_type))
 
 (call logind_client (auth_login_program_type))
 (call logind_read_run_files (auth_login_program_type))
