@@ -837,6 +837,9 @@
 (macro file_search_var_lib ((type ARG1))
     (call search_dirs_pattern (ARG1 var var_lib)))
 
+(macro file_list_var_log ((type ARG1))
+    (call list_dirs_pattern (ARG1 var var_log)))
+
 (macro file_search_var_log ((type ARG1))
     (call search_dirs_pattern (ARG1 var var_log)))
 
@@ -866,8 +869,15 @@
 (macro file_mounton_all_except ((type ARG1))
     (allow ARG1 file_except (dir_file (mounton))))
 
+(macro file_list_all_except ((type ARG1))
+    (allow ARG1 file_except list_dir_perms))
+
 (macro file_read_all_files_except ((type ARG1))
     (call read_files_pattern (ARG1 file_except file_except)))
+
+(macro file_relabel_all_except ((type ARG1))
+    (call file_list_all_except (ARG1))
+    (allow ARG1 file_except (all_file_objects (relabel))))
 
 (macro file_spec_except ((type ARG1)(type ARG2))
     (typeattributeset ARG1 (and (file_type)

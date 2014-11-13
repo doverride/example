@@ -23,6 +23,14 @@
     (context var_spool_sysadm (u r user.var_spool_object (systemlow mls_systemhigh)))
     (filecon "/var/spool/mail/root" file var_spool_sysadm)
 
+    (optional sysadm_optional_audit
+        (call audit_run_ausearch (common_subject r)))
+
+    (optional sysadm_optional_seutil
+        (call seutil_run_load_policy (common_subject r))
+        (call seutil_run_secilc (common_subject r))
+        (call seutil_run_setfiles (common_subject r)))
+
     (optional sysadm_optional_sudo
         (call sudo_send_signal (common_subject))
         (optional sysadm_optional_staff

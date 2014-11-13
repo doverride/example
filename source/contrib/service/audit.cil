@@ -1,5 +1,6 @@
 (roleattribute auditctl_role)
 (roleattribute augenrules_role)
+(roleattribute ausearch_role)
 
 (roleattribute audit_admin_role)
 (typeattribute audit_admin_type)
@@ -84,12 +85,12 @@
     (call miscfiles_read_localization (common_subject))
 
     (call audit_auto_subtrans_audispd (common_subject))
-    (call audit_create_var_log_files (common_subject))
-    (call audit_delete_var_log_files (common_subject))
-    (call audit_append_var_log_files (common_subject))
+    (call audit_create_log_files (common_subject))
+    (call audit_delete_log_files (common_subject))
+    (call audit_append_log_files (common_subject))
     (call audit_read_config_files (common_subject))
-    (call audit_read_var_log_files (common_subject))
-    (call audit_setattr_var_log_files (common_subject))
+    (call audit_read_log_files (common_subject))
+    (call audit_setattr_log_files (common_subject))
 
     (call journal_client (common_subject))
 )
@@ -137,6 +138,31 @@
 
     (optional augenrules_optional_unconfined
         (call unconfined (augenrules_role common_subject)))
+)
+
+(block ausearch
+    (blockinherit app_block)
+
+    (typeattributeset audit_subject_type common_subject)
+
+    (roletype ausearch_role common_subject)
+
+    (context bin_ausearch (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/ausearch" file bin_ausearch)
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call audit_list_config (common_subject))
+    (call audit_read_config_files (common_subject))
+    (call audit_list_log (common_subject))
+    (call audit_read_log_files (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (optional ausearch_optional_unconfined
+        (call unconfined (ausearch_role common_subject)))
 )
 
 (type etc_audisp)
@@ -212,6 +238,7 @@
         (ARG1 audispd.bin_object audispd.common_subject)))
 
 (macro audit_auto_subtrans_auditctl ((type ARG1))
+    (call audit_send_signal_auditctl (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 auditctl.bin_object auditctl.common_subject)))
 
@@ -220,6 +247,7 @@
     (roleattributeset auditctl_role (ARG2)))
 
 (macro audit_auto_subtrans_augenrules ((type ARG1))
+    (call audit_send_signal_augenrules (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 augenrules.bin_object augenrules.common_subject)))
 
@@ -227,29 +255,54 @@
     (call audit_auto_subtrans_augenrules (ARG1))
     (roleattributeset augenrules_role (ARG2)))
 
-(macro audit_search_var_log ((type ARG1))
+(macro audit_auto_subtrans_ausearch ((type ARG1))
+    (call audit_send_signal_ausearch (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 ausearch.bin_object ausearch.common_subject)))
+
+(macro audit_run_ausearch ((type ARG1)(role ARG2))
+    (call audit_auto_subtrans_ausearch (ARG1))
+    (roleattributeset ausearch_role (ARG2)))
+
+(macro audit_list_log ((type ARG1))
+    (call file_search_var_log (ARG1))
+    (allow ARG1 var_log_audit list_dir_perms))
+
+(macro audit_search_log ((type ARG1))
     (call file_search_var_log (ARG1))
     (allow ARG1 var_log_audit search_dir_perms))
 
-(macro audit_create_var_log_files ((type ARG1))
+(macro audit_create_log_files ((type ARG1))
     (call file_search_var_log (ARG1))
     (call create_files_pattern (ARG1 var_log_audit var_log_audit)))
 
-(macro audit_delete_var_log_files ((type ARG1))
+(macro audit_delete_log_files ((type ARG1))
     (call file_search_var_log (ARG1))
     (call delete_files_pattern (ARG1 var_log_audit var_log_audit)))
 
-(macro audit_append_var_log_files ((type ARG1))
-    (call audit_search_var_log (ARG1))
+(macro audit_append_log_files ((type ARG1))
+    (call audit_search_log (ARG1))
     (allow ARG1 var_log_audit append_file_perms))
 
-(macro audit_read_var_log_files ((type ARG1))
-    (call audit_search_var_log (ARG1))
+(macro audit_read_log_files ((type ARG1))
+    (call audit_search_log (ARG1))
     (allow ARG1 var_log_audit read_file_perms))
 
-(macro audit_setattr_var_log_files ((type ARG1))
-    (call audit_search_var_log (ARG1))
+(macro audit_setattr_log_files ((type ARG1))
+    (call audit_search_log (ARG1))
     (allow ARG1 var_log_audit (file (setattr))))
+
+(macro audit_relabel_log_dirs ((type ARG1))
+    (call file_list_var_log (ARG1))
+    (allow ARG1 var_log_audit relabel_dir_perms))
+
+(macro audit_relabel_log_files ((type ARG1))
+    (call audit_list_log (ARG1))
+    (allow ARG1 var_log_audit relabel_file_perms))
+
+(macro audit_relabel_log ((type ARG1))
+    (call audit_relabel_log_files (ARG1))
+    (call audit_relabel_log_dirs (ARG1)))
 
 (macro audit_list_audisp_config ((type ARG1))
     (call file_search_etc (ARG1))
@@ -259,9 +312,37 @@
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 etc_audisp etc_audisp)))
 
+(macro audit_relabel_audisp_config_dirs ((type ARG1))
+    (call file_list_etc (ARG1))
+    (allow ARG1 etc_audisp relabel_dir_perms))
+
+(macro audit_relabel_audisp_config_files ((type ARG1))
+    (call audit_list_audisp_config (ARG1))
+    (allow ARG1 etc_audisp relabel_file_perms))
+
+(macro audit_relabel_audisp_config ((type ARG1))
+    (call audit_relabel_audisp_config_files (ARG1))
+    (call audit_relabel_audisp_config_dirs (ARG1)))
+
+(macro audit_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 etc_audit list_dir_perms))
+
 (macro audit_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 etc_audit etc_audit)))
+
+(macro audit_relabel_config_dirs ((type ARG1))
+    (call file_list_etc (ARG1))
+    (allow ARG1 etc_audit relabel_dir_perms))
+
+(macro audit_relabel_config_files ((type ARG1))
+    (call audit_list_config (ARG1))
+    (allow ARG1 etc_audit relabel_file_perms))
+
+(macro audit_relabel_config ((type ARG1))
+    (call audit_relabel_config_files (ARG1))
+    (call audit_relabel_config_dirs (ARG1)))
 
 (macro audit_rw_audispd_unix_stream_sockets ((type ARG1))
     (allow ARG1 audispd.common_subject rw_unix_stream_socket_perms))
@@ -271,6 +352,15 @@
 
 (macro audit_send_signal_audispd ((type ARG1))
     (allow ARG1 audispd.common_subject (process (signal))))
+
+(macro audit_send_signal_auditctl ((type ARG1))
+    (allow ARG1 auditctl.common_subject (process (signal))))
+
+(macro audit_send_signal_augenrules ((type ARG1))
+    (allow ARG1 augenrules.common_subject (process (signal))))
+
+(macro audit_send_signal_ausearch ((type ARG1))
+    (allow ARG1 ausearch.common_subject (process (signal))))
 
 (macro audit_use_fd_auditd ((type ARG1))
     (allow ARG1 auditd.common_subject (fd (use))))

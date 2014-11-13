@@ -24,6 +24,8 @@
     (context bin_load_policy (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/load_policy" file bin_load_policy)
 
+    (call seutil_read_policy_config_files (common_subject))
+
     (optional load_policy_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
@@ -36,12 +38,18 @@
     (blockinherit subject_system_entry_block)
 
     (typeattributeset seutil_subject_type common_subject)
-    (typeattributeset can_write_binary_policy common_subject)
 
     (roletype secilc_role common_subject)
 
     (context bin_secilc (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/secilc" file bin_secilc)
+
+    (call seutil_create_file_context_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
+    (call seutil_write_file_context_files (common_subject))
+    (call seutil_create_policy_config_files (common_subject))
+    (call seutil_write_policy_config_files (common_subject))
+    (call seutil_read_source_files (common_subject))
 
     (optional secilc_optional_app
         (call app_exec_object_type (bin_object))
@@ -55,7 +63,6 @@
     (blockinherit subject_system_entry_block)
 
     (typeattributeset seutil_subject_type common_subject)
-    (typeattributeset can_relabelto_binary_policy common_subject)
 
     (roletype setfiles_role common_subject)
 
@@ -64,7 +71,20 @@
 
     (allow common_subject self (capability (dac_override fowner)))
 
+    (call dev_relabel_all (common_subject))
+
+    (call file_relabel_all_except (common_subject))
+
     (call subject_object_identity_change_exemption (common_subject))
+
+    (call audit_client (common_subject))
+    (call audit_relabel_config (common_subject))
+    (call audit_relabel_audisp_config (common_subject))
+    (call audit_relabel_log (common_subject))
+
+    (call auth_relabel_shadow (common_subject))
+
+    (call seutil_relabel_policy_config (common_subject))
 
     (optional setfiles_optional_app
         (call app_exec_object_type (bin_object))
@@ -301,6 +321,10 @@
     (class ARG3)(name ARG4))
     (call file_type_transition_pattern (ARG1 selinux_conf ARG2 ARG3 ARG4)))
 
+(macro seutil_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 selinux_conf list_dir_perms))
+
 (macro seutil_search_config ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 selinux_conf search_dir_perms))
@@ -317,14 +341,18 @@
     (call seutil_search_config (ARG1))
     (call read_files_pattern (ARG1 default_context default_context)))
 
-(macro seutil_write_policy_config_files ((type ARG1))
-    (call seutil_search_config (ARG1))
-    (call write_files_pattern (ARG1 policy_conf policy_conf))
-    (typeattributeset can_write_binary_policy ARG1))
-
 (macro seutil_create_policy_config_files ((type ARG1))
     (call seutil_search_config (ARG1))
     (call create_files_pattern (ARG1 policy_conf policy_conf))
+    (typeattributeset can_write_binary_policy ARG1))
+
+(macro seutil_read_policy_config_files ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (call read_files_pattern (ARG1 policy_conf policy_conf)))
+
+(macro seutil_write_policy_config_files ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (call write_files_pattern (ARG1 policy_conf policy_conf))
     (typeattributeset can_write_binary_policy ARG1))
 
 (macro seutil_manage_policy_config_files ((type ARG1))
@@ -332,18 +360,46 @@
     (call manage_files_pattern (ARG1 policy_conf policy_conf))
     (typeattributeset can_write_binary_policy ARG1))
 
+(macro seutil_list_policy_config ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (allow ARG1 policy_conf list_dir_perms))
+
 (macro seutil_search_policy_config ((type ARG1))
     (call seutil_search_config (ARG1))
     (allow ARG1 policy_conf search_dir_perms))
 
 (macro seutil_relabelto_policy_config_files ((type ARG1))
-    (call seutil_search_policy_config (ARG1))
+    (call seutil_list_policy_config (ARG1))
     (allow ARG1 policy_conf relabelto_file_perms)
     (typeattributeset can_relabelto_binary_policy ARG1))
 
 (macro seutil_relabel_policy_config_files ((type ARG1))
     (call seutil_relabelto_policy_config_files (ARG1))
     (allow ARG1 policy_conf relabelfrom_file_perms))
+
+(macro seutil_relabel_policy_config_dirs ((type ARG1))
+    (call seutil_list_config (ARG1))
+    (allow ARG1 policy_conf relabel_dir_perms))
+
+(macro seutil_relabel_policy_config ((type ARG1))
+    (call seutil_relabel_policy_config_files (ARG1))
+    (call seutil_relabel_policy_config_dirs (ARG1)))
+
+(macro seutil_create_file_context_files ((type ARG1))
+    (call seutil_search_default_context (ARG1))
+    (call create_files_pattern (ARG1 file_context file_context)))
+
+(macro seutil_read_file_context_files ((type ARG1))
+    (call seutil_search_default_context (ARG1))
+    (call read_files_pattern (ARG1 file_context file_context)))
+
+(macro seutil_write_file_context_files ((type ARG1))
+    (call seutil_search_default_context (ARG1))
+    (call write_files_pattern (ARG1 file_context file_context)))
+
+(macro seutil_read_source_files ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (call read_files_pattern (ARG1 policy_src policy_src)))
 
 (macro seutil_admin ((role ARG1)(type ARG2))
     (roleattributeset seutil_admin_role ARG1)
