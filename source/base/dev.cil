@@ -270,6 +270,18 @@
 (macro dev_rw_devtty ((type ARG1))
     (allow ARG1 devtty_dev rw_chr_file_perms))
 
+(macro dev_rw_dri ((type ARG1))
+    (allow ARG1 dri_dev rw_chr_file_perms))
+
+(macro dev_rw_inherited_dri ((type ARG1))
+    (allow ARG1 dri_dev rw_inherited_chr_file_perms))
+
+(macro dev_rw_event ((type ARG1))
+    (allow ARG1 event_dev rw_chr_file_perms))
+
+(macro dev_rw_inherited_event ((type ARG1))
+    (allow ARG1 event_dev rw_inherited_chr_file_perms))
+
 (macro dev_rw_null ((type ARG1))
     (allow ARG1 null_dev rw_chr_file_perms))
 

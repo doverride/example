@@ -57,8 +57,43 @@
     (allow common_subject self create_netlink_selinux_socket_perms)
     (allow common_subject self (unix_stream_socket (listen accept)))
 
-    (optional dbus_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call sys_read_kernel_sysctl (common_subject))
+
+    (call dev_read_urandom (common_subject))
+    (call dev_rw_inherited_dri (common_subject))
+    (call dev_rw_inherited_event (common_subject))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call sec_compute_access_vector (common_subject))
+    (call sec_list (common_subject))
+
+    (call audit_client (common_subject))
+
+    (call auth_read_pam_console_run_files (common_subject))
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_chat_all_system_client_subjects (common_subject))
+    (call dbus_chat_all_unconfined_subjects (common_subject))
+
+    (call dbus_list_config (common_subject))
+    (call dbus_read_all_config_files (common_subject))
+
+    (call dbus_read_state_all_system_client_subjects (common_subject))
+    (call dbus_read_state_all_unconfined_subjects (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call logind_use_fd (common_subject))
+    (call logind_read_run_files (common_subject))
+    (call logind_write_inherited_run_fifo_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_default_context_files (common_subject))
+
+    (call systemd_getattr_unit_dirs (common_subject))
 )
 
 (type etc_dbus)
@@ -72,10 +107,7 @@
 
 (allow dbus_system_client_type self (dbus (send_msg)))
 
-(allow dbus_system_client_type dbusd.common_subject (dbus (send_msg)))
-(allow dbusd.common_subject dbus_system_client_type (dbus (send_msg)))
-
-(call dbus_read_generic_config_files (dbus_system_client_type)) ; FIXME
+(call dbus_read_generic_config_files (dbus_system_client_type))
 (call dbus_read_var_lib_files (dbus_system_client_type))
 (call dbus_stream_connect_system (dbus_system_client_type))
 
@@ -88,20 +120,46 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype dbus_admin_role dbus_object_type)
 
-(allow dbus_unconfined_type self (dbus (acquire_svc)))
-(allow dbus_unconfined_type dbusd.common_subject (dbus (all)))
-
-(allow dbus_unconfined_type dbus_unconfined_type (dbus (send_msg)))
-(allow dbusd.common_subject dbus_unconfined_type (dbus (send_msg)))
-(allow dbus_system_client_type dbus_unconfined_type (dbus (send_msg)))
+(call dbus_acquire_system_service (dbus_unconfined_type))
+(call dbus_chat_all_unconfined_subjects (dbus_unconfined_type))
+(call dbus_chat_all_system_client_subjects (dbus_unconfined_type))
 
 (macro dbus_etc_file_type ((type ARG1))
     (call file_etc_type (ARG1))
     (typeattributeset dbus_etc_file_type ARG1))
 
+(macro dbus_acquire_system_service ((type ARG1))
+    (allow ARG1 dbusd.common_subject (dbus (acquire_svc))))
+
+(macro dbus_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 etc_dbus list_dir_perms))
+
+(macro dbus_read_all_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 etc_dbus dbus_etc_file_type)))
+
 (macro dbus_read_generic_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 etc_dbus etc_dbus)))
+
+(macro dbus_chat_all_unconfined_subjects ((type ARG1))
+    (allow ARG1 dbus_unconfined_type (dbus (send_msg)))
+    (allow dbus_unconfined_type ARG1 (dbus (send_msg))))
+
+(macro dbus_read_state_all_unconfined_subjects ((type ARG1))
+    (allow ARG1 dbus_unconfined_type list_dir_perms)
+    (allow ARG1 dbus_unconfined_type read_file_perms)
+    (allow ARG1 dbus_unconfined_type read_lnk_file_perms))
+
+(macro dbus_chat_all_system_client_subjects ((type ARG1))
+    (allow ARG1 dbus_system_client_type (dbus (send_msg)))
+    (allow dbus_system_client_type ARG1 (dbus (send_msg))))
+
+(macro dbus_read_state_all_system_client_subjects ((type ARG1))
+    (allow ARG1 dbus_system_client_type list_dir_perms)
+    (allow ARG1 dbus_system_client_type read_file_perms)
+    (allow ARG1 dbus_system_client_type read_lnk_file_perms))
 
 (macro dbus_read_var_lib_files ((type ARG1))
     (call file_search_var_lib (ARG1))

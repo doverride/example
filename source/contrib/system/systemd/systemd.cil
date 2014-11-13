@@ -444,6 +444,9 @@
 (macro systemd_getattr_exec_files ((type ARG1))
     (allow ARG1 systemd.bin_object (file (getattr))))
 
+(macro systemd_getattr_unit_dirs ((type ARG1))
+    (allow ARG1 systemd_unit (dir (getattr))))
+
 (macro systemd_read_state ((type ARG1))
     (allow ARG1 systemd.common_subject read_file_perms)
     (allow ARG1 systemd.common_subject list_dir_perms)
