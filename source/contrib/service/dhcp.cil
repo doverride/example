@@ -41,6 +41,8 @@
     (call bin_execute_bin_files (common_subject))
     (call bin_mmap_shell_files (common_subject))
 
+    (call file_read_generic_etc_files (common_subject))
+
     (call net_udp_bind_all_unreserved_ports (common_subject))
     (call net_udp_bind_generic_node (common_subject))
 
