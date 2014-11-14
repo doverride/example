@@ -63,7 +63,7 @@
     (call dev_rw_inherited_dri (common_subject))
     (call dev_rw_inherited_event (common_subject))
 
-    (call file_read_generic_usr_files (common_subject))
+    (call file_read_generic_usr (common_subject))
 
     (call sec_compute_access_vector (common_subject))
     (call sec_list (common_subject))
