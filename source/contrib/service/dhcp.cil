@@ -31,8 +31,39 @@
     (context var_lib_dhclient (sys.u sys.r var_lib_object (systemlow systemlow)))
     (filecon "/var/lib/dhclient(/.*)?" any var_lib_dhclient)
 
-    (optional dhclient_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (allow common_subject self (capability (net_raw)))
+    (allow common_subject self (process (setcap)))
+    (allow common_subject self create_packet_socket_perms)
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call sys_read_kernel_sysctl (common_subject))
+
+    (call bin_execute_bin_files (common_subject))
+    (call bin_mmap_shell_files (common_subject))
+
+    (call net_udp_bind_all_unreserved_ports (common_subject))
+    (call net_udp_bind_generic_node (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dhcp_list_config (common_subject))
+    (call dhcp_read_config_files (common_subject))
+    (call dhcp_udp_bind_dhcp_port (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_generic_cert_files (common_subject))
+    (call miscfiles_read_localization (common_subject))
+    (call miscfiles_read_net_config_files (common_subject))
+
+    (optional dhclient_optional_nm
+        (call nm_exec_helper (common_subject))
+        (call nm_read_config_files (common_subject))
+        (call nm_manage_var_lib_files (common_subject))
+        (call nm_stream_connect (common_subject)))
+
+    (optional dhclient_optional_ntp
+        (call ntp_auto_subtrans (common_subject)))
 )
 
 (block dhcp
@@ -69,6 +100,10 @@
 (macro dhcp_run_dhclient ((type ARG1)(role ARG2))
     (call dhcp_auto_subtrans_dhclient (ARG1))
     (roleattributeset dhclient_role (ARG2)))
+
+(macro dhcp_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 dhcp.etc_object list_dir_perms))
 
 (macro dhcp_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))

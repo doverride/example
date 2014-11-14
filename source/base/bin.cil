@@ -108,3 +108,6 @@
 
 (macro bin_execute_shell_files ((type ARG1))
     (allow ARG1 shell.bin_object exec_file_perms))
+
+(macro bin_mmap_shell_files ((type ARG1))
+    (allow ARG1 shell.bin_object mmap_file_perms))

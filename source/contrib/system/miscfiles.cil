@@ -111,6 +111,10 @@
 (macro miscfiles_terminfo_type ((type ARG1))
     (typeattributeset miscfiles_terminfo_type ARG1))
 
+(macro miscfiles_read_generic_cert_lnk_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 cert.etc_object read_lnk_file_perms))
+
 (macro miscfiles_list_generic_cert ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 cert.etc_object list_dir_perms))
@@ -119,6 +123,10 @@
     (call file_search_etc (ARG1))
     (call read_files_pattern
         (ARG1 cert.etc_object cert.etc_object)))
+
+(macro miscfiles_read_generic_cert ((type ARG1))
+    (call miscfiles_read_generic_cert_files (ARG1))
+    (call miscfiles_read_generic_cert_lnk_files (ARG1)))
 
 (macro miscfiles_read_localization_lnk_files ((type ARG1))
     (call file_search_etc (ARG1))
@@ -220,6 +228,10 @@
     (allow ARG1 modules.file_object manage_file_perms)
     (allow ARG1 modules.file_object manage_lnk_file_perms))
 
+(macro miscfiles_read_net_config_lnk_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 net.etc_object read_lnk_file_perms))
+
 (macro miscfiles_list_net_config ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 net.etc_object list_dir_perms))
@@ -227,6 +239,10 @@
 (macro miscfiles_read_net_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 net.etc_object net.etc_object)))
+
+(macro miscfiles_read_net_config ((type ARG1))
+    (call miscfiles_read_net_config_files (ARG1))
+    (call miscfiles_read_net_config_lnk_files (ARG1)))
 
 (macro miscfiles_manage_net_config_files ((type ARG1))
     (call file_rw_etc_dirs (ARG1))

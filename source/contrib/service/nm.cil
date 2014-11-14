@@ -142,6 +142,19 @@
     (call nm_auto_subtrans_nmcli (ARG1))
     (roleattributeset nmcli_role (ARG2)))
 
+(macro nm_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 nm.etc_object list_dir_perms))
+
+(macro nm_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 nm.etc_object nm.etc_object)))
+
+(macro nm_manage_var_lib_files ((type ARG1))
+    (call file_search_var_lib (ARG1))
+    (call manage_files_pattern
+        (ARG1 nm.var_lib_object nm.var_lib_object)))
+
 (macro nm_stream_connect ((type ARG1))
     (call file_search_run (ARG1))
     (call stream_connect_pattern
