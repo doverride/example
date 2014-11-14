@@ -379,6 +379,9 @@
     (allow ARG1 kcore_proc read_file_perms)
     (typeattributeset can_dump_kernel ARG1))
 
+(macro sys_get_sysvipc_info ((type ARG1))
+    (allow ARG1 sys.common_subject (system (ipc_info))))
+
 (macro sys_load_kernel_module ((type ARG1))
     (typeattributeset can_load_kernel_module ARG1))
 

@@ -264,6 +264,9 @@
     (allow ARG1 memory_dev read_chr_file_perms)
     (typeattributeset can_read_memory ARG1))
 
+(macro dev_read_random ((type ARG1))
+    (allow ARG1 random_dev read_chr_file_perms))
+
 (macro dev_read_urandom ((type ARG1))
     (allow ARG1 urandom_dev read_chr_file_perms))
 
@@ -281,6 +284,9 @@
 
 (macro dev_rw_inherited_event ((type ARG1))
     (allow ARG1 event_dev rw_inherited_chr_file_perms))
+
+(macro dev_rw_lvm_control ((type ARG1))
+    (allow ARG1 lvm_control_dev rw_chr_file_perms))
 
 (macro dev_rw_null ((type ARG1))
     (allow ARG1 null_dev rw_chr_file_perms))

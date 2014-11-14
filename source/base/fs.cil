@@ -183,6 +183,9 @@
 (macro fs_getattr_devpts ((type ARG1))
     (allow ARG1 devpts (filesystem (getattr))))
 
+(macro fs_getattr_devtmpfs ((type ARG1))
+    (allow ARG1 devtmpfs (filesystem (getattr))))
+
 (macro fs_getattr_fs ((type ARG1))
     (allow ARG1 fs (filesystem (getattr))))
 

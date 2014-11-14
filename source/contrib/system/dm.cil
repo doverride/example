@@ -44,12 +44,23 @@
     (context bin_dmsetup (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/dmsetup" file bin_dmsetup)
 
+    (allow common_subject self (capability (sys_admin)))
+
+    (call sys_get_sysvipc_info (common_subject))
+
+    (call dev_rw_lvm_control (common_subject))
+
+    (call dm_rw_dmcrypt_semaphores (common_subject))
+
+    (call udev_client (common_subject))
+    (call udev_rw_inherited_udp_socket (common_subject))
+
+    (optional dmsetup_optional_lvm
+        (call lvm_rw_lvm_semaphores (common_subject)))
+
     (optional dmsetup_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional dmsetup_optional_unconfined
-        (call unconfined (dmsetup_role common_subject)))
 )
 
 (block dmcrypt
@@ -62,8 +73,33 @@
     (context bin_dmcrypt (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/cryptsetup" file bin_dmcrypt)
 
-    (optional dmscrypt_optional_unconfined
-        (call unconfined (dmcrypt_role common_subject)))
+    (allow common_subject self (capability (ipc_lock sys_admin sys_nice)))
+    (allow common_subject self (process (setsched)))
+    (allow common_subject self create_socket_perms)
+    (allow common_subject self (socket (accept)))
+    (allow common_subject self create_sem_perms)
+
+    (call sys_get_sysvipc_info (common_subject))
+    (call sys_read_crypto_sysctl (common_subject))
+    (call sys_request_load_module (common_subject))
+
+    (call fs_getattr_devtmpfs (common_subject))
+    (call fs_list_debugfs (common_subject))
+    (call fs_read_devtmpfs_lnk_files (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+
+    (call dev_read_urandom (common_subject))
+    (call dev_read_random (common_subject))
+    (call dev_rw_lvm_control (common_subject))
+
+    (call stor_rw_fixed_disk (common_subject))
+    (call stor_rw_removable (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call udev_client (common_subject))
 )
 
 (allow dm_admin_type self (capability (kill sys_ptrace)))
