@@ -69,3 +69,19 @@
 (macro mount_run ((type ARG1)(role ARG2))
     (call mount_auto_subtrans (ARG1))
     (roleattributeset mount_role (ARG2)))
+
+(macro mount_list_run ((type ARG1))
+    (call file_search_run (ARG!))
+    (allow ARG1 mount.run_object list_dir_perms))
+
+(macro mount_manage_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call manage_files_pattern (ARG1 mount.run_object mount.run_object)))
+
+(macro mount_read_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call read_files_pattern (ARG1 mount.run_object mount.run_object)))
+
+(macro mount_rw_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call rw_files_pattern (ARG1 mount.run_object mount.run_object)))

@@ -199,6 +199,9 @@
 (macro fs_list_sysfs ((type ARG1))
     (allow ARG1 sysfs list_dir_perms))
 
+(macro fs_list_devtmpfs ((type ARG1))
+    (allow ARG1 devtmpfs list_dir_perms))
+
 (macro fs_manage_devtmpfs_dirs ((type ARG1))
     (allow ARG1 devtmpfs manage_dir_perms))
 
