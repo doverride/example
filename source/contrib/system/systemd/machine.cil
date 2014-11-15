@@ -100,6 +100,15 @@
     (call file_etc_filetrans (ARG1 machined.etc_object file "machine-id"))
     (call file_etc_filetrans (ARG1 machined.etc_object file "machine-info")))
 
+(macro machine_list_run ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (allow ARG1 machined.systemd_run_object list_dir_perms))
+
+(macro machined_read_run_files ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (call read_files_pattern
+        (ARG1 machined.systemd_run_object machined.systemd_run_object)))
+
 (macro machine_admin ((role ARG1)(type ARG2))
     (typeattributeset machine_admin_role ARG1)
     (typeattributeset machine_admin_type ARG2))
