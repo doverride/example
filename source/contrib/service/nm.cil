@@ -160,6 +160,10 @@
     (call stream_connect_pattern
         (ARG1 nm.run_object nm.run_object nm.common_subject)))
 
+(macro nm_dbus_chat ((type ARG1))
+    (allow ARG1 nm.common_subject (dbus (send_msg)))
+    (allow nm.common_subject ARG1 (dbus (send_msg))))
+
 (macro nm_admin ((role ARG1)(type ARG2))
     (roleattributeset nm_admin_role ARG1)
     (typeattributeset nm_admin_type ARG2))

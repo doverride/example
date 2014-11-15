@@ -58,8 +58,30 @@
 
     (typeattributeset firewall_object_type tmpfs_object)
 
-    (optional firewalld_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (allow common_subject self rw_fifo_file_perms)
+
+    (allow common_subject tmpfs_object mmap_file_perms)
+
+    (call sys_read_net_proc (common_subject))
+
+    (call bin_read_bin_files (common_subject))
+
+    (call dev_read_urandom (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call iptables_auto_subtrans (common_subject))
+
+    (call kmod_auto_subtrans (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call polkit_dbus_chat_polkitd (common_subject))
+
+    (optional firewall_optional_nm
+        (call nm_dbus_chat (common_subject)))
 )
 
 (allow firewall_admin_type self (capability (kill sys_ptrace)))

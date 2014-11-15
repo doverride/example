@@ -398,6 +398,14 @@
     (allow ARG1 kmsg_proc read_file_perms)
     (typeattributeset can_read_kernel_message ARG1))
 
+(macro sys_search_net_proc ((type ARG1))
+    (call fs_search_proc (ARG1))
+    (allow ARG1 net_proc search_dir_perms))
+
+(macro sys_read_net_proc ((type ARG1))
+    (call sys_search_net_proc (ARG1))
+    (allow ARG1 net_proc read_file_perms))
+
 (macro sys_read_crypto_sysctl ((type ARG1))
     (call sys_search_crypto_sysctl (ARG1))
     (allow ARG1 crypto_sysctl read_file_perms))

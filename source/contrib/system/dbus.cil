@@ -131,6 +131,10 @@
 (macro dbus_acquire_system_service ((type ARG1))
     (allow ARG1 dbusd.common_subject (dbus (acquire_svc))))
 
+(macro dbus_system_service ((type ARG1))
+    (call dbus_system_client (ARG1))
+    (allow ARG1 dbusd.common_subject (dbus (acquire_svc))))
+
 (macro dbus_list_config ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 etc_dbus list_dir_perms))

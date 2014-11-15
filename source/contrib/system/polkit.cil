@@ -161,6 +161,10 @@
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 etc_polkit polkit_etc_file_type)))
 
+(macro polkit_dbus_chat_polkitd ((type ARG1))
+    (allow ARG1 polkitd.common_subject (dbus (send_msg)))
+    (allow polkitd.common_subject self (dbus (send_msg))))
+
 (macro polkit_admin ((role ARG1)(type ARG2))
     (roleattributeset polkit_admin_role ARG1)
     (typeattributeset polkit_admin_type ARG2))

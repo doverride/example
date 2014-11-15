@@ -96,6 +96,9 @@
 (macro bin_execute_bin_files ((type ARG1))
     (allow ARG1 bin exec_file_perms))
 
+(macro bin_read_bin_files ((type ARG1))
+    (allow ARG1 bin read_file_perms))
+
 (macro bin_shell_entry ((type ARG1))
     (call subject_entry (ARG1 shell.bin_object)))
 
