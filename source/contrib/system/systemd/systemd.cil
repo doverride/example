@@ -387,11 +387,12 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype systemd_admin_role systemd_object_type)
 
-(allow systemd_unconfined_type self (service (all)))
-(allow systemd_unconfined_type systemd.common_subject (service (all)))
-(allow systemd_unconfined_type systemd_unit_object_type (service (all)))
 (allow systemd_unconfined_type systemd.common_subject (system (halt reboot
     status start stop undefined enable disable reload)))
+
+(call systemd_manage_transient_units (systemd_unconfined_type))
+(call systemd_manage_transient_systemd_units (systemd_unconfined_type))
+(call systemd_manage_all_units (systemd_unconfined_type))
 
 (macro systemd_etc_object_type ((type ARG1))
     (typeattributeset systemd_etc_object_type ARG1))
@@ -511,6 +512,110 @@
     (call manage_sock_files_pattern
         (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object))
     (roletype ARG1 systemd.user_tmpfs_object))
+
+(macro systemd_stop_generic_units ((type ARG1))
+    (allow ARG1 systemd_unit (service (stop))))
+
+(macro systemd_stop_transient_units ((type ARG1))
+    (allow ARG1 self (service (stop))))
+
+(macro systemd_stop_transient_systemd_units ((type ARG1))
+    (allow ARG1 systemd.common_subject (service (stop))))
+
+(macro systemd_stop_all_units ((type ARG1))
+    (allow ARG1 systemd_unit_object_type (service (stop))))
+
+(macro systemd_status_generic_units ((type ARG1))
+    (allow ARG1 systemd_unit (service (status))))
+
+(macro systemd_status_transient_units ((type ARG1))
+    (allow ARG1 self (service (status))))
+
+(macro systemd_status_transient_systemd_units ((type ARG1))
+    (allow ARG1 systemd.common_subject (service (status))))
+
+(macro systemd_status_all_units ((type ARG1))
+    (allow ARG1 systemd_unit_object_type (service (status))))
+
+(macro systemd_disable_generic_units ((type ARG1))
+    (allow ARG1 systemd_unit (service (disable))))
+
+(macro systemd_disable_transient_units ((type ARG1))
+    (allow ARG1 self (service (disable))))
+
+(macro systemd_disable_transient_systemd_units ((type ARG1))
+    (allow ARG1 systemd.common_subject (service (disable))))
+
+(macro systemd_disable_all_units ((type ARG1))
+    (allow ARG1 systemd_unit_object_type (service (disable))))
+
+(macro systemd_enable_generic_units ((type ARG1))
+    (allow ARG1 systemd_unit (service (enable))))
+
+(macro systemd_enable_transient_units ((type ARG1))
+    (allow ARG1 self (service (enable))))
+
+(macro systemd_enable_transient_systemd_units ((type ARG1))
+    (allow ARG1 systemd.common_subject (service (enable))))
+
+(macro systemd_enable_all_units ((type ARG1))
+    (allow ARG1 systemd_unit_object_type (service (enable))))
+
+(macro systemd_reload_generic_units ((type ARG1))
+    (allow ARG1 systemd_unit (service (reload))))
+
+(macro systemd_reload_transient_units ((type ARG1))
+    (allow ARG1 self (service (reload))))
+
+(macro systemd_reload_transient_systemd_units ((type ARG1))
+    (allow ARG1 systemd.common_subject (service (reload))))
+
+(macro systemd_reload_all_units ((type ARG1))
+    (allow ARG1 systemd_unit_object_type (service (reload))))
+
+(macro systemd_start_generic_units ((type ARG1))
+    (allow ARG1 systemd_unit (service (start))))
+
+(macro systemd_start_transient_units ((type ARG1))
+    (allow ARG1 self (service (start))))
+
+(macro systemd_start_transient_systemd_units ((type ARG1))
+    (allow ARG1 systemd.common_subject (service (start))))
+
+(macro systemd_start_all_units ((type ARG1))
+    (allow ARG1 systemd_unit_object_type (service (start))))
+
+(macro systemd_manage_generic_units ((type ARG1))
+    (call systemd_stop_generic_units (ARG1))
+    (call systemd_status_generic_units (ARG1))
+    (call systemd_disable_generic_units (ARG1))
+    (call systemd_enable_generic_units (ARG1))
+    (call systemd_reload_generic_units (ARG1))
+    (call systemd_start_generic_units (ARG1)))
+
+(macro systemd_manage_transient_units ((type ARG1))
+    (call systemd_stop_transient_units (ARG1))
+    (call systemd_status_transient_units (ARG1))
+    (call systemd_disable_transient_units (ARG1))
+    (call systemd_enable_transient_units (ARG1))
+    (call systemd_reload_transient_units (ARG1))
+    (call systemd_start_transient_units (ARG1)))
+
+(macro systemd_manage_transient_systemd_units ((type ARG1))
+    (call systemd_stop_transient_systemd_units (ARG1))
+    (call systemd_status_transient_systemd_units (ARG1))
+    (call systemd_disable_transient_systemd_units (ARG1))
+    (call systemd_enable_transient_systemd_units (ARG1))
+    (call systemd_reload_transient_systemd_units (ARG1))
+    (call systemd_start_transient_systemd_units (ARG1)))
+
+(macro systemd_manage_all_units ((type ARG1))
+    (call systemd_stop_all_units (ARG1))
+    (call systemd_status_all_units (ARG1))
+    (call systemd_disable_all_units (ARG1))
+    (call systemd_enable_all_units (ARG1))
+    (call systemd_reload_all_units (ARG1))
+    (call systemd_start_all_units (ARG1)))
 
 (macro systemd_admin ((role ARG1)(type ARG2))
     (roleattributeset systemd_admin_role ARG1)
