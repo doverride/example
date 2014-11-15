@@ -11,12 +11,13 @@
     (filecon "/usr/sbin/ownership" file bin_dmi)
     (filecon "/usr/sbin/vpddecode" file bin_dmi)
 
+    (call dev_read_memory (common_subject))
+
+    (call fs_read_sysfs_files (common_subject))
+
     (optional dmi_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional dmi_optional_unconfined
-        (call unconfined (dmi_role common_subject)))
 )
 
 (macro dmi_exec ((type ARG1))
