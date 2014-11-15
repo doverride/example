@@ -11,6 +11,19 @@
     (filecon "/usr/lib/systemd/system/[^/]*getty.*" file unit_getty)
 
     (allow common_subject self (capability (chown fsetid sys_tty_config sys_admin)))
+    (allow common_subject self create_unix_stream_socket_perms)
+
+    (call term_setattr_unallocated_tts (common_subject))
+    (call term_use_unallocated_tts (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+    (call auth_write_wtmp (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call utmp_rw_run_files (common_subject))
 
     (call login_auto_subtrans (common_subject))
 
@@ -21,8 +34,8 @@
         (false
             (call term_dontaudit_use_console (common_subject))))
 
-    (optional getty_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (optional getty_optional_plymouth
+        (call plymouth_exec (common_subject)))
 )
 
 (allow getty_admin_type self (capability (kill sys_ptrace)))
