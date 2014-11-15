@@ -8,8 +8,13 @@
     (context bin_dmesg (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/dmesg" file bin_dmesg)
 
-    (optional dmesg_optional_unconfined
-        (call unconfined (dmesg_role common_subject)))
+    (call sys_read_ring_buffer (common_subject))
+
+    (call dev_read_kmsg (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
 )
 
 (macro dmesg_auto_subtrans ((type ARG1))

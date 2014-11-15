@@ -382,6 +382,14 @@
 (macro sys_get_sysvipc_info ((type ARG1))
     (allow ARG1 sys.common_subject (system (ipc_info))))
 
+(macro sys_read_ring_buffer ((type ARG1))
+    (allow ARG1 self (capability2 (syslog)))
+    (allow ARG1 sys.common_subject (system (syslog_read))))
+
+(macro sys_change_ring_buffer_level ((type ARG1))
+    (allow ARG1 self (capability2 (syslog)))
+    (allow ARG1 sys.common_subject (system (syslog_console))))
+
 (macro sys_load_kernel_module ((type ARG1))
     (typeattributeset can_load_kernel_module ARG1))
 

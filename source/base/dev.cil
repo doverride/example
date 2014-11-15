@@ -259,6 +259,9 @@
     (optional dev_relabel_all_optional_storage
         (call stor_relabel_all (ARG1))))
 
+(macro dev_read_kmsg ((type ARG1))
+    (allow ARG1 kmsg_dev read_chr_file_perms))
+
 (macro dev_read_memory ((type ARG1))
     (allow ARG1 self (capability (sys_rawio)))
     (allow ARG1 memory_dev read_chr_file_perms)
