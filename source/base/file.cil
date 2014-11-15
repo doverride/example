@@ -813,6 +813,9 @@
 (macro file_getattr_all_dirs ((type ARG1))
     (allow ARG1 file_type (dir (getattr))))
 
+(macro file_read_boot_files ((type ARG1))
+    (call read_files_pattern (ARG1 boot boot)))
+
 (macro file_read_generic_etc_files ((type ARG1))
     (call read_files_pattern (ARG1 etc etc)))
 

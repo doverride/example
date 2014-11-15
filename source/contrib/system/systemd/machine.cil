@@ -88,6 +88,18 @@
 (macro machine_send_signal_machinectl ((type ARG1))
     (allow ARG1 machinectl.common_subject (process (signal))))
 
+(macro machine_manage_config_files ((type ARG1))
+    (call file_rw_etc_dirs (ARG1))
+    (allow ARG1 machined.etc_object manage_file_perms))
+
+(macro machine_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 machined.etc_object read_file_perms))
+
+(macro machine_etc_filetrans_config_files ((type ARG1))
+    (call file_etc_filetrans (ARG1 machined.etc_object file "machine-id"))
+    (call file_etc_filetrans (ARG1 machined.etc_object file "machine-info")))
+
 (macro machine_admin ((role ARG1)(type ARG2))
     (typeattributeset machine_admin_role ARG1)
     (typeattributeset machine_admin_type ARG2))
