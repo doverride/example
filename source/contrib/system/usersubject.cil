@@ -173,8 +173,6 @@
 
 (block user_terminfo
     (blockinherit usersubject_home_object_block)
-
-    (call miscfiles_terminfo_type (home_object))
 )
 
 (call bin_entry (usersubject_common_type))
@@ -371,6 +369,40 @@
     (call usersubject_home_user_filetrans
         (ARG1 ARG2 user_terminfo.home_object file ".terminfo"))
     (roletype ARG1 user_terminfo.home_object))
+
+(macro usersubject_search_home_user ((type ARG1))
+    (call file_search_home (ARG1))
+    (allow ARG1 home_user search_dir_perms))
+
+(macro usersubject_list_cert ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 user_cert.home_object list_dir_perms))
+
+(macro usersubject_search_cert ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 user_cert.home_object search_dir_perms))
+
+(macro usersubject_read_cert_lnk_files ((type ARG1))
+    (call usersubject_search_cert (ARG1))
+    (allow ARG1 user_cert.home_object read_lnk_file_perms))
+
+(macro usersubject_read_cert_files ((type ARG1))
+    (call usersubject_search_cert (ARG1))
+    (allow ARG1 user_cert.home_object read_file_perms))
+
+(macro usersubject_read_cert ((type ARG1))
+    (call usersubject_list_cert (ARG1))
+    (call usersubject_read_cert_lnk_files (ARG1))
+    (allow ARG1 user_cert.home_object read_file_perms))
+
+(macro usersubject_manage_cert ((type ARG1))
+    (allow ARG1 user_cert.home_object manage_dir_perms)
+    (allow ARG1 user_cert.home_object manage_lnk_file_perms)
+    (allow ARG1 user_cert.home_object manage_file_perms))
+
+(macro usersubject_read_terminfo_files ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 user_terminfo.home_object read_file_perms))
 
 (macro usersubject_pty_type ((type ARG1))
     (call term_pty_type (ARG1))

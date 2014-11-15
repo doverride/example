@@ -875,6 +875,12 @@
 (macro file_search_var ((type ARG1))
     (allow ARG1 var search_dir_perms))
 
+(macro file_list_home ((type ARG1))
+    (allow ARG1 home list_dir_perms))
+
+(macro file_search_home ((type ARG1))
+    (allow ARG1 home search_dir_perms))
+
 (macro file_sec_type ((type ARG1))
     (call sys_object_type (ARG1))
     (typeattributeset file_type ARG1)

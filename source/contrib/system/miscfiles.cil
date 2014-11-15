@@ -1,5 +1,4 @@
 (typeattribute miscfiles_cert_type)
-(typeattribute miscfiles_terminfo_type)
 
 (block cert
     (blockinherit file_etc_object_block)
@@ -92,14 +91,10 @@
 (block terminfo
     (blockinherit file_etc_object_block)
 
-    (typeattributeset miscfiles_terminfo_type etc_object)
-
     (context etc_terminfo (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/terminfo(/.*)?" any etc_terminfo)
 
     (blockinherit file_usr_object_block)
-
-    (typeattributeset miscfiles_terminfo_type usr_object)
 
     (context usr_terminfo (sys.u sys.r usr_object (systemlow systemlow)))
     (filecon "/usr/share/terminfo(/.*)?" any usr_terminfo)
@@ -107,9 +102,6 @@
 
 (macro miscfiles_cert_type ((type ARG1))
     (typeattributeset miscfiles_cert_type ARG1))
-
-(macro miscfiles_terminfo_type ((type ARG1))
-    (typeattributeset miscfiles_terminfo_type ARG1))
 
 (macro miscfiles_read_generic_cert_lnk_files ((type ARG1))
     (call file_search_etc (ARG1))
@@ -128,6 +120,32 @@
     (call miscfiles_list_generic_cert (ARG1))
     (call miscfiles_read_generic_cert_lnk_files (ARG1))
     (allow ARG1 cert.etc_object read_file_perms))
+
+(macro miscfiles_read_all_cert_lnk_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 miscfiles_cert_type read_lnk_file_perms)
+    (optional miscfiles_read_all_cert_lnk_files_optional_usersubject
+        (call usersubject_search_home_user (ARG1))))
+
+(macro miscfiles_list_all_cert ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 miscfiles_cert_type list_dir_perms)
+    (optional miscfiles_list_all_cert_optional_usersubject
+        (call usersubject_search_home_user (ARG1))))
+
+(macro miscfiles_read_all_cert_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern
+        (ARG1 miscfiles_cert_type miscfiles_cert_type))
+    (optional miscfiles_read_all_cert_files_optional_usersubject
+        (call usersubject_search_home_user (ARG1))))
+
+(macro miscfiles_read_all_cert ((type ARG1))
+    (call miscfiles_list_all_cert (ARG1))
+    (call miscfiles_read_all_cert_lnk_files (ARG1))
+    (allow ARG1 miscfiles_cert_type read_file_perms)
+    (optional miscfiles_read_all_cert_optional_usersubject
+        (call usersubject_search_home_user (ARG1))))
 
 (macro miscfiles_read_localization_lnk_files ((type ARG1))
     (call file_search_etc (ARG1))
@@ -317,45 +335,49 @@
 (macro miscfiles_etc_filetrans_net_config ((type ARG1)(class ARG2)(name ARG3))
     (call file_etc_filetrans (ARG1 net.etc_object ARG2 ARG3)))
 
-(macro miscfiles_read_generic_terminfo_etc_lnk_files ((type ARG1))
+(macro miscfiles_read_terminfo_etc_lnk_files ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 terminfo.etc_object read_lnk_file_perms))
 
-(macro miscfiles_list_generic_terminfo_etc ((type ARG1))
+(macro miscfiles_list_terminfo_etc ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 terminfo.etc_object list_dir_perms))
 
-(macro miscfiles_read_generic_terminfo_etc_files ((type ARG1))
+(macro miscfiles_read_terminfo_etc_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern
         (ARG1 terminfo.etc_object terminfo.etc_object)))
 
-(macro miscfiles_read_generic_terminfo_usr_lnk_files ((type ARG1))
+(macro miscfiles_read_terminfo_usr_lnk_files ((type ARG1))
     (call file_search_usr (ARG1))
     (allow ARG1 terminfo.usr_object read_lnk_file_perms))
 
-(macro miscfiles_list_generic_terminfo_usr ((type ARG1))
+(macro miscfiles_list_terminfo_usr ((type ARG1))
     (call file_search_usr (ARG1))
     (allow ARG1 terminfo.usr_object list_dir_perms))
 
-(macro miscfiles_read_generic_terminfo_usr_files ((type ARG1))
+(macro miscfiles_read_terminfo_usr_files ((type ARG1))
     (call file_search_usr (ARG1))
     (call read_files_pattern
         (ARG1 terminfo.usr_object terminfo.usr_object)))
 
-(macro miscfiles_read_generic_terminfo_lnk_files ((type ARG1))
-    (call miscfiles_read_generic_terminfo_etc_lnk_files (ARG1))
-    (call miscfiles_read_generic_terminfo_usr_lnk_files (ARG1)))
+(macro miscfiles_read_terminfo_lnk_files ((type ARG1))
+    (call miscfiles_read_terminfo_etc_lnk_files (ARG1))
+    (call miscfiles_read_terminfo_usr_lnk_files (ARG1)))
 
-(macro miscfiles_list_generic_terminfo ((type ARG1))
-    (call miscfiles_list_generic_terminfo_etc (ARG1))
-    (call miscfiles_list_generic_terminfo_usr (ARG1)))
+(macro miscfiles_list_terminfo ((type ARG1))
+    (call miscfiles_list_terminfo_etc (ARG1))
+    (call miscfiles_list_terminfo_usr (ARG1)))
 
-(macro miscfiles_read_generic_terminfo_files ((type ARG1))
-    (call miscfiles_read_generic_terminfo_etc_files (ARG1))
-    (call miscfiles_read_generic_terminfo_usr_files (ARG1)))
+(macro miscfiles_read_terminfo_files ((type ARG1))
+    (call miscfiles_read_terminfo_etc_files (ARG1))
+    (call miscfiles_read_terminfo_usr_files (ARG1))
+    (optional miscfiles_read_terminfo_files_optional_usersubject
+        (call usersubject_read_terminfo_files (ARG1))))
 
-(macro miscfiles_read_generic_terminfo ((type ARG1))
-    (call miscfiles_list_generic_terminfo (ARG1))
-    (call miscfiles_read_generic_terminfo_lnk_files (ARG1))
-    (call miscfiles_read_generic_terminfo_files (ARG1)))
+(macro miscfiles_read_terminfo ((type ARG1))
+    (call miscfiles_list_terminfo (ARG1))
+    (call miscfiles_read_terminfo_lnk_files (ARG1))
+    (call miscfiles_read_terminfo_files (ARG1))
+    (optional miscfiles_read_terminfo_optional_usersubject
+        (call usersubject_read_terminfo_files (ARG1))))

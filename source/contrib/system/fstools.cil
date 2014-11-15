@@ -82,7 +82,7 @@
 
     (call term_use_inherited_unallocated_tts (common_subject))
 
-    (call miscfiles_read_generic_terminfo_files (common_subject))
+    (call miscfiles_read_terminfo (common_subject))
     (call miscfiles_read_localization (common_subject))
 
     (call fstools_exec (common_subject))
