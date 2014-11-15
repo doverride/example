@@ -19,12 +19,21 @@
     (context etc_iptools (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/iproute2(/.*)?" any etc_iptools)
 
+    (allow common_subject self (capability (net_admin)))
+    (allow common_subject self create_udp_socket_perms)
+    (allow common_subject self create_netlink_route_socket_perms)
+    (allow common_subject self create_unix_dgram_socket_perms)
+
+    (call sys_read_net_sysctl (common_subject))
+    (call sys_read_net_proc (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
     (optional iptools_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional iptools_optional_unconfined
-        (call unconfined (iptools_role common_subject)))
 )
 
 (macro iptools_exec ((type ARG1))
