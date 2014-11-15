@@ -38,9 +38,26 @@
 
     (allow common_subject self (capability (net_raw setgid setuid)))
     (allow common_subject self (process (setcap)))
+    (allow common_subject self rw_fifo_file_perms)
 
-    (optional dnsmasq_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call sys_read_kernel_sysctl (common_subject))
+
+    (call dev_read_urandom (common_subject))
+
+    (call net_udp_bind_generic_node (common_subject))
+    (call net_tcp_bind_generic_node (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dhcp_udp_bind_dhcp_port (common_subject))
+
+    (call dns_udp_bind_dns_port (common_subject))
+    (call dns_tcp_bind_dns_port (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+    (call miscfiles_read_net_config_files (common_subject))
 )
 
 (allow dnsmasq_admin_type self (capability (kill sys_ptrace)))
