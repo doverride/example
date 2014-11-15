@@ -106,6 +106,10 @@
     (allow ARG1 fixed_disk_dev relabel_blk_file_perms)
     (allow ARG1 fixed_disk_dev relabel_chr_file_perms))
 
+(macro stor_getattr_fixed_disk ((type ARG1))
+    (allow ARG1 fixed_disk_dev (chr_file (getattr)))
+    (allow ARG1 fixed_disk_dev (blk_file (getattr))))
+
 (macro stor_read_fixed_disk ((type ARG1))
     (allow ARG1 fixed_disk_dev read_chr_file_perms)
     (allow ARG1 fixed_disk_dev read_blk_file_perms)
@@ -152,6 +156,9 @@
 
 (macro stor_relabel_scsi_generic ((type ARG1))
     (allow ARG1 fixed_disk_dev relabel_chr_file_perms))
+
+(macro stor_getattr_scsi_generic ((type ARG1))
+    (allow ARG1 fixed_disk_dev (chr_file (getattr))))
 
 (macro stor_read_scsi_generic ((type ARG1))
     (allow ARG1 scsi_generic_dev read_chr_file_perms)
