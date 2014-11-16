@@ -114,3 +114,6 @@
 
 (macro bin_mmap_shell_files ((type ARG1))
     (allow ARG1 shell.bin_object mmap_file_perms))
+
+(macro bin_mprot_read_shell_files ((type ARG1))
+    (allow ARG1 shell.bin_object (file (read))))

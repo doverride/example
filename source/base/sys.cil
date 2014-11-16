@@ -470,6 +470,11 @@
     (typeattributeset
         can_write_security_and_usermodehelper_sysctl ARG1))
 
+(macro sys_read_usermodehelper_sysctl ((type ARG1))
+    (call sys_search_kernel_sysctl (ARG1))
+    (call read_files_pattern
+        (ARG1 usermodehelper_sysctl usermodehelper_sysctl)))
+
 (macro sys_rw_usermodehelper_sysctl ((type ARG1))
     (call sys_search_kernel_sysctl (ARG1))
     (call rw_files_pattern (ARG1 usermodehelper_sysctl

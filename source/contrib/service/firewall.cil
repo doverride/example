@@ -101,6 +101,13 @@
     (call firewall_auto_subtrans_firewallcmd (ARG1))
     (roleattributeset firewallcmd_role ARG2))
 
+(macro firewall_rw_inherited_fifo_files ((type ARG1))
+    (allow ARG1 firewalld.common_subject (fd (use)))
+    (allow ARG1 firewalld.common_subject (fifo_file (read write))))
+
+(macro firewall_rw_inherited_tmpfs_files ((type ARG1))
+    (allow ARG1 firewalld.tmpfs_object (file (read write))))
+
 (macro firewall_admin ((role ARG1)(type ARG2))
     (roleattributeset firewall_admin_role ARG1)
     (typeattributeset firewall_admin_type ARG2))

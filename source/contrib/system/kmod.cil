@@ -65,6 +65,14 @@
     (call kmod_auto_subtrans (ARG1))
     (roleattributeset kmod_role (ARG2)))
 
+(macro kmod_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 kmod.etc_object list_dir_perms))
+
+(macro kmod_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 kmod.etc_object kmod.etc_object)))
+
 (macro kmod_admin ((role ARG1)(type ARG2))
     (roleattributeset kmod_admin_role ARG1)
     (typeattributeset kmod_admin_type ARG2))

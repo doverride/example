@@ -57,18 +57,46 @@
 
     (allow common_subject self (capability (net_raw net_admin)))
     (allow common_subject self create_rawip_socket_perms)
+    (allow common_subject self rw_fifo_file_perms)
 
     (allow common_subject etc_object manage_file_perms)
     (call file_etc_filetrans (common_subject etc_object file "*"))
 
+    (call sys_read_net_proc (common_subject))
+    (call sys_read_kernel_sysctl (common_subject))
+    (call sys_read_usermodehelper_sysctl (common_subject))
+    (call sys_request_load_module (common_subject))
+
+    (call bin_execute_bin_files (common_subject))
+    (call bin_mprot_read_shell_files (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call fs_getattr_proc (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call iptables_exec (common_subject))
     (call iptables_search_config (common_subject))
+
+    (call kmod_list_config (common_subject))
+    (call kmod_read_config_files (common_subject))
+    (call kmod_run (common_subject iptables_role))
+
+    (call miscfiles_read_net_config_files (common_subject))
+    (call miscfiles_read_localization (common_subject))
 
     (optional iptables_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
 
-    (optional iptables_optional_unconfined
-        (call unconfined (iptables_role common_subject)))
+    (optional iptables_optional_firewall
+        (call firewall_rw_inherited_tmpfs_files (common_subject)))
+
+    (optional iptables_optional_plymouth
+        (call plymouth_exec (common_subject)))
 )
 
 (allow iptables_admin_type self (capability (kill sys_ptrace)))
@@ -79,6 +107,9 @@
 (allow iptables_admin_type iptables_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype iptables_admin_role iptables_object_type)
+
+(macro iptables_exec ((type ARG1))
+    (call can_exec (ARG1 iptables.bin_object)))
 
 (macro iptables_auto_subtrans ((type ARG1))
     (call auto_subject_type_transition_pattern
