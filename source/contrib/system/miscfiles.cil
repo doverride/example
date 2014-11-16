@@ -288,15 +288,15 @@
     (call miscfiles_read_man_files (ARG1)))
 
 (macro miscfiles_list_modules ((type ARG1))
-    (call lib_search (ARG1))
+    (call file_search_usr (ARG1))
     (allow ARG1 modules.file_object list_dir_perms))
 
 (macro miscfiles_read_modules_lnk_files ((type ARG1))
-    (call lib_search (ARG1))
+    (call file_search_usr (ARG1))
     (allow ARG1 modules.file_object read_lnk_file_perms))
 
 (macro miscfiles_read_modules_files ((type ARG1))
-    (call lib_search (ARG1))
+    (call file_search_usr (ARG1))
     (call read_files_pattern
         (ARG1 modules.file_object modules.file_object)))
 
@@ -306,7 +306,7 @@
     (allow ARG1 modules.file_object read_file_perms))
 
 (macro miscfiles_manage_modules ((type ARG1))
-    (call lib_search (ARG1))
+    (call file_search_usr (ARG1))
     (allow ARG1 modules.file_object manage_dir_perms)
     (allow ARG1 modules.file_object manage_file_perms)
     (allow ARG1 modules.file_object manage_lnk_file_perms))

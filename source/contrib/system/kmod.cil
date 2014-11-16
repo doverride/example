@@ -40,12 +40,33 @@
     (context usr_kmod (sys.u sys.r usr_object (systemlow systemlow)))
     (filecon "/usr/lib/modules/[^/]+/modules\..+" file usr_kmod)
 
+    (allow common_subject run_object manage_file_perms)
+    (call tmpfiles_run_filetrans (common_subject run_object file "*"))
+
+    (call sys_link_keyring (common_subject))
+    (call sys_load_kernel_module (common_subject))
+    (call sys_request_load_module (common_subject))
+
+    (call fs_list_debugfs (common_subject))
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+
+    (call kmod_list_config (common_subject))
+    (call kmod_read_config_files (common_subject))
+    (call kmod_read_modules_dep_files (common_subject))
+
+    (call miscfiles_read_modules_files (common_subject))
+
+    (optional kmod_optional_firewall
+        (call firewall_rw_inherited_fifo_files (common_subject)))
+
+    (optional kmod_optional_iptables
+        (call iptables_dontaudit_rw_inherited_stream_sockets (common_subject))
+        (call iptables_dontaudit_rw_inherited_rawip_sockets (common_subject)))
+
     (optional kmod_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional kmod_optional_unconfined
-        (call unconfined (kmod_role common_subject)))
 )
 
 (allow kmod_admin_type self (capability (kill sys_ptrace)))
@@ -72,6 +93,18 @@
 (macro kmod_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 kmod.etc_object kmod.etc_object)))
+
+(macro kmod_read_modules_dep_files ((type ARG1))
+    (call file_search_usr (ARG1))
+    (allow ARG1 kmod.usr_object read_file_perms))
+
+(macro kmod_manage_modules_dep_files ((type ARG1))
+    (call file_search_usr (ARG1))
+    (allow ARG1 kmod.usr_object manage_file_perms))
+
+(macro kmod_relabel_modules_dep_files ((type ARG1))
+    (call file_search_usr (ARG1))
+    (allow ARG1 kmod.usr_object relabel_file_perms))
 
 (macro kmod_admin ((role ARG1)(type ARG2))
     (roleattributeset kmod_admin_role ARG1)

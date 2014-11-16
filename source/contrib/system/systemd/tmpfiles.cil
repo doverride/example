@@ -92,6 +92,23 @@
     (call tmpfiles_auto_subtrans (ARG1))
     (roleattributeset tmpfiles_role (ARG2)))
 
+(macro tmpfiles_list_run ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 tmpfiles.run_object list_dir_perms))
+
+(macro tmpfiles_read_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call read_files_pattern (ARG1 tmpfiles.run_object tmpfiles.run_object)))
+
+(macro tmpfiles_manage_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call manage_files_pattern (ARG1 tmpfiles.run_object tmpfiles.run_object)))
+
+(macro tmpfiles_run_filetrans ((type ARG1)(type ARG2)(class ARG3)(name ARG4))
+    (call file_search_run (ARG1))
+    (call file_type_transition_pattern
+        (ARG1 tmpfiles.run_object ARG2 ARG3 ARG4)))
+
 (macro tmpfiles_manageable_object_exception ((type ARG1))
     (call file_spec_exception
         (tmpfiles_manageable_object_exception_type ARG1)))
