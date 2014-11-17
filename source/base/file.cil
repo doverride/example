@@ -872,6 +872,10 @@
     (call file_search_run (ARG1))
     (allow ARG1 run_user search_dir_perms))
 
+(macro file_search_run_lock ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 run_lock search_dir_perms))
+
 (macro file_search_var ((type ARG1))
     (allow ARG1 var search_dir_perms))
 

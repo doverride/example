@@ -9,10 +9,10 @@
 (typeattribute lvm_etc_file_type)
 (typeattribute lvm_unit_type)
 
-(block lvm_object_block
-    (blockabstract lvm_object_block)
-        (type lvm_object)
-        (call lvm_etc_file_type (lvm_object))
+(block lvm_etc_object_block
+    (blockabstract lvm_etc_object_block)
+        (type lvm_etc_object)
+        (call lvm_etc_file_type (lvm_etc_object))
 )
 
 (block lvm
@@ -34,16 +34,56 @@
     (filecon "/usr/lib/systemd/system/blk-availability.*" file unit_lvm)
     (filecon "/usr/lib/systemd/system/lvm2-.*" file unit_lvm)
 
-    (allow common_subject self (process (setsched)))
+    (blockinherit file_maintains_run_lock_dirs_and_files_block)
+
+    (typeattributeset lvm_object_type run_lock_object)
+
+    (context run_lock_lvm (sys.u sys.r run_lock_object (systemlow systemlow)))
+    (filecon "/run/lock/lvm(/.*)?" any run_lock_lvm)
+
+    (allow common_subject self (capability (ipc_lock sys_nice sys_admin)))
+    (allow common_subject self (process (setfscreate setsched)))
+    (allow common_subject self create_sem_perms)
+
+    (call sys_get_sysvipc_info (common_subject))
+    (call sys_getattr_core_if (common_subject))
+    (call sys_use_fd (common_subject))
+
+    (call dev_getattr_all (common_subject))
+    (call dev_read_urandom (common_subject))
+    (call dev_rw_lvm_control (common_subject))
+    (call dev_write_kmsg (common_subject))
+
+    (call fs_list_debugfs (common_subject))
+    (call fs_getattr_devpts_chr_files (common_subject))
+    (call fs_list_tmpfs (common_subject))
+    (call fs_list_hugetlbfs (common_subject))
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_devtmpfs_lnk_files (common_subject))
+
+    (call sec_get_enforce_mode (common_subject))
 
     (call subject_object_identity_change_exemption (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
+
+    (call stor_manage_fixed_disk (common_subject))
+    (call stor_manage_removable (common_subject))
+    (call stor_manage_scsi_generic (common_subject))
+
+    (call lvm_read_config_files (common_subject))
+    (call lvm_manage_metadata_files (common_subject))
+    (call lvm_stream_connect_lvmetad (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call udev_client (common_subject))
 
     (optional lvm_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional lvm_optional_unconfined
-       (call unconfined (lvm_role common_subject)))
 )
 
 (block lvmetad
@@ -58,9 +98,9 @@
     (context unit_lvmetad (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/lvm2-lvmetad.*" file unit_lvmetad)
 
-    (blockinherit lvm_object_block)
+    (blockinherit lvm_etc_object_block)
 
-    (context etc_lvmetad (sys.u sys.r lvm_object (systemlow systemlow)))
+    (context etc_lvmetad (sys.u sys.r lvm_etc_object (systemlow systemlow)))
     (filecon "/etc/lvm/cache(/.*)?" any etc_lvmetad)
     (filecon "/etc/lvm/archive(/.*)?" any etc_lvmetad)
     (filecon "/etc/lvm/backup(/.*)?" any etc_lvmetad)
@@ -74,13 +114,6 @@
     (filecon "/var/run/lvm(/.*)?" any run_lvmetad)
     (filecon "/var/run/lvmetad\.pid" file run_lvmetad)
 
-    (blockinherit file_maintains_run_lock_dirs_and_files_block)
-
-    (typeattributeset lvm_object_type run_lock_object)
-
-    (context run_lock_lvmetad (sys.u sys.r run_lock_object (systemlow systemlow)))
-    (filecon "/run/lock/lvm(/.*)?" any run_lock_lvmetad)
-
     (call systemd_pid_object_type (run_object))
 
     (allow common_subject run_object manage_file_perms)
@@ -88,12 +121,18 @@
 
     (call systemd_socket_activated_object_type (run_object))
 
+    (allow common_subject self (process (setfscreate)))
+
     (allow common_subject run_object manage_dir_perms)
     (allow common_subject run_object manage_sock_file_perms)
     (call file_run_filetrans (common_subject run_object dir "*"))
 
-    (optional lvmetad_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (allow common_subject self create_unix_stream_stream_socket_perms)
+
+    (call sec_get_enforce_mode (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
 )
 
 (type etc_lvm)
@@ -125,6 +164,7 @@
     (call can_exec (ARG1 lvm.bin_object)))
 
 (macro lvm_auto_subtrans ((type ARG1))
+    (call lvm_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 lvm.bin_object lvm.common_subject)))
 
@@ -132,9 +172,39 @@
     (call lvm_auto_subtrans (ARG1))
     (roleattributeset lvm_role (ARG2)))
 
+(macro lvm_send_signal ((type ARG1))
+    (allow ARG1 lvm.common_subject (process (signal))))
+
+(macro lvm_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 etc_lvm list_dir_perms))
+
 (macro lvm_search_config ((type ARG1))
     (call file_search_etc (ARG1))
-    (allow ARG1 lvm_etc search_dir_perms))
+    (allow ARG1 etc_lvm search_dir_perms))
+
+(macro lvm_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 etc_lvm etc_lvm)))
+
+(macro lvm_read_metadata_files ((type ARG1))
+    (call lvm_search_config (ARG1))
+    (call read_files_pattern
+        (ARG1 lvmetad.lvm_etc_object lvmetad.lvm_etc_object)))
+
+(macro lvm_manage_metadata_files ((type ARG1))
+    (call lvm_search_config (ARG1))
+    (call manage_files_pattern
+        (ARG1 lvmetad.lvm_etc_object lvmetad.lvm_etc_object)))
+
+(macro lvm_manage_lock_files ((type ARG1))
+    (call file_search_run_lock (ARG1))
+    (call manage_dirs_pattern
+        (ARG1 lvm.run_lock_object lvm.run_lock_object)))
+
+(macro lvm_run_lock_filetrans_lvm_lock ((type ARG1)(class ARG2)(name ARG3))
+    (call file_search_run_lock (ARG1))
+    (call file_run_lock_filetrans (ARG1 lvm.run_lock_object ARG2 ARG3)))
 
 (macro lvm_rw_lvm_semaphores ((type ARG1))
     (allow ARG1 lvm.common_subject rw_sem_perms))

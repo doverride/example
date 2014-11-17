@@ -73,6 +73,10 @@
     (call sys_object_type (ARG1))
     (typeattributeset sec_bool_type ARG1))
 
+(macro sec_get_enforce_mode ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call read_files_pattern (ARG1 securityfs securityfs)))
+
 (macro sec_compute_access_vector ((type ARG1))
     (call fs_search_sysfs (ARG1))
     (call rw_files_pattern (ARG1 securityfs securityfs))

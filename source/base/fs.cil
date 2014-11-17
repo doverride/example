@@ -202,6 +202,12 @@
 (macro fs_list_sysfs ((type ARG1))
     (allow ARG1 sysfs list_dir_perms))
 
+(macro fs_list_tmpfs ((type ARG1))
+    (allow ARG1 tmpfs list_dir_perms))
+
+(macro fs_list_hugetlbfs ((type ARG1))
+    (allow ARG1 hugetlbfs list_dir_perms))
+
 (macro fs_list_devtmpfs ((type ARG1))
     (allow ARG1 devtmpfs list_dir_perms))
 
@@ -228,6 +234,10 @@
 
 (macro fs_read_devtmpfs_lnk_files ((type ARG1))
     (allow ARG1 devtmpfs read_lnk_file_perms))
+
+(macro fs_getattr_devpts_chr_files ((type ARG1))
+    (call fs_search_devpts (ARG1))
+    (allow ARG1 devpts (chr_file (getattr))))
 
 (macro fs_getattr_all_fs ((type ARG1))
     (allow ARG1 fs_type (filesystem (getattr))))
@@ -261,6 +271,9 @@
 
 (macro fs_rw_devtmpfs_dirs ((type ARG1))
     (allow ARG1 devtmpfs rw_dir_perms))
+
+(macro fs_search_devpts ((type ARG1))
+    (allow ARG1 devpts search_dir_perms))
 
 (macro fs_search_devtmpfs ((type ARG1))
     (allow ARG1 devtmpfs search_dir_perms))

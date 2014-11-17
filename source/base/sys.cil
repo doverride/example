@@ -382,6 +382,9 @@
 (macro sys_get_sysvipc_info ((type ARG1))
     (allow ARG1 sys.common_subject (system (ipc_info))))
 
+(macro sys_getattr_core_if ((type ARG1))
+    (allow ARG1 kcore_proc (file (getattr))))
+
 (macro sys_read_ring_buffer ((type ARG1))
     (allow ARG1 self (capability2 (syslog)))
     (allow ARG1 sys.common_subject (system (syslog_read))))

@@ -311,6 +311,9 @@
 (macro dev_rw_zero ((type ARG1))
     (allow ARG1 zero_dev rw_chr_file_perms))
 
+(macro dev_write_kmsg ((type ARG1))
+    (allow ARG1 kmsg_dev write_chr_file_perms))
+
 (macro dev_write_memory ((type ARG1))
     (allow ARG1 self (capability (sys_rawio)))
     (allow ARG1 memory_dev write_chr_file_perms)
