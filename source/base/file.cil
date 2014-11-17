@@ -816,9 +816,6 @@
 (macro file_read_boot_files ((type ARG1))
     (call read_files_pattern (ARG1 boot boot)))
 
-(macro file_read_generic_etc_files ((type ARG1))
-    (call read_files_pattern (ARG1 etc etc)))
-
 (macro file_list_usr ((type ARG1))
     (allow ARG1 usr list_dir_perms))
 
@@ -847,6 +844,17 @@
 
 (macro file_search_etc ((type ARG1))
     (allow ARG1 etc search_dir_perms))
+
+(macro file_read_generic_etc_lnk_files ((type ARG1))
+    (allow ARG1 etc read_lnk_file_perms))
+
+(macro file_read_generic_etc_files ((type ARG1))
+    (call read_files_pattern (ARG1 etc etc)))
+
+(macro file_read_generic_etc ((type ARG1))
+    (call file_list_etc (ARG1))
+    (call file_read_generic_etc_lnk_files (ARG1))
+    (allow ARG1 etc read_file_perms))
 
 (macro file_search_var_cache ((type ARG1))
     (call search_dirs_pattern (ARG1 var var_cache)))

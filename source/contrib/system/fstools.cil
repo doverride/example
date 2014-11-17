@@ -73,6 +73,7 @@
     (call fs_read_devtmpfs_lnk_files (common_subject))
     (call fs_read_sysfs (common_subject))
 
+    (call file_read_generic_etc_lnk_files (common_subject))
     (call file_read_generic_etc_files (common_subject))
 
     (call stor_manage_fixed_disk (common_subject))
