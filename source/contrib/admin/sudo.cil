@@ -99,14 +99,9 @@
 
 (call usersubject_relabel_all_terminals (sudo_subject_type))
 
-(optional sudo_optional_unconfined
-    (call unconfined (sudo_role sudo_subject_type)))
-
 (call manage_files_pattern
     (visudo_subject_type sudo.etc_object sudo.etc_object))
-
-(optional visudo_optional_unconfined
-    (call unconfined (visudo_role visudo_subject_type)))
+(roletype visudo_role sudo.etc_object)
 
 (allow sudo_admin_type sudo_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
