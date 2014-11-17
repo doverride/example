@@ -68,9 +68,14 @@
 
     (call dev_read_urandom (common_subject))
 
+    (call file_read_generic_etc_files (common_subject))
+
     (call auth_nsswitch_client (common_subject))
 
     (call dbus_system_service (common_subject))
+
+    (call firewall_list_config (common_subject))
+    (call firewall_read_config_lnk_files (common_subject))
 
     (call iptables_auto_subtrans (common_subject))
 
@@ -100,6 +105,26 @@
 (macro firewall_run_firewallcmd ((type ARG1)(role ARG2))
     (call firewall_auto_subtrans_firewallcmd (ARG1))
     (roleattributeset firewallcmd_role ARG2))
+
+(macro firewall_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 firewalld.etc_object list_dir_perms))
+
+(macro firewall_search_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 firewalld.etc_object search_dir_perms))
+
+(macro firewall_read_config_lnk_files ((type ARG1))
+    (allow ARG1 firewalld.etc_object read_lnk_file_perms))
+
+(macro firewall_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 firewalld.etc_object firewalld.etc_object)))
+
+(macro firewall_read_config ((type ARG1))
+    (call firewall_list_config (ARG1))
+    (call firewall_read_config_lnk_files (ARG1))
+    (allow ARG1 firewall.etc_object read_file_perms))
 
 (macro firewall_rw_inherited_fifo_files ((type ARG1))
     (allow ARG1 firewalld.common_subject (fd (use)))
