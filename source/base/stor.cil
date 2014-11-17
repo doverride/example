@@ -162,15 +162,15 @@
 
 (macro stor_manage_scsi_generic ((type ARG1))
     (allow ARG1 self (capability (mknod)))
-    (allow ARG1 fixed_disk_dev manage_chr_file_perms)
+    (allow ARG1 scsi_generic_dev manage_chr_file_perms)
     (typeattributeset can_read_scsi_generic ARG1)
     (typeattributeset can_write_scsi_generic ARG1))
 
 (macro stor_relabel_scsi_generic ((type ARG1))
-    (allow ARG1 fixed_disk_dev relabel_chr_file_perms))
+    (allow ARG1 scsi_generic_dev relabel_chr_file_perms))
 
 (macro stor_getattr_scsi_generic ((type ARG1))
-    (allow ARG1 fixed_disk_dev (chr_file (getattr))))
+    (allow ARG1 scsi_generic_dev (chr_file (getattr))))
 
 (macro stor_read_scsi_generic ((type ARG1))
     (allow ARG1 scsi_generic_dev read_chr_file_perms)

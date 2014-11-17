@@ -16,6 +16,10 @@
         (call app_exec_object_type (bin_object))
 )
 
+(call auth_use_login_program_fd (app_subject_type))
+
+(call login_use_fd_sulogin (app_subject_type))
+
 (optional app_optional_sudo
     (call sudo_send_sigchld (app_subject_type))
     (call sudo_use_fd (app_subject_type))

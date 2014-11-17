@@ -136,8 +136,22 @@
 (roletype login_admin_role login_object_type)
 
 (macro login_auto_subtrans ((type ARG1))
+    (call login_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 login.bin_object login.common_subject)))
+
+(macro login_send_signal ((type ARG1))
+    (allow ARG1 login.common_subject (process (signal))))
+
+(macro login_send_signull ((type ARG1))
+    (allow ARG1 login.common_subject (process (signull))))
+
+(macro login_use_fd_sulogin ((type ARG1))
+    (allow ARG1 sulogin.common_subject (fd (use))))
+
+(macro login_read_pam_config_files ((type ARG1))
+    (call auth_search_pam_config (ARG1))
+    (allow ARG1 login.pam_etc_object read_file_perms))
 
 (macro login_admin ((role ARG1)(type ARG2))
     (roleattributeset login_admin_role ARG1)
