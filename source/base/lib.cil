@@ -61,6 +61,13 @@
     (call file_search_etc (ARG1))
     (allow ARG1 ld_so.etc_object read_file_perms))
 
+(macro lib_manage_ld_so_cache_files ((type ARG1))
+    (call file_rw_etc_dirs (ARG1))
+    (allow ARG1 ld_so.etc_object manage_file_perms))
+
+(macro lib_etc_filetrans_ld_so_cache_files ((type ARG1))
+    (call file_etc_filetrans (ARG1 ld_so.etc_object file "*")))
+
 (macro lib_read_lib_files ((type ARG1))
     (call file_search_usr (ARG1))
     (call lib_read_lnk_files (ARG1))

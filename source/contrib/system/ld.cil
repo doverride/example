@@ -1,0 +1,68 @@
+(roleattribute ldconfig_role)
+
+(roleattribute ld_admin_role)
+(typeattribute ld_admin_type)
+
+(typeattribute ld_object_type)
+
+(block ldconfig
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset ld_object_type unit_object)
+
+    (roletype ldconfig_role common_subject)
+
+    (context bin_ldconfig (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/ldconfig" file bin_ldconfig)
+
+    (context unit_ldconfig (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*ldconfig.*" file unit_ldconfig)
+
+    (blockinherit file_maintains_var_cache_dirs_and_files_block)
+
+    (typeattributeset ld_object_type var_cache_object)
+
+    (context var_cache_ldconfig (sys.u sys.r var_cache_object (systemlow systemlow)))
+    (filecon "/var/cache/ldconfig(/.*)?" any var_cache_ldconfig)
+
+    (allow common_subject self (capability (sys_chroot)))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call lib_manage_ld_so_cache_files (common_subject))
+    (call lib_etc_filetrans_ld_so_cache_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (optional ldconfig_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+)
+
+(allow ld_admin_type self (capability (kill sys_ptrace)))
+(allow ld_admin_type ldconfig.common_subject signal_perms)
+(allow ld_admin_type ldconfig.common_subject (process (ptrace)))
+(call ps_subject_pattern (ld_admin_type ldconfig.common_subject))
+(allow ld_admin_type ldconfig.unit_object (service (all)))
+(allow ld_admin_type ld_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype ld_admin_role ld_object_type)
+
+(macro ld_exec_ldconfig ((type ARG1))
+    (call can_exec (ARG1 ldconfig.bin_object)))
+
+(macro ld_auto_subtrans_ldconfig ((type ARG1))
+    (call ld_send_signal_ldconfig (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 ldconfig.bin_object ldconfig.common_subject)))
+
+(macro ld_run_ldconfig ((type ARG1)(role ARG2))
+    (call ld_auto_subtrans_ldconfig (ARG1))
+    (roleattributeset ldconfig_role (ARG2)))
+
+(macro ld_send_signal_ldconfig ((type ARG1))
+    (allow ARG1 ldconfig.common_subject (process (signal))))
+
+(macro ld_admin ((role ARG1)(type ARG2))
+    (roleattributeset ld_admin_role ARG1)
+    (typeattributeset ld_admin_type ARG2))
