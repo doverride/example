@@ -59,6 +59,7 @@
     (call fs_list_tmpfs (common_subject))
     (call fs_list_hugetlbfs (common_subject))
     (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
     (call fs_read_sysfs_files (common_subject))
     (call fs_read_devtmpfs_lnk_files (common_subject))
 

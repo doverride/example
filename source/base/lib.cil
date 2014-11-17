@@ -40,7 +40,6 @@
 
 (macro lib_list ((type ARG1))
     (call file_search_usr (ARG1))
-    (call lib_read_lnk_files (ARG1))
     (allow ARG1 lib list_dir_perms))
 
 (macro lib_read_lnk_files ((type ARG1))
@@ -52,9 +51,9 @@
     (allow ARG1 lib search_list_perms))
 
 (macro lib_use_ld_so ((type ARG1))
-    (call file_search_usr (ARG1))
+    (call lib_list (ARG1))
     (call lib_read_lnk_files (ARG1))
-    (call mmap_files_pattern (ARG1 lib ld_so.file_object))
+    (allow ARG1 ld_so.file_object mmap_file_perms)
     (call lib_read_ld_so_cache_files (ARG1)))
 
 (macro lib_read_ld_so_cache_files ((type ARG1))
@@ -70,11 +69,15 @@
 
 (macro lib_read_lib_files ((type ARG1))
     (call file_search_usr (ARG1))
-    (call lib_read_lnk_files (ARG1))
     (call read_files_pattern (ARG1 lib lib)))
 
-(macro lib_use_shared_libs ((type ARG1))
-    (call file_search_usr (ARG1))
+(macro lib_read_lib ((type ARG1))
+    (call lib_list (ARG1))
     (call lib_read_lnk_files (ARG1))
-    (call mmap_files_pattern (ARG1 lib lib_type))
+    (allow ARG1 lib read_file_perms))
+
+(macro lib_use_shared_libs ((type ARG1))
+    (call lib_list (ARG1))
+    (call lib_read_lnk_files (ARG1))
+    (allow ARG1 lib_type mmap_file_perms)
     (allow ARG1 textrel_lib.lib_object (file (execmod))))
