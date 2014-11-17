@@ -30,7 +30,30 @@
     (context pam_login (sys.u sys.r pam_etc_object (systemlow systemlow)))
     (filecon "/etc/pam\.d/login" file pam_login)
 
+    (allow common_subject self (capability (kill fsetid fowner sys_tty_config
+        dac_override)))
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call sys_link_keyring (common_subject))
+    (call sys_read_kernel_sysctl (common_subject))
+
+    (call dev_read_urandom (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call term_relabel_unallocated_tts (common_subject))
+    (call term_setattr_unallocated_tts (common_subject))
+    (call term_use_unallocated_tts (common_subject))
+
     (call auth_login_program (common_subject))
+    (call auth_manage_pam_console_run_files (common_subject)) ; FIXME
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call usersubject_search_home_user (common_subject))
+    (call usersubject_relabel_generic_tty_objects (common_subject))
+    (call usersubject_setattr_generic_tty_objects (common_subject))
+    (call usersubject_use_generic_tty_objects (common_subject))
 
     (booleanif priv_user_login
         (true
@@ -38,8 +61,16 @@
         (false
             (call usersubject_shell_manual_subtrans_all_unpriv_login_subjects (common_subject))))
 
-    (optional login_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (booleanif console_login
+        (true
+            (call term_relabel_console (common_subject))
+            (call term_setattr_console (common_subject))
+            (call term_use_console (common_subject)))
+        (false
+            (call term_dontaudit_use_console (common_subject))))
+
+    (optional login_optional_plymouth
+        (call plymouth_exec (common_subject)))
 )
 
 (block sulogin
@@ -55,12 +86,44 @@
     (context unit_sulogin (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*emergency.*" file unit_sulogin)
 
-    (call auth_login_program (common_subject))
+    (allow common_subject self (capability (sys_admin sys_tty_config dac_override)))
+    (allow common_subject self (process (setexec setsched)))
+    (allow common_subject self rw_fifo_file_perms)
 
+    (call sys_read_crypto_sysctl (common_subject))
+
+    (call fs_list_devtmpfs (common_subject))
+    (call fs_dontaudit_getattr_devtmpfs_chr_files (common_subject))
+    (call fs_dontaudit_getattr_devtmpfs_blk_files (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+
+    (call dev_getattr_all (common_subject))
+
+    (call subject_object_identity_change_exemption (common_subject))
+    (call subject_identity_change_exemption (common_subject))
+    (call subject_role_change_exemption (common_subject))
+
+    (call sec_compute_user_contexts (common_subject))
+    (call sec_validate_context (common_subject))
+
+    (call term_use_console (common_subject))
+    (call term_use_unallocated_tts (common_subject))
+
+    (call auth_read_shadow (common_subject))
+    (call auth_nsswitch_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_default_context_files (common_subject))
+
+    (call systemd_getpgid (common_subject))
+
+    (call usersubject_search_home_user (common_subject))
     (call usersubject_shell_manual_subtrans_all_common_login_subjects (common_subject))
 
-    (optional sulogin_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (optional sulogin_optional_plymouth
+        (call plymouth_exec (common_subject)))
 )
 
 (allow login_admin_type self (capability (kill sys_ptrace)))

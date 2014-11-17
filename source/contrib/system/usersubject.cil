@@ -235,6 +235,12 @@
 (macro usersubject_relabel_all_tty_objects ((type ARG1))
     (allow ARG1 usersubject_tty_type relabel_chr_file_perms))
 
+(macro usersubject_setattr_all_pty_objects ((type ARG1))
+    (allow ARG1 usersubject_pty_type (chr_file (setattr))))
+
+(macro usersubject_setattr_all_tty_objects ((type ARG1))
+    (allow ARG1 usersubject_tty_type (chr_file (setattr))))
+
 (macro usersubject_use_all_pty_objects ((type ARG1))
     (allow ARG1 usersubject_pty_type rw_term_perms))
 
@@ -253,6 +259,12 @@
 (macro usersubject_relabel_generic_tty_objects ((type ARG1))
     (allow ARG1 user.tty_object relabel_chr_file_perms))
 
+(macro usersubject_setattr_generic_pty_objects ((type ARG1))
+    (allow ARG1 user.pty_object (chr_file (setattr))))
+
+(macro usersubject_setattr_generic_tty_objects ((type ARG1))
+    (allow ARG1 user.tty_object (chr_file (setattr))))
+
 (macro usersubject_use_generic_pty_objects ((type ARG1))
     (allow ARG1 user.pty_object rw_term_perms))
 
@@ -269,6 +281,10 @@
     (call usersubject_relabel_generic_pty_objects (ARG1))
     (call usersubject_relabel_generic_tty_objects (ARG1)))
 
+(macro usersubject_setattr_generic_terminals ((type ARG1))
+    (call usersubject_setattr_generic_pty_objects (ARG1))
+    (call usersubject_setattr_generic_tty_objects (ARG1)))
+
 (macro usersubject_use_generic_terminals ((type ARG1))
     (call usersubject_use_generic_pty_objects (ARG1))
     (call usersubject_use_generic_tty_objects (ARG1)))
@@ -280,6 +296,10 @@
 (macro usersubject_relabel_all_terminals ((type ARG1))
     (call usersubject_relabel_all_pty_objects (ARG1))
     (call usersubject_relabel_all_tty_objects (ARG1)))
+
+(macro usersubject_setattr_all_terminals ((type ARG1))
+    (call usersubject_setattr_all_pty_objects (ARG1))
+    (call usersubject_setattr_all_tty_objects (ARG1)))
 
 (macro usersubject_use_all_terminals ((type ARG1))
     (call usersubject_use_all_pty_objects (ARG1))

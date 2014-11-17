@@ -70,9 +70,6 @@
     (call dev_type (ARG1))
     (typeattributeset term_pty_type ARG1))
 
-(macro term_setattr_console ((type ARG1))
-    (allow ARG1 console_dev (chr_file (setattr))))
-
 (macro term_serial_type ((type ARG1))
     (call dev_type (ARG1))
     (typeattributeset term_serial_type ARG1))
@@ -87,8 +84,17 @@
 (macro term_use_console ((type ARG1))
     (allow ARG1 console_dev rw_term_perms))
 
+(macro term_relabel_console ((type ARG1))
+    (allow ARG1 console_dev relabel_chr_file_perms))
+
+(macro term_setattr_console ((type ARG1))
+    (allow ARG1 console_dev (chr_file (setattr))))
+
 (macro term_write_console ((type ARG1))
     (allow ARG1 console_dev write_chr_file_perms))
+
+(macro term_relabel_unallocated_tts ((type ARG1))
+    (allow ARG1 tty_dev relabel_chr_file_perms))
 
 (macro term_setattr_unallocated_tts ((type ARG1))
     (allow ARG1 tty_dev (chr_file (setattr))))

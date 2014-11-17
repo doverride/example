@@ -469,6 +469,9 @@
 (macro systemd_rw_unix_stream_sockets ((type ARG1))
     (allow ARG1 systemd.common_subject rw_unix_stream_socket_perms))
 
+(macro systemd_getpgid ((type ARG1))
+    (allow ARG1 systemd.common_subject (process (getpgid))))
+
 (macro systemd_send_sigchld ((type ARG1))
     (allow ARG1 systemd.common_subject (process (sigchld))))
 

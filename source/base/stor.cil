@@ -95,6 +95,12 @@
     (call stor_relabel_removable (ARG1))
     (call stor_relabel_scsi_generic (ARG1)))
 
+(macro stor_getattr_all ((type ARG1))
+    (call stor_getattr_fixed_disk (ARG1))
+    (call stor_getattr_fuse (ARG1))
+    (call stor_getattr_removable (ARG1))
+    (call stor_getattr_scsi_generic (ARG1)))
+
 (macro stor_manage_fixed_disk ((type ARG1))
     (allow ARG1 self (capability (mknod)))
     (allow ARG1 fixed_disk_dev manage_blk_file_perms)
@@ -131,12 +137,18 @@
 (macro stor_relabel_fuse ((type ARG1))
     (allow ARG1 fuse_dev relabel_chr_file_perms))
 
+(macro stor_getattr_fuse ((type ARG1))
+    (allow ARG1 fuse_dev (chr_file (getattr))))
+
 (macro stor_manage_removable ((type ARG1))
     (allow ARG1 self (capability (mknod)))
     (allow ARG1 removable_dev manage_blk_file_perms))
 
 (macro stor_relabel_removable ((type ARG1))
     (allow ARG1 removable_dev relabel_blk_file_perms))
+
+(macro stor_getattr_removable ((type ARG1))
+    (allow ARG1 removable_dev (blk_file (getattr))))
 
 (macro stor_read_removable ((type ARG1))
     (allow ARG1 removable_dev read_blk_file_perms))
