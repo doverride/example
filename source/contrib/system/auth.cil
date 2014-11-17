@@ -311,8 +311,7 @@
 (call auth_append_wtmp (auth_pam_client_type))
 (call auth_read_wtmp (auth_pam_client_type))
 (call auth_dontaudit_write_wtmp (auth_pam_client_type))
-(call auth_list_pam_config (auth_pam_client_type))
-(call auth_read_all_pam_config_files (auth_pam_client_type)) ; FIXME
+(call auth_read_all_pam_config (auth_pam_client_type))
 (call auth_create_faillog (auth_pam_client_type))
 (call auth_rw_faillog (auth_pam_client_type))
 (call auth_var_log_filetrans_faillog (auth_pam_client_type))
@@ -462,6 +461,16 @@
 (macro auth_read_generic_pam_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 etc_pam read_file_perms))
+
+(macro auth_read_generic_pam_config ((type ARG1))
+    (call auth_list_pam_config (ARG1))
+    (call auth_read_generic_pam_config_lnk_files (ARG1))
+    (allow ARG1 etc_pam read_file_perms))
+
+(macro auth_read_all_pam_config ((type ARG1))
+    (call auth_list_pam_config (ARG1))
+    (call auth_read_generic_pam_config_lnk_files (ARG1))
+    (allow ARG1 auth_pam_etc_file_type read_file_perms))
 
 (macro auth_manage_pam_console_run_files ((type ARG1))
     (call file_search_run (ARG1))
