@@ -51,9 +51,9 @@
     (call miscfiles_read_localization (common_subject))
 
     (call usersubject_search_home_user (common_subject))
-    (call usersubject_relabel_generic_tty_objects (common_subject))
-    (call usersubject_setattr_generic_tty_objects (common_subject))
-    (call usersubject_use_generic_tty_objects (common_subject))
+    (call usersubject_relabel_generic_tts (common_subject))
+    (call usersubject_setattr_generic_tts (common_subject))
+    (call usersubject_use_generic_tts (common_subject))
 
     (booleanif priv_user_login
         (true
