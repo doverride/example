@@ -8,12 +8,19 @@
     (context bin_hostname (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/hostname" file bin_hostname)
 
+    (allow common_subject self create_unix_dgram_socket_perms)
+
+    (call sys_read_net_proc (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call hostnamed_read_config_files (common_subject))
+
+    (call miscfiles_read_net_config_files (common_subject))
+
     (optional hostname_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional hostname_optional_unconfined
-        (call unconfined (hostname_role common_subject)))
 )
 
 (macro hostname_exec ((type ARG1))

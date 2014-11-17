@@ -79,6 +79,10 @@
     (call hostnamed_auto_subtrans_hostnamectl (ARG1))
     (roleattributeset hostnamectl_role (ARG2)))
 
+(macro hostnamed_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 hostnamed.etc_object read_file_perms))
+
 (macro hostnamed_send_signal_hostnamectl ((type ARG1))
     (allow ARG1 hostnamectl.common_subject (process (signal))))
 
