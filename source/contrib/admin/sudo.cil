@@ -81,13 +81,16 @@
 (allow sudo_subject_type sudo.run_object manage_dir_perms)
 (allow sudo_subject_type sudo.run_object manage_file_perms)
 (call file_run_filetrans (sudo_subject_type sudo.run_object dir "sudo"))
+(roletype sudo_role sudo.run_object)
 
 (allow sudo_subject_type sudo.var_object manage_dir_perms)
 (allow sudo_subject_type sudo.var_object manage_file_perms)
 (call file_var_filetrans (sudo_subject_type sudo.var_object dir "sudo"))
+(roletype sudo_role sudo.var_object)
 
 (allow sudo_subject_type sudo.user_tmpfs_object manage_file_perms)
 (call fs_tmpfs_filetrans (sudo_subject_type sudo.user_tmpfs_object file "*"))
+(roletype sudo_role sudo.user_tmpfs_object)
 
 (call subject_role_change_exemption (sudo_subject_type))
 
