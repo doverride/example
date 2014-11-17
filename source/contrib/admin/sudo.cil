@@ -139,6 +139,7 @@
 (call utmp_read_run_files (sudo_subject_type))
 
 (call usersubject_relabel_generic_terminals (sudo_subject_type))
+(call usersubject_use_generic_terminals (sudo_subject_type))
 
 (allow visudo_subject_type self (capability (dac_override)))
 (allow visudo_subject_type self create_unix_stream_socket_perms)
@@ -151,6 +152,8 @@
 (call auth_nsswitch_client (visudo_subject_type))
 
 (call sudo_list_config (visudo_subject_type))
+
+(call usersubject_use_generic_inherited_terminals (visudo_subject_type))
 
 (allow sudo_admin_type sudo_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
