@@ -24,6 +24,10 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype utmp_admin_role utmp.run_object)
 
+(macro utmp_read_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 utmp.run_object read_file_perms))
+
 (macro utmp_rw_run_files ((type ARG1))
     (call file_search_run (ARG1))
     (allow ARG1 utmp.run_object rw_file_perms))

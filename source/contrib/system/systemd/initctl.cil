@@ -26,6 +26,11 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype initctl_admin_role initctl.systemd_run_object)
 
+(macro initctl_getattr_run_fifo_files ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (call getattr_fifo_files_pattern
+        (ARG1 initctl.systemd_run_object initctl.systemd_run_object)))
+
 (macro initctl_admin ((role ARG1)(type ARG2))
     (roleattributeset initctl_admin_role ARG1)
     (typeattributeset initctl_admin_type ARG2))

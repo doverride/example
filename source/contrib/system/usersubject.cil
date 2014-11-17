@@ -230,18 +230,21 @@
     (typeattributeset usersubject_mail_spool_type ARG1))
 
 (macro usersubject_relabel_all_pts ((type ARG1))
+    (call fs_search_devpts (ARG1))
     (allow ARG1 usersubject_pty_type relabel_chr_file_perms))
 
 (macro usersubject_relabel_all_tts ((type ARG1))
     (allow ARG1 usersubject_tty_type relabel_chr_file_perms))
 
 (macro usersubject_setattr_all_pts ((type ARG1))
+    (call fs_search_devpts (ARG1))
     (allow ARG1 usersubject_pty_type (chr_file (setattr))))
 
 (macro usersubject_setattr_all_tts ((type ARG1))
     (allow ARG1 usersubject_tty_type (chr_file (setattr))))
 
 (macro usersubject_use_all_pts ((type ARG1))
+    (call fs_search_devpts (ARG1))
     (allow ARG1 usersubject_pty_type rw_term_perms))
 
 (macro usersubject_use_all_tts ((type ARG1))
@@ -254,18 +257,21 @@
     (allow ARG1 usersubject_tty_type rw_inherited_term_perms))
 
 (macro usersubject_relabel_generic_pts ((type ARG1))
+    (call fs_search_devpts (ARG1))
     (allow ARG1 user.pty_object relabel_chr_file_perms))
 
 (macro usersubject_relabel_generic_tts ((type ARG1))
     (allow ARG1 user.tty_object relabel_chr_file_perms))
 
 (macro usersubject_setattr_generic_pts ((type ARG1))
+    (call fs_search_devpts (ARG1))
     (allow ARG1 user.pty_object (chr_file (setattr))))
 
 (macro usersubject_setattr_generic_tts ((type ARG1))
     (allow ARG1 user.tty_object (chr_file (setattr))))
 
 (macro usersubject_use_generic_pts ((type ARG1))
+    (call fs_search_devpts (ARG1))
     (allow ARG1 user.pty_object rw_term_perms))
 
 (macro usersubject_use_generic_tts ((type ARG1))

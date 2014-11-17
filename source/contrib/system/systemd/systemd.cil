@@ -478,6 +478,9 @@
 (macro systemd_send_signal ((type ARG1))
     (allow ARG1 systemd.common_subject (process (signal))))
 
+(macro systemd_link_keyring ((type ARG1))
+    (allow ARG1 systemd.common_subject (key (search link))))
+
 (macro systemd_send_signal_all_systemd_daemon_subjects ((type ARG1))
     (allow ARG1 systemd_daemon_subject_type (process (signal))))
 
