@@ -64,7 +64,7 @@
     (typeattributeset iscsi_object_type run_lock_object)
 
     (context run_lock_iscsid (sys.u sys.r run_lock_object (systemlow systemlow)))
-    (filecon "/run/lock/iscsi(/.*)?" any run_lock_iscsid)
+    (filecon "/var/run/lock/iscsi(/.*)?" any run_lock_iscsid)
 
     (optional iscsid_optional_unconfined
         (call unconfined (sys.r common_subject)))
