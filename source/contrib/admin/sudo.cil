@@ -130,6 +130,9 @@
 
 (call miscfiles_read_localization (sudo_subject_type))
 
+(call seutil_read_config_files (sudo_subject_type))
+(call seutil_read_default_context_files (sudo_subject_type))
+
 (call sudo_read_config (sudo_subject_type))
 (call sudo_read_pam_config_files (sudo_subject_type))
 
@@ -152,8 +155,6 @@
 (call auth_nsswitch_client (visudo_subject_type))
 
 (call sudo_list_config (visudo_subject_type))
-
-(call usersubject_use_generic_inherited_terminals (visudo_subject_type))
 
 (allow sudo_admin_type sudo_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
