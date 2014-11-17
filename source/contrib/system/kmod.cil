@@ -26,12 +26,12 @@
     (filecon "/etc/modprobe\.d(/.*)?" any etc_kmod)
     (filecon "/usr/lib/modules/modprobe\.conf" file etc_kmod)
 
-    (blockinherit file_run_object_block)
+    (blockinherit tmpfiles_maintains_single_run_file_block)
 
-    (typeattributeset kmod_object_type run_object)
+    (typeattributeset kmod_object_type tmpfiles_run_object)
 
-    (context run_kmod (sys.u sys.r run_object (systemlow systemlow)))
-    (filecon "/run/tmpfiles\.d/kmod\.conf" file run_kmod)
+    (context run_kmod (sys.u sys.r tmpfiles_run_object (systemlow systemlow)))
+    (filecon "/var/run/tmpfiles\.d/kmod\.conf" file run_kmod)
 
     (blockinherit file_usr_object_block)
 
@@ -39,9 +39,6 @@
 
     (context usr_kmod (sys.u sys.r usr_object (systemlow systemlow)))
     (filecon "/usr/lib/modules/[^/]+/modules\..+" file usr_kmod)
-
-    (allow common_subject run_object manage_file_perms)
-    (call tmpfiles_run_filetrans (common_subject run_object file "*"))
 
     (call sys_link_keyring (common_subject))
     (call sys_load_kernel_module (common_subject))

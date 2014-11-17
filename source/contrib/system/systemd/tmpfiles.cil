@@ -12,6 +12,24 @@
 (typeattribute tmpfiles_client_type)
 
 (typeattribute tmpfiles_object_type)
+(typeattribute tmpfiles_run_object_type)
+
+(block tmpfiles_run_object_block
+    (blockabstract tmpfiles_run_object_block)
+        (type tmpfiles_run_object)
+        (call file_run_type (tmpfiles_run_object))
+
+        (call tmpfiles_run_object_type (tmpfiles_run_object))
+)
+
+(block tmpfiles_maintains_single_run_file_block
+    (blockabstract tmpfiles_maintains_single_run_file_block)
+        (blockinherit tmpfiles_run_object_block)
+
+        (allow common_subject tmpfiles_run_object manage_file_perms)
+
+        (call tmpfiles_run_filetrans (common_subject tmpfiles_run_object file "*"))
+)
 
 (block tmpfiles
     (blockinherit systemd_daemon_no_unit_block)
@@ -29,13 +47,6 @@
 
     (context etc_tmpfiles (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/tmpfiles\.d(/.*)?" any etc_tmpfiles)
-
-    (blockinherit file_maintains_run_dirs_and_files_block)
-
-    (typeattributeset tmpfiles_object_type run_object)
-
-    (context run_tmpfiles (sys.u sys.r run_object (systemlow systemlow)))
-    (filecon "/var/run/tmpfiles\.d(/.*)?" any run_tmpfiles)
 
     (allow common_subject self (capability (fowner fsetid dac_override chown)))
     (allow common_subject self (process (getcap setfscreate)))
@@ -56,6 +67,18 @@
         (call unconfined (tmpfiles_role common_subject)))
 )
 
+(type run_tmpfiles)
+(call file_run_type (run_tmpfiles))
+
+(typeattributeset tmpfiles_run_object_type run_tmpfiles)
+
+(context run_tmpfiles (sys.u sys.r run_tmpfiles (systemlow systemlow)))
+(filecon "/var/run/tmpfiles\.d(/.*)?" any run_tmpfiles)
+
+(allow tmpfiles.common_subject run_tmpfiles manage_dir_perms)
+(allow tmpfiles.common_subject run_tmpfiles manage_file_perms)
+(call file_run_filetrans (tmpfiles.common_subject run_tmpfiles dir "*"))
+
 (call file_spec_except (tmpfiles_manageable_object_type
     tmpfiles_manageable_object_exception_type))
 
@@ -68,6 +91,8 @@
 (allow tmpfiles.common_subject tmpfiles_relabelable_object_type
     (all_file_objects (relabel)))
 
+(typeattributeset tmpfiles_object_type tmpfiles_run_object_type)
+
 (allow tmpfiles_admin_type self (capability (kill sys_ptrace)))
 (allow tmpfiles_admin_type tmpfiles.common_subject signal_perms)
 (allow tmpfiles_admin_type tmpfiles.common_subject (process (ptrace)))
@@ -75,6 +100,9 @@
 (allow tmpfiles_admin_type tmpfiles_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype tmpfiles_admin_role tmpfiles_object_type)
+
+(macro tmpfiles_run_object_type ((type ARG1))
+    (typeattributeset tmpfiles_run_object_type ARG1))
 
 (macro tmpfiles_exec ((type ARG1))
     (call can_exec (ARG1 tmpfiles.bin_object))
@@ -94,20 +122,28 @@
 
 (macro tmpfiles_list_run ((type ARG1))
     (call file_search_run (ARG1))
-    (allow ARG1 tmpfiles.run_object list_dir_perms))
+    (allow ARG1 run_tmpfiles list_dir_perms))
 
-(macro tmpfiles_read_run_files ((type ARG1))
+(macro tmpfiles_read_generic_run_files ((type ARG1))
     (call file_search_run (ARG1))
-    (call read_files_pattern (ARG1 tmpfiles.run_object tmpfiles.run_object)))
+    (call read_files_pattern (ARG1 run_tmpfiles run_tmpfiles)))
 
-(macro tmpfiles_manage_run_files ((type ARG1))
+(macro tmpfiles_manage_generic_run_files ((type ARG1))
     (call file_search_run (ARG1))
-    (call manage_files_pattern (ARG1 tmpfiles.run_object tmpfiles.run_object)))
+    (call manage_files_pattern (ARG1 run_tmpfiles run_tmpfiles)))
+
+(macro tmpfiles_read_all_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call read_files_pattern (ARG1 run_tmpfiles tmpfiles_run_object_type)))
+
+(macro tmpfiles_manage_all_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call manage_files_pattern (ARG1 run_tmpfiles tmpfiles_run_object_type)))
 
 (macro tmpfiles_run_filetrans ((type ARG1)(type ARG2)(class ARG3)(name ARG4))
     (call file_search_run (ARG1))
     (call file_type_transition_pattern
-        (ARG1 tmpfiles.run_object ARG2 ARG3 ARG4)))
+        (ARG1 run_tmpfiles ARG2 ARG3 ARG4)))
 
 (macro tmpfiles_manageable_object_exception ((type ARG1))
     (call file_spec_exception
