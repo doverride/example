@@ -868,6 +868,9 @@
 (macro file_search_var_log ((type ARG1))
     (call search_dirs_pattern (ARG1 var var_log)))
 
+(macro file_rw_var_log_dirs ((type ARG1))
+    (call rw_dirs_pattern (ARG1 var var_log)))
+
 (macro file_list_run ((type ARG1))
     (call file_read_run_lnk_files (ARG1))
     (call list_dirs_pattern (ARG1 var run)))

@@ -239,6 +239,10 @@
     (call fs_search_devpts (ARG1))
     (allow ARG1 devpts (chr_file (getattr))))
 
+(macro fs_rw_devpts_chr_files ((type ARG1))
+    (call fs_search_devpts (ARG1))
+    (allow ARG1 devpts rw_chr_file_perms))
+
 (macro fs_getattr_all_fs ((type ARG1))
     (allow ARG1 fs_type (filesystem (getattr))))
 

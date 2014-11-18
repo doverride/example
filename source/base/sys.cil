@@ -373,6 +373,13 @@
 (macro sys_stream_connect ((type ARG1))
     (allow ARG1 sys.common_subject (unix_stream_socket (connectto))))
 
+(macro sys_manage_var_log_files ((type ARG1))
+    (call file_rw_var_log_dirs (ARG1))
+    (allow ARG1 sys.var_log_object manage_file_perms))
+
+(macro sys_var_log_filetrans_boot_log_files ((type ARG1))
+    (call file_var_log_filetrans (ARG1 sys.var_log_object file "boot.log")))
+
 (macro sys_dump_kernel ((type ARG1))
     (call fs_search_proc (ARG1))
     (allow ARG1 self (capability (sys_rawio)))

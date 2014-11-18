@@ -19,12 +19,18 @@
     (context bin_plymouth (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/plymouth" file bin_plymouth)
 
+    (allow common_subject self (capability2 (block_suspend)))
+
+    (call sys_stream_connect (common_subject))
+
+    (call term_use_console (common_subject))
+    (call term_use_unallocated_tts (common_subject))
+
+    (call plymouth_read_config_files (common_subject))
+
     (optional plymouth_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional plymouth_optional_unconfined
-        (call unconfined (plymouth_role common_subject)))
 )
 
 (block plymouthd
@@ -67,9 +73,35 @@
     (context var_spool_plymouthd (sys.u sys.r var_spool_object (systemlow systemlow)))
     (filecon "/var/spool/plymouth(/.*)?" any var_spool_plymouthd)
 
-    (optional plymouthd_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (allow common_subject self (capability (sys_tty_config sys_admin dac_override)))
+    (allow common_subject self (capability2 (syslog block_suspend)))
+    (allow common_subject self (unix_stream_socket (listen accept)))
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call sys_change_ring_buffer_level (common_subject))
+    (call sys_manage_var_log_files (common_subject))
+    (call sys_var_log_filetrans_boot_log_files (common_subject))
+
+    (call dev_rw_dri (common_subject))
+    (call dev_rw_framebuf (common_subject))
+    (call dev_rw_ptmx (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+    (call file_read_generic_usr_files (common_subject))
+
+    (call fs_getattr_devpts (common_subject))
+    (call fs_rw_devpts_chr_files (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+
+    (call term_use_console (common_subject))
+    (call term_use_unallocated_tts (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call systemd_send_signal (common_subject))
 )
+
+(call plymouth_stream_connect_plymouthd (plymouth_client_type))
 
 (allow plymouth_admin_type self (capability (kill sys_ptrace)))
 (allow plymouth_admin_type plymouth_subject_type signal_perms)
@@ -82,15 +114,20 @@
 
 (macro plymouth_exec ((type ARG1))
     (call can_exec (ARG1 plymouth.bin_object))
-    (call plymouth_client_type (ARG1)))
+    (call plymouth_client (ARG1)))
 
-(macro plymouth_client_type ((type ARG1))
+(macro plymouth_client ((type ARG1))
     (typeattributeset plymouth_client_type ARG1))
 
 (macro plymouth_auto_subtrans ((type ARG1))
     (call plymouth_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 plymouth.bin_object plymouth.common_subject)))
+
+(macro plymouth_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern
+        (ARG1 plymouthd.etc_object plymouthd.etc_object)))
 
 (macro plymouth_run ((type ARG1)(role ARG2))
     (call plymouth_auto_subtrans (ARG1))
@@ -108,6 +145,11 @@
 
 (macro plymouth_send_signal ((type ARG1))
     (allow ARG1 plymouth.common_subject (process (signal))))
+
+(macro plymouth_stream_connect_plymouthd ((type ARG1))
+    (call file_search_run (ARG1))
+    (call stream_connect_pattern
+        (ARG1 plymouthd.run_object plymouthd.run_object plymouthd.common_subject)))
 
 (macro plymouth_admin ((role ARG1)(type ARG2))
     (roleattributeset plymouth_admin_role ARG1)
