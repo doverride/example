@@ -10,14 +10,24 @@
     (filecon "/usr/sbin/setpci" file bin_pcitools)
     (filecon "/usr/sbin/update-pciids" file bin_pcitools)
 
-    (optional pcitools_optional_unconfined
-        (call unconfined (pcitools_role common_subject)))
+    (allow common_subject self (capability (sys_admin)))
+
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call miscfiles_read_hwdata_files (common_subject))
 )
 
 (macro pcitools_auto_subtrans ((type ARG1))
+    (call pcitools_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 pcitools.bin_object pcitools.common_subject)))
 
 (macro pcitools_run ((type ARG1)(role ARG2))
     (call pcitools_auto_subtrans (ARG1))
     (typeattributeset pcitools_role ARG2))
+
+(macro pcitools_send_signal ((type ARG1))
+    (allow ARG1 pcitools.common_subject (process (signal))))
