@@ -41,24 +41,22 @@
     (call fs_remount_all (common_subject))
     (call fs_unmount_all (common_subject))
 
+    (call stor_read_fixed_disk (common_subject))
+    (call stor_read_removable (common_subject))
+    (call stor_read_scsi_generic (common_subject))
+
     (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
 
     (booleanif (mount_any_file)
         (true
             (call file_read_all_files_except (common_subject))
             (call file_mounton_all_except (common_subject))))
 
-    (optional mount_optional_stor
-        (call stor_read_fixed_disk (common_subject))
-        (call stor_read_removable (common_subject))
-        (call stor_read_scsi_generic (common_subject)))
-
     (optional mount_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional mount_optional_unconfined
-        (call unconfined (sys.r common_subject)))
 )
 
 (macro mount_exec ((type ARG1))
