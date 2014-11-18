@@ -183,8 +183,7 @@
     (call bin_auto_subtrans (ARG3 ARG2))
     (call bin_shell_auto_subtrans (ARG3 ARG2))
 
-    (call auth_run_chkpwd (ARG3 ARG1))
-)
+    (call auth_run_chkpwd (ARG3 ARG1)))
 
 (macro sudo_role_template_visudo ((role ARG1)(type ARG2)(type ARG3))
     (call auto_subject_type_transition_pattern

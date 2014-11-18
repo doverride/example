@@ -30,9 +30,14 @@
     (filecon "/var/cache/man(/.*)?" any var_cache_mandb)
 
     (allow common_subject self (capability (fsetid)))
+    (allow common_subject self rw_fifo_file_perms)
 
-    (optional mandb_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call file_read_generic_etc_files (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+
+    (call miscfiles_read_man_files (common_subject))
+    (call miscfiles_read_localization (common_subject))
 )
 
 (allow mandb_admin_type self (capability (kill sys_ptrace)))
