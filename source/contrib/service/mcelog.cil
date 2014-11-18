@@ -21,7 +21,7 @@
     (context etc_mcelog (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/mcelog(/.*)?" any etc_mcelog)
 
-    (blockinherit file_maintains_run_files_and_sock_files_block)
+    (blockinherit file_run_object_block)
 
     (typeattributeset mcelog_object_type run_object)
 
@@ -30,9 +30,21 @@
     (filecon "/var/run/mcelog\.pid" file run_mcelog)
 
     (allow common_subject self (capability (sys_admin)))
+    (allow common_subject self (unix_stream_socket (listen accept)))
 
-    (optional mcelog_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call mcelog_manage_run_files (common_subject))
+    (call mcelog_manage_run_sock_files (common_subject))
+    (call mcelog_run_filetrans_run_mcelog (common_subject file "*"))
+    (call mcelog_run_filetrans_run_mcelog (common_subject sock_file "*"))
+
+    (call bin_execute_bin_files (common_subject))
+
+    (call dev_read_kmsg (common_subject))
+    (call dev_read_memory (common_subject))
+
+    (call fs_rw_sysfs_files (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
 )
 
 (allow mcelog_admin_type self (capability (kill sys_ptrace)))
@@ -43,6 +55,19 @@
 (allow mcelog_admin_type mcelog_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype mcelog_admin_role mcelog_object_type)
+
+(macro mcelog_manage_run_files ((type ARG1))
+    (call file_rw_run_dirs (ARG1))
+    (call manage_files_pattern
+        (ARG1 mcelog.run_object mcelog.run_object)))
+
+(macro mcelog_manage_run_sock_files ((type ARG1))
+    (call file_rw_run_dirs (ARG1))
+    (call manage_sock_files_pattern
+        (ARG1 mcelog.run_object mcelog.run_object)))
+
+(macro mcelog_run_filetrans_run_mcelog ((type ARG1)(class ARG3)(name ARG4))
+    (call file_run_filetrans (ARG1 mcelog.run_object ARG3 ARG4)))
 
 (macro mcelog_admin ((role ARG1)(type ARG2))
     (roleattributeset mcelog_admin_role ARG1)
