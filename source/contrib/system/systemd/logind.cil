@@ -113,6 +113,10 @@
     (call logind_search_run (ARG1))
     (allow ARG1 logind.systemd_run_object (fifo_file (write))))
 
+(macro logind_list_run ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (allow ARG1 logind.systemd_run_object list_dir_perms))
+
 (macro logind_search_run ((type ARG1))
     (call systemd_search_run (ARG1))
     (allow ARG1 logind.systemd_run_object search_dir_perms))

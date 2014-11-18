@@ -314,6 +314,9 @@
 (macro dev_rw_usb ((type ARG1))
     (allow ARG1 usb_dev rw_chr_file_perms))
 
+(macro dev_rw_wireless ((type ARG1))
+    (allow ARG1 wireless_dev rw_chr_file_perms))
+
 (macro dev_rw_zero ((type ARG1))
     (allow ARG1 zero_dev rw_chr_file_perms))
 

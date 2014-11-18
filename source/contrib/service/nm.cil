@@ -6,6 +6,8 @@
 (typeattribute nm_object_type)
 (typeattribute nm_subject_type)
 
+(typeattribute nm_client_type)
+
 (block nm
     (blockinherit systemd_daemon_block)
 
@@ -19,7 +21,7 @@
     (context unit_nm (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*NetworkManager.*" file unit_nm)
 
-    (blockinherit file_maintains_etc_dirs_and_files_block)
+    (blockinherit file_etc_object_block)
 
     (typeattributeset nm_object_type etc_object)
 
@@ -51,16 +53,78 @@
     (context var_lib_nm (sys.u sys.r var_lib_object (systemlow systemlow)))
     (filecon "/var/lib/NetworkManager(/.*)?" any var_lib_nm)
 
+    (allow common_subject self (process (setpgid)))
+    (allow common_subject self (capability (net_admin net_raw)))
+    (allow common_subject self create_netlink_socket_perms)
+    (allow common_subject self (netlink_route_socket (nlmsg_write)))
+    (allow common_subject self (unix_stream_socket (listen accept)))
+    (allow common_subject self create_rawip_socket_perms)
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call sys_load_kernel_module (common_subject))
+    (call sys_read_net_proc (common_subject))
+    (call sys_request_load_module (common_subject))
+    (call sys_rw_net_sysctl (common_subject))
+
+    (call bin_mmap_shell_files (common_subject))
+    (call bin_read_bin_files (common_subject))
+
+    (call dev_read_urandom (common_subject))
+    (call dev_rw_wireless (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+    (call fs_list_sysfs (common_subject))
+    (call fs_list_tmpfs (common_subject))
+    (call fs_read_cgroup_files (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call dns_etc_filetrans_resolv (common_subject))
+    (call dns_manage_resolv (common_subject))
+
+    (call hostnamed_read_config_files (common_subject))
+
     (call iptools_auto_subtrans (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call logind_client (common_subject))
+    (call logind_list_run (common_subject))
+    (call logind_read_run_files (common_subject))
+
+    (call machine_list_run (common_subject))
+    (call machine_read_run_files (common_subject))
+
+    (call miscfiles_manage_net_config_files (common_subject))
+    (call miscfiles_etc_filetrans_net_config (common_subject file "*"))
+    (call miscfiles_read_localization (common_subject))
 
     (call mount_exec (common_subject))
 
     (call nettools_auto_subtrans (common_subject))
 
-    (call dhcp_auto_subtrans_dhclient (common_subject))
+    (call nm_exec_helper (common_subject))
+    (call nm_getattr_all_clients (common_subject))
+    (call nm_manage_config_files (common_subject))
+    (call nm_read_state_all_clients (common_subject))
 
-    (optional nm_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call sysctl_read_config_files (common_subject))
+
+    (call udev_client (common_subject))
+
+    (optional networkmgr_optional_dhcp
+        (call dhcp_delete_dhclient_run_files (common_subject))
+        (call dhcp_read_config_files (common_subject))
+        (call dhcp_read_dhclient_var_lib_files (common_subject))
+        (call dhcp_auto_subtrans_dhclient (common_subject)))
+
+    (optional nm_optinal_polkit
+        (call polkit_dbus_chat_polkitd (common_subject)))
 )
 
 (block nm_disp
@@ -71,17 +135,48 @@
     (context bin_nm_disp (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/libexec/nm-dispatcher" file bin_nm_disp)
 
+    (allow common_subject self (process (setpgid)))
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call sys_read_net_proc (common_subject))
+
+    (call bin_execute_shell_files (common_subject))
+    (call bin_execute_bin_files (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call fs_read_cgroup_files (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_service (common_subject))
+
     (call iptools_exec (common_subject))
+    (call iptools_read_config_files (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
 
     (call mount_exec (common_subject))
 
-    (call dhcp_auto_subtrans_dhclient (common_subject))
+    (call nm_dbus_chat (common_subject))
+    (call nm_exec_helper (common_subject))
+    (call nm_list_config (common_subject))
+    (call nm_list_run (common_subject))
+    (call nm_read_config_files (common_subject))
+
+    (call systemd_exec_systemctl (common_subject))
+
+    (optional nm_disp_optional_dhcp
+        (call dhcp_auto_subtrans_dhclient (common_subject)))
 
     (optional nm_disp_optional_ntp
         (call ntp_auto_subtrans (common_subject)))
 
-    (optional nm_disp_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (optional nm_disp_optional_iscsi
+        (call iscsi_get_status_iscsid (common_subject))
+        (call iscsi_reload_iscsid (common_subject)))
 )
 
 (block nm_online
@@ -110,8 +205,21 @@
     (filecon "/usr/bin/nmtui-edit" file bin_nmcli)
     (filecon "/usr/bin/nmtui-hostname" file bin_nmcli)
 
-    (optional nmcli_optional_unconfined
-        (call unconfined (nmcli_role common_subject)))
+    (call dev_read_urandom (common_subject))
+
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_list_tmpfs (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call auth_read_passwd (common_subject))
+
+    (call miscfiles_read_terminfo (common_subject))
+    (call miscfiles_read_localization_files (common_subject))
+
+    (call nm_client (common_subject))
+
+    (call udev_client (common_subject))
 )
 
 (block nm_helper
@@ -121,6 +229,9 @@
     (filecon "/etc/NetworkManager/dispatcher\.d/.*" file bin_nm_helper)
     (filecon "/usr/libexec/nm-dhcp-helper" file bin_nm_helper)
 )
+
+(call nm_stream_connect (nm_client_type))
+(call nm_dbus_chat (nm_client_type))
 
 (allow nm_admin_type self (capability (kill sys_ptrace)))
 (allow nm_admin_type nm_subject_type signal_perms)
@@ -134,13 +245,21 @@
 (macro nm_exec_helper ((type ARG1))
     (call can_exec (ARG1 nm_helper.bin_object)))
 
+(macro nm_exec_nmcli ((type ARG1))
+    (call nm_client (ARG1))
+    (call can_exec (ARG1 nmcli.bin_object)))
+
 (macro nm_auto_subtrans_nmcli ((type ARG1))
+    (call nm_send_signal_nmcli (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 nmcli.bin_object nmcli.common_subject)))
 
 (macro nm_run_nmcli ((type ARG1)(role ARG2))
     (call nm_auto_subtrans_nmcli (ARG1))
     (roleattributeset nmcli_role (ARG2)))
+
+(macro nm_send_signal_nmcli ((type ARG1))
+    (allow ARG1 nmcli.common_subject (process (signal))))
 
 (macro nm_list_config ((type ARG1))
     (call file_search_etc (ARG1))
@@ -149,6 +268,14 @@
 (macro nm_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 nm.etc_object nm.etc_object)))
+
+(macro nm_manage_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call manage_files_pattern (ARG1 nm.etc_object nm.etc_object)))
+
+(macro nm_list_run ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 nm.run_object list_dir_perms))
 
 (macro nm_manage_var_lib_files ((type ARG1))
     (call file_search_var_lib (ARG1))
@@ -159,6 +286,17 @@
     (call file_search_run (ARG1))
     (call stream_connect_pattern
         (ARG1 nm.run_object nm.run_object nm.common_subject)))
+
+(macro nm_client ((type ARG1))
+    (typeattributeset nm_client_type ARG1))
+
+(macro nm_getattr_all_clients ((type ARG1))
+    (allow ARG1 nm_client_type (process (getattr))))
+
+(macro nm_read_state_all_clients ((type ARG1))
+    (allow ARG1 nm_client_type list_dir_perms)
+    (allow ARG1 nm_client_type read_file_perms)
+    (allow ARG1 nm_client_type read_lnk_file_perms))
 
 (macro nm_dbus_chat ((type ARG1))
     (allow ARG1 nm.common_subject (dbus (send_msg)))

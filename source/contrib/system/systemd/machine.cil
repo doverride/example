@@ -104,7 +104,7 @@
     (call systemd_search_run (ARG1))
     (allow ARG1 machined.systemd_run_object list_dir_perms))
 
-(macro machined_read_run_files ((type ARG1))
+(macro machine_read_run_files ((type ARG1))
     (call systemd_search_run (ARG1))
     (call read_files_pattern
         (ARG1 machined.systemd_run_object machined.systemd_run_object)))

@@ -114,12 +114,22 @@
 (roletype iscsi_admin_role iscsi_object_type)
 
 (macro iscsi_auto_subtrans_iscsiadm ((type ARG1))
+    (call iscsi_send_signal_iscsiadm (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 iscsiadm.bin_object iscsiadm.common_subject)))
 
 (macro iscsi_run_iscsiadm ((type ARG1)(role ARG2))
     (call iscsi_auto_subtrans_iscsiadm (ARG1))
     (roleattributeset iscsiadm_role ARG2))
+
+(macro iscsi_send_signal_iscsiadm ((type ARG1))
+    (allow ARG1 iscsiadm.common_subject (process (signal))))
+
+(macro iscsi_get_status_iscsid ((type ARG1))
+    (allow ARG1 iscsid.unit_object (service (status))))
+
+(macro iscsi_reload_iscsid ((type ARG1))
+    (allow ARG1 iscsid.unit_object (service (reload))))
 
 (macro iscsi_admin ((role ARG1)(type ARG2))
     (roleattributeset iscsi_admin_role ARG1)

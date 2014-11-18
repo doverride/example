@@ -44,12 +44,21 @@
     (call can_exec (ARG1 sysctl_exec_t)))
 
 (macro sysctl_auto_subtrans ((type ARG1))
+    (call sysctl_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 sysctl.bin_object sysctl.common_subject)))
 
 (macro sysctl_run ((type ARG1)(role ARG2))
     (call sysctl_auto_subtrans (ARG1))
     (roleattributeset sysctl_role (ARG2)))
+
+(macro sysctl_send_signal ((type ARG1))
+    (allow ARG1 sysctl.common_subject (process (signal))))
+
+(macro sysctl_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern
+        (ARG1 sysctl.etc_object sysctl.etc_object)))
 
 (macro sysctl_admin ((role ARG1)(type ARG2))
     (roleattributeset sysctl_admin_role ARG1)

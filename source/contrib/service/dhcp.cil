@@ -96,6 +96,7 @@
 (roletype dhcp_admin_role dhcp_object_type)
 
 (macro dhcp_auto_subtrans_dhclient ((type ARG1))
+    (call dhcp_send_signal_dhclient (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 dhclient.bin_object dhclient.common_subject)))
 
@@ -107,9 +108,25 @@
     (call file_search_etc (ARG1))
     (allow ARG1 dhcp.etc_object list_dir_perms))
 
+(macro dhcp_send_signal_dhclient ((type ARG1))
+    (allow ARG1 dhclient.common_subject (process (signal))))
+
 (macro dhcp_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 dhcp.etc_object dhcp.etc_object)))
+
+(macro dhcp_delete_dhclient_run_files ((type ARG1))
+    (call file_del_entry_generic_run (ARG1))
+    (allow ARG1 dhclient.run_object delete_file_perms))
+
+(macro dhcp_list_dhclient_var_lib ((type ARG1))
+    (call file_search_var_lib (ARG1))
+    (allow ARG1 dhclient.var_lib_object list_dir_perms))
+
+(macro dhcp_read_dhclient_var_lib_files ((type ARG1))
+    (call file_search_var_lib (ARG1))
+    (call read_files_pattern
+        (ARG1 dhclient.var_lib_object dhclient.var_lib_object)))
 
 (macro dhcp_udp_bind_dhcp_port ((type ARG1))
     (allow ARG1 self (capability (net_bind_service)))

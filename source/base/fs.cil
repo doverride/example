@@ -260,6 +260,10 @@
 (macro fs_read_generic_proc_lnk_files ((type ARG1))
     (allow ARG1 proc read_lnk_file_perms))
 
+(macro fs_read_cgroup_files ((type ARG1))
+    (call fs_search_cgroup (ARG1))
+    (allow ARG1 cgroup read_file_perms))
+
 (macro fs_read_sysfs_files ((type ARG1))
     (call read_files_pattern (ARG1 sysfs sysfs)))
 
@@ -276,6 +280,10 @@
 
 (macro fs_rw_devtmpfs_dirs ((type ARG1))
     (allow ARG1 devtmpfs rw_dir_perms))
+
+(macro fs_search_cgroup ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call search_dirs_pattern (ARG1 tmpfs cgroup)))
 
 (macro fs_search_devpts ((type ARG1))
     (allow ARG1 devpts search_dir_perms))

@@ -103,12 +103,16 @@
 (roletype ntp_admin_role ntp_object_type)
 
 (macro ntp_auto_subtrans ((type ARG1))
+    (call ntp_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 ntp.bin_object ntp.common_subject)))
 
 (macro ntp_run ((type ARG1)(role ARG2))
     (call ntp_auto_subtrans (ARG1))
     (roleattributeset ntp_role ARG2))
+
+(macro ntp_send_signal ((type ARG1))
+    (allow ARG1 ntp.common_subject (process (signal))))
 
 (macro ntp_udp_bind_ntpd_port ((type ARG1))
     (allow ARG1 self (capability (net_bind_service)))

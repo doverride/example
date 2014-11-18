@@ -40,9 +40,18 @@
     (call can_exec (ARG1 iptools.bin_object)))
 
 (macro iptools_auto_subtrans ((type ARG1))
+    (call iptools_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 iptools.bin_object iptools.common_subject)))
 
 (macro iptools_run ((type ARG1)(role ARG2))
     (call iptools_auto_subtrans (ARG1))
     (roleattributeset iptools_role (ARG2)))
+
+(macro iptools_send_signal ((type ARG1))
+    (allow ARG1 iptools.common_subject (process (signal))))
+
+(macro iptools_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern
+        (ARG1 iptools.etc_object iptools.etc_object)))
