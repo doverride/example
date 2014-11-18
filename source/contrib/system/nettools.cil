@@ -20,12 +20,42 @@
     (filecon "/usr/sbin/arping" file bin_nettools)
     (filecon "/usr/sbin/tcpdump" file bin_nettools)
 
+    (allow common_subject self (capability (sys_ptrace dac_override
+        net_raw net_admin setgid setuid)))
+    (allow common_subject self (process (getcap setcap)))
+    (allow common_subject self create_netlink_socket_perms)
+    (allow common_subject self create_socket_perms)
+    (allow common_subject self create_packet_socket_perms)
+    (allow common_subject self create_unix_dgram_socket_perms)
+
+    (call sys_read_kernel_sysctl (common_subject))
+    (call sys_request_load_module (common_subject))
+    (call sys_read_net_proc (common_subject))
+
+    (call fs_list_proc (common_subject))
+    (call fs_list_devtmpfs (common_subject))
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+
+    (call dev_read_usbmon (common_subject))
+    (call dev_rw_usb (common_subject))
+
+    (call net_udp_bind_generic_node (common_subject))
+
+    (call sec_get_enforce_mode (common_subject))
+
+    (call subject_getattr_all_common_subjects (common_subject))
+    (call subject_read_all_common_subjects_state (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
     (optional nettools_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional nettools_optional_unconfined
-        (call unconfined (nettools_role common_subject)))
 )
 
 (block ping
@@ -38,12 +68,20 @@
     (context bin_ping (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/ping" file bin_ping)
 
+    (allow common_subject self (capability (net_raw)))
+    (allow common_subject self (process (getcap setcap)))
+    (allow common_subject self create_rawip_socket_perms)
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call miscfiles_read_net_config_files (common_subject))
+    (call miscfiles_read_localization (common_subject))
+
     (optional ping_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional ping_optional_unconfined
-        (call unconfined (ping_role common_subject)))
 )
 
 (block traceroute
@@ -58,12 +96,30 @@
     (filecon "/usr/bin/tcptraceroute" file bin_traceroute)
     (filecon "/usr/bin/nmap" file bin_traceroute)
 
+    (allow common_subject self (capability (dac_override net_raw)))
+    (allow common_subject self (capability2 (block_suspend)))
+    (allow common_subject self create_unix_dgram_socket_perms)
+    (allow common_subject self create_packet_socket_perms)
+    (allow common_subject self create_rawip_socket_perms)
+
+    (call sys_read_net_proc (common_subject))
+
+    (call dev_read_urandom (common_subject))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call net_udp_bind_generic_node (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call miscfiles_read_net_config_files (common_subject))
+    (call miscfiles_read_localization (common_subject))
+
     (optional traceroute_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional traceroute_optional_unconfined
-        (call unconfined (traceroute_role common_subject)))
 )
 
 (block arp

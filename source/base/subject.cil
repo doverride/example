@@ -258,10 +258,16 @@
 (macro subject_entry_type ((type ARG1))
     (typeattributeset subject_entry_type ARG1))
 
+(macro subject_getattr_all_subjects ((type ARG1))
+    (allow ARG1 subject_type (process (getattr))))
+
 (macro subject_read_all_subjects_state ((type ARG1))
     (allow ARG1 subject_type list_dir_perms)
     (allow ARG1 subject_type read_file_perms)
     (allow ARG1 subject_type read_lnk_file_perms))
+
+(macro subject_getattr_all_common_subjects ((type ARG1))
+    (allow ARG1 subject_common_type (process (getattr))))
 
 (macro subject_read_all_common_subjects_state ((type ARG1))
     (allow ARG1 subject_common_type list_dir_perms)
