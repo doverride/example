@@ -64,8 +64,32 @@
     (allow common_subject self (capability (setuid setgid)))
     (allow common_subject self rw_fifo_file_perms)
 
-    (optional polkitd_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call sys_read_kernel_sysctl (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call subject_read_all_common_subjects_state (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call logind_list_run (common_subject))
+    (call logind_read_run_files (common_subject))
+
+    (call machine_list_run (common_subject))
+    (call machine_read_run_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call polkit_exec_pkladm (common_subject))
+    (call polkit_exec_pklauth (common_subject))
+    (call polkit_list_config (common_subject))
 )
 
 (block pkladm
@@ -129,7 +153,14 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype polkit_admin_role polkit_object_type)
 
+(macro polkit_exec_helper ((type ARG1))
+    (call can_exec (ARG1 polkit_helper.bin_object)))
+
+(macro polkit_exec_pkladm ((type ARG1))
+    (call can_exec (ARG1 pkladm.bin_object)))
+
 (macro polkit_auto_subtrans_pkladm ((type ARG1))
+    (call polkit_send_signal_pkladm (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 pkladm.bin_object pkladm.common_subject)))
 
@@ -137,7 +168,14 @@
     (call polkit_auto_subtrans_pkladm (ARG1))
     (roleattributeset pkladm_role ARG2))
 
+(macro polkit_send_signal_pkladm ((type ARG1))
+    (allow ARG1 pkladm.common_subject (process (signal))))
+
+(macro polkit_exec_pklauth ((type ARG1))
+    (call can_exec (ARG1 pklauth.bin_object)))
+
 (macro polkit_auto_subtrans_pklauth ((type ARG1))
+    (call polkit_send_signal_pklauth (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 pklauth.bin_object pklauth.common_subject)))
 
@@ -145,9 +183,16 @@
     (call polkit_auto_subtrans_pklauth (ARG1))
     (roleattributeset pklauth_role ARG2))
 
+(macro polkit_send_signal_pklauth ((type ARG1))
+    (allow ARG1 pklauth.common_subject (process (signal))))
+
 (macro polkit_etc_file_type ((type ARG1))
     (call file_etc_type (ARG1))
     (typeattributeset polkit_etc_file_type ARG1))
+
+(macro polkit_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 etc_polkit list_dir_perms))
 
 (macro polkit_search_config ((type ARG1))
     (call file_search_etc (ARG1))
