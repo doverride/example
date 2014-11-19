@@ -143,6 +143,7 @@
     (call bin_execute_shell_files (common_subject))
     (call bin_execute_bin_files (common_subject))
 
+    (call file_read_generic_etc_lnk_files (common_subject))
     (call file_read_generic_etc_files (common_subject))
 
     (call fs_read_cgroup_files (common_subject))
@@ -156,6 +157,7 @@
 
     (call journal_client (common_subject))
 
+    (call miscfiles_read_net_config_files (common_subject))
     (call miscfiles_read_localization (common_subject))
 
     (call mount_exec (common_subject))
