@@ -76,6 +76,8 @@
 
     (allow common_subject self (capability (dac_override fowner)))
 
+    (call sys_list_mountpoints (common_subject))
+
     (call dev_relabel_all (common_subject))
 
     (call file_relabel_all_except (common_subject))

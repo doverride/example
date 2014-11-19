@@ -1,4 +1,4 @@
-(classmap all_file_objects (not_mounton_entrypoint_and_execmod manage relabel delete))
+(classmap all_file_objects (not_mounton_entrypoint_and_execmod manage relabel delete getattr))
 
 (classmapping all_file_objects not_mounton_entrypoint_and_execmod
     all_file_perms_except_mounton_execmod_and_entrypoint)
@@ -14,6 +14,14 @@
     all_sock_file_perms_except_mounton_and_execmod)
 (classmapping all_file_objects not_mounton_entrypoint_and_execmod
     all_fifo_file_perms_except_mounton_and_execmod)
+
+(classmapping all_file_objects getattr (file (getattr)))
+(classmapping all_file_objects getattr (dir (getattr)))
+(classmapping all_file_objects getattr (lnk_file (getattr)))
+(classmapping all_file_objects getattr (chr_file (getattr)))
+(classmapping all_file_objects getattr (blk_file (getattr)))
+(classmapping all_file_objects getattr (sock_file (getattr)))
+(classmapping all_file_objects getattr (fifo_file (getattr)))
 
 (classmapping all_file_objects delete delete_file_perms)
 (classmapping all_file_objects delete delete_dir_perms)

@@ -341,7 +341,11 @@
 (macro sys_dontaudit_audit_access_mountpoint_dirs ((type ARG1))
     (dontaudit ARG1 sys_mountpoint_type (dir (audit_access))))
 
+(macro sys_getattr_all_mountpoint ((type ARG1))
+    (allow ARG1 sys_mountpoint_type (all_file_objects (getattr))))
+
 (macro sys_list_mountpoints ((type ARG1))
+    (call sys_getattr_all_mountpoint (ARG1))
     (allow ARG1 sys_mountpoint_type list_dir_perms))
 
 (macro sys_mounton_mountpoint_dirs ((type ARG1))
