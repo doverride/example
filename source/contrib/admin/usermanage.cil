@@ -111,12 +111,50 @@
     (context etc_useradd (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/default/useradd" file etc_useradd)
 
+    (allow common_subject self (capability (chown fsetid fowner sys_ptrace dac_override)))
+    (allow common_subject self (process (setfscreate)))
+
+    (call sys_read_kernel_sysctl (common_subject))
+
+    (call fs_list_proc (common_subject))
+    (call fs_list_devtmpfs (common_subject))
+    (call fs_search_devpts (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call sec_validate_context (common_subject))
+
+    (call subject_object_identity_change_exemption (common_subject))
+    (call subject_read_all_common_subjects_state (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call audit_client (common_subject))
+
+    (call auth_rw_lastlog (common_subject))
+    (call auth_manage_shadow (useradd_role common_subject))
+    (call auth_manage_passwd (useradd_role common_subject))
+    (call auth_etc_filetrans_passwd_files (useradd_role common_subject "*"))
+    (call auth_nsswitch_client (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
+
+    (call usersubject_manage_home_user_dirs (common_subject))
+    (call usersubject_manage_mail_spool_files (common_subject))
+    (call usersubject_var_spool_filetrans_mail_spool_files (common_subject "*"))
+    (call usersubject_list_all_home_content (common_subject))
+    (call usersubject_delete_all_home_content (common_subject))
+    (call usersubject_manage_generic_home_content_files (common_subject))
+    (call usersubject_use_generic_inherited_terminals (common_subject))
+
     (optional useradd_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional useradd_optional_unconfined
-        (call unconfined (useradd_role common_subject)))
 )
 
 (block groupadd
@@ -132,13 +170,69 @@
     (filecon "/usr/sbin/groupmod" file bin_groupadd)
     (filecon "/usr/sbin/gpasswd" file bin_groupadd)
 
+    (allow common_subject self (capability (dac_override)))
+    (allow common_subject self (process (setfscreate)))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call sec_validate_context (common_subject))
+
+    (call subject_object_identity_change_exemption (common_subject))
+
+    (call audit_client (common_subject))
+
+    (call auth_manage_shadow (groupadd_role common_subject))
+    (call auth_manage_passwd (groupadd_role common_subject))
+    (call auth_etc_filetrans_passwd_files (groupadd_role common_subject "*"))
+    (call auth_nsswitch_client (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call usersubject_use_generic_inherited_terminals (common_subject))
+
     (optional groupadd_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional groupadd_optional_unconfined
-        (call unconfined (groupadd_role common_subject)))
 )
+
+(allow passwd_subject_type self (capability (setuid dac_override chown fsetid)))
+(allow passwd_subject_type self (process (setfscreate)))
+(allow passwd_subject_type self create_netlink_selinux_socket_perms)
+(allow passwd_subject_type self rw_fifo_file_perms)
+
+(call sys_read_crypto_sysctl (passwd_subject_type))
+
+(call dev_read_urandom (passwd_subject_type))
+
+(call fs_list_devtmpfs (passwd_subject_type))
+(call fs_search_devpts (passwd_subject_type))
+
+(call file_read_generic_etc_files (passwd_subject_type))
+(call file_read_generic_usr_files (passwd_subject_type))
+
+(call sec_list (passwd_subject_type))
+(call sec_compute_access_vector (passwd_subject_type))
+
+(call subject_object_identity_change_exemption (passwd_subject_type))
+
+(call audit_client (passwd_subject_type))
+
+(call auth_nsswitch_client (passwd_subject_type))
+(call auth_manage_shadow (passwd_role passwd_subject_type))
+(call auth_manage_passwd (passwd_role passwd_subject_type))
+(call auth_read_authconfig_pam_config_files (passwd_subject_type))
+(call auth_read_generic_pam_config_files (passwd_subject_type))
+
+(call journal_client (passwd_subject_type))
+
+(call miscfiles_read_localization (passwd_subject_type))
 
 (allow usermanage_admin_type self (capability (kill sys_ptrace)))
 (allow usermanage_admin_type usermanage_subject_type signal_perms)
@@ -185,6 +279,7 @@
     (call auth_run_chkpwd (ARG3 ARG1)))
 
 (macro usermanage_auto_subtrans_groupadd ((type ARG1))
+    (call usermanage_send_signal_groupadd (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 groupadd.bin_object groupadd.common_subject)))
 
@@ -192,13 +287,20 @@
     (call usermanage_auto_subtrans_groupadd (ARG1))
     (roleattributeset groupadd_role ARG2))
 
+(macro usermanage_send_signal_groupadd ((type ARG1))
+    (allow ARG! groupadd.common_subject (process (signal))))
+
 (macro usermanage_auto_subtrans_useradd ((type ARG1))
+    (call usermanage_send_signal_useradd (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 useradd.bin_object useradd.common_subject)))
 
 (macro usermanage_run_useradd ((type ARG1)(role ARG2))
     (call usermanage_auto_subtrans_useradd (ARG1))
     (roleattributeset useradd_role ARG2))
+
+(macro usermanage_send_signal_useradd ((type ARG1))
+    (allow ARG! useradd.common_subject (process (signal))))
 
 (macro usermanage_admin ((role ARG1)(type ARG2))
     (roleattributeset usermanage_admin_role ARG1)

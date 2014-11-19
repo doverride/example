@@ -900,6 +900,9 @@
 (macro file_search_home ((type ARG1))
     (allow ARG1 home search_dir_perms))
 
+(macro file_rw_home_dirs ((type ARG1))
+    (allow ARG1 home rw_dir_perms))
+
 (macro file_sec_type ((type ARG1))
     (call sys_object_type (ARG1))
     (typeattributeset file_type ARG1)
@@ -934,6 +937,9 @@
     (call file_search_var (ARG1))
     (call file_type_transition_pattern
         (ARG1 var_spool ARG2 ARG3 ARG4)))
+
+(macro file_rw_var_spool_dirs ((type ARG1))
+    (call rw_dirs_pattern (ARG1 var var_spool)))
 
 (macro file_tmp_type ((type ARG1))
     (call file_type (ARG1))

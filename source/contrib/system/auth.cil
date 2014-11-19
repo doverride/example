@@ -484,12 +484,14 @@
     (call file_search_etc (ARG1))
     (allow ARG1 password.etc_object read_file_perms))
 
-(macro auth_manage_passwd ((type ARG1))
-    (call file_rw_etc_dirs (ARG1))
-    (allow ARG1 password.etc_object manage_file_perms))
+(macro auth_manage_passwd ((role ARG1)(type ARG2))
+    (call file_rw_etc_dirs (ARG2))
+    (allow ARG2 password.etc_object manage_file_perms)
+    (roletype ARG1 password.etc_object))
 
-(macro auth_etc_filetrans_passwd ((type ARG1)(name ARG2))
-    (call file_etc_filetrans (ARG1 password.etc_object file ARG2)))
+(macro auth_etc_filetrans_passwd_files ((role ARG1)(type ARG2)(name ARG3))
+    (call file_etc_filetrans (ARG2 password.etc_object file ARG3))
+    (roletype ARG1 password.etc_object))
 
 (macro auth_manage_shadow ((role ARG1)(type ARG2))
     (call file_rw_etc_dirs (ARG2))

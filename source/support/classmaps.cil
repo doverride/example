@@ -1,4 +1,4 @@
-(classmap all_file_objects (not_mounton_entrypoint_and_execmod manage relabel))
+(classmap all_file_objects (not_mounton_entrypoint_and_execmod manage relabel delete))
 
 (classmapping all_file_objects not_mounton_entrypoint_and_execmod
     all_file_perms_except_mounton_execmod_and_entrypoint)
@@ -14,6 +14,14 @@
     all_sock_file_perms_except_mounton_and_execmod)
 (classmapping all_file_objects not_mounton_entrypoint_and_execmod
     all_fifo_file_perms_except_mounton_and_execmod)
+
+(classmapping all_file_objects delete delete_file_perms)
+(classmapping all_file_objects delete delete_dir_perms)
+(classmapping all_file_objects delete delete_lnk_file_perms)
+(classmapping all_file_objects delete delete_chr_file_perms)
+(classmapping all_file_objects delete delete_blk_file_perms)
+(classmapping all_file_objects delete delete_sock_file_perms)
+(classmapping all_file_objects delete delete_fifo_file_perms)
 
 (classmapping all_file_objects manage manage_file_perms)
 (classmapping all_file_objects manage manage_dir_perms)

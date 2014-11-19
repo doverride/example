@@ -348,6 +348,14 @@
     (allow ARG2 user.var_spool_object rw_file_perms)
     (roletype ARG1 user.var_spool_object))
 
+(macro usersubject_manage_mail_spool_files ((type ARG1))
+    (call file_rw_var_spool_dirs (ARG1))
+    (allow ARG1 user.var_spool_object manage_file_perms))
+
+(macro usersubject_var_spool_filetrans_mail_spool_files ((type ARG1)(name ARG2))
+    (call file_search_var (ARG1))
+    (call file_var_spool_filetrans (ARG1 user.var_spool_object file ARG2)))
+
 (macro usersubject_generic_home_template ((role ARG1)(type ARG2))
     (allow ARG2 user.home_object (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
@@ -399,6 +407,21 @@
 (macro usersubject_search_home_user ((type ARG1))
     (call file_search_home (ARG1))
     (allow ARG1 home_user search_dir_perms))
+
+(macro usersubject_manage_home_user_dirs ((type ARG1))
+    (call file_rw_home_dirs (ARG1))
+    (allow ARG1 home_user manage_dir_perms))
+
+(macro usersubject_list_all_home_content ((type ARG1))
+    (allow ARG1 usersubject_home_type list_dir_perms))
+
+(macro usersubject_delete_all_home_content ((type ARG1))
+    (allow ARG1 usersubject_home_type del_entry_dir_perms)
+    (allow ARG1 usersubject_home_type (all_file_objects (delete))))
+
+(macro usersubject_manage_generic_home_content_files ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (call manage_files_pattern (ARG1 user.home_object user.home_object)))
 
 (macro usersubject_list_cert ((type ARG1))
     (call usersubject_search_home_user (ARG1))
