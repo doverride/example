@@ -911,7 +911,11 @@
 (macro file_mounton_all_except ((type ARG1))
     (allow ARG1 file_except (dir_file (mounton))))
 
+(macro file_getattr_all_except ((type ARG1))
+    (allow ARG1 file_except (all_file_objects (getattr))))
+
 (macro file_list_all_except ((type ARG1))
+    (call file_getattr_all_except (ARG1))
     (allow ARG1 file_except list_dir_perms))
 
 (macro file_read_all_files_except ((type ARG1))

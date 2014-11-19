@@ -84,6 +84,7 @@
 
     (call fs_getattr_all (common_subject))
     (call fs_read_cgroup_files (common_subject))
+    (call fs_relabel_all_files (common_subject))
 
     (call sec_get_enforce_mode (common_subject))
     (call sec_validate_context (common_subject))
