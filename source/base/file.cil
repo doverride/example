@@ -955,6 +955,13 @@
     (call file_type_transition_pattern
         (ARG1 var_tmp ARG2 ARG3 ARG4)))
 
+(macro file_read_var_tmp_lnk_files ((type ARG1))
+    (allow ARG1 var_tmp read_lnk_file_perms))
+
+(macro file_list_var_tmp ((type ARG1))
+    (call file_read_var_tmp_lnk_files (ARG1))
+    (allow ARG1 var_tmp list_dir_perms))
+
 (macro file_tmpfs_type ((type ARG1))
     (call file_type (ARG1))
     (typeattributeset file_tmpfs_type ARG1))

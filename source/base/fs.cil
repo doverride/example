@@ -310,6 +310,13 @@
 (macro fs_search_tmpfs ((type ARG1))
     (allow ARG1 tmpfs search_dir_perms))
 
+(macro fs_rw_tmpfs_dirs ((type ARG1))
+    (allow ARG1 tmpfs rw_dir_perms))
+
+(macro fs_manage_tmpfs_files ((type ARG1))
+    (call fs_rw_tmpfs_dirs (ARG1))
+    (allow ARG1 tmpfs manage_file_perms))
+
 (macro fs_getattr_all_files ((type ARG1))
     (allow ARG1 fs_type (all_file_objects (getattr))))
 

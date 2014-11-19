@@ -91,6 +91,7 @@
 
     (call fs_getattr_devpts (common_subject))
     (call fs_rw_devpts_chr_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
     (call fs_read_sysfs_files (common_subject))
 
     (call term_use_console (common_subject))

@@ -66,10 +66,12 @@
 
     (call sys_read_kernel_sysctl (common_subject))
 
+    (call dev_read_urandom (common_subject))
+
     (call fs_getattr_fs (common_subject))
     (call fs_read_sysfs_files (common_subject))
 
-    (call file_read_generic_usr_files (common_subject))
+    (call file_read_generic_usr (common_subject))
 
     (call subject_read_all_common_subjects_state (common_subject))
 
@@ -89,7 +91,7 @@
 
     (call polkit_exec_pkladm (common_subject))
     (call polkit_exec_pklauth (common_subject))
-    (call polkit_list_config (common_subject))
+    (call polkit_read_all_config (common_subject))
 )
 
 (block pkladm
@@ -198,6 +200,10 @@
     (call file_search_etc (ARG1))
     (allow ARG1 etc_polkit search_dir_perms))
 
+(macro polkit_read_generic_config_lnk_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_lnk_files_pattern (ARG1 etc_polkit etc_polkit)))
+
 (macro polkit_read_generic_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 etc_polkit etc_polkit)))
@@ -206,9 +212,14 @@
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 etc_polkit polkit_etc_file_type)))
 
+(macro polkit_read_all_config ((type ARG1))
+    (call polkit_list_config (ARG1))
+    (call polkit_read_generic_config_lnk_files (ARG1))
+    (call polkit_read_all_config_files (ARG1)))
+
 (macro polkit_dbus_chat_polkitd ((type ARG1))
     (allow ARG1 polkitd.common_subject (dbus (send_msg)))
-    (allow polkitd.common_subject self (dbus (send_msg))))
+    (allow polkitd.common_subject ARG1 (dbus (send_msg))))
 
 (macro polkit_admin ((role ARG1)(type ARG2))
     (roleattributeset polkit_admin_role ARG1)

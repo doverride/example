@@ -21,6 +21,8 @@
 
     (call file_read_boot_files (common_subject))
 
+    (call fs_manage_tmpfs_files (common_subject)) ; /run/initramfs/.need_shutdown
+
     (call dracut_manage_initramfs_run_files (common_subject))
     (call dracut_manage_initramfs_run_lnk_files (common_subject))
     (call dracut_manage_initramfs_run_dirs (common_subject))
