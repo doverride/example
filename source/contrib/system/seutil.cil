@@ -24,14 +24,18 @@
     (context bin_load_policy (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/load_policy" file bin_load_policy)
 
+    (call sec_load_policy (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call seutil_read_config_files (common_subject))
     (call seutil_read_policy_config_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
 
     (optional load_policy_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional load_policy_optional_unconfined
-        (call unconfined (load_policy_role common_subject)))
 )
 
 (block secilc
@@ -44,6 +48,10 @@
     (context bin_secilc (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/secilc" file bin_secilc)
 
+    (allow common_subject self (capability (dac_override)))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
     (call seutil_create_file_context_files (common_subject))
     (call seutil_read_file_context_files (common_subject))
     (call seutil_write_file_context_files (common_subject))
@@ -54,9 +62,6 @@
     (optional secilc_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional secilc_optional_unconfined
-        (call unconfined (secilc_role common_subject)))
 )
 
 (block setfiles
@@ -75,7 +80,16 @@
 
     (call file_relabel_all_except (common_subject))
 
+    (call fs_getattr_all (common_subject))
+    (call fs_read_cgroup_files (common_subject))
+
+    (call sec_get_enforce_mode (common_subject))
+    (call sec_validate_context (common_subject))
+
     (call subject_object_identity_change_exemption (common_subject))
+
+    (call term_use_inherited_console (common_subject))
+    (call term_use_inherited_unallocated_tts (common_subject))
 
     (call audit_client (common_subject))
     (call audit_relabel_config (common_subject))
@@ -84,14 +98,15 @@
 
     (call auth_relabel_shadow (common_subject))
 
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
     (call seutil_relabel_policy_config (common_subject))
+
+    (call systemd_use_fd (common_subject))
 
     (optional setfiles_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional setfiles_optional_unconfined
-        (call unconfined (setfiles_role common_subject)))
 )
 
 (block getsebool
@@ -103,8 +118,6 @@
 
     (context bin_getsebool (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/getsebool" file bin_getsebool)
-
-    (call journal_client (common_subject))
 
     (optional getsebool_optional_app
         (call app_exec_object_type (bin_object))
@@ -124,12 +137,22 @@
     (context bin_setsebool (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/setsebool" file bin_setsebool)
 
+    (call sec_list (common_subject))
+    (call sec_set_all_booleans (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
     (optional setsebool_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional setsebool_optional_unconfined
-        (call unconfined (setsebool_role common_subject)))
 )
 
 (block getenforce
@@ -160,12 +183,15 @@
     (context bin_setenforce (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/setenforce" file bin_setenforce)
 
+    (call sec_set_enforce_mode (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+
     (optional setenforce_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional setenforce_optional_unconfined
-        (call unconfined (setenforce_role common_subject)))
 )
 
 (type default_context)

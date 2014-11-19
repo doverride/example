@@ -487,6 +487,9 @@
 (macro systemd_send_signal_systemctl ((type ARG1))
     (allow ARG1 systemctl.common_subject (process (signal))))
 
+(macro systemd_use_fd ((type ARG1))
+    (allow ARG1 systemd.common_subject (fd (use))))
+
 (macro systemd_socket_activated ((type ARG1)(type ARG2))
     (call systemd_socket_activated_object_type (ARG2))
     (call systemd_socket_activated_subject_type (ARG1)))

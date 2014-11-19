@@ -84,6 +84,9 @@
 (macro term_use_console ((type ARG1))
     (allow ARG1 console_dev rw_term_perms))
 
+(macro term_use_inherited_console ((type ARG1))
+    (allow ARG1 console_dev rw_inherited_term_perms))
+
 (macro term_relabel_console ((type ARG1))
     (allow ARG1 console_dev relabel_chr_file_perms))
 

@@ -180,6 +180,9 @@
     (class ARG3)(name ARG4))
     (call file_type_transition_pattern (ARG1 rootfs ARG2 ARG3 ARG4)))
 
+(macro fs_getattr_all ((type ARG1))
+    (allow ARG1 fs_type (filesystem (getattr))))
+
 (macro fs_getattr_devpts ((type ARG1))
     (allow ARG1 devpts (filesystem (getattr))))
 
