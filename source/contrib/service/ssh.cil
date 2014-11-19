@@ -41,15 +41,30 @@
         (allow common_subject pty_object relabelfrom_chr_file_perms)
         (call term_create_pty (common_subject pty_object))
 
-        (allow common_subject etc_object read_file_perms)
+        (allow common_subject self (capability (sys_resource kill)))
+        (allow common_subject self rw_fifo_file_perms)
 
         (call can_exec (common_subject bin_object))
 
+        (call sys_read_kernel_sysctl (common_subject))
+
+        (call bin_getattr_shell_files (common_subject))
+
+        (call dev_read_urandom (common_subject))
+
         (call file_list_etc (common_subject))
+        (call file_read_generic_etc_files (common_subject))
+
+        (call net_tcp_bind_generic_node (common_subject))
 
         (call subject_dynamic_subject_type_transition_subject (common_subject))
 
         (call auth_login_program (common_subject))
+
+        (call journal_client (common_subject))
+
+        (call miscfiles_read_net_config_files (common_subject))
+        (call miscfiles_read_generic_cert_files (common_subject))
 )
 
 (block ssh_sshd_key_object_block
@@ -87,6 +102,10 @@
 
         (allow common_subject self (capability (sys_chroot setuid setgid)))
         (allow common_subject self (process (setrlimit)))
+
+        (call file_search_var (common_subject))
+
+        (call miscfiles_read_localization (common_subject))
 )
 
 (block ssh_sshd_pty_object_block
@@ -121,14 +140,16 @@
     (portcon "tcp" 22 port_sshd)
     (portcon "udp" 22 port_sshd)
 
-    (allow common_subject self (capability (sys_resource net_admin kill)))
-    (allow common_subject self rw_fifo_file_perms)
-
     (allow common_subject sshd_net.common_subject (process (sigkill)))
 
     (call dynamic_subject_type_transition_pattern (common_subject sshd_net.common_subject))
 
-    (allow common_subject sshd_key.etc_object read_file_perms)
+    (call ssh_read_sshd_key_files (common_subject))
+    (call ssh_tcp_bind_sshd_port (common_subject))
+
+    (call usersubject_relabel_generic_pts (common_subject))
+    (call usersubject_setattr_generic_pts (common_subject))
+    (call usersubject_use_generic_pts (common_subject))
 
     (booleanif ssh_priv_user_login
         (true
@@ -137,9 +158,6 @@
         (false
             (call usersubject_dynamic_subtrans_all_unpriv_login_subjects (common_subject))
             (call usersubject_shell_manual_subtrans_all_unpriv_login_subjects (common_subject))))
-
-    (optional sshd_optional_unconfined
-        (call unconfined (sys.r common_subject)))
 )
 
 (block sshd_keygen
@@ -151,8 +169,8 @@
     (context unit_sshd_keygen (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*sshd-keygen.*" file unit_sshd_keygen)
 
-    (optional sshd_keygen_optional_subject
-        (call unconfined (sys.r common_subject)))
+    (call ssh_manage_sshd_key_files (common_subject))
+    (call ssh_etc_filetrans (common_subject sshd_key.etc_object file "*"))
 )
 
 (block sshd_key
@@ -166,10 +184,9 @@
 (block sshd_net
     (blockinherit ssh_sshd_privsep_preauth_block)
 
-    (allow common_subject sshd.common_subject (fifo_file (write)))
-
-    (optional sshd_net_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call ssh_rw_inherited_sshd_fifo_files (common_subject))
+    (call ssh_rw_inherited_sshd_unix_stream_sockets (common_subject))
+    (call ssh_rw_inherited_sshd_tcp_sockets (common_subject))
 )
 
 (typeattributeset ssh_object_type ssh_unit_object_type)
@@ -183,10 +200,51 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype ssh_admin_role ssh_object_type)
 
+(macro ssh_list_sshd_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 sshd.etc_object list_dir_perms))
+
+(macro ssh_search_sshd_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 sshd.etc_object search_dir_perms))
+
+(macro ssh_rw_sshd_config_dirs ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 sshd.etc_object rw_dir_perms))
+
+(macro ssh_manage_sshd_key_files ((type ARG1))
+    (call ssh_rw_sshd_config_dirs (ARG1))
+    (allow ARG1 sshd_key.etc_object manage_file_perms))
+
+(macro ssh_read_sshd_key_files ((type ARG1))
+    (call ssh_search_sshd_config (ARG1))
+    (allow ARG1 sshd_key.etc_object read_file_perms))
+
 (macro ssh_tcp_bind_sshd_port ((type ARG1))
     (allow ARG1 self (capability (net_bind_service)))
     (allow ARG1 self create_tcp_stream_socket_perms)
     (allow ARG1 sshd.reserved_port_object (tcp_socket (name_bind))))
+
+(macro ssh_rw_inherited_sshd_tcp_sockets ((type ARG1))
+    (allow ARG1 sshd.common_subject rw_tcp_socket_perms)
+    (allow ARG1 sshd.common_subject (fd (use))))
+
+(macro ssh_rw_inherited_sshd_unix_stream_sockets ((type ARG1))
+    (allow ARG1 sshd.common_subject rw_unix_stream_socket_perms)
+    (allow ARG1 sshd.common_subject (fd (use))))
+
+(macro ssh_rw_inherited_sshd_unix_dgram_sockets ((type ARG1))
+    (allow ARG1 sshd.common_subject rw_unix_dgram_socket_perms)
+    (allow ARG1 sshd.common_subject (fd (use))))
+
+(macro ssh_rw_inherited_sshd_fifo_files ((type ARG1))
+    (allow ARG1 sshd.common_subject rw_inherited_fifo_file_perms)
+    (allow ARG1 sshd.common_subject (fd (use))))
+
+(macro ssh_etc_filetrans ((type ARG1)(type ARG2)(class ARG3)(name ARG4))
+    (call file_search_etc (ARG1))
+    (call file_type_transition_pattern
+        (ARG1 sshd.etc_object ARG2 ARG3 ARG4)))
 
 (macro ssh_admin ((role ARG1)(type ARG2))
     (roleattributeset ssh_admin_role ARG1)
