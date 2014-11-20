@@ -264,6 +264,29 @@
     (optional dev_getattr_all_optional_storage
         (call stor_getattr_all (ARG1))))
 
+(macro dev_create_zero ((type ARG1))
+    (allow ARG1 self (capability (mknod)))
+    (call fs_add_entry_devtmpfs_dirs (ARG1))
+    (allow ARG1 zero_dev create_chr_file_perms))
+
+(macro dev_create_random ((type ARG1))
+    (allow ARG1 self (capability (mknod)))
+    (call fs_add_entry_devtmpfs_dirs (ARG1))
+    (allow ARG1 random_dev create_chr_file_perms))
+
+(macro dev_create_urandom ((type ARG1))
+    (allow ARG1 self (capability (mknod)))
+    (call fs_add_entry_devtmpfs_dirs (ARG1))
+    (allow ARG1 urandom_dev create_chr_file_perms))
+
+(macro dev_create_null ((type ARG1))
+    (allow ARG1 self (capability (mknod)))
+    (call fs_add_entry_devtmpfs_dirs (ARG1))
+    (allow ARG1 null_dev create_chr_file_perms))
+
+(macro dev_read_autofs ((type ARG1))
+    (allow ARG1 autofs_dev read_chr_file_perms))
+
 (macro dev_read_kmsg ((type ARG1))
     (allow ARG1 kmsg_dev read_chr_file_perms))
 

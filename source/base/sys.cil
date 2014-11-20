@@ -357,6 +357,25 @@
 (macro sys_setattr_mountpoint_dirs ((type ARG1))
     (allow ARG1 sys_mountpoint_type (dir (setattr))))
 
+(macro sys_dontaudit_audit_access_fs_sysctl_dirs ((type ARG1))
+    (dontaudit ARG1 fs_sysctl (dir (audit_access))))
+
+(macro sys_getattr_fs_sysctl ((type ARG1))
+    (allow ARG1 fs_sysctl (all_file_objects (getattr))))
+
+(macro sys_list_fs_sysctl ((type ARG1))
+    (call sys_getattr_fs_sysctl (ARG1))
+    (call list_dirs_pattern (ARG1 sysctl fs_sysctl)))
+
+(macro sys_mounton_fs_sysctl_dirs ((type ARG1))
+    (call sys_dontaudit_audit_access_fs_sysctl_dirs (ARG1))
+    (call sys_list_fs_sysctl (ARG1))
+    (call sys_setattr_fs_sysctl_dirs (ARG1))
+    (allow ARG1 fs_sysctl (dir (mounton))))
+
+(macro sys_setattr_fs_sysctl_dirs ((type ARG1))
+    (allow ARG1 fs_sysctl (dir (setattr))))
+
 (macro sys_proc_type ((type ARG1))
     (call sys_object_type (ARG1))
     (typeattributeset sys_proc_type ARG1))
@@ -547,6 +566,11 @@
 
 (macro sys_use_fd ((type ARG1))
     (allow ARG1 sys.common_subject (fd (use))))
+
+(macro sys_read_state_invalid ((type ARG1))
+    (allow ARG1 invalid list_dir_perms)
+    (allow ARG1 invalid read_file_perms)
+    (allow ARG1 invalid read_lnk_file_perms))
 
 (macro sys_recvfrom_unlabeled_tcp_socket ((type ARG1))
     (allow ARG1 unlabeled (tcp_socket (recvfrom))))

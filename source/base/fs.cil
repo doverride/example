@@ -205,14 +205,8 @@
 (macro fs_list_sysfs ((type ARG1))
     (allow ARG1 sysfs list_dir_perms))
 
-(macro fs_list_tmpfs ((type ARG1))
-    (allow ARG1 tmpfs list_dir_perms))
-
 (macro fs_list_hugetlbfs ((type ARG1))
     (allow ARG1 hugetlbfs list_dir_perms))
-
-(macro fs_list_devtmpfs ((type ARG1))
-    (allow ARG1 devtmpfs list_dir_perms))
 
 (macro fs_manage_devtmpfs_dirs ((type ARG1))
     (allow ARG1 devtmpfs manage_dir_perms))
@@ -258,9 +252,6 @@
 (macro fs_unmount_all ((type ARG1))
     (allow ARG1 fs_type (filesystem (unmount))))
 
-(macro fs_mounton_rootfs_dirs ((type ARG1))
-    (allow ARG1 rootfs (dir (mounton))))
-
 (macro fs_read_generic_proc_files ((type ARG1))
     (call read_files_pattern (ARG1 proc proc)))
 
@@ -301,11 +292,35 @@
 (macro fs_search_proc ((type ARG1))
     (allow ARG1 proc search_dir_perms))
 
+(macro fs_search_sysfs ((type ARG1))
+    (allow ARG1 sysfs search_dir_perms))
+
+(macro fs_list_rootfs ((type ARG1))
+    (allow ARG1 rootfs list_dir_perms))
+
 (macro fs_search_rootfs ((type ARG1))
     (allow ARG1 rootfs search_dir_perms))
 
-(macro fs_search_sysfs ((type ARG1))
-    (allow ARG1 sysfs search_dir_perms))
+(macro fs_mounton_rootfs_dirs ((type ARG1))
+    (call fs_dontaudit_audit_access_rootfs_dirs (ARG1))
+    (call fs_list_rootfs (ARG1))
+    (call fs_setattr_rootfs_dirs (ARG1))
+    (allow ARG1 rootfs (dir (mounton))))
+
+(macro fs_setattr_rootfs_dirs ((type ARG1))
+    (allow ARG1 rootfs (dir (setattr))))
+
+(macro fs_mounton_sysfs_dirs ((type ARG1))
+    (call fs_dontaudit_audit_access_sysfs_dirs (ARG1))
+    (call fs_list_sysfs (ARG1))
+    (call fs_setattr_sysfs_dirs (ARG1))
+    (allow ARG1 sysfs (dir (mounton))))
+
+(macro fs_setattr_sysfs_dirs ((type ARG1))
+    (allow ARG1 sysfs (dir (setattr))))
+
+(macro fs_list_tmpfs ((type ARG1))
+    (allow ARG1 tmpfs list_dir_perms))
 
 (macro fs_search_tmpfs ((type ARG1))
     (allow ARG1 tmpfs search_dir_perms))
@@ -313,9 +328,49 @@
 (macro fs_rw_tmpfs_dirs ((type ARG1))
     (allow ARG1 tmpfs rw_dir_perms))
 
+(macro fs_manage_tmpfs_dirs ((type ARG1))
+    (allow ARG1 tmpfs manage_dir_perms))
+
 (macro fs_manage_tmpfs_files ((type ARG1))
     (call fs_rw_tmpfs_dirs (ARG1))
     (allow ARG1 tmpfs manage_file_perms))
+
+(macro fs_mounton_tmpfs_dirs ((type ARG1))
+    (call fs_dontaudit_audit_access_tmpfs_dirs (ARG1))
+    (call fs_list_tmpfs (ARG1))
+    (call fs_setattr_tmpfs_dirs (ARG1))
+    (allow ARG1 tmpfs (dir (mounton))))
+
+(macro fs_setattr_tmpfs_dirs ((type ARG1))
+    (allow ARG1 tmpfs (dir (setattr))))
+
+(macro fs_dontaudit_audit_access_tmpfs_dirs ((type ARG1))
+    (dontaudit ARG1 tmpfs (dir (audit_access))))
+
+(macro fs_dontaudit_audit_access_rootfs_dirs ((type ARG1))
+    (dontaudit ARG1 rootfs (dir (audit_access))))
+
+(macro fs_dontaudit_audit_access_sysfs_dirs ((type ARG1))
+    (dontaudit ARG1 sysfs (dir (audit_access))))
+
+(macro fs_dontaudit_audit_access_devtmpfs_dirs ((type ARG1))
+    (dontaudit ARG1 devtmpfs (dir (audit_access))))
+
+(macro fs_list_devtmpfs ((type ARG1))
+    (call dev_getattr_all (ARG1))
+    (allow ARG1 devtmpfs list_dir_perms))
+
+(macro fs_mounton_devtmpfs_dirs ((type ARG1))
+    (call fs_dontaudit_audit_access_devtmpfs_dirs (ARG1))
+    (call fs_list_devtmpfs (ARG1))
+    (call fs_setattr_devtmpfs_dirs (ARG1))
+    (allow ARG1 devtmpfs (dir (mounton))))
+
+(macro fs_setattr_devtmpfs_dirs ((type ARG1))
+    (allow ARG1 devtmpfs (dir (setattr))))
+
+(macro fs_add_entry_devtmpfs_dirs ((type ARG1))
+    (allow ARG1 devtmpfs add_entry_dir_perms))
 
 (macro fs_getattr_all_files ((type ARG1))
     (allow ARG1 fs_type (all_file_objects (getattr))))
