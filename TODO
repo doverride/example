@@ -19,3 +19,6 @@
     the question is which ones to remove without being inconsistent, some are easier than others
 
     There is a bug in secilc that prevents me from declaring contexts in blockbstracts if they are inherited on more than a single level
+
+* implement environ etc file type to differentiate between config and environ files. this will enable me to allow systemd to read all environ files, and only
+    select etc files without things becoming high maintenance.
