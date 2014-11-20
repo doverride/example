@@ -271,7 +271,7 @@
     (call file_mounton_var_dirs (common_subject))
     (call file_mounton_var_spool_dirs (common_subject))
     (call file_read_all_run_lock_files (common_subject))
-    (call file_read_generic_etc_files (common_subject))
+    (call file_read_all_etc_files (common_subject))
 
     (call fs_manage_devtmpfs_dirs (common_subject))
     (call fs_manage_tmpfs_dirs (common_subject))

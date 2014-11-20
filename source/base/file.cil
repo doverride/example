@@ -872,6 +872,9 @@
 (macro file_read_generic_etc_files ((type ARG1))
     (call read_files_pattern (ARG1 etc etc)))
 
+(macro file_read_all_etc_files ((type ARG1))
+    (call read_files_pattern (ARG1 file_etc_type file_etc_type)))
+
 (macro file_read_generic_etc ((type ARG1))
     (call file_list_etc (ARG1))
     (call file_read_generic_etc_lnk_files (ARG1))
