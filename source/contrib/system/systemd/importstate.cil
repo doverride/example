@@ -1,0 +1,19 @@
+(typeattribute importstate_admin_type)
+
+(block importstate
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (context bin_importstate (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/fedora-import-state" file bin_importstate)
+
+    (optional importstate_optional_unconfined
+        (call unconfined (sys.r common_subject)))
+)
+
+(allow importstate_admin_type self (capability (kill sys_ptrace)))
+(allow importstate_admin_type importstate.common_subject signal_perms)
+(allow importstate_admin_type importstate.common_subject (process (ptrace)))
+(call ps_subject_pattern (importstate_admin_type importstate.common_subject))
+
+(macro importstate_admin ((type ARG1))
+    (typeattributeset importstate_admin_type ARG1))

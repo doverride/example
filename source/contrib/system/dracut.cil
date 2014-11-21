@@ -60,6 +60,10 @@
     (all_file_objects (not_mounton_entrypoint_and_execmod)))
 (roletype dracut_admin_role dracut_object_type)
 
+(macro dracut_search_initramfs_run ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 initramfs.run_object search_dir_perms))
+
 (macro dracut_manage_initramfs_run_files ((type ARG1))
     (call file_search_run (ARG1))
     (call manage_files_pattern

@@ -321,6 +321,8 @@
 
     (call dbus_system_service (common_subject))
 
+    (call dracut_search_initramfs_run (common_subject)) ; /run/initramfs/.need_shutdown
+
     (call journal_list_log (common_subject))
     (call journal_client (common_subject))
     (call journal_list_run (common_subject))
