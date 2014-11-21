@@ -255,6 +255,7 @@
         (call stor_manage_all (ARG1))))
 
 (macro dev_relabel_all ((type ARG1))
+    (call fs_relabelfrom_devtmpfs_chr_files (ARG1))
     (allow ARG1 dev_except_storage relabel_chr_file_perms)
     (optional dev_relabel_all_optional_storage
         (call stor_relabel_all (ARG1))))
