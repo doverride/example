@@ -54,6 +54,7 @@
 
 (type debugfs)
 (call fs_type (debugfs))
+(call sys_mountpoint_type (debugfs))
 
 (context debugfs (sys.u sys.r debugfs (systemlow systemlow)))
 (genfscon "debugfs" "/" debugfs)
@@ -96,6 +97,7 @@
 
 (type hugetlbfs)
 (call fs_type (hugetlbfs))
+(call sys_mountpoint_type (hugetlbfs))
 
 (context hugetlbfs (sys.u sys.r hugetlbfs (systemlow systemlow)))
 (fsuse trans "hugetlbfs" hugetlbfs)
@@ -137,6 +139,7 @@
 
 (type tmpfs)
 (call fs_type (tmpfs))
+(call sys_mountpoint_type (tmpfs))
 
 (context tmpfs (sys.u sys.r tmpfs (systemlow systemlow)))
 (filecon "/var/run/user/.*" any ())
