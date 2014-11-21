@@ -264,6 +264,11 @@
     (optional dev_getattr_all_optional_storage
         (call stor_getattr_all (ARG1))))
 
+(macro dev_create_devtty ((type ARG1))
+    (allow ARG1 self (capability (mknod)))
+    (call fs_add_entry_devtmpfs_dirs (ARG1))
+    (allow ARG1 devtty_dev create_chr_file_perms))
+
 (macro dev_create_zero ((type ARG1))
     (allow ARG1 self (capability (mknod)))
     (call fs_add_entry_devtmpfs_dirs (ARG1))

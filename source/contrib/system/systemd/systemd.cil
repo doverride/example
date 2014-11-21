@@ -252,6 +252,7 @@
     (call sys_read_state_invalid (common_subject))
     (call sys_use_fd (common_subject))
 
+    (call dev_create_devtty (common_subject))
     (call dev_create_null (common_subject))
     (call dev_create_random (common_subject))
     (call dev_create_urandom (common_subject))
@@ -263,17 +264,113 @@
     (call dev_write_kmsg (common_subject))
 
     (call file_read_all_run_lock_files (common_subject))
-    (call file_read_all_etc_files (common_subject))
+    (call file_read_all_etc_files (common_subject)) ; FIXME
 
+    (call fs_getattr_all (common_subject))
+    (call fs_manage_cgroup_dirs (common_subject))
     (call fs_manage_devtmpfs_dirs (common_subject))
-    (call fs_manage_tmpfs_dirs (common_subject))
     (call fs_manage_devtmpfs_lnk_files (common_subject))
     (call fs_manage_devtmpfs_chr_files (common_subject))
+    (call fs_manage_tmpfs_dirs (common_subject))
+    (call fs_manage_tmpfs_lnk_files (common_subject))
+    (call fs_mount_autofs (common_subject))
+    (call fs_mount_tmpfs (common_subject))
+    (call fs_read_tmpfs_files (common_subject))
+    (call fs_remount_devpts (common_subject))
+    (call fs_remount_dosfs (common_subject))
+    (call fs_remount_fs (common_subject))
+    (call fs_remount_hugetlbfs (common_subject))
+    (call fs_remount_tmpfs (common_subject))
+    (call fs_rw_cgroup_files (common_subject))
+    (call fs_search_devpts (common_subject))
+    (call fs_search_efivarfs (common_subject))
+    (call fs_setattr_cgroup_files (common_subject))
+    (call fs_unmount_all (common_subject))
+
+    (call sec_compute_access_vector (common_subject))
+    (call sec_compute_create_context (common_subject))
+    (call sec_list (common_subject))
+
+    (call stor_read_fixed_disk (common_subject))
+    (call stor_read_removable (common_subject))
+    (call stor_read_scsi_generic (common_subject))
+
+    (call subject_getattr_all_common_subjects (common_subject))
+    (call subject_read_all_common_subjects_state (common_subject))
+    (call subject_send_sigkill_all_common_subjects (common_subject))
+    (call subject_send_signal_all_common_subjects (common_subject))
+    (call subject_send_signull_all_common_subjects (common_subject))
+
+    (call term_use_unallocated_tts (common_subject))
+
+    (call askpwd_list_run (common_subject))
+    (call askpwd_read_run_files (common_subject))
+
+    (call audit_client (common_subject))
+
+    (call auth_list_pam_config (common_subject))
+    (call auth_read_authconfig_pam_config_files (common_subject))
+    (call auth_read_generic_pam_config_files (common_subject))
+    (call auth_nsswitch_client (common_subject))
+    (call auth_write_wtmp (common_subject))
+
+    (call binfmt_list_config (common_subject))
+    (call binfmt_read_config_files (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call hwclock_read_config_files (common_subject))
+
+    (call hostnamed_read_config_files (common_subject))
+
+    (call journal_list_log (common_subject))
+    (call journal_client (common_subject))
+    (call journal_list_run (common_subject))
+    (call journal_read_run_files (common_subject))
+
+    (call machine_read_config_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+    (call miscfiles_read_modules_files (common_subject))
+
+    (call loadmodules_list_config (common_subject))
+    (call loadmodules_read_config_files (common_subject))
+
+    (call mount_read_run_files (common_subject))
+
+    (call plymouth_list_run (common_subject))
+    (call plymouth_read_run_files (common_subject))
+    (call plymouth_stream_connect_plymouthd (common_subject))
+    (call plymouth_use_fd (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_default_context_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
 
     (call shutdown_share_state (common_subject))
 
-    (call systemd_rw_unix_stream_sockets (systemd_daemon_subject_type))
-    (call systemd_read_state (systemd_daemon_subject_type))
+    (call sysctl_read_config_files (common_subject))
+
+    (call systemd_exec (common_subject))
+    (call systemd_exec_helper (common_subject))
+    (call systemd_delete_all_unit_files (common_subject))
+    (call systemd_read_all_unit_files (common_subject))
+    (call systemd_read_pam_config_files (common_subject))
+
+    (call tmpfiles_list_config (common_subject))
+    (call tmpfiles_read_config_files (common_subject))
+    (call tmpfiles_list_run (common_subject))
+    (call tmpfiles_read_generic_run_files (common_subject))
+
+    (call udev_client (common_subject))
+
+    (call utmp_rw_run_files (common_subject))
+
+    (optional systemd_optional_mcelog
+        (call mcelog_search_config (common_subject))) ; FIXME
+
+    (optional systemd_optional_sshd
+        (call ssh_read_sshd_config_files (common_subject)))
 
     (optional systemd_optional_usersubject
         (blockinherit usersubject_tmpfs_object_block)
@@ -285,9 +382,6 @@
         (call systemd_manage_user_tmpfs_sock_files (sys.r common_subject))
 
         (call fs_tmpfs_filetrans (common_subject user_tmpfs_object dir "systemd")))
-
-    (optional systemd_optional_unconfined
-        (call unconfined (sys.r common_subject)))
 )
 
 (block systemd_helper
@@ -355,6 +449,9 @@
     (filecon "/usr/lib/systemd/system/[^/]*shutdown.*" file unit_systemd_power)
     (filecon "/usr/lib/systemd/system/[^/]*suspend.*" file unit_systemd_power)
 )
+
+(call systemd_rw_unix_stream_sockets (systemd_daemon_subject_type))
+(call systemd_read_state (systemd_daemon_subject_type))
 
 (type systemd_unit)
 (call file_type (systemd_unit))
@@ -453,6 +550,12 @@
 
 (macro systemd_daemon_subject_type ((type ARG1))
     (typeattributeset systemd_daemon_subject_type ARG1))
+
+(macro systemd_exec ((type ARG1))
+    (call can_exec (ARG1 systemd.bin_object)))
+
+(macro systemd_exec_helper ((type ARG1))
+    (call can_exec (ARG1 systemd_helper.bin_object)))
 
 (macro systemd_auto_subtrans ((type ARG1))
     (call auto_subject_type_transition_pattern
@@ -663,6 +766,18 @@
     (call systemd_enable_all_units (ARG1))
     (call systemd_reload_all_units (ARG1))
     (call systemd_start_all_units (ARG1)))
+
+(macro systemd_delete_all_unit_files ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (call delete_files_pattern (ARG1 systemd_unit systemd_unit_object_type)))
+
+(macro systemd_read_all_unit_files ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (call read_files_pattern (ARG1 systemd_unit systemd_unit_object_type)))
+
+(macro systemd_read_pam_config_files ((type ARG1))
+    (call auth_search_pam_config (ARG1))
+    (allow ARG1 systemd.pam_etc_object read_file_perms))
 
 (macro systemd_admin ((role ARG1)(type ARG2))
     (roleattributeset systemd_admin_role ARG1)

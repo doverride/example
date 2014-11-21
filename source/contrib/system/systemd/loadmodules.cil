@@ -25,6 +25,15 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype loadmodules_admin_role loadmodules.etc_object)
 
+(macro loadmodules_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 loadmodules.etc_object list_dir_perms))
+
+(macro loadmodules_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern
+        (ARG1 loadmodules.etc_object loadmodules.etc_object)))
+
 (macro loadmodules_admin ((role ARG1)(type ARG1))
     (roleattributeset loadmodules_admin_role ARG1)
     (typeattributeset loadmodules_admin_type ARG2))

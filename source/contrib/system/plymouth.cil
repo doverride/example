@@ -125,27 +125,39 @@
     (call auto_subject_type_transition_pattern
         (ARG1 plymouth.bin_object plymouth.common_subject)))
 
+(macro plymouth_run ((type ARG1)(role ARG2))
+    (call plymouth_auto_subtrans (ARG1))
+    (roleattributeset plymouth_role ARG2))
+
 (macro plymouth_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern
         (ARG1 plymouthd.etc_object plymouthd.etc_object)))
-
-(macro plymouth_run ((type ARG1)(role ARG2))
-    (call plymouth_auto_subtrans (ARG1))
-    (roleattributeset plymouth_role ARG2))
 
 (macro plymouth_manage_var_lib_files ((type ARG1))
     (call file_search_var_lib (ARG1))
     (call manage_files_pattern
         (ARG1 plymouthd.var_lib_object plymouthd.var_lib_object)))
 
+(macro plymouth_list_run ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 plymouthd.run_object list_dir_perms))
+
 (macro plymouth_manage_run_files ((type ARG1))
     (call file_search_run (ARG1))
     (call manage_files_pattern
         (ARG1 plymouthd.run_object plymouthd.run_object)))
 
+(macro plymouth_read_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call read_files_pattern
+        (ARG1 plymouthd.run_object plymouthd.run_object)))
+
 (macro plymouth_send_signal ((type ARG1))
     (allow ARG1 plymouth.common_subject (process (signal))))
+
+(macro plymouth_use_fd ((type ARG1))
+    (allow ARG1 plymouth.common_subject (fd (use))))
 
 (macro plymouth_stream_connect_plymouthd ((type ARG1))
     (call file_search_run (ARG1))

@@ -56,6 +56,10 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype mcelog_admin_role mcelog_object_type)
 
+(macro mcelog_search_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 mcelog.etc_object search_dir_perms))
+
 (macro mcelog_manage_run_files ((type ARG1))
     (call file_rw_run_dirs (ARG1))
     (call manage_files_pattern

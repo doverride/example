@@ -135,6 +135,19 @@
 (macro journal_send_signal_journalctl ((type ARG1))
     (allow ARG1 journalctl.common_subject (process (signal))))
 
+(macro journal_list_log ((type ARG1))
+    (call file_search_var_log (ARG1))
+    (allow ARG1 journald.var_log_object list_dir_perms))
+
+(macro journal_list_run ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (allow ARG1 journald.systemd_run_object list_dir_perms))
+
+(macro journal_read_run_files ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (call read_files_pattern
+        (ARG1 journald.systemd_run_object journald.systemd_run_object)))
+
 (macro journal_client ((type ARG1))
     (typeattributeset journal_client_type ARG1))
 

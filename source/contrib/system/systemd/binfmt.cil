@@ -24,6 +24,15 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype binfmt_admin_role binfmt.etc_object)
 
+(macro binfmt_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 binfmt.etc_object list_dir_perms))
+
+(macro binfmt_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern
+        (ARG1 binfmt.etc_object binfmt.etc_object)))
+
 (macro binfmt_admin ((role ARG1)(type ARG2))
     (roleattributeset binfmt_admin_role ARG1)
     (typeattributeset binfmt_admin_type ARG2))

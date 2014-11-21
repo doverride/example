@@ -120,6 +120,15 @@
     (call tmpfiles_auto_subtrans (ARG1))
     (roleattributeset tmpfiles_role (ARG2)))
 
+(macro tmpfiles_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 tmpfiles.etc_object list_dir_perms))
+
+(macro tmpfiles_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern
+        (ARG1 tmpfiles.etc_object tmpfiles.etc_object)))
+
 (macro tmpfiles_list_run ((type ARG1))
     (call file_search_run (ARG1))
     (allow ARG1 run_tmpfiles list_dir_perms))

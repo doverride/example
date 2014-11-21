@@ -249,8 +249,29 @@
 (macro fs_mount_all ((type ARG1))
     (allow ARG1 fs_type (filesystem (mount))))
 
+(macro fs_mount_autofs ((type ARG1))
+    (allow ARG1 autofs (filesystem (mount))))
+
+(macro fs_mount_tmpfs ((type ARG1))
+    (allow ARG1 tmpfs (filesystem (mount))))
+
 (macro fs_remount_all ((type ARG1))
     (allow ARG1 fs_type (filesystem (remount))))
+
+(macro fs_remount_devpts ((type ARG1))
+    (allow ARG1 devpts (filesystem (remount))))
+
+(macro fs_remount_dosfs ((type ARG1))
+    (allow ARG1 dosfs (filesystem (remount))))
+
+(macro fs_remount_fs ((type ARG1))
+    (allow ARG1 fs (filesystem (remount))))
+
+(macro fs_remount_hugetlbfs ((type ARG1))
+    (allow ARG1 hugetlbfs (filesystem (remount))))
+
+(macro fs_remount_tmpfs ((type ARG1))
+    (allow ARG1 tmpfs (filesystem (remount))))
 
 (macro fs_unmount_all ((type ARG1))
     (allow ARG1 fs_type (filesystem (unmount))))
@@ -261,9 +282,25 @@
 (macro fs_read_generic_proc_lnk_files ((type ARG1))
     (allow ARG1 proc read_lnk_file_perms))
 
+(macro fs_manage_cgroup_dirs ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call manage_dirs_pattern (ARG1 tmpfs cgroup)))
+
+(macro fs_search_cgroup ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call search_dirs_pattern (ARG1 tmpfs cgroup)))
+
 (macro fs_read_cgroup_files ((type ARG1))
     (call fs_search_cgroup (ARG1))
     (allow ARG1 cgroup read_file_perms))
+
+(macro fs_setattr_cgroup_files ((type ARG1))
+    (call fs_search_cgroup (ARG1))
+    (allow ARG1 cgroup (file (setattr))))
+
+(macro fs_rw_cgroup_files ((type ARG1))
+    (call fs_search_cgroup (ARG1))
+    (allow ARG1 cgroup rw_file_perms))
 
 (macro fs_read_sysfs_files ((type ARG1))
     (call read_files_pattern (ARG1 sysfs sysfs)))
@@ -282,12 +319,11 @@
 (macro fs_rw_devtmpfs_dirs ((type ARG1))
     (allow ARG1 devtmpfs rw_dir_perms))
 
-(macro fs_search_cgroup ((type ARG1))
-    (call fs_search_sysfs (ARG1))
-    (call search_dirs_pattern (ARG1 tmpfs cgroup)))
-
 (macro fs_search_devpts ((type ARG1))
     (allow ARG1 devpts search_dir_perms))
+
+(macro fs_search_efivarfs ((type ARG1))
+    (allow ARG1 efivarfs search_dir_perms))
 
 (macro fs_search_proc ((type ARG1))
     (allow ARG1 proc search_dir_perms))
@@ -316,6 +352,13 @@
 (macro fs_manage_tmpfs_files ((type ARG1))
     (call fs_rw_tmpfs_dirs (ARG1))
     (allow ARG1 tmpfs manage_file_perms))
+
+(macro fs_read_tmpfs_files ((type ARG1))
+    (call read_files_pattern (ARG1 tmpfs tmpfs)))
+
+(macro fs_manage_tmpfs_lnk_files ((type ARG1))
+    (call fs_rw_tmpfs_dirs (ARG1))
+    (allow ARG1 tmpfs manage_lnk_file_perms))
 
 (macro fs_list_devtmpfs ((type ARG1))
     (call dev_getattr_all (ARG1))

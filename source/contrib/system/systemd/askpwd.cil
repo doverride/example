@@ -108,6 +108,15 @@
 (macro askpwd_send_signal_askpwdagent ((type ARG1))
     (allow ARG1 askpwdagent.common_subject (process (signal))))
 
+(macro askpwd_list_run ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (allow ARG1 askpwd.systemd_run_object list_dir_perms))
+
+(macro askpwd_read_run_files ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (call read_files_pattern
+        (ARG1 askpwd.systemd_run_object askpwd.systemd_run_object)))
+
 (macro askpwd_admin ((role ARG1)(type ARG2))
     (roleattributeset askpwd_admin_role ARG1)
     (typeattributeset askpwd_admin_type ARG2))
