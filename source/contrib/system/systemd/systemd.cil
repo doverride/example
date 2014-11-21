@@ -372,10 +372,10 @@
         (call systemd_manage_user_tmpfs_dirs (sys.r common_subject))
         (call systemd_manage_user_tmpfs_sock_files (sys.r common_subject))
 
-        (call fs_tmpfs_filetrans (common_subject user_tmpfs_object dir "systemd")))
+        (call fs_tmpfs_filetrans (common_subject user_tmpfs_object dir "systemd"))
 
         (call usersubject_link_keyring_all_common_login_subjects (common_subject))
-        (call usersubject_search_home_user (common_subject))
+        (call usersubject_search_home_user (common_subject)))
 )
 
 (block systemd_helper
