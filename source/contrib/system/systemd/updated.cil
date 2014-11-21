@@ -31,6 +31,9 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype updated_admin_role updated.file_object)
 
+(macro updated_getattr_files ((type ARG1))
+    (allow ARG1 updated.file_object (file (getattr))))
+
 (macro updated_admin ((role ARG1)(type ARG2))
     (roleattributeset updated_admin_role ARG1)
     (typeattributeset updated_admin_type ARG2))

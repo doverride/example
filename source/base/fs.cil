@@ -214,6 +214,9 @@
 (macro fs_list_hugetlbfs ((type ARG1))
     (allow ARG1 hugetlbfs list_dir_perms))
 
+(macro fs_list_pstore ((type ARG1))
+    (allow ARG1 pstore list_dir_perms))
+
 (macro fs_manage_devtmpfs_dirs ((type ARG1))
     (allow ARG1 devtmpfs manage_dir_perms))
 
@@ -336,6 +339,9 @@
 
 (macro fs_search_proc ((type ARG1))
     (allow ARG1 proc search_dir_perms))
+
+(macro fs_search_pstore ((type ARG1))
+    (allow ARG1 pstore search_dir_perms))
 
 (macro fs_search_sysfs ((type ARG1))
     (allow ARG1 sysfs search_dir_perms))

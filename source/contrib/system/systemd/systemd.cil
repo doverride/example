@@ -284,6 +284,7 @@
     (call fs_rw_cgroup_files (common_subject))
     (call fs_search_devpts (common_subject))
     (call fs_search_efivarfs (common_subject))
+    (call fs_search_pstore (common_subject))
     (call fs_setattr_cgroup_files (common_subject))
     (call fs_unmount_all (common_subject))
 
@@ -342,6 +343,8 @@
     (call tmpfiles_read_generic_run_files (common_subject))
 
     (call udev_client (common_subject))
+
+    (call updated_getattr_files (common_subject))
 
     (call utmp_rw_run_files (common_subject))
 
