@@ -36,7 +36,7 @@
 
     (call fs_getattr_fs (common_subject))
 
-    (call miscfiles_read_man_files (common_subject))
+    (call miscfiles_read_man (common_subject))
     (call miscfiles_read_localization (common_subject))
 )
 

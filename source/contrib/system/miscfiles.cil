@@ -76,6 +76,7 @@
 
     (context man (sys.u sys.r usr_object (systemlow systemlow)))
     (filecon "/usr/share/man(/.*)?" any man)
+    (filecon "/usr/local/share/man(/.*)?" any man)
 )
 
 (block net
