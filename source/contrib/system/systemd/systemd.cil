@@ -244,7 +244,7 @@
 
     (allow common_subject systemd_pid_object_type manage_file_perms)
 
-    (call sys_mounton_fs_sysctl_dirs (common_subject))
+    (call sys_mounton_mountpoint_dirs (common_subject))
     (call sys_read_net_proc (common_subject))
     (call sys_read_net_sysctl (common_subject))
     (call sys_read_kernel_sysctl (common_subject))
@@ -262,14 +262,6 @@
     (call dev_relabel_all (common_subject))
     (call dev_write_kmsg (common_subject))
 
-    (call file_list_boot (common_subject))
-    (call file_mounton_etc_dirs (common_subject))
-    (call file_mounton_home_dirs (common_subject))
-    (call file_mounton_run_user_dirs (common_subject))
-    (call file_mounton_run_lock_dirs (common_subject))
-    (call file_mounton_usr_dirs (common_subject))
-    (call file_mounton_var_dirs (common_subject))
-    (call file_mounton_var_spool_dirs (common_subject))
     (call file_read_all_run_lock_files (common_subject))
     (call file_read_all_etc_files (common_subject))
 
@@ -277,10 +269,6 @@
     (call fs_manage_tmpfs_dirs (common_subject))
     (call fs_manage_devtmpfs_lnk_files (common_subject))
     (call fs_manage_devtmpfs_chr_files (common_subject))
-    (call fs_mounton_sysfs_dirs (common_subject))
-    (call fs_mounton_devtmpfs_dirs (common_subject))
-    (call fs_mounton_tmpfs_dirs (common_subject))
-    (call fs_mounton_rootfs_dirs (common_subject))
 
     (call shutdown_share_state (common_subject))
 

@@ -839,18 +839,6 @@
     (call file_read_usr_lnk_files (ARG1))
     (allow ARG1 usr read_file_perms))
 
-(macro file_mounton_usr_dirs ((type ARG1))
-    (call file_dontaudit_audit_access_usr_dirs (ARG1))
-    (call file_list_usr (ARG1))
-    (call file_setattr_usr_dirs (ARG1))
-    (allow ARG1 usr (dir (mounton))))
-
-(macro file_setattr_usr_dirs ((type ARG1))
-    (allow ARG1 usr (dir (setattr))))
-
-(macro file_dontaudit_audit_access_usr_dirs ((type ARG1))
-    (dontaudit ARG1 usr (dir (audit_access))))
-
 (macro file_read_run_lnk_files ((type ARG1))
     (allow ARG1 run read_lnk_file_perms))
 
@@ -862,9 +850,6 @@
 
 (macro file_search_etc ((type ARG1))
     (allow ARG1 etc search_dir_perms))
-
-(macro file_dontaudit_audit_access_etc_dirs ((type ARG1))
-    (dontaudit ARG1 etc (dir (audit_access))))
 
 (macro file_read_generic_etc_lnk_files ((type ARG1))
     (allow ARG1 etc read_lnk_file_perms))
@@ -880,15 +865,6 @@
     (call file_read_generic_etc_lnk_files (ARG1))
     (allow ARG1 etc read_file_perms))
 
-(macro file_mounton_etc_dirs ((type ARG1))
-    (call file_dontaudit_audit_access_etc_dirs (ARG1))
-    (call file_list_etc (ARG1))
-    (call file_setattr_etc_dirs (ARG1))
-    (allow ARG1 etc (dir (mounton))))
-
-(macro file_setattr_etc_dirs ((type ARG1))
-    (allow ARG1 etc (dir (setattr))))
-
 (macro file_list_var_spool ((type ARG1))
     (call file_search_var (ARG1))
     (allow ARG1 var_spool list_dir_perms))
@@ -896,18 +872,6 @@
 (macro file_search_var_spool ((type ARG1))
     (call file_search_var (ARG1))
     (allow ARG1 var_spool search_dir_perms))
-
-(macro file_mounton_var_spool_dirs ((type ARG1))
-    (call file_dontaudit_audit_access_var_spool_dirs (ARG1))
-    (call file_list_var_spool (ARG1))
-    (call file_setattr_var_spool_dirs (ARG1))
-    (allow ARG1 var_spool (dir (mounton))))
-
-(macro file_setattr_var_spool_dirs ((type ARG1))
-    (allow ARG1 var_spool (dir (setattr))))
-
-(macro file_dontaudit_audit_access_var_spool_dirs ((type ARG1))
-    (dontaudit ARG1 var_spool (dir (audit_access))))
 
 (macro file_search_var_cache ((type ARG1))
     (call search_dirs_pattern (ARG1 var var_cache)))
@@ -944,18 +908,6 @@
     (call file_search_run (ARG1))
     (allow ARG1 run_user search_dir_perms))
 
-(macro file_mounton_run_user_dirs ((type ARG1))
-    (call file_dontaudit_audit_access_run_user_dirs (ARG1))
-    (call file_list_run_user (ARG1))
-    (call file_setattr_run_user_dirs (ARG1))
-    (allow ARG1 run_user (dir (mounton))))
-
-(macro file_setattr_run_user_dirs ((type ARG1))
-    (allow ARG1 run_user (dir (setattr))))
-
-(macro file_dontaudit_audit_access_run_user_dirs ((type ARG1))
-    (dontaudit ARG1 run_user (dir (audit_access))))
-
 (macro file_list_run_lock ((type ARG1))
     (call file_search_run (ARG1))
     (allow ARG1 run_lock list_dir_perms))
@@ -968,35 +920,11 @@
     (call file_search_run (ARG1))
     (call read_files_pattern (ARG1 run_lock file_lock_type)))
 
-(macro file_mounton_run_lock_dirs ((type ARG1))
-    (call file_dontaudit_audit_access_run_lock_dirs (ARG1))
-    (call file_list_run_lock (ARG1))
-    (call file_setattr_run_lock_dirs (ARG1))
-    (allow ARG1 run_lock (dir (mounton))))
-
-(macro file_setattr_run_lock_dirs ((type ARG1))
-    (allow ARG1 run_lock (dir (setattr))))
-
-(macro file_dontaudit_audit_access_run_lock_dirs ((type ARG1))
-    (dontaudit ARG1 run_lock (dir (audit_access))))
-
 (macro file_list_var ((type ARG1))
     (allow ARG1 var list_dir_perms))
 
 (macro file_search_var ((type ARG1))
     (allow ARG1 var search_dir_perms))
-
-(macro file_mounton_var_dirs ((type ARG1))
-    (call file_dontaudit_audit_access_var_dirs (ARG1))
-    (call file_list_var (ARG1))
-    (call file_setattr_var_dirs (ARG1))
-    (allow ARG1 var (dir (mounton))))
-
-(macro file_setattr_var_dirs ((type ARG1))
-    (allow ARG1 var (dir (setattr))))
-
-(macro file_dontaudit_audit_access_var_dirs ((type ARG1))
-    (dontaudit ARG1 var (dir (audit_access))))
 
 (macro file_list_home ((type ARG1))
     (allow ARG1 home list_dir_perms))
@@ -1007,25 +935,19 @@
 (macro file_rw_home_dirs ((type ARG1))
     (allow ARG1 home rw_dir_perms))
 
-(macro file_mounton_home_dirs ((type ARG1))
-    (call file_dontaudit_audit_access_home_dirs (ARG1))
-    (call file_list_home (ARG1))
-    (call file_setattr_home_dirs (ARG1))
-    (allow ARG1 home (dir (mounton))))
-
-(macro file_setattr_home_dirs ((type ARG1))
-    (allow ARG1 home (dir (setattr))))
-
-(macro file_dontaudit_audit_access_home_dirs ((type ARG1))
-    (dontaudit ARG1 home (dir (audit_access))))
-
 (macro file_sec_type ((type ARG1))
     (call sys_object_type (ARG1))
     (typeattributeset file_type ARG1)
     (typeattributeset file_sec_type ARG1))
 
 (macro file_mounton_all_except ((type ARG1))
+    (call file_dontaudit_audit_access_all_except (ARG1))
+    (call file_list_all_except (ARG1))
+    (call file_getattr_all_except (ARG1))
     (allow ARG1 file_except (dir_file (mounton))))
+
+(macro file_dontaudit_audit_access_all_except ((type ARG1))
+    (dontaudit ARG1 file_except (all_file_objects (audit_access))))
 
 (macro file_getattr_all_except ((type ARG1))
     (allow ARG1 file_except (all_file_objects (getattr))))
