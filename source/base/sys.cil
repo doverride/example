@@ -511,6 +511,10 @@
     (call fs_search_proc (ARG1))
     (allow ARG1 sysctl search_dir_perms))
 
+(macro sys_search_fs_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (allow ARG1 fs_sysctl search_dir_perms))
+
 (macro sys_search_crypto_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (allow ARG1 crypto_sysctl search_dir_perms))

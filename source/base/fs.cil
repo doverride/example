@@ -201,6 +201,10 @@
 (macro fs_getattr_proc ((type ARG1))
     (allow ARG1 proc (filesystem (getattr))))
 
+(macro fs_list_binfmt_misc ((type ARG1))
+    (call sys_search_fs_sysctl (ARG1))
+    (allow ARG1 binfmt_misc list_dir_perms))
+
 (macro fs_list_debugfs ((type ARG1))
     (allow ARG1 debugfs list_dir_perms))
 

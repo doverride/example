@@ -270,6 +270,7 @@
 
     (call fs_getattr_all (common_subject))
     (call fs_list_autofs (common_subject)) ; BUG /proc/sys/fs/binfmt_misc
+    (call fs_list_binfmt_misc (common_subject)) ; BUG /proc/sys/fs/binfmt_misc
     (call fs_manage_cgroup_dirs (common_subject))
     (call fs_manage_devtmpfs_dirs (common_subject))
     (call fs_manage_devtmpfs_lnk_files (common_subject))
