@@ -50,7 +50,7 @@
 (block file_etc_object_block
     (blockabstract file_etc_object_block)
         (type etc_object)
-        (call file_boot_type (etc_object))
+        (call file_etc_type (etc_object))
 )
 
 (block file_maintains_single_etc_file_block
@@ -857,8 +857,19 @@
 (macro file_read_generic_etc_files ((type ARG1))
     (call read_files_pattern (ARG1 etc etc)))
 
+(macro file_list_all_etc ((type ARG1))
+    (allow ARG1 file_etc_type list_dir_perms))
+
+(macro file_read_all_etc_lnk_files ((type ARG1))
+    (allow ARG1 file_etc_type read_lnk_file_perms))
+
 (macro file_read_all_etc_files ((type ARG1))
     (call read_files_pattern (ARG1 file_etc_type file_etc_type)))
+
+(macro file_read_all_etc ((type ARG1))
+    (call file_list_all_etc (ARG1))
+    (call file_read_all_etc_lnk_files (ARG1))
+    (allow ARG1 file_etc_type read_file_perms))
 
 (macro file_read_generic_etc ((type ARG1))
     (call file_list_etc (ARG1))

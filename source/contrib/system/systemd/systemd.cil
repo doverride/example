@@ -264,7 +264,7 @@
     (call dev_write_kmsg (common_subject))
 
     (call file_read_all_run_lock_files (common_subject))
-    (call file_read_all_etc_files (common_subject)) ; FIXME
+    (call file_read_all_etc (common_subject)) ; FIXME
 
     (call fs_getattr_all (common_subject))
     (call fs_manage_cgroup_dirs (common_subject))
@@ -308,33 +308,18 @@
 
     (call audit_client (common_subject))
 
-    (call auth_list_pam_config (common_subject))
-    (call auth_read_authconfig_pam_config_files (common_subject))
-    (call auth_read_generic_pam_config_files (common_subject))
     (call auth_nsswitch_client (common_subject))
     (call auth_write_wtmp (common_subject))
 
-    (call binfmt_list_config (common_subject))
-    (call binfmt_read_config_files (common_subject))
-
     (call dbus_system_service (common_subject))
-
-    (call hwclock_read_config_files (common_subject))
-
-    (call hostnamed_read_config_files (common_subject))
 
     (call journal_list_log (common_subject))
     (call journal_client (common_subject))
     (call journal_list_run (common_subject))
     (call journal_read_run_files (common_subject))
 
-    (call machine_read_config_files (common_subject))
-
     (call miscfiles_read_localization (common_subject))
     (call miscfiles_read_modules_files (common_subject))
-
-    (call loadmodules_list_config (common_subject))
-    (call loadmodules_read_config_files (common_subject))
 
     (call mount_read_run_files (common_subject))
 
@@ -343,34 +328,22 @@
     (call plymouth_stream_connect_plymouthd (common_subject))
     (call plymouth_use_fd (common_subject))
 
-    (call seutil_read_config_files (common_subject))
     (call seutil_read_default_context_files (common_subject))
     (call seutil_read_file_context_files (common_subject))
 
     (call shutdown_share_state (common_subject))
 
-    (call sysctl_read_config_files (common_subject))
-
     (call systemd_exec (common_subject))
     (call systemd_exec_helper (common_subject))
     (call systemd_delete_all_unit_files (common_subject))
     (call systemd_read_all_unit_files (common_subject))
-    (call systemd_read_pam_config_files (common_subject))
 
-    (call tmpfiles_list_config (common_subject))
-    (call tmpfiles_read_config_files (common_subject))
     (call tmpfiles_list_run (common_subject))
     (call tmpfiles_read_generic_run_files (common_subject))
 
     (call udev_client (common_subject))
 
     (call utmp_rw_run_files (common_subject))
-
-    (optional systemd_optional_mcelog
-        (call mcelog_search_config (common_subject))) ; FIXME
-
-    (optional systemd_optional_sshd
-        (call ssh_read_sshd_config_files (common_subject)))
 
     (optional systemd_optional_usersubject
         (blockinherit usersubject_tmpfs_object_block)
