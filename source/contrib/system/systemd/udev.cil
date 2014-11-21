@@ -135,6 +135,9 @@
     (call stream_connect_pattern
         (ARG1 udevd.run_object udevd.run_object udevd.common_subject)))
 
+(macro udev_create_udevd_netlink_kobject_uevent_socket ((type ARG1))
+    (allow ARG1 udevd.common_subject create_netlink_kobject_uevent_socket_perms))
+
 (macro udev_client ((type ARG1))
     (typeattributeset udev_client_type ARG1))
 

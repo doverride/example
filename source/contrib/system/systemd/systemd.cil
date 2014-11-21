@@ -269,6 +269,7 @@
     (call file_relabelto_run_lock_dirs (common_subject))
 
     (call fs_getattr_all (common_subject))
+    (call fs_list_autofs (common_subject)) ; BUG /proc/sys/fs/binfmt_misc
     (call fs_manage_cgroup_dirs (common_subject))
     (call fs_manage_devtmpfs_dirs (common_subject))
     (call fs_manage_devtmpfs_lnk_files (common_subject))
@@ -347,11 +348,13 @@
     (call systemd_exec_helper (common_subject))
     (call systemd_delete_all_unit_files (common_subject))
     (call systemd_read_all_unit_files (common_subject))
+    (call systemd_relabelto_unit_dirs (common_subject))
 
     (call tmpfiles_list_run (common_subject))
     (call tmpfiles_read_generic_run_files (common_subject))
 
     (call udev_client (common_subject))
+    (call udev_create_udevd_netlink_kobject_uevent_socket (common_subject))
 
     (call updated_getattr_files (common_subject))
 
@@ -576,6 +579,9 @@
 
 (macro systemd_getattr_unit_dirs ((type ARG1))
     (allow ARG1 systemd_unit (dir (getattr))))
+
+(macro systemd_relabelto_unit_dirs ((type ARG1))
+    (allow ARG1 systemd_unit relabelto_dir_perms))
 
 (macro systemd_read_state ((type ARG1))
     (allow ARG1 systemd.common_subject read_file_perms)

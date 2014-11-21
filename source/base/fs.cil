@@ -382,6 +382,9 @@
     (call fs_rw_tmpfs_dirs (ARG1))
     (allow ARG1 tmpfs manage_lnk_file_perms))
 
+(macro fs_list_autofs ((type ARG1))
+    (allow ARG1 autofs list_dir_perms))
+
 (macro fs_list_devtmpfs ((type ARG1))
     (call dev_getattr_all (ARG1))
     (allow ARG1 devtmpfs list_dir_perms))
