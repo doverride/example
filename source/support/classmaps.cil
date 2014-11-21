@@ -1,4 +1,5 @@
-(classmap all_file_objects (not_mounton_entrypoint_and_execmod manage relabel delete getattr audit_access))
+(classmap all_file_objects (not_mounton_entrypoint_and_execmod manage relabel delete getattr audit_access
+    relabelfrom relabelto))
 
 (classmapping all_file_objects not_mounton_entrypoint_and_execmod
     all_file_perms_except_mounton_execmod_and_entrypoint)
@@ -54,6 +55,22 @@
 (classmapping all_file_objects relabel relabel_blk_file_perms)
 (classmapping all_file_objects relabel relabel_sock_file_perms)
 (classmapping all_file_objects relabel relabel_fifo_file_perms)
+
+(classmapping all_file_objects relabelfrom relabelfrom_file_perms)
+(classmapping all_file_objects relabelfrom relabelfrom_dir_perms)
+(classmapping all_file_objects relabelfrom relabelfrom_lnk_file_perms)
+(classmapping all_file_objects relabelfrom relabelfrom_chr_file_perms)
+(classmapping all_file_objects relabelfrom relabelfrom_blk_file_perms)
+(classmapping all_file_objects relabelfrom relabelfrom_sock_file_perms)
+(classmapping all_file_objects relabelfrom relabelfrom_fifo_file_perms)
+
+(classmapping all_file_objects relabelto relabelto_file_perms)
+(classmapping all_file_objects relabelto relabelto_dir_perms)
+(classmapping all_file_objects relabelto relabelto_lnk_file_perms)
+(classmapping all_file_objects relabelto relabelto_chr_file_perms)
+(classmapping all_file_objects relabelto relabelto_blk_file_perms)
+(classmapping all_file_objects relabelto relabelto_sock_file_perms)
+(classmapping all_file_objects relabelto relabelto_fifo_file_perms)
 
 (classmap dir_file (mounton))
 

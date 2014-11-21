@@ -907,6 +907,9 @@
     (call file_read_run_lnk_files (ARG1))
     (call search_dirs_pattern (ARG1 var run)))
 
+(macro file_relabelto_all_run ((type ARG1))
+    (allow ARG1 file_run_type (all_file_objects (relabelto))))
+
 (macro file_rw_run_dirs ((type ARG1))
     (call file_read_run_lnk_files (ARG1))
     (call rw_dirs_pattern (ARG1 var run)))
@@ -922,6 +925,9 @@
 (macro file_list_run_lock ((type ARG1))
     (call file_search_run (ARG1))
     (allow ARG1 run_lock list_dir_perms))
+
+(macro file_relabelto_run_lock_dirs ((type ARG1))
+    (allow ARG1 run_lock relabelto_dir_perms))
 
 (macro file_search_run_lock ((type ARG1))
     (call file_search_run (ARG1))

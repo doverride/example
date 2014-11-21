@@ -265,6 +265,8 @@
 
     (call file_read_all_run_lock_files (common_subject))
     (call file_read_all_etc (common_subject)) ; FIXME
+    (call file_relabelto_all_run (common_subject))
+    (call file_relabelto_run_lock_dirs (common_subject))
 
     (call fs_getattr_all (common_subject))
     (call fs_manage_cgroup_dirs (common_subject))
@@ -276,17 +278,20 @@
     (call fs_mount_autofs (common_subject))
     (call fs_mount_tmpfs (common_subject))
     (call fs_read_tmpfs_files (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+    (call fs_relabelfrom_tmpfs (common_subject))
     (call fs_remount_devpts (common_subject))
     (call fs_remount_dosfs (common_subject))
     (call fs_remount_fs (common_subject))
     (call fs_remount_hugetlbfs (common_subject))
     (call fs_remount_tmpfs (common_subject))
     (call fs_rw_cgroup_files (common_subject))
-    (call fs_search_devpts (common_subject))
     (call fs_search_efivarfs (common_subject))
     (call fs_search_pstore (common_subject))
     (call fs_setattr_cgroup_files (common_subject))
     (call fs_unmount_all (common_subject))
+    (call fs_write_devpts_chr_files (common_subject))
 
     (call sec_compute_access_vector (common_subject))
     (call sec_compute_create_context (common_subject))
@@ -318,6 +323,10 @@
     (call journal_client (common_subject))
     (call journal_list_run (common_subject))
     (call journal_read_run_files (common_subject))
+    (call journal_relabelto_log_dirs (common_subject))
+    (call journal_relabelto_log_files (common_subject))
+
+    (call logind_read_run_files (common_subject))
 
     (call miscfiles_read_localization (common_subject))
     (call miscfiles_read_modules_files (common_subject))
@@ -358,6 +367,9 @@
         (call systemd_manage_user_tmpfs_sock_files (sys.r common_subject))
 
         (call fs_tmpfs_filetrans (common_subject user_tmpfs_object dir "systemd")))
+
+        (call usersubject_link_keyring_all_common_login_subjects (common_subject))
+        (call usersubject_search_home_user (common_subject))
 )
 
 (block systemd_helper

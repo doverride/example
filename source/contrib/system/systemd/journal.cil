@@ -148,6 +148,12 @@
     (call read_files_pattern
         (ARG1 journald.systemd_run_object journald.systemd_run_object)))
 
+(macro journal_relabelto_log_dirs ((type ARG1))
+    (allow ARG1 journald.var_log_object relabelto_dir_perms))
+
+(macro journal_relabelto_log_files ((type ARG1))
+    (allow ARG1 journald.var_log_object relabelto_file_perms))
+
 (macro journal_client ((type ARG1))
     (typeattributeset journal_client_type ARG1))
 
