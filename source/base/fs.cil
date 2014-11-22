@@ -263,6 +263,10 @@
     (call fs_search_devpts (ARG1))
     (allow ARG1 devpts write_chr_file_perms))
 
+(macro fs_write_inherited_devpts_chr_files ((type ARG1))
+    (call fs_search_devpts (ARG1))
+    (allow ARG1 devpts write_inherited_chr_file_perms))
+
 (macro fs_getattr_all_fs ((type ARG1))
     (allow ARG1 fs_type (filesystem (getattr))))
 
@@ -305,6 +309,10 @@
 (macro fs_manage_cgroup_dirs ((type ARG1))
     (call fs_search_sysfs (ARG1))
     (call manage_dirs_pattern (ARG1 tmpfs cgroup)))
+
+(macro fs_list_cgroup ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call list_dirs_pattern (ARG1 tmpfs cgroup)))
 
 (macro fs_search_cgroup ((type ARG1))
     (call fs_search_sysfs (ARG1))

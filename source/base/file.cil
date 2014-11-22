@@ -957,6 +957,14 @@
     (typeattributeset file_type ARG1)
     (typeattributeset file_sec_type ARG1))
 
+(macro file_getattr_all_tmpfs_files ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (call getattr_files_pattern (ARG1 file_tmpfs_type file_tmpfs_type)))
+
+(macro file_list_all_tmpfs ((type ARG1))
+    (call fs_list_tmpfs (ARG1))
+    (allow ARG1 file_tmpfs_type list_dir_perms))
+
 (macro file_mounton_all_except ((type ARG1))
     (call file_dontaudit_audit_access_all_except (ARG1))
     (call file_list_all_except (ARG1))

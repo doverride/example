@@ -293,7 +293,7 @@
     (call fs_search_pstore (common_subject))
     (call fs_setattr_cgroup_files (common_subject))
     (call fs_unmount_all (common_subject))
-    (call fs_write_devpts_chr_files (common_subject))
+    (call fs_write_inherited_devpts_chr_files (common_subject))
 
     (call sec_compute_access_vector (common_subject))
     (call sec_compute_create_context (common_subject))
@@ -447,6 +447,38 @@
 (call systemd_rw_unix_stream_sockets (systemd_daemon_subject_type))
 (call systemd_read_state (systemd_daemon_subject_type))
 
+(allow systemctl_client_type self (capability (net_admin ipc_lock)))
+
+(call sys_read_crypto_sysctl (systemctl_client_type))
+(call sys_read_kernel_sysctl (systemctl_client_type))
+(call sys_use_fd (systemctl_client_type))
+
+(call bin_execute_bin_files (systemctl_client_type))
+
+(call dev_read_urandom (systemctl_client_type))
+
+(call fs_getattr_fs (systemctl_client_type))
+(call fs_read_sysfs_files (systemctl_client_type))
+(call fs_list_cgroup (systemctl_client_type))
+(call fs_read_cgroup_files (systemctl_client_type))
+
+(call dbus_system_client (systemctl_client_type))
+
+(call journal_list_log (systemctl_client_type))
+(call journal_read_log_files (systemctl_client_type))
+
+(call machine_read_config_files (systemctl_client_type))
+
+(call miscfiles_read_terminfo (systemctl_client_type))
+(call miscfiles_read_localization (systemctl_client_type))
+
+(call systemd_dbus_chat (systemctl_client_type))
+(call systemd_dgram_send (systemctl_client_type))
+(call systemd_search_unit (systemctl_client_type))
+(call systemd_stream_connect (systemctl_client_type))
+(call systemd_read_state (systemctl_client_type))
+(call systemd_use_fd (systemctl_client_type))
+
 (type systemd_unit)
 (call file_type (systemd_unit))
 
@@ -586,6 +618,9 @@
 (macro systemd_relabelto_unit_dirs ((type ARG1))
     (allow ARG1 systemd_unit relabelto_dir_perms))
 
+(macro systemd_search_unit ((type ARG1))
+    (allow ARG1 systemd_unit search_dir_perms))
+
 (macro systemd_read_state ((type ARG1))
     (allow ARG1 systemd.common_subject read_file_perms)
     (allow ARG1 systemd.common_subject list_dir_perms)
@@ -599,6 +634,10 @@
 (macro systemd_search_etc ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 etc_systemd search_dir_perms))
+
+(macro systemd_list_run ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 run_systemd list_dir_perms))
 
 (macro systemd_search_run ((type ARG1))
     (call file_search_run (ARG1))
@@ -659,6 +698,9 @@
     (call manage_sock_files_pattern
         (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object))
     (roletype ARG1 systemd.user_tmpfs_object))
+
+(macro systemd_reboot_system ((type ARG1))
+    (allow ARG1 systemd.common_subject (system (reboot))))
 
 (macro systemd_stop_generic_units ((type ARG1))
     (allow ARG1 systemd_unit (service (stop))))
@@ -775,6 +817,18 @@
 (macro systemd_read_pam_config_files ((type ARG1))
     (call auth_search_pam_config (ARG1))
     (allow ARG1 systemd.pam_etc_object read_file_perms))
+
+(macro systemd_dgram_send ((type ARG1))
+    (call file_search_run (ARG1))
+    (call dgram_send_pattern (ARG1 run_systemd run_systemd systemd.common_subject)))
+
+(macro systemd_stream_connect ((type ARG1))
+    (call file_search_run (ARG1))
+    (call stream_connect_pattern (ARG1 run_systemd run_systemd systemd.common_subject)))
+
+(macro systemd_dbus_chat ((type ARG1))
+    (allow ARG1 systemd.common_subject (dbus (send_msg)))
+    (allow systemd.common_subject ARG1 (dbus (send_msg))))
 
 (macro systemd_admin ((role ARG1)(type ARG2))
     (roleattributeset systemd_admin_role ARG1)
