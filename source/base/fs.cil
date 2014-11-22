@@ -48,6 +48,7 @@
 
 (type configfs)
 (call fs_type (configfs))
+(call sys_mountpoint_type (configfs))
 
 (context configfs (sys.u sys.r configfs (systemlow systemlow)))
 (genfscon "configfs" "/" configfs)

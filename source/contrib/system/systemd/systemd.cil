@@ -340,7 +340,7 @@
     (call plymouth_list_run (common_subject))
     (call plymouth_read_run_files (common_subject))
     (call plymouth_stream_connect_plymouthd (common_subject))
-    (call plymouth_use_fd (common_subject))
+    (call plymouth_use_fd_plymouthd (common_subject))
 
     (call seutil_read_default_context_files (common_subject))
     (call seutil_read_file_context_files (common_subject))
