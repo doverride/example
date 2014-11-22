@@ -109,6 +109,7 @@
 
     (call fs_getattr_fs (common_subject))
     (call fs_getattr_tmpfs (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
     (call fs_read_sysfs_files (common_subject))
     (call fs_write_inherited_devpts_chr_files (common_subject))
 

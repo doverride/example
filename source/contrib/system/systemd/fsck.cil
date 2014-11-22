@@ -8,6 +8,7 @@
 
     (allow common_subject self rw_fifo_file_perms)
 
+    (call fs_read_sysfs_lnk_files (common_subject))
     (call fs_read_sysfs_files (common_subject))
 
     (call dev_write_kmsg (common_subject))
