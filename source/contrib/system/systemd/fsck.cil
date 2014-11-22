@@ -6,12 +6,21 @@
     (context bin_fsck (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/systemd-fsck" file bin_fsck)
 
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call fs_read_sysfs_files (common_subject))
+
+    (call dev_write_kmsg (common_subject))
+
+    (call stor_getattr_all (common_subject))
+
     (call fstools_auto_subtrans (common_subject))
 
     (call journal_client (common_subject))
 
-    (optional fsck_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call plymouth_read_run_files (common_subject))
+
+    (call udev_client (common_subject))
 )
 
 (allow fsck_admin_type fsck.common_subject signal_perms)
