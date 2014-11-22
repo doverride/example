@@ -677,6 +677,10 @@
 (macro systemd_socket_activated_subject_type ((type ARG1))
     (typeattributeset systemd_socket_activated_subject_type ARG1))
 
+(macro systemd_search_var_lib ((type ARG1))
+    (call file_search_var_lib (ARG1))
+    (allow ARG1 var_lib_systemd search_dir_perms))
+
 (macro systemd_var_lib_filetrans ((type ARG1)(type ARG2)(class ARG3)(name ARG4))
     (call file_search_var_lib (ARG1))
     (call file_type_transition_pattern

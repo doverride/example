@@ -102,6 +102,9 @@
 (macro bin_dontaudit_getattr_all_bin_files ((type ARG1))
     (dontaudit ARG1 bin_type (file (getattr))))
 
+(macro bin_read_all_bin_files ((type ARG1))
+    (allow ARG1 bin_type read_file_perms))
+
 (macro bin_shell_entry ((type ARG1))
     (call subject_entry (ARG1 shell.bin_object)))
 
