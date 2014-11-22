@@ -4,8 +4,15 @@
     (context bin_cgagent (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/systemd-cgroups-agent" file bin_cgagent)
 
-    (optional cgagent_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (allow common_subject self (capability (net_admin)))
+
+    (call dev_write_kmsg (common_subject))
+
+    (call file_search_etc (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call systemd_stream_connect (common_subject))
 )
 
 (macro cgagent_auto_subtrans ((type ARG1))
