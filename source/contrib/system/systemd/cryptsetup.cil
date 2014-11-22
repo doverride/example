@@ -6,10 +6,28 @@
     (context bin_cryptsetup (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/systemd-cryptsetup" file bin_cryptsetup)
 
+    (allow common_subject self (capability (net_admin sys_admin ipc_lock)))
+    (allow common_subject self create_sem_perms)
+
+    (call sys_get_sysvipc_info (common_subject))
+    (call sys_read_crypto_sysctl (common_subject))
+
+    (call dev_read_random (common_subject))
+    (call dev_read_urandom (common_subject))
+    (call dev_rw_lvm_control (common_subject))
+
+    (call fs_getattr_devtmpfs (common_subject))
+    (call fs_list_devtmpfs (common_subject))
+
+    (call stor_read_fixed_disk (common_subject))
+    (call stor_read_removable (common_subject))
+    (call stor_read_scsi_generic (common_subject))
+
+    (call seutil_search_config (common_subject))
+
     (call journal_client (common_subject))
 
-    (optional cryptsetup_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call udev_client (common_subject))
 )
 
 (allow cryptsetup_admin_type self (capability (kill sys_ptrace)))
