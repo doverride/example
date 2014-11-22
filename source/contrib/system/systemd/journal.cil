@@ -100,8 +100,8 @@
     (call sys_read_ring_buffer (common_subject))
     (call sys_read_crypto_sysctl (common_subject))
     (call sys_read_kernel_sysctl (common_subject))
-    (call sys_rw_inherited_unix_dgram_sockets (common_subject))
-    (call sys_rw_inherited_unix_stream_sockets (common_subject))
+    (call sys_rw_unix_dgram_sockets (common_subject))
+    (call sys_rw_unix_stream_sockets (common_subject))
     (call sys_use_fd (common_subject))
 
     (call dev_rw_kmsg (common_subject))
