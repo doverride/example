@@ -20,12 +20,19 @@
     (context bin_journalctl (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/journalctl" file bin_journalctl)
 
+    (allow common_subject self (capability (dac_override)))
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call dev_read_random (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call journal_manage_log_files (common_subject))
+    (call journal_manage_var_lib_files (common_subject))
+
     (optional journalctl_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional journalctl_optional_unconfined
-        (call unconfined (journalctl_role common_subject)))
 )
 
 (block journald
@@ -87,9 +94,57 @@
     (allow common_subject self (capability (setgid setuid sys_admin sys_ptrace)))
     (allow common_subject self (process (getcap)))
 
-    (optional journald_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call sys_dgram_send (common_subject))
+    (call sys_read_ring_buffer (common_subject))
+    (call sys_read_crypto_sysctl (common_subject))
+    (call sys_read_kernel_sysctl (common_subject))
+    (call sys_rw_inherited_unix_dgram_sockets (common_subject))
+    (call sys_rw_inherited_unix_stream_sockets (common_subject))
+    (call sys_use_fd (common_subject))
+
+    (call dev_rw_kmsg (common_subject))
+    (call dev_read_urandom (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+    (call fs_getattr_tmpfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_write_inherited_devpts_chr_files (common_subject))
+
+    (call sec_get_enforce_mode (common_subject))
+
+    (call subject_read_all_common_subjects_state (common_subject))
+
+    (call term_write_console (common_subject))
+
+    (call machine_read_config_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call plymouth_use_fd_plymouthd (common_subject))
+
+    (call systemd_dgram_send (common_subject))
+
+    (call udev_client (common_subject))
 )
+
+(allow journalctl_client_type self (capability (net_admin ipc_lock)))
+
+(call sys_read_crypto_sysctl (journalctl_client_type))
+(call sys_read_kernel_sysctl (journalctl_client_type))
+
+(call bin_execute_bin_files (journalctl_client_type))
+
+(call dev_read_urandom (journalctl_client_type))
+
+(call fs_getattr_fs (journalctl_client_type))
+(call fs_getattr_tmpfs (journalctl_client_type))
+
+(call machine_read_config_files (journalctl_client_type))
+
+(call miscfiles_read_terminfo (journalctl_client_type))
+(call miscfiles_read_localization (journalctl_client_type))
+
+(call systemd_search_run (journalctl_client_type))
 
 (allow journal_client_type self (capability (net_admin))) ; FIXME
 (allow journal_client_type self (unix_dgram_socket (sendto)))
@@ -143,6 +198,16 @@
     (call systemd_search_run (ARG1))
     (call read_files_pattern
         (ARG1 journald.systemd_run_object journald.systemd_run_object)))
+
+(macro journal_manage_log_files ((type ARG1))
+    (call file_search_var_log (ARG1))
+    (call manage_files_pattern
+        (ARG1 journald.var_log_object journald.var_log_object)))
+
+(macro journal_manage_var_lib_files ((type ARG1))
+    (call systemd_search_var_lib (ARG1))
+    (call manage_files_pattern
+        (ARG1 journald.systemd_var_lib_object journald.systemd_var_lib_object)))
 
 (macro journal_relabelto_log_dirs ((type ARG1))
     (allow ARG1 journald.var_log_object relabelto_dir_perms))

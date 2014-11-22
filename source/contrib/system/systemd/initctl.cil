@@ -13,9 +13,6 @@
 
     (context run_initctl (sys.u sys.r systemd_run_object (systemlow systemlow)))
     (filecon "/var/run/systemd/initctl(/.*)?" any run_initctl)
-
-    (optional initctl_optional_unconfined
-        (call unconfined (sys.r common_subject)))
 )
 
 (allow initctl_admin_type self (capability (kill sys_ptrace)))

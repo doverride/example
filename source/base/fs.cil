@@ -198,6 +198,9 @@
 (macro fs_getattr_fs ((type ARG1))
     (allow ARG1 fs (filesystem (getattr))))
 
+(macro fs_getattr_tmpfs ((type ARG1))
+    (allow ARG1 tmpfs (filesystem (getattr))))
+
 (macro fs_getattr_proc ((type ARG1))
     (allow ARG1 proc (filesystem (getattr))))
 

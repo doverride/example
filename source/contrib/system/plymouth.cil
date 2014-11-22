@@ -159,6 +159,9 @@
 (macro plymouth_use_fd ((type ARG1))
     (allow ARG1 plymouth.common_subject (fd (use))))
 
+(macro plymouth_use_fd_plymouthd ((type ARG1))
+    (allow ARG1 plymouthd.common_subject (fd (use))))
+
 (macro plymouth_stream_connect_plymouthd ((type ARG1))
     (call file_search_run (ARG1))
     (call stream_connect_pattern

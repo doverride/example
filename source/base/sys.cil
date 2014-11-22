@@ -552,6 +552,12 @@
 (macro sys_use_fd ((type ARG1))
     (allow ARG1 sys.common_subject (fd (use))))
 
+(macro sys_rw_inherited_unix_dgram_sockets ((type ARG1))
+    (allow ARG1 sys.common_subject (unix_dgram_socket (getattr read write))))
+
+(macro sys_rw_inherited_unix_stream_sockets ((type ARG1))
+    (allow ARG1 sys.common_subject (unix_stream_socket (getattr read write))))
+
 (macro sys_read_state_invalid ((type ARG1))
     (allow ARG1 invalid list_dir_perms)
     (allow ARG1 invalid read_file_perms)
