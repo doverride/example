@@ -46,9 +46,7 @@
     (call term_use_unallocated_tts (common_subject))
 
     (call auth_login_program (common_subject))
-    (call auth_manage_pam_console_run_files (common_subject)) ; FIXME
-
-    (call miscfiles_read_localization (common_subject))
+    (call auth_manage_pam_console_run_files (common_subject))
 
     (call usersubject_search_home_user (common_subject))
     (call usersubject_relabel_generic_tts (common_subject))
