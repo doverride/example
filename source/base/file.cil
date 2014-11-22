@@ -245,6 +245,15 @@
         (call file_usr_type (usr_object))
 )
 
+(block file_maintains_single_usr_file_block
+    (blockabstract file_maintains_single_usr_file_block)
+        (blockinherit file_usr_object_block)
+
+        (allow common_subject usr_object read_file_perms)
+
+        (call file_search_usr (common_subject))
+)
+
 (block file_var_object_block
     (blockabstract file_var_object_block)
         (type var_object)

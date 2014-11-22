@@ -33,7 +33,7 @@
     (context run_kmod (sys.u sys.r tmpfiles_run_object (systemlow systemlow)))
     (filecon "/var/run/tmpfiles\.d/kmod\.conf" file run_kmod)
 
-    (blockinherit file_usr_object_block)
+    (blockinherit file_maintains_single_usr_file_block)
 
     (typeattributeset kmod_object_type usr_object)
 
