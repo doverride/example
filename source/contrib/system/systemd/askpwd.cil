@@ -54,12 +54,19 @@
     (context systemd_run_askpwdagent (sys.u sys.r systemd_run_object (systemlow systemlow)))
     (filecon "/var/run/systemd/ask-password-block(/.*)?" any systemd_run_askpwdagent)
 
+    (call file_search_etc (common_subject))
+
+    (call term_use_console (common_subject))
+    (call term_use_unallocated_tts (common_subject))
+
+    (call askpwd_list_run (common_subject))
+    (call askpwd_read_run_files (common_subject))
+
+    (call systemd_use_fd (common_subject))
+
     (optional askpwdagent_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional askpwdagent_optional_unconfined
-        (call unconfined (askpwdagent_role common_subject)))
 )
 
 (allow askpwd_admin_type self (capability (kill sys_ptrace)))
