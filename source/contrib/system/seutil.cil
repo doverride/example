@@ -1,3 +1,6 @@
+(typepermissive getsebool.common_subject)
+(typepermissive getenforce.common_subject)
+
 (roleattribute load_policy_role)
 (roleattribute secilc_role)
 (roleattribute setfiles_role)
@@ -125,9 +128,6 @@
     (optional getsebool_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional getsebool_optional_unconfined
-        (call unconfined (getsebool_role common_subject)))
 )
 
 (block setsebool
@@ -171,9 +171,6 @@
     (optional getenforce_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional getenforce_optional_unconfined
-        (call unconfined (getenforce_role common_subject)))
 )
 
 (block setenforce

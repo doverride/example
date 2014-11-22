@@ -1,3 +1,8 @@
+(typepermissive audispd.common_subject)
+(typepermissive auditctl.common_subject)
+(typepermissive augenrules.common_subject)
+(typepermissive ausearch.common_subject)
+
 (roleattribute auditctl_role)
 (roleattribute augenrules_role)
 (roleattribute ausearch_role)
@@ -48,9 +53,6 @@
     (call audit_rw_auditd_unix_stream_sockets (common_subject))
 
     (call journal_client (common_subject))
-
-    (optional audispd_optional_unconfined
-        (call unconfined (sys.r common_subject)))
 )
 
 (block auditd
@@ -117,9 +119,6 @@
     (optional auditctl_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional auditctl_optional_unconfined
-        (call unconfined (auditctl_role common_subject)))
 )
 
 (block augenrules
@@ -135,9 +134,6 @@
     (optional augenrules_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional augenrules_optional_unconfined
-        (call unconfined (augenrules_role common_subject)))
 )
 
 (block ausearch
@@ -160,9 +156,6 @@
     (call auth_nsswitch_client (common_subject))
 
     (call miscfiles_read_localization (common_subject))
-
-    (optional ausearch_optional_unconfined
-        (call unconfined (ausearch_role common_subject)))
 )
 
 (type etc_audisp)

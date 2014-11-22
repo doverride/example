@@ -1,3 +1,5 @@
+(typepermissive cracklib.common_subject)
+
 (roleattribute cracklib_role)
 (roleattribute groupadd_role)
 (roleattribute useradd_role)
@@ -86,9 +88,6 @@
     (optional cracklib_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional cracklib_optional_unconfined
-        (call unconfined (cracklib_role common_subject)))
 )
 
 (block useradd

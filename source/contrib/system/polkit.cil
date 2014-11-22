@@ -1,3 +1,6 @@
+(typepermissive pkladm.common_subject)
+(typepermissive pklauth.common_subject)
+
 (roleattribute pkladm_role)
 (roleattribute pklauth_role)
 (roleattribute polkit_role)
@@ -107,9 +110,6 @@
     (optional pkladm_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional pkladm_optional_unconfined
-        (call unconfined (pkladm_role common_subject)))
 )
 
 (block pklauth
@@ -125,9 +125,6 @@
     (optional pklauth_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional pklauth_optional_unconfined
-        (call unconfined (pklauth_role common_subject)))
 )
 
 (block polkit_helper

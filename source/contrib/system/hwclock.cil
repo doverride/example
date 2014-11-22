@@ -1,3 +1,5 @@
+(typepermissive hwclock.common_subject)
+
 (roleattribute hwclock_role)
 
 (block hwclock
@@ -16,9 +18,6 @@
     (optional hwclock_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional hwclock_optional_unconfined
-        (call unconfined (hwclock_role common_subject)))
 )
 
 (macro hwclock_auto_subtrans ((type ARG1))

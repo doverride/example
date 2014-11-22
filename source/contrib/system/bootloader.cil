@@ -1,3 +1,5 @@
+(typepermissive bootloader.common_subject)
+
 (roleattribute bootloader_role)
 
 (roleattribute bootloader_admin_role)
@@ -39,9 +41,6 @@
     (optional bootloader_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional bootloader_optional_unconfined
-        (call unconfined (bootloader_role common_subject)))
 )
 
 (allow bootloader_admin_type self (capability (kill sys_ptrace)))

@@ -1,3 +1,5 @@
+(typepermissive dmeventd.common_subject)
+
 (roleattribute dmcrypt_role)
 (roleattribute dmsetup_role)
 
@@ -29,9 +31,6 @@
     (filecon "/var/run/dmeventd-client" pipe run_dmeventd)
     (filecon "/var/run/dmeventd-server" pipe run_dmeventd)
     (filecon "/var/run/dmeventd\.pid" file run_dmeventd)
-
-    (optional dmeventd_optional_unconfined
-        (call unconfined (sys.r common_subject)))
 )
 
 (block dmsetup

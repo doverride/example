@@ -1,3 +1,5 @@
+(typepermissive consoletype.common_subject)
+
 (roleattribute consoletype_role)
 
 (block consoletype
@@ -7,9 +9,6 @@
 
     (context bin_consoletype (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/sbin/consoletype" file bin_consoletype)
-
-    (optional consoletype_optional_unconfined
-        (call unconfined (consoletype_role common_subject)))
 )
 
 (macro consoletype_exec ((type ARG1))

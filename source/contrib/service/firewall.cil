@@ -1,3 +1,5 @@
+(typepermissive firewallcmd.common_subject)
+
 (roleattribute firewallcmd_role)
 
 (roleattribute firewall_admin_role)
@@ -16,9 +18,6 @@
     (context bin_firewallcmd (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/firewall-cmd" file bin_firewallcmd)
     (filecon "/usr/bin/firewall-offline-cmd" file bin_firewallcmd)
-
-    (optional firewallcmd_optional_unconfined
-        (call unconfined (firewallcmd_role common_subject)))
 )
 
 (block firewalld

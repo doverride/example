@@ -1,3 +1,5 @@
+(typepermissive importstate.common_subject)
+
 (typeattribute importstate_admin_type)
 
 (block importstate
@@ -5,9 +7,6 @@
 
     (context bin_importstate (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/fedora-import-state" file bin_importstate)
-
-    (optional importstate_optional_unconfined
-        (call unconfined (sys.r common_subject)))
 )
 
 (allow importstate_admin_type self (capability (kill sys_ptrace)))

@@ -1,3 +1,5 @@
+(typepermissive askpwd.common_subject)
+
 (roleattribute askpwd_role)
 (roleattribute askpwdagent_role)
 
@@ -31,9 +33,6 @@
     (optional askpwd_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional askpwd_optional_unconfined
-        (call unconfined (askpwd_role common_subject)))
 )
 
 (block askpwdagent

@@ -1,3 +1,5 @@
+(typepermissive rpcbind.common_subject)
+
 (roleattribute rpcbind_admin_role)
 (typeattribute rpcbind_admin_type)
 
@@ -36,9 +38,6 @@
 
     (context var_lib_rpcbind (sys.u sys.r var_lib_object (systemlow systemlow)))
     (filecon "/var/lib/rpcbind(/.*)?" any var_lib_rpcbind)
-
-    (optional rpcbind_optional_unconfined
-        (call unconfined (sys.r common_subject)))
 )
 
 (allow rpcbind_admin_type self (capability (kill sys_ptrace)))
