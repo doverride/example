@@ -32,7 +32,7 @@
     (context unit_firewalld (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*firewalld.*" file unit_firewalld)
 
-    (blockinherit file_maintains_etc_dirs_and_files_block)
+    (blockinherit file_maintains_etc_dirs_files_and_lnk_files_block)
 
     (typeattributeset firewall_object_type etc_object)
 
@@ -73,9 +73,6 @@
     (call auth_nsswitch_client (common_subject))
 
     (call dbus_system_service (common_subject))
-
-    (call firewall_list_config (common_subject))
-    (call firewall_read_config_lnk_files (common_subject))
 
     (call iptables_auto_subtrans (common_subject))
 

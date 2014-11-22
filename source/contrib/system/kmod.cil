@@ -48,10 +48,6 @@
     (call fs_list_sysfs (common_subject))
     (call fs_read_sysfs_files (common_subject))
 
-    (call kmod_list_config (common_subject))
-    (call kmod_read_config_files (common_subject))
-    (call kmod_read_modules_dep_files (common_subject))
-
     (call miscfiles_read_modules_files (common_subject))
 
     (optional kmod_optional_firewall

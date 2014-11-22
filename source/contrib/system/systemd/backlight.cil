@@ -12,12 +12,12 @@
     (context systemd_var_lib_backlight (sys.u sys.r systemd_var_lib_object (systemlow systemlow)))
     (filecon "/var/lib/systemd/backlight(/.*)?" any systemd_var_lib_backlight)
 
+    (call fs_list_sysfs (common_subject))
     (call fs_rw_sysfs_files (common_subject))
 
     (call journal_client (common_subject))
 
-    (optional backlight_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call udev_client (common_subject))
 )
 
 (allow backlight_admin_type self (capability (kill sys_ptrace)))

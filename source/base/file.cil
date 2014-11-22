@@ -67,7 +67,18 @@
         (blockinherit file_etc_object_block)
 
         (allow common_subject etc_object read_file_perms)
-        (allow common_subject etc_object search_dir_perms)
+        (allow common_subject etc_object list_dir_perms)
+
+        (call file_search_etc (common_subject))
+)
+
+(block file_maintains_etc_dirs_files_and_lnk_files_block
+    (blockabstract file_maintains_etc_dirs_files_and_lnk_files_block)
+        (blockinherit file_etc_object_block)
+
+        (allow common_subject etc_object read_file_perms)
+        (allow common_subject etc_object read_lnk_file_perms)
+        (allow common_subject etc_object list_dir_perms)
 
         (call file_search_etc (common_subject))
 )
