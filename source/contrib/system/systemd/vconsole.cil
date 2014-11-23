@@ -28,6 +28,10 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype vconsole_admin_role vconsole.etc_object)
 
+(macro vconsole_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 vconsole.etc_object read_file_perms))
+
 (macro vconsole_admin ((role ARG1)(type ARG2))
     (roleattributeset vconsole_admin_role ARG1)
     (typeattributeset vconsole_admin_type ARG2))

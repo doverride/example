@@ -49,10 +49,22 @@
     (context dbus_etc_localed (sys.u sys.r dbus_etc_object (systemlow systemlow)))
     (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.locale1\.conf" file dbus_etc_localed)
 
+    (call sys_read_kernel_sysctl (common_subject))
+
+    (call dev_read_urandom (common_subject))
+
+    (call dbus_system_service (common_subject))
+
     (call journal_client (common_subject))
 
-    (optional localed_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call polkit_dbus_chat_polkitd (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
+
+    (call systemd_stream_connect (common_subject))
+
+    (call vconsole_read_config_files (common_subject))
 )
 
 (allow localed_admin_type self (capability (kill sys_ptrace)))
