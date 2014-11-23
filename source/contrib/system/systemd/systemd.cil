@@ -694,6 +694,11 @@
     (allow ARG1 systemd.user_tmpfs_object manage_dir_perms)
     (roletype ARG1 systemd.user_tmpfs_object))
 
+(macro systemd_delete_user_tmpfs_dirs ((type ARG1))
+    (call fs_del_entry_tmpfs_dirs (ARG1))
+    (call delete_dirs_pattern
+        (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object)))
+
 (macro systemd_relabel_user_tmpfs_sock_files ((type ARG1))
     (allow ARG1 systemd.user_tmpfs_object relabel_sock_file_perms))
 
@@ -703,8 +708,22 @@
         (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object))
     (roletype ARG1 systemd.user_tmpfs_object))
 
+(macro systemd_delete_user_tmpfs_sock_files ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (call delete_sock_files_pattern
+        (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object)))
+
 (macro systemd_reboot_system ((type ARG1))
     (allow ARG1 systemd.common_subject (system (reboot))))
+
+(macro systemd_status_system ((type ARG1))
+    (allow ARG1 systemd.common_subject (system (status))))
+
+(macro systemd_start_system ((type ARG1))
+    (allow ARG1 systemd.common_subject (system (start))))
+
+(macro systemd_stop_system ((type ARG1))
+    (allow ARG1 systemd.common_subject (system (stop))))
 
 (macro systemd_stop_generic_units ((type ARG1))
     (allow ARG1 systemd_unit (service (stop))))
@@ -768,6 +787,9 @@
 
 (macro systemd_start_generic_units ((type ARG1))
     (allow ARG1 systemd_unit (service (start))))
+
+(macro systemd_start_power_units ((type ARG1))
+    (allow ARG1 systemd_power.unit_object (service (start))))
 
 (macro systemd_start_transient_units ((type ARG1))
     (allow ARG1 self (service (start))))

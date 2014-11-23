@@ -939,11 +939,21 @@
 
 (macro file_list_run_user ((type ARG1))
     (call file_search_run (ARG1))
-    (allow ARG1 run_user list_dir_perms))
+    (allow ARG1 run_user list_dir_perms)
+    (optional file_list_run_user_optional_usersubject
+        (call usersubject_getattr_all_tmpfs (ARG1))))
 
 (macro file_search_run_user ((type ARG1))
     (call file_search_run (ARG1))
     (allow ARG1 run_user search_dir_perms))
+
+(macro file_manage_run_user_dirs ((type ARG1))
+    (call file_rw_run_dirs (ARG1))
+    (call manage_dirs_pattern (ARG1 run_user run_user)))
+
+(macro file_mounton_run_user_dirs ((type ARG1))
+    (call file_list_run_user (ARG1))
+    (allow ARG1 run_user (dir (mounton))))
 
 (macro file_list_run_lock ((type ARG1))
     (call file_search_run (ARG1))

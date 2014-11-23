@@ -1,3 +1,5 @@
+(typepermissive loginctl.common_subject)
+
 (roleattribute loginctl_role)
 
 (roleattribute logind_admin_role)
@@ -23,9 +25,6 @@
     (optional loginctl_optional_app
         (call app_subject_type (common_subject))
         (call app_exec_object_type (common_subject)))
-
-    (optional loginctl_optional_unconfined
-        (call unconfined (loginctl_role common_subject)))
 )
 
 (block logind
@@ -68,8 +67,70 @@
     (allow common_subject self (capability (chown fowner sys_tty_config sys_admin dac_override)))
     (allow common_subject self (process (getcap setfscreate)))
 
-    (optional logind_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call sys_read_kernel_sysctl (common_subject))
+
+    (call dev_getattr_dri (common_subject))
+    (call dev_getattr_sound (common_subject))
+    (call dev_getattr_wireless (common_subject))
+    (call dev_getattr_v4l (common_subject))
+    (call dev_read_urandom (common_subject))
+    (call dev_rw_event (common_subject))
+    (call dev_setattr_dri (common_subject))
+    (call dev_rw_dri (common_subject))
+    (call dev_setattr_sound (common_subject))
+    (call dev_setattr_wireless (common_subject))
+    (call dev_setattr_v4l (common_subject))
+
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+    (call fs_rw_sysfs_files (common_subject))
+    (call fs_list_tmpfs (common_subject))
+    (call fs_getattr_tmpfs (common_subject))
+    (call fs_mount_tmpfs (common_subject))
+    (call fs_unmount_tmpfs (common_subject))
+
+    (call file_search_home (common_subject))
+    (call file_manage_run_user_dirs (common_subject))
+    (call file_mounton_run_user_dirs (common_subject))
+
+    (call sec_get_enforce_mode (common_subject))
+
+    (call term_use_unallocated_tts (common_subject))
+
+    (call auth_read_state_all_login_program_subjects (common_subject))
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call getty_start_units (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call polkit_dbus_chat_polkitd (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
+
+    (call systemd_delete_user_tmpfs_dirs (common_subject))
+    (call systemd_delete_user_tmpfs_sock_files (common_subject))
+
+    (call systemd_dbus_chat (common_subject))
+    (call systemd_status_generic_units (common_subject))
+    (call systemd_status_system (common_subject))
+    (call systemd_search_var_lib (common_subject))
+    (call systemd_start_generic_units (common_subject))
+    (call systemd_stop_generic_units (common_subject))
+    (call systemd_start_power_units (common_subject))
+    (call systemd_start_system (common_subject))
+    (call systemd_stop_system (common_subject))
+    (call systemd_start_transient_systemd_units (common_subject))
+    (call systemd_stream_connect (common_subject))
+
+    (call usersubject_setattr_generic_terminals (common_subject))
+    (call usersubject_use_generic_terminals (common_subject))
+
+    (call udev_client (common_subject))
+    (call udev_list_run (common_subject))
 )
 
 (allow logind_admin_type self (capability (kill sys_ptrace)))

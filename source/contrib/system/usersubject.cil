@@ -344,6 +344,9 @@
     (call fs_tmpfs_filetrans
         (ARG2 user.user_tmpfs_object all_file_objects "*")))
 
+(macro usersubject_getattr_all_tmpfs ((type ARG1))
+    (allow ARG1 usersubject_tmpfs_type (all_file_objects (getattr))))
+
 (macro usersubject_generic_mail_spool_template ((role ARG1)(type ARG2))
     (allow ARG2 user.var_spool_object rw_file_perms)
     (roletype ARG1 user.var_spool_object))

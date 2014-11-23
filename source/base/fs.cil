@@ -308,6 +308,9 @@
 (macro fs_remount_tmpfs ((type ARG1))
     (allow ARG1 tmpfs (filesystem (remount))))
 
+(macro fs_unmount_tmpfs ((type ARG1))
+    (allow ARG1 tmpfs (filesystem (unmount))))
+
 (macro fs_unmount_all ((type ARG1))
     (allow ARG1 fs_type (filesystem (unmount))))
 

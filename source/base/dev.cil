@@ -265,6 +265,30 @@
     (optional dev_getattr_all_optional_storage
         (call stor_getattr_all (ARG1))))
 
+(macro dev_getattr_dri ((type ARG1))
+    (allow ARG1 dri_dev (chr_file (getattr))))
+
+(macro dev_setattr_dri ((type ARG1))
+    (allow ARG1 dri_dev (chr_file (setattr))))
+
+(macro dev_getattr_sound ((type ARG1))
+    (allow ARG1 sound_dev (chr_file (getattr))))
+
+(macro dev_setattr_sound ((type ARG1))
+    (allow ARG1 sound_dev (chr_file (setattr))))
+
+(macro dev_getattr_v4l ((type ARG1))
+    (allow ARG1 v4l_dev (chr_file (getattr))))
+
+(macro dev_setattr_v4l ((type ARG1))
+    (allow ARG1 v4l_dev (chr_file (setattr))))
+
+(macro dev_getattr_wireless ((type ARG1))
+    (allow ARG1 wireless_dev (chr_file (getattr))))
+
+(macro dev_setattr_wireless ((type ARG1))
+    (allow ARG1 wireless_dev (chr_file (setattr))))
+
 (macro dev_create_devtty ((type ARG1))
     (allow ARG1 self (capability (mknod)))
     (call fs_add_entry_devtmpfs_dirs (ARG1))

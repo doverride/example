@@ -47,6 +47,10 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype getty_admin_role getty.unit_object)
 
+(macro getty_start_units ((type ARG1))
+    (call systemd_search_unit (ARG1))
+    (allow ARG1 getty.unit_object (service (start))))
+
 (macro getty_admin ((role ARG1)(type ARG2))
     (roleattributeset getty_admin_role ARG1)
     (typeattributeset getty_admin_type ARG2))

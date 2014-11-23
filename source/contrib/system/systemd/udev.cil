@@ -116,6 +116,10 @@
     (call udev_auto_subtrans_udevadm (ARG1))
     (roleattributeset udevadm_role (ARG2)))
 
+(macro udev_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 udevd.etc_object list_dir_perms))
+
 (macro udev_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 udevd.etc_object udevd.etc_object)))
@@ -123,6 +127,10 @@
 (macro udev_read_run_files ((type ARG1))
     (call file_search_run (ARG1))
     (call read_files_pattern (ARG1 udevd.run_object udevd.run_object)))
+
+(macro udev_list_run ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 udevd.run_object list_dir_perms))
 
 (macro udev_rw_inherited_udp_socket ((type ARG1))
     (allow ARG1 udevd.common_subject (udp_socket (read write))))
