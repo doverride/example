@@ -16,12 +16,15 @@
 
     (allow common_subject self rw_fifo_file_perms)
 
+    (call sys_read_invalid_files (common_subject)) ; FIXME
+
     (call bin_execute_bin_files (common_subject))
     (call bin_execute_shell_files (common_subject))
 
     (call file_read_boot_files (common_subject))
+    (call file_read_boot_lnk_files (common_subject))
 
-    (call fs_manage_tmpfs_files (common_subject)) ; /run/initramfs/.need_shutdown
+    (call fs_manage_tmpfs_files (common_subject))
 
     (call dracut_manage_initramfs_run_files (common_subject))
     (call dracut_manage_initramfs_run_lnk_files (common_subject))
@@ -62,6 +65,10 @@
     (all_file_objects (not_mounton_entrypoint_and_execmod)))
 (roletype dracut_admin_role dracut_object_type)
 
+(macro dracut_list_initramfs_run ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 initramfs.run_object list_dir_perms))
+
 (macro dracut_search_initramfs_run ((type ARG1))
     (call file_search_run (ARG1))
     (allow ARG1 initramfs.run_object search_dir_perms))
@@ -90,6 +97,10 @@
     (call file_search_run (ARG1))
     (call manage_chr_files_pattern
         (ARG1 initramfs.run_object initramfs.run_object)))
+
+(macro dracut_mounton_initramfs_run_dirs ((type ARG1))
+    (call dracut_list_initramfs_run (ARG1))
+    (allow ARG1 initramfs.run_object (dir (mounton))))
 
 (macro dracut_admin ((role ARG1)(type ARG2))
     (roleattributeset dracut_admin_role ARG1)

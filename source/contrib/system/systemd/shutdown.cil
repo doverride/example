@@ -19,8 +19,8 @@
     (allow common_subject self create_unix_stream_socket_perms)
     (allow common_subject self manage_fifo_file_perms)
 
+    (call sys_getattr_all_mountpoint (common_subject))
     (call sys_manual_subtrans (common_subject))
-    (call sys_mounton_mountpoint_dirs (common_subject))
     (call sys_request_load_module (common_subject))
     (call sys_rw_kernel_sysctl (common_subject))
     (call sys_send_sigchld (common_subject))
@@ -38,18 +38,24 @@
     (call dev_rw_lvm_control (common_subject))
     (call dev_write_kmsg (common_subject))
 
+    (call file_list_all_except (common_subject)) ; FIXME
+
     (call fs_getattr_sysfs (common_subject))
+    (call fs_list_proc (common_subject))
+    (call fs_read_devtmpfs_lnk_files (common_subject))
     (call fs_read_sysfs_files (common_subject))
     (call fs_read_sysfs_lnk_files (common_subject))
     (call fs_delete_cgroup_dirs (common_subject))
     (call fs_read_cgroup_files (common_subject))
     (call fs_write_inherited_devpts_chr_files (common_subject))
+    (call fs_mounton_rootfs_dirs (common_subject))
     (call fs_remount_all (common_subject))
     (call fs_unmount_all (common_subject))
 
     (call dracut_execute_initramfs_run_files (common_subject))
     (call dracut_manage_initramfs_run_dirs (common_subject))
     (call dracut_manage_initramfs_run_files (common_subject))
+    (call dracut_mounton_initramfs_run_dirs (common_subject))
 
     (call sec_get_enforce_mode (common_subject))
 

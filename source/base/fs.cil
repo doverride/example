@@ -184,7 +184,11 @@
     (class ARG3)(name ARG4))
     (call file_type_transition_pattern (ARG1 rootfs ARG2 ARG3 ARG4)))
 
+(macro fs_list_rootfs ((type ARG1))
+    (allow ARG1 rootfs list_dir_perms))
+
 (macro fs_mounton_rootfs_dirs ((type ARG1))
+    (call fs_list_rootfs (ARG1))
     (allow ARG1 rootfs (dir (mounton))))
 
 (macro fs_getattr_all ((type ARG1))
@@ -323,6 +327,7 @@
 
 (macro fs_search_cgroup ((type ARG1))
     (call fs_search_sysfs (ARG1))
+    (call fs_read_tmpfs_lnk_files (ARG1))
     (call search_dirs_pattern (ARG1 tmpfs cgroup)))
 
 (macro fs_read_cgroup_files ((type ARG1))
@@ -373,9 +378,6 @@
 (macro fs_search_sysfs ((type ARG1))
     (allow ARG1 sysfs search_dir_perms))
 
-(macro fs_list_rootfs ((type ARG1))
-    (allow ARG1 rootfs list_dir_perms))
-
 (macro fs_search_rootfs ((type ARG1))
     (allow ARG1 rootfs search_dir_perms))
 
@@ -402,6 +404,9 @@
     (allow ARG1 tmpfs manage_file_perms))
 
 (macro fs_read_tmpfs_files ((type ARG1))
+    (call read_files_pattern (ARG1 tmpfs tmpfs)))
+
+(macro fs_read_tmpfs_lnk_files ((type ARG1))
     (call read_files_pattern (ARG1 tmpfs tmpfs)))
 
 (macro fs_manage_tmpfs_lnk_files ((type ARG1))

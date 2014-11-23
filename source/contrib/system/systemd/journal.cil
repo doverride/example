@@ -94,7 +94,7 @@
     (allow common_subject self (capability (setgid setuid sys_admin sys_ptrace)))
     (allow common_subject self (process (getcap)))
 
-    (allow common_subject var_log_object (file (write)))
+    (allow common_subject var_log_object (file (write rename)))
 
     (call sys_dgram_send (common_subject))
     (call sys_read_ring_buffer (common_subject))

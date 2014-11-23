@@ -839,6 +839,9 @@
 (macro file_search_boot ((type ARG1))
     (allow ARG1 boot search_dir_perms))
 
+(macro file_read_boot_lnk_files ((type ARG1))
+    (call read_lnk_files_pattern (ARG1 boot boot)))
+
 (macro file_read_boot_files ((type ARG1))
     (call read_files_pattern (ARG1 boot boot)))
 

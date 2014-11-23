@@ -563,6 +563,12 @@
     (allow ARG1 invalid read_file_perms)
     (allow ARG1 invalid read_lnk_file_perms))
 
+(macro sys_search_invalid ((type ARG1))
+    (allow ARG1 invalid search_dir_perms))
+
+(macro sys_read_invalid_files ((type ARG1))
+    (call read_files_pattern (ARG1 invalid invalid)))
+
 (macro sys_recvfrom_unlabeled_tcp_socket ((type ARG1))
     (allow ARG1 unlabeled (tcp_socket (recvfrom))))
 
