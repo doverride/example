@@ -27,6 +27,13 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype sessions_admin_role sessions.run_object)
 
+(macro sessions_manage_run_files ((type ARG1))
+    (call file_rw_run_dirs (ARG1))
+    (allow ARG1 sessions.run_object manage_file_perms))
+
+(macro sessions_run_filetrans_run_files ((type ARG1))
+    (call file_run_filetrans (ARG1 sessions.run_object file "*")))
+
 (macro sessions_admin ((role ARG1)(type ARG2))
     (roleattributeset sessions_admin_role ARG1)
     (typeattributeset sessions_admin_type ARG2))

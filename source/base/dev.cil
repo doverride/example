@@ -296,6 +296,9 @@
 (macro dev_read_kmsg ((type ARG1))
     (allow ARG1 kmsg_dev read_chr_file_perms))
 
+(macro dev_read_loop_control ((type ARG1))
+    (allow ARG1 loop_control_dev read_chr_file_perms))
+
 (macro dev_read_memory ((type ARG1))
     (allow ARG1 self (capability (sys_rawio)))
     (allow ARG1 memory_dev read_chr_file_perms)

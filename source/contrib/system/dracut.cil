@@ -47,6 +47,8 @@
 
     (typeattributeset dracut_object_type run_object)
 
+    (call sys_mountpoint_type (run_object))
+
     (context run_initramfs (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/initramfs(/.*)?" any run_initramfs)
 )
@@ -63,6 +65,11 @@
 (macro dracut_search_initramfs_run ((type ARG1))
     (call file_search_run (ARG1))
     (allow ARG1 initramfs.run_object search_dir_perms))
+
+(macro dracut_execute_initramfs_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call exec_files_pattern
+        (ARG1 initramfs.run_object initramfs.run_object)))
 
 (macro dracut_manage_initramfs_run_files ((type ARG1))
     (call file_search_run (ARG1))

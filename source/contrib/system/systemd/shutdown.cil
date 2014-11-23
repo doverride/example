@@ -1,3 +1,5 @@
+(typepermissive shutdownd.common_subject)
+
 (roleattribute shutdown_admin_role)
 (typeattribute shutdown_admin_type)
 
@@ -14,14 +16,42 @@
     (allow common_subject self (capability (sys_boot ipc_lock kill sys_admin
         sys_chroot sys_ptrace dac_override)))
     (allow common_subject self (process (setfscreate)))
+    (allow common_subject self create_unix_stream_socket_perms)
+    (allow common_subject self manage_fifo_file_perms)
 
     (call sys_manual_subtrans (common_subject))
+    (call sys_mounton_mountpoint_dirs (common_subject))
+    (call sys_request_load_module (common_subject))
+    (call sys_rw_kernel_sysctl (common_subject))
     (call sys_send_sigchld (common_subject))
     (call sys_setkeycreate (common_subject))
     (call sys_setpgid (common_subject))
     (call sys_share_state (common_subject))
     (call sys_setsched (common_subject))
     (call sys_use_fd (common_subject))
+
+    (call bin_execute_bin_files (common_subject))
+    (call bin_execute_shell_files (common_subject))
+
+    (call dev_read_loop_control (common_subject))
+    (call dev_read_urandom (common_subject))
+    (call dev_rw_lvm_control (common_subject))
+    (call dev_write_kmsg (common_subject))
+
+    (call fs_getattr_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+    (call fs_delete_cgroup_dirs (common_subject))
+    (call fs_read_cgroup_files (common_subject))
+    (call fs_write_inherited_devpts_chr_files (common_subject))
+    (call fs_remount_all (common_subject))
+    (call fs_unmount_all (common_subject))
+
+    (call dracut_execute_initramfs_run_files (common_subject))
+    (call dracut_manage_initramfs_run_dirs (common_subject))
+    (call dracut_manage_initramfs_run_files (common_subject))
+
+    (call sec_get_enforce_mode (common_subject))
 
     (call subject_getpgid_all_common_subjects (common_subject))
     (call subject_read_all_common_subjects_state (common_subject))
@@ -30,8 +60,29 @@
     (call subject_send_signull_all_common_subjects (common_subject))
     (call subject_send_sigstop_all_common_subjects (common_subject))
 
-    (optional shutdown_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call stor_rw_fixed_disk (common_subject))
+    (call stor_rw_removable (common_subject))
+    (call stor_rw_scsi_generic (common_subject))
+
+    (call term_use_console (common_subject))
+
+    (call fstools_exec (common_subject))
+
+    (call lvm_exec (common_subject))
+
+    (call mount_exec (common_subject))
+    (call mount_manage_run_files (common_subject))
+
+    (call plymouth_getattr_plymouthd_exec_files (common_subject))
+    (call plymouth_use_fd_plymouthd (common_subject))
+
+    (call systemd_getattr_unit_dirs (common_subject))
+
+    (call udev_client (common_subject))
+
+    (call usersubject_use_generic_inherited_terminals (common_subject))
+
+    (call utmp_read_run_files (common_subject))
 )
 
 (block shutdownd
@@ -57,8 +108,14 @@
 
     (call journal_client (common_subject))
 
-    (optional shutdownd_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call sessions_manage_run_files (common_subject))
+    (call sessions_run_filetrans_run_files (common_subject))
+
+    (call systemd_exec_systemctl (common_subject))
+
+    (call usersubject_use_generic_terminals (common_subject))
+
+    (call utmp_read_run_files (common_subject))
 )
 
 (macro shutdown_share_state ((type ARG1))
