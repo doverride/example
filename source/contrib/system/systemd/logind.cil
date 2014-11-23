@@ -111,8 +111,8 @@
     (call seutil_read_config_files (common_subject))
     (call seutil_read_file_context_files (common_subject))
 
-    (call systemd_delete_user_tmpfs_dirs (common_subject))
-    (call systemd_delete_user_tmpfs_sock_files (common_subject))
+    (call systemd_delete_generic_user_tmpfs_dirs (common_subject))
+    (call systemd_delete_generic_user_tmpfs_sock_files (common_subject))
 
     (call systemd_dbus_chat (common_subject))
     (call systemd_status_generic_units (common_subject))

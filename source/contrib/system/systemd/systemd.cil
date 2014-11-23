@@ -369,8 +369,8 @@
         (context user_tmpfs_systemd (sys.u sys.r user_tmpfs_object (systemlow systemlow)))
         (filecon "/var/run/user/.*/systemd(/.*)?" any user_tmpfs_systemd)
 
-        (call systemd_manage_user_tmpfs_dirs (sys.r common_subject))
-        (call systemd_manage_user_tmpfs_sock_files (sys.r common_subject))
+        (call systemd_manage_generic_user_tmpfs_dirs (sys.r common_subject))
+        (call systemd_manage_generic_user_tmpfs_sock_files (sys.r common_subject))
 
         (call fs_tmpfs_filetrans (common_subject user_tmpfs_object dir "systemd"))
 
@@ -686,29 +686,29 @@
     (call file_type_transition_pattern
         (ARG1 var_lib_systemd ARG2 ARG3 ARG4)))
 
-(macro systemd_relabel_user_tmpfs_dirs ((type ARG1))
+(macro systemd_relabel_generic_user_tmpfs_dirs ((type ARG1))
     (allow ARG1 systemd.user_tmpfs_object relabel_dir_perms))
 
-(macro systemd_manage_user_tmpfs_dirs ((role ARG1)(type ARG1))
+(macro systemd_manage_generic_user_tmpfs_dirs ((role ARG1)(type ARG1))
     (call fs_search_tmpfs (ARG1))
     (allow ARG1 systemd.user_tmpfs_object manage_dir_perms)
     (roletype ARG1 systemd.user_tmpfs_object))
 
-(macro systemd_delete_user_tmpfs_dirs ((type ARG1))
+(macro systemd_delete_generic_user_tmpfs_dirs ((type ARG1))
     (call fs_del_entry_tmpfs_dirs (ARG1))
     (call delete_dirs_pattern
         (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object)))
 
-(macro systemd_relabel_user_tmpfs_sock_files ((type ARG1))
+(macro systemd_relabel_generic_user_tmpfs_sock_files ((type ARG1))
     (allow ARG1 systemd.user_tmpfs_object relabel_sock_file_perms))
 
-(macro systemd_manage_user_tmpfs_sock_files ((role ARG1)(type ARG1))
+(macro systemd_manage_generic_user_tmpfs_sock_files ((role ARG1)(type ARG1))
     (call fs_search_tmpfs (ARG1))
     (call manage_sock_files_pattern
         (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object))
     (roletype ARG1 systemd.user_tmpfs_object))
 
-(macro systemd_delete_user_tmpfs_sock_files ((type ARG1))
+(macro systemd_delete_generic_user_tmpfs_sock_files ((type ARG1))
     (call fs_search_tmpfs (ARG1))
     (call delete_sock_files_pattern
         (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object)))
