@@ -112,3 +112,8 @@
 (macro fstools_run ((type ARG1)(role ARG2))
     (call fstools_auto_subtrans (ARG1))
     (roleattributeset fstools_role (ARG2)))
+
+(macro fstools_read_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call read_files_pattern
+        (ARG1 fstools.run_object fstools.run_object)))

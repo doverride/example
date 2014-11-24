@@ -845,6 +845,9 @@
 (macro file_read_boot_files ((type ARG1))
     (call read_files_pattern (ARG1 boot boot)))
 
+(macro file_rw_boot_files ((type ARG1))
+    (call rw_files_pattern (ARG1 boot boot)))
+
 (macro file_list_usr ((type ARG1))
     (allow ARG1 usr list_dir_perms))
 

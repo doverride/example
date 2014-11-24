@@ -197,6 +197,9 @@
 (macro fs_getattr_all ((type ARG1))
     (allow ARG1 fs_type (filesystem (getattr))))
 
+(macro fs_manage_dosfs_files ((type ARG1))
+    (call manage_files_pattern (ARG1 dosfs dosfs)))
+
 (macro fs_getattr_devpts ((type ARG1))
     (allow ARG1 devpts (filesystem (getattr))))
 
@@ -375,6 +378,9 @@
 
 (macro fs_rw_devtmpfs_dirs ((type ARG1))
     (allow ARG1 devtmpfs rw_dir_perms))
+
+(macro fs_list_devpts ((type ARG1))
+    (allow ARG1 devpts list_dir_perms))
 
 (macro fs_search_devpts ((type ARG1))
     (allow ARG1 devpts search_dir_perms))

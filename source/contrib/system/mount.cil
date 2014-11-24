@@ -72,6 +72,9 @@
     (call mount_auto_subtrans (ARG1))
     (roleattributeset mount_role (ARG2)))
 
+(macro mount_getattr_executable_files ((type ARG1))
+    (allow ARG1 mount.bin_object (file (getattr))))
+
 (macro mount_list_run ((type ARG1))
     (call file_search_run (ARG!))
     (allow ARG1 mount.run_object list_dir_perms))

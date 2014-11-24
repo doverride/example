@@ -415,6 +415,10 @@
     (allow ARG1 kmsg_proc read_file_perms)
     (typeattributeset can_read_kernel_message ARG1))
 
+(macro sys_read_mdstat_proc ((type ARG1))
+    (call fs_search_proc (ARG1))
+    (allow ARG1 mdstat_proc read_file_perms))
+
 (macro sys_search_net_proc ((type ARG1))
     (call fs_search_proc (ARG1))
     (allow ARG1 net_proc search_dir_perms))
