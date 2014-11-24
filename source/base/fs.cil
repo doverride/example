@@ -184,6 +184,9 @@
     (class ARG3)(name ARG4))
     (call file_type_transition_pattern (ARG1 rootfs ARG2 ARG3 ARG4)))
 
+(macro fs_mprot_write_rootfs_dirs ((type ARG1))
+    (allow ARG1 rootfs (dir (write))))
+
 (macro fs_list_rootfs ((type ARG1))
     (allow ARG1 rootfs list_dir_perms))
 
@@ -216,6 +219,10 @@
     (call sys_search_fs_sysctl (ARG1))
     (allow ARG1 binfmt_misc list_dir_perms))
 
+(macro fs_read_binfmt_misc_files ((type ARG1))
+    (call sys_search_fs_sysctl (ARG1))
+    (call read_files_pattern (ARG1 binfmt_misc binfmt_misc)))
+
 (macro fs_list_debugfs ((type ARG1))
     (allow ARG1 debugfs list_dir_perms))
 
@@ -234,6 +241,9 @@
 
 (macro fs_manage_devtmpfs_dirs ((type ARG1))
     (allow ARG1 devtmpfs manage_dir_perms))
+
+(macro fs_manage_devtmpfs_files ((type ARG1))
+    (allow ARG1 devtmpfs manage_file_perms))
 
 (macro fs_manage_devtmpfs_chr_files ((type ARG1))
     (call fs_rw_devtmpfs_dirs (ARG1))

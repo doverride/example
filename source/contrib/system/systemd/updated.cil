@@ -19,8 +19,8 @@
 
     (call journal_client (common_subject))
 
-    (optional updated_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
 )
 
 (allow updated_admin_type self (capability (kill sys_ptrace)))

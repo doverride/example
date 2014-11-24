@@ -1,3 +1,5 @@
+(typepermissive notify.common_subject)
+
 (roleattribute notify_role)
 
 (block notify
@@ -8,21 +10,24 @@
     (context bin_notify (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/systemd-notify" file bin_notify)
 
+    (call file_read_generic_etc_files (common_subject))
+
     (optional notify_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional notify_optional_unconfined
-        (call unconfined (notify_role common_subject)))
 )
 
 (macro notify_exec ((type ARG1))
     (call can_exec (ARG1 notify.bin_object)))
 
 (macro notify_auto_subtrans ((type ARG1))
+    (call notify_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 notify.bin_object notify.common_subject)))
 
 (macro notify_run ((type ARG1)(role ARG2))
     (call notify_auto_subtrans (ARG1))
     (roleattributeset notify_role (ARG2)))
+
+(macro notify_send_signal ((type ARG1))
+    (allow ARG1 notify.common_subject (process (signal))))

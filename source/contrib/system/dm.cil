@@ -52,7 +52,7 @@
     (call dm_rw_dmcrypt_semaphores (common_subject))
 
     (call udev_client (common_subject))
-    (call udev_rw_inherited_udp_socket (common_subject))
+    (call udev_rw_inherited_udp_sockets (common_subject))
 
     (optional dmsetup_optional_lvm
         (call lvm_rw_lvm_semaphores (common_subject)))

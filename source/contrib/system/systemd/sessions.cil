@@ -13,10 +13,11 @@
     (filecon "/var/run/\.nologin.*" file run_sessions)
     (filecon "/var/run/nologin" file run_sessions)
 
-    (call journal_client (common_subject))
+    (call dev_write_kmsg (common_subject))
 
-    (optional sessions_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call file_search_etc (common_subject))
+
+    (call journal_client (common_subject))
 )
 
 (allow sessions_admin_type self (capability (kill sys_ptrace)))

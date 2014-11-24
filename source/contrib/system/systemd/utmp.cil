@@ -12,8 +12,18 @@
     (context run_utmp (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/utmp" file run_utmp)
 
-    (optional utmp_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call file_search_etc (common_subject))
+
+    (call audit_client (common_subject))
+
+    (call auth_write_wtmp (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call systemd_status_generic_units (common_subject))
+    (call systemd_status_system (common_subject))
+    (call systemd_status_transient_systemd_units (common_subject))
+    (call systemd_stream_connect (common_subject))
 )
 
 (allow utmp_admin_type self (capability (kill sys_ptrace)))

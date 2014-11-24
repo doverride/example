@@ -1,3 +1,5 @@
+(typepermissive loadmodules.common_subject)
+
 (roleattribute loadmodules_admin_role)
 (typeattribute loadmodules_admin_type)
 
@@ -12,10 +14,9 @@
     (context etc_loadmodules (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/modules-load\.d(/.*)?" any etc_loadmodules)
 
-    (call journal_client (common_subject))
+    (call dev_write_kmsg (common_subject))
 
-    (optional loadmodules_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call journal_client (common_subject))
 )
 
 (allow loadmodules_admin_type loadmodules.common_subject signal_perms)

@@ -1,3 +1,5 @@
+(typepermissive readonly.common_subject)
+
 (typeattribute readonly_admin_type)
 
 (block readonly
@@ -6,8 +8,21 @@
     (context bin_readonly (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/fedora-readonly" file bin_readonly)
 
-    (optional readonly_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call bin_execute_bin_files (common_subject))
+    (call bin_mprot_read_shell_files (common_subject))
+
+    (call fs_read_devtmpfs_lnk_files (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+    (call file_read_generic_etc_lnk_files (common_subject))
+
+    (call sec_get_enforce_mode (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
 )
 
 (allow readonly_admin_type self (capability (kill sys_ptrace)))

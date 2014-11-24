@@ -14,7 +14,7 @@
     (filecon "/usr/sbin/sysctl" file bin_sysctl)
     (filecon "/usr/lib/systemd/systemd-sysctl" file bin_sysctl)
 
-    (blockinherit file_maintains_etc_dirs_and_files_block)
+    (blockinherit file_maintains_etc_dirs_files_and_lnk_files_block)
 
     (typeattributeset sysctl_object_type etc_object)
 
@@ -24,12 +24,22 @@
 
     (call sys_rw_all_sysctl (common_subject))
 
+    (call dev_read_urandom (common_subject))
+    (call dev_write_kmsg (common_subject))
+
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_list_binfmt_misc (common_subject))
+    (call fs_read_binfmt_misc_files (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call udev_rw_inherited_udp_sockets (common_subject))
+
     (optional sysctl_optional_app
         (call app_subject_type (common_subject))
         (call app_exec_object_type (common_subject)))
-
-    (optional sysctl_optional_unconfined
-        (call unconfined (sysctl_role common_subject)))
 )
 
 (allow sysctl_admin_type self (capability (kill sys_ptrace)))

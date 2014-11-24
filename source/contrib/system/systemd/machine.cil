@@ -1,3 +1,6 @@
+(typepermissive machinectl.common_subject)
+(typepermissive machined.common_subject)
+
 (roleattribute machinectl_role)
 
 (roleattribute machine_admin_role)
@@ -22,9 +25,6 @@
     (optional machinectl_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional machinectl_optional_unconfined
-        (call unconfined (machinectl_role common_subject)))
 )
 
 (block machined
@@ -56,9 +56,6 @@
 
     (context systemd_run_machined (sys.u sys.r systemd_run_object (systemlow systemlow)))
     (filecon "/var/run/systemd/machines(/.*)?" any systemd_run_machined)
-
-    (optional machined_optional_unconfined
-        (call unconfined (sys.r common_subject)))
 )
 
 (allow machine_admin_type self (capability (kill sys_ptrace)))

@@ -13,12 +13,15 @@
         (mls_systemhigh mls_systemhigh)))
     (filecon "/var/lib/systemd/random-seed" file var_lib_randomseed)
 
+    (call sys_read_kernel_sysctl (common_subject))
+
     (call dev_rw_urandom (common_subject))
 
-    (call journal_client (common_subject))
+    (call file_search_etc (common_subject))
 
-    (optional randomseed_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call sec_list (common_subject))
+
+    (call journal_client (common_subject))
 )
 
 (allow randomseed_admin_type randomseed.common_subject signal_perms)

@@ -265,6 +265,18 @@
     (optional dev_getattr_all_optional_storage
         (call stor_getattr_all (ARG1))))
 
+(macro dev_setattr_all ((type ARG1))
+    (allow ARG1 dev_except_storage (chr_file (setattr)))
+    (optional dev_setattr_all_optional_storage
+        (call stor_setattr_all (ARG1))))
+
+(macro dev_rw_all ((type ARG1))
+    (allow ARG1 dev_except_storage rw_chr_file_perms)
+    (typeattributeset can_read_memory ARG1)
+    (typeattributeset can_write_memory ARG1)
+    (optional dev_rw_all_optional_storage
+        (call stor_rw_all (ARG1))))
+
 (macro dev_getattr_dri ((type ARG1))
     (allow ARG1 dri_dev (chr_file (getattr))))
 
@@ -316,6 +328,9 @@
 
 (macro dev_read_autofs ((type ARG1))
     (allow ARG1 autofs_dev read_chr_file_perms))
+
+(macro dev_read_event ((type ARG1))
+    (allow ARG1 event_dev read_chr_file_perms))
 
 (macro dev_read_kmsg ((type ARG1))
     (allow ARG1 kmsg_dev read_chr_file_perms))

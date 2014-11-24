@@ -40,7 +40,7 @@
 
         (allow common_subject systemd_etc_object read_file_perms)
 
-        (call systemd_search_etc (common_subject))
+        (call systemd_search_config (common_subject))
 )
 
 (block systemd_maintains_single_run_file_block
@@ -631,7 +631,7 @@
     (call file_type_transition_pattern
         (ARG1 run_systemd ARG2 ARG3 ARG4)))
 
-(macro systemd_search_etc ((type ARG1))
+(macro systemd_search_config ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 etc_systemd search_dir_perms))
 

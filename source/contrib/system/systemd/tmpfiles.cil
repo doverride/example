@@ -50,21 +50,28 @@
 
     (allow common_subject self (capability (fowner fsetid dac_override chown)))
     (allow common_subject self (process (getcap setfscreate)))
+    (allow common_subject self create_unix_stream_socket_perms)
+
+    (call sys_read_kernel_sysctl (common_subject))
+    (call sys_read_net_proc (common_subject))
+
+    (call sec_set_check_req_prot (common_subject))
 
     (call dev_manage_all (common_subject))
     (call dev_relabel_all (common_subject))
 
     (call fs_manage_devtmpfs_dirs (common_subject))
     (call fs_manage_devtmpfs_lnk_files (common_subject))
+    (call fs_manage_tmpfs_dirs (common_subject))
 
     (call journal_client (common_subject))
+
+    (call miscfiles_read_factory (common_subject))
+    (call miscfiles_read_localization (common_subject))
 
     (optional tmpfiles_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional tmpfiles_optional_unconfined
-        (call unconfined (tmpfiles_role common_subject)))
 )
 
 (type run_tmpfiles)

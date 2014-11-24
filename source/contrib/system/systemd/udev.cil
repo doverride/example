@@ -1,3 +1,5 @@
+(typepermissive udevadm.common_subject)
+
 (roleattribute udevadm_role)
 
 (roleattribute udev_admin_role)
@@ -20,12 +22,25 @@
     (context bin_udevadm (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/udevadm" file bin_udevadm)
 
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+    (call fs_rw_sysfs_files (common_subject))
+
+    (call stor_read_fixed_disk (common_subject))
+    (call stor_read_removable (common_subject))
+    (call stor_read_scsi_generic (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
+
+    (call systemd_search_run (common_subject))
+
+    (call udev_manage_config_files (common_subject))
+    (call udev_manage_run_files (common_subject))
+
     (optional udevadm_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional udevadm_optional_unconfined
-        (call unconfined (udevadm_role common_subject)))
 )
 
 (block udevd
@@ -64,9 +79,71 @@
     (allow common_subject self create_netlink_kobject_uevent_socket_perms)
     (allow common_subject self (netlink_route_socket (nlmsg_write)))
     (allow common_subject self create_netlink_socket_perms)
+    (allow common_subject self (unix_stream_socket (listen accept)))
 
-    (optional udevd_optional_unconfined
-        (call unconfined (sys.r common_subject)))
+    (call sys_load_kernel_module (common_subject))
+    (call sys_read_net_proc (common_subject))
+    (call sys_read_crypto_sysctl (common_subject))
+    (call sys_read_kernel_sysctl (common_subject))
+    (call sys_request_load_module (common_subject))
+    (call sys_link_keyring (common_subject))
+
+    (call bin_execute_bin_files (common_subject))
+    (call bin_execute_shell_files (common_subject))
+
+    (call dev_rw_all (common_subject))
+    (call dev_relabel_all (common_subject))
+    (call dev_setattr_all (common_subject))
+
+    (call file_list_etc (common_subject))
+
+    (call fs_mprot_write_rootfs_dirs (common_subject))
+    (call fs_list_debugfs (common_subject))
+    (call fs_manage_devtmpfs_dirs (common_subject))
+    (call fs_manage_devtmpfs_files (common_subject))
+    (call fs_manage_devtmpfs_lnk_files (common_subject))
+    (call fs_manage_devtmpfs_blk_files (common_subject))
+    (call fs_manage_devtmpfs_chr_files (common_subject))
+    (call fs_read_cgroup_files (common_subject))
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+    (call fs_rw_sysfs_files (common_subject))
+    (call fs_relabelfrom_devtmpfs_chr_files (common_subject))
+    (call fs_relabelfrom_devtmpfs_blk_files (common_subject))
+    (call fs_search_efivarfs (common_subject))
+
+    (call sec_get_enforce_mode (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dm_auto_subtrans_dmsetup (common_subject))
+
+    (call iptools_exec (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call kmod_list_config (common_subject))
+    (call kmod_read_config_files (common_subject))
+    (call kmod_read_modules_dep_files (common_subject))
+    (call kmod_auto_subtrans (common_subject))
+
+    (call logind_read_run_files (common_subject))
+
+    (call lvm_auto_subtrans (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+    (call miscfiles_read_modules_files (common_subject))
+    (call miscfiles_read_net_config_files (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
+
+    (call sysctl_auto_subtrans (common_subject))
+
+    (call systemd_search_config (common_subject))
+    (call systemd_dgram_send (common_subject))
+
+    (call udev_exec_helper (common_subject))
 )
 
 (block udev_helper
@@ -79,14 +156,17 @@
     (filecon "/usr/sbin/setregdomain" file bin_udev_helper)
 )
 
+(call dev_read_urandom (udevadm_client_type))
+
+(call systemd_search_run (udevadm_client_type))
+
+(call udev_client (udevadm_client_type))
+(call udev_stream_connect_udevd (udevadm_client_type))
+
 (allow udev_client_type self create_netlink_kobject_uevent_socket_perms)
 
 (call udev_read_config_files (udev_client_type))
 (call udev_read_run_files (udev_client_type))
-
-(call dev_read_urandom (udevadm_client_type))
-
-(call udev_stream_connect_udevd (udevadm_client_type))
 
 (allow udev_admin_type self (capability (kill sys_ptrace)))
 (allow udev_admin_type udev_subject_type signal_perms)
@@ -122,17 +202,29 @@
 
 (macro udev_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
-    (call read_files_pattern (ARG1 udevd.etc_object udevd.etc_object)))
+    (call read_files_pattern
+        (ARG1 udevd.etc_object udevd.etc_object)))
 
-(macro udev_read_run_files ((type ARG1))
-    (call file_search_run (ARG1))
-    (call read_files_pattern (ARG1 udevd.run_object udevd.run_object)))
+(macro udev_manage_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call manage_files_pattern
+        (ARG1 udevd.etc_object udevd.etc_object)))
 
 (macro udev_list_run ((type ARG1))
     (call file_search_run (ARG1))
     (allow ARG1 udevd.run_object list_dir_perms))
 
-(macro udev_rw_inherited_udp_socket ((type ARG1))
+(macro udev_read_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call read_files_pattern
+        (ARG1 udevd.run_object udevd.run_object)))
+
+(macro udev_manage_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call manage_files_pattern
+        (ARG1 udevd.run_object udevd.run_object)))
+
+(macro udev_rw_inherited_udp_sockets ((type ARG1))
     (allow ARG1 udevd.common_subject (udp_socket (read write))))
 
 (macro udev_send_signal_udevadm ((type ARG1))
