@@ -10,7 +10,6 @@
 (call bin_type (bin))
 
 (context bin (sys.u sys.r bin (systemlow systemlow)))
-(filecon "/bin" symlink bin)
 (filecon "/etc/dhcp/dhclient\.d/chrony\.sh" file bin)
 (filecon "/etc/grub\.d/.*" file bin)
 (filecon "/etc/profile\.d/.*" file bin)
@@ -26,7 +25,7 @@
 (filecon "/etc/sysconfig/network-scripts/ifdown-.*" file bin)
 (filecon "/etc/sysconfig/network-scripts/ifup-.*" file bin)
 (filecon "/etc/sysconfig/network-scripts/init\.ipv6-global" file bin)
-(filecon "/sbin" symlink bin)
+(filecon "/usr/bin" symlink bin)
 (filecon "/usr/bin/.*" any bin)
 (filecon "/usr/bin" dir bin)
 (filecon "/usr/lib/dracut/.*" file bin)
@@ -36,6 +35,7 @@
 (filecon "/usr/lib/tuned/powersave/script\.sh" file bin)
 (filecon "/usr/libexec/.*" any bin)
 (filecon "/usr/libexec" dir bin)
+(filecon "/usr/sbin" symlink bin)
 (filecon "/usr/sbin/.*" any bin)
 (filecon "/usr/sbin" dir bin)
 (filecon "/usr/share/texlive/texmf-dist/scripts(/.*)?" file bin)
@@ -92,9 +92,6 @@
 
 (macro bin_manual_subtrans ((type ARG1)(type ARG2))
     (call manual_subject_type_transition_pattern (ARG1 bin ARG2)))
-
-(macro bin_rootfs_filetrans_bin ((type ARG1)(class ARG2)(name ARG3))
-    (call fs_rootfs_filetrans (ARG1 bin ARG2 ARG3)))
 
 (macro bin_execute_bin_files ((type ARG1))
     (allow ARG1 bin exec_file_perms))

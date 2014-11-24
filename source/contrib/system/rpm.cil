@@ -80,7 +80,7 @@
 
     (typeattributeset rpm_object_type tmpfs_object)
 
-    (call bin_rootfs_filetrans_bin (common_subject lnk_file "*"))
+    (call fs_rootfs_filetrans (common_subject var_lib_object lnk_file "*"))
 
     (call auth_manage_shadow (rpm_role common_subject))
     (call auth_relabel_shadow (common_subject))
