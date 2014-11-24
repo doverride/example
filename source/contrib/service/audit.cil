@@ -92,6 +92,7 @@
     (call audit_append_log_files (common_subject))
     (call audit_read_config_files (common_subject))
     (call audit_read_log_files (common_subject))
+    (call audit_rename_log_files (common_subject))
     (call audit_setattr_log_files (common_subject))
 
     (call journal_client (common_subject))
@@ -292,6 +293,10 @@
 (macro audit_append_log_files ((type ARG1))
     (call audit_search_log (ARG1))
     (allow ARG1 var_log_audit append_file_perms))
+
+(macro audit_rename_log_files ((type ARG1))
+    (call audit_search_log (ARG1))
+    (allow ARG1 var_log_audit (file (rename))))
 
 (macro audit_read_log_files ((type ARG1))
     (call audit_search_log (ARG1))

@@ -1,3 +1,4 @@
+(roleattribute fsck_admin_role)
 (typeattribute fsck_admin_type)
 
 (block fsck
@@ -5,6 +6,11 @@
 
     (context bin_fsck (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/systemd-fsck" file bin_fsck)
+
+    (blockinherit file_maintains_run_dirs_and_files_block)
+
+    (context run_fsck (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/fsck(/.*)?" any run_fsck)
 
     (allow common_subject self rw_fifo_file_perms)
 
@@ -27,6 +33,15 @@
 (allow fsck_admin_type fsck.common_subject signal_perms)
 (allow fsck_admin_type fsck.common_subject (process (ptrace)))
 (call ps_subject_pattern (fsck_admin_type fsck.common_subject))
+(allow fsck_admin_type fsck.run_object (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype fsck_admin_role fsck.run_object)
 
-(macro fsck_admin ((type ARG1))
-    (typeattributeset fsck_admin_type ARG1))
+(macro fsck_manage_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call manage_files_pattern
+        (ARG1 fsck.run_object fsck.run_object)))
+
+(macro fsck_admin ((role ARG1)(type ARG2))
+    (roleattributeset fsck_admin_role ARG1)
+    (typeattributeset fsck_admin_type ARG2))

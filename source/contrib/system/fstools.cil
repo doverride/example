@@ -97,6 +97,9 @@
     (optional fstools_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
+
+    (optional fstools_optional_fsck
+        (call fsck_manage_run_files (common_subject)))
 )
 
 (macro fstools_exec ((type ARG1))

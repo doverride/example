@@ -21,6 +21,7 @@
     (filecon "/usr/bin/journalctl" file bin_journalctl)
 
     (allow common_subject self (capability (dac_override)))
+    (allow common_subject self create_unix_stream_socket_perms)
     (allow common_subject self rw_fifo_file_perms)
 
     (call dev_read_random (common_subject))
