@@ -21,15 +21,16 @@
     (filecon "/usr/bin/journalctl" file bin_journalctl)
 
     (allow common_subject self (capability (dac_override)))
-    (allow common_subject self create_unix_stream_socket_perms)
     (allow common_subject self rw_fifo_file_perms)
 
     (call dev_read_random (common_subject))
 
     (call term_use_inherited_unallocated_tts (common_subject))
 
+    (call journal_list_run (common_subject))
     (call journal_manage_log_files (common_subject))
     (call journal_manage_var_lib_files (common_subject))
+    (call journal_stop_journald_units (common_subject))
 
     (optional journalctl_optional_app
         (call app_exec_object_type (bin_object))
@@ -148,7 +149,7 @@
 (call miscfiles_read_terminfo (journalctl_client_type))
 (call miscfiles_read_localization (journalctl_client_type))
 
-(call systemd_search_run (journalctl_client_type))
+(call systemd_stream_connect (journalctl_client_type))
 
 (allow journal_client_type self (capability (net_admin))) ; FIXME
 (allow journal_client_type self (unix_dgram_socket (sendto)))
@@ -227,6 +228,9 @@
 
 (macro journal_relabelto_log_files ((type ARG1))
     (allow ARG1 journald.var_log_object relabelto_file_perms))
+
+(macro journal_stop_journald_units ((type ARG1))
+    (allow ARG1 journald.unit_object (service (stop))))
 
 (macro journal_client ((type ARG1))
     (typeattributeset journal_client_type ARG1))

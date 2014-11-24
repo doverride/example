@@ -323,6 +323,9 @@
 
     (call dracut_search_initramfs_run (common_subject)) ; /run/initramfs/.need_shutdown
 
+    (call fsck_list_run (common_subject))
+    (call fsck_read_run_files (common_subject))
+
     (call journal_list_log (common_subject))
     (call journal_client (common_subject))
     (call journal_list_run (common_subject))

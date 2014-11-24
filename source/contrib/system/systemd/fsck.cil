@@ -37,6 +37,15 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype fsck_admin_role fsck.run_object)
 
+(macro fsck_list_run ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 fsck.run_object list_dir_perms))
+
+(macro fsck_read_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call read_files_pattern
+        (ARG1 fsck.run_object fsck.run_object)))
+
 (macro fsck_manage_run_files ((type ARG1))
     (call file_search_run (ARG1))
     (call manage_files_pattern
