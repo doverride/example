@@ -27,9 +27,10 @@
     (context var_cache_ldconfig (sys.u sys.r var_cache_object (systemlow systemlow)))
     (filecon "/var/cache/ldconfig(/.*)?" any var_cache_ldconfig)
 
-    (allow common_subject self (capability (sys_chroot)))
+    (allow common_subject self (capability (dac_override sys_chroot)))
 
     (call file_read_generic_etc_files (common_subject))
+    (call file_read_generic_etc_lnk_files (common_subject))
 
     (call lib_manage_ld_so_cache_files (common_subject))
     (call lib_etc_filetrans_ld_so_cache_files (common_subject))
@@ -39,6 +40,12 @@
     (optional ldconfig_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
+
+    (optional ldconfig_optional_rpm
+        (call rpm_manage_var_tmp_files (common_subject))
+        (call rpm_read_inherited_fifo_files (common_subject))
+        (call rpm_append_inherited_tmpfs_files (common_subject))
+        (call rpm_read_inherited_tmpfs_files (common_subject)))
 )
 
 (allow ld_admin_type self (capability (kill sys_ptrace)))

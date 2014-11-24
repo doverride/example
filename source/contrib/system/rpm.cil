@@ -80,20 +80,22 @@
 
     (typeattributeset rpm_object_type tmpfs_object)
 
+    (call bin_rootfs_filetrans_bin (common_subject lnk_file "*"))
+
     (call auth_manage_shadow (rpm_role common_subject))
     (call auth_relabel_shadow (common_subject))
 
     (call rpm_shell_manual_subtrans_rpm_script (common_subject))
 
-    (call seutil_create_policy_config (common_subject))
+    (call seutil_create_policy_config (rpm_role common_subject))
     (call seutil_relabel_policy_config (common_subject))
 
     (optional rpm_optional_audit
-        (call audit_create_config (common_subject))
+        (call audit_manage_config (rpm_role common_subject))
         (call audit_relabel_config (common_subject))
-        (call audit_create_audisp_config (common_subject))
+        (call audit_manage_audisp_config (rpm_role common_subject))
         (call audit_relabel_audisp_config (common_subject))
-        (call audit_create_log (common_subject))
+        (call audit_manage_log (rpm_role common_subject))
         (call audit_relabel_log (common_subject)))
 
     (optional rpm_optional_app
@@ -153,6 +155,8 @@
 
 (call stor_unconfined (rpm_subject_type))
 
+(call lib_etc_filetrans_ld_so_cache_files (rpm_script_t))
+
 (optional rpm_script_optional_auth
     (call auth_unconfined (rpm_script_t)))
 
@@ -208,6 +212,25 @@
 
 (macro rpm_shell_manual_subtrans_rpm_script ((type ARG1))
     (call bin_shell_manual_subtrans (ARG1 rpm_script_t)))
+
+(macro rpm_manage_var_tmp_files ((type ARG1))
+    (call file_search_var_tmp (ARG1))
+    (call manage_files_pattern (ARG1 rpm.var_tmp_object rpm.var_tmp_object)))
+
+(macro rpm_append_inherited_tmpfs_files ((type ARG1))
+    (call rpm_use_fd (ARG1))
+    (allow ARG1 rpm.tmpfs_object (file (append))))
+
+(macro rpm_read_inherited_tmpfs_files ((type ARG1))
+    (call rpm_use_fd (ARG1))
+    (allow ARG1 rpm.tmpfs_object (file (read))))
+
+(macro rpm_use_fd ((type ARG1))
+    (allow ARG1 rpm.common_subject (fd (use))))
+
+(macro rpm_read_inherited_fifo_files ((type ARG1))
+    (call rpm_use_fd (ARG1))
+    (allow ARG1 rpm.common_subject (fifo_file (read))))
 
 (macro rpm_admin ((role ARG1)(type ARG2))
     (roleattributeset rpm_admin_role ARG1)

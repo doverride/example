@@ -93,6 +93,9 @@
 (macro bin_manual_subtrans ((type ARG1)(type ARG2))
     (call manual_subject_type_transition_pattern (ARG1 bin ARG2)))
 
+(macro bin_rootfs_filetrans_bin ((type ARG1)(class ARG2)(name ARG3))
+    (call fs_rootfs_filetrans (ARG1 bin ARG2 ARG3)))
+
 (macro bin_execute_bin_files ((type ARG1))
     (allow ARG1 bin exec_file_perms))
 
