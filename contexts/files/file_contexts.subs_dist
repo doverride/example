@@ -2,9 +2,12 @@
 /sbin /usr/sbin
 
 /lib /usr/lib
-
 /lib64 /usr/lib
+
 /usr/lib64 /usr/lib
+
+/usr/local/bin /usr/bin
+/usr/local/sbin /usr/sbin
 
 /usr/local/lib64 /usr/lib
 /usr/local/lib32 /usr/lib
