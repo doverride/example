@@ -287,7 +287,7 @@
     (roleattributeset groupadd_role ARG2))
 
 (macro usermanage_send_signal_groupadd ((type ARG1))
-    (allow ARG! groupadd.common_subject (process (signal))))
+    (allow ARG1 groupadd.common_subject (process (signal))))
 
 (macro usermanage_auto_subtrans_useradd ((type ARG1))
     (call usermanage_send_signal_useradd (ARG1))
@@ -299,7 +299,7 @@
     (roleattributeset useradd_role ARG2))
 
 (macro usermanage_send_signal_useradd ((type ARG1))
-    (allow ARG! useradd.common_subject (process (signal))))
+    (allow ARG1 useradd.common_subject (process (signal))))
 
 (macro usermanage_admin ((role ARG1)(type ARG2))
     (roleattributeset usermanage_admin_role ARG1)

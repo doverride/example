@@ -358,6 +358,9 @@
     (call file_search_etc (ARG1))
     (allow ARG1 selinux_conf search_dir_perms))
 
+(macro seutil_add_entry_config_dirs ((type ARG1))
+    (allow ARG1 selinux_conf add_entry_dir_perms))
+
 (macro seutil_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 selinux_conf selinux_conf)))
@@ -370,10 +373,18 @@
     (call seutil_search_config (ARG1))
     (call read_files_pattern (ARG1 default_context default_context)))
 
+(macro seutil_create_policy_config_dirs ((type ARG1))
+    (call seutil_add_entry_config_dirs (ARG1))
+    (allow ARG1 policy_conf create_dir_perms))
+
 (macro seutil_create_policy_config_files ((type ARG1))
     (call seutil_search_config (ARG1))
     (call create_files_pattern (ARG1 policy_conf policy_conf))
     (typeattributeset can_write_binary_policy ARG1))
+
+(macro seutil_create_policy_config ((type ARG1))
+    (call seutil_create_policy_config_dirs (ARG1))
+    (call seutil_create_policy_config_files (ARG1)))
 
 (macro seutil_read_policy_config_files ((type ARG1))
     (call seutil_search_config (ARG1))

@@ -1,0 +1,214 @@
+(roleattribute rpm_role)
+
+(roleattribute rpm_admin_role)
+(typeattribute rpm_admin_type)
+
+(typeattribute rpm_etc_file_type)
+
+(typeattribute rpm_object_type)
+(typeattribute rpm_subject_type)
+
+(block rpm_maintains_single_rpm_etc_file_block
+    (blockabstract rpm_maintains_single_rpm_etc_file_block)
+        (blockinherit rpm_etc_object_block)
+
+        (allow common_subject rpm_etc_object read_file_perms)
+
+        (call rpm_search_config (common_subject))
+)
+
+(block rpm_etc_object_block
+    (blockabstract rpm_etc_object_block)
+        (type rpm_etc_object)
+        (call rpm_etc_file_type (rpm_etc_object))
+)
+
+(block rpm
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset rpm_object_type unit_object)
+    (typeattributeset rpm_subject_type common_subject)
+
+    (roletype rpm_role common_subject)
+
+    (context bin_rpm (sys.u sys.r rpm.bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/rpm" file bin_rpm)
+    (filecon "/usr/bin/yum" file bin_rpm)
+    (filecon "/usr/libexec/packagekitd" file bin_rpm)
+
+    (context unit_rpm (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*yum-makecache.*" file unit_rpm)
+    (filecon "/usr/lib/systemd/system/[^/]*packagekit.*" file unit_rpm)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset rpm_object_type dbus_etc_object)
+
+    (context dbus_etc_rpm (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system.d/org\.freedesktop\.PackageKit\.conf" file dbus_etc_rpm)
+
+    (blockinherit file_maintains_var_cache_dirs_and_files_block)
+
+    (typeattributeset rpm_object_type var_cache_object)
+
+    (context var_cache_rpm (sys.u sys.r var_cache_object (systemlow systemlow)))
+    (filecon "/var/cache/yum(/.*)?" any var_cache_rpm)
+    (filecon "/var/cache/PackageKit(/.*)?" any var_cache_rpm)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset rpm_object_type var_lib_object)
+
+    (context var_lib_rpm (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/rpm(/.*)?" any var_lib_rpm)
+    (filecon "/var/lib/rpm-state(/.*)?" any var_lib_rpm)
+    (filecon "/var/lib/yum(/.*)?" any var_lib_rpm)
+    (filecon "/var/lib/PackageKit(/.*)?" any var_lib_rpm)
+
+    (blockinherit file_maintains_single_var_log_file_block)
+
+    (typeattributeset rpm_object_type var_log_object)
+
+    (context var_log_rpm (sys.u sys.r var_log_object (systemlow systemlow)))
+    (filecon "/var/log/yum\.log.*" file var_log_rpm)
+
+    (blockinherit file_var_tmp_object_block)
+
+    (typeattributeset rpm_object_type var_tmp_object)
+
+    (blockinherit file_tmpfs_object_block)
+
+    (typeattributeset rpm_object_type tmpfs_object)
+
+    (call auth_manage_shadow (rpm_role common_subject))
+    (call auth_relabel_shadow (common_subject))
+
+    (call rpm_shell_manual_subtrans_rpm_script (common_subject))
+
+    (call seutil_create_policy_config (common_subject))
+    (call seutil_relabel_policy_config (common_subject))
+
+    (optional rpm_optional_audit
+        (call audit_create_config (common_subject))
+        (call audit_relabel_config (common_subject))
+        (call audit_create_audisp_config (common_subject))
+        (call audit_relabel_audisp_config (common_subject))
+        (call audit_create_log (common_subject))
+        (call audit_relabel_log (common_subject)))
+
+    (optional rpm_optional_app
+        (call app_exec_object_type (common_subject))
+        (call app_subject_type (common_subject)))
+)
+
+(type rpm_script_t)
+(call subject_common_type (rpm_script_t))
+
+(typeattributeset rpm_subject_type rpm_script_t)
+
+(roletype rpm_role rpm_script_t)
+
+(type etc_rpm)
+(call file_etc_type (etc_rpm))
+
+(typeattributeset rpm_etc_file_type etc_rpm)
+
+(context etc_rpm (sys.u sys.r etc_rpm (systemlow systemlow)))
+(filecon "/etc/rpm(/.*)?" any etc_rpm)
+(filecon "/etc/yum(/.*)?" any etc_rpm)
+(filecon "/etc/yum\.conf" file etc_rpm)
+(filecon "/etc/yum\.repos\.d(/.*)?" any etc_rpm)
+(filecon "/etc/PackageKit(/.*)?" any etc_rpm)
+
+(allow rpm_subject_type self all_capability_perms_except_sys_module_and_sys_nice)
+(allow rpm_subject_type self all_capability2_perms_except_mac_override_and_mac_admin)
+(allow rpm_subject_type self (process (execmem execheap execstack transition dyntransition
+    setcurrent setsched ptrace)))
+(allow rpm_subject_type self all_fifo_file_perms_except_mounton_and_execmod)
+
+(call file_var_tmp_filetrans (rpm_subject_type rpm.var_tmp_object dir "*"))
+(call file_var_tmp_filetrans (rpm_subject_type rpm.var_tmp_object file "*"))
+(call file_var_tmp_filetrans (rpm_subject_type rpm.var_tmp_object lnk_file "*"))
+(call file_var_tmp_filetrans (rpm_subject_type rpm.var_tmp_object fifo_file "*"))
+(call file_var_tmp_filetrans (rpm_subject_type rpm.var_tmp_object sock_file "*"))
+(call file_var_tmp_filetrans (rpm_subject_type rpm.var_tmp_object blk_file "*"))
+(call file_var_tmp_filetrans (rpm_subject_type rpm.var_tmp_object chr_file "*"))
+
+(call fs_tmpfs_filetrans (rpm_subject_type rpm.tmpfs_object dir "*"))
+(call fs_tmpfs_filetrans (rpm_subject_type rpm.tmpfs_object file "*"))
+(call fs_tmpfs_filetrans (rpm_subject_type rpm.tmpfs_object lnk_file "*"))
+(call fs_tmpfs_filetrans (rpm_subject_type rpm.tmpfs_object fifo_file "*"))
+(call fs_tmpfs_filetrans (rpm_subject_type rpm.tmpfs_object sock_file "*"))
+(call fs_tmpfs_filetrans (rpm_subject_type rpm.tmpfs_object blk_file "*"))
+(call fs_tmpfs_filetrans (rpm_subject_type rpm.tmpfs_object chr_file "*"))
+
+(call dev_unconfined (rpm_role rpm_subject_type))
+(call file_unconfined (rpm_role rpm_subject_type))
+(call subject_unconfined (rpm_role rpm_subject_type))
+
+(call fs_unconfined (rpm_subject_type))
+(call net_unconfined (rpm_subject_type))
+(call sec_unconfined (rpm_subject_type))
+(call sys_unconfined (rpm_subject_type))
+
+(call stor_unconfined (rpm_subject_type))
+
+(optional rpm_script_optional_auth
+    (call auth_unconfined (rpm_script_t)))
+
+(optional rpm_script_optional_bootloader
+    (call bootloader_run (rpm_script_t rpm_role)))
+
+(optional rpm_subject_optional_dbus
+    (call dbus_unconfined (rpm_subject_type)))
+
+(optional rpm_script_optional_ld
+    (call ld_run_ldconfig (rpm_script_t rpm_role)))
+
+(optional rpm_script_optional_systemd
+    (call systemd_unconfined (rpm_script_t)))
+
+(optional rpm_script_optional_usermanage
+    (call usermanage_run_groupadd (rpm_script_t rpm_role))
+    (call usermanage_run_useradd (rpm_script_t rpm_role)))
+
+(typeattributeset rpm_object_type rpm_etc_file_type)
+
+(allow rpm_admin_type self (capability (kill sys_ptrace)))
+(allow rpm_admin_type rpm_subject_type signal_perms)
+(allow rpm_admin_type rpm_subject_type (process (ptrace)))
+(call ps_subject_pattern (rpm_admin_type rpm_subject_type))
+(allow rpm_admin_type rpm.unit_object (service (all)))
+(allow rpm_admin_type rpm_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype rpm_admin_role rpm_object_type)
+
+(macro rpm_exec ((type ARG1))
+    (call can_exec (ARG1 rpm.bin_object)))
+
+(macro rpm_auto_subtrans ((type ARG1))
+    (call rpm_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 rpm.bin_object rpm.common_subject)))
+
+(macro rpm_run ((type ARG1)(role ARG2))
+    (call rpm_auto_subtrans (ARG1))
+    (roleattributeset rpm_role ARG2))
+
+(macro rpm_send_signal ((type ARG1))
+    (allow ARG1 rpm.common_subject (process (signal))))
+
+(macro rpm_etc_file_type ((type ARG1))
+    (call file_etc_type (ARG1))
+    (typeattributeset rpm_etc_file_type ARG1))
+
+(macro rpm_dbus_chat ((type ARG1))
+    (allow ARG1 rpm.common_subject (dbus (send_msg)))
+    (allow rpm.common_subject ARG1 (dbus (send_msg))))
+
+(macro rpm_shell_manual_subtrans_rpm_script ((type ARG1))
+    (call bin_shell_manual_subtrans (ARG1 rpm_script_t)))
+
+(macro rpm_admin ((role ARG1)(type ARG2))
+    (roleattributeset rpm_admin_role ARG1)
+    (typeattributeset rpm_admin_type ARG2))

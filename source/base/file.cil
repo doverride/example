@@ -865,6 +865,9 @@
 (macro file_read_run_lnk_files ((type ARG1))
     (allow ARG1 run read_lnk_file_perms))
 
+(macro file_add_entry_etc_dirs ((type ARG1))
+    (allow ARG1 etc add_entry_dir_perms))
+
 (macro file_rw_etc_dirs ((type ARG1))
     (allow ARG1 etc rw_dir_perms))
 
@@ -918,6 +921,9 @@
 
 (macro file_search_var_log ((type ARG1))
     (call search_dirs_pattern (ARG1 var var_log)))
+
+(macro file_add_entry_var_log_dirs ((type ARG1))
+    (allow ARG1 var_log add_entry_dir_perms))
 
 (macro file_rw_var_log_dirs ((type ARG1))
     (call rw_dirs_pattern (ARG1 var var_log)))

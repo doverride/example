@@ -265,6 +265,10 @@
     (call file_search_var_log (ARG1))
     (allow ARG1 var_log_audit search_dir_perms))
 
+(macro audit_create_log_dirs ((type ARG1))
+    (call file_add_entry_var_log_dirs (ARG1))
+    (allow ARG1 var_log_audit create_dir_perms))
+
 (macro audit_create_log_files ((type ARG1))
     (call file_search_var_log (ARG1))
     (call create_files_pattern (ARG1 var_log_audit var_log_audit)))
@@ -297,6 +301,10 @@
     (call audit_relabel_log_files (ARG1))
     (call audit_relabel_log_dirs (ARG1)))
 
+(macro audit_create_log ((type ARG1))
+    (call audit_create_log_dirs (ARG1))
+    (call audit_create_log_files (ARG1)))
+
 (macro audit_list_audisp_config ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 etc_audisp list_dir_perms))
@@ -304,6 +312,18 @@
 (macro audit_read_audisp_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 etc_audisp etc_audisp)))
+
+(macro audit_create_audisp_config_dirs ((type ARG1))
+    (call file_add_entry_etc_dirs (ARG1))
+    (allow ARG1 etc_audisp create_dir_perms))
+
+(macro audit_create_audisp_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call create_files_pattern (ARG1 etc_audisp etc_audisp)))
+
+(macro audit_create_audisp_config ((type ARG1))
+    (call audit_create_audisp_config_dirs (ARG1))
+    (call audit_create_audisp_config_files (ARG1)))
 
 (macro audit_relabel_audisp_config_dirs ((type ARG1))
     (call file_list_etc (ARG1))
@@ -324,6 +344,18 @@
 (macro audit_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 etc_audit etc_audit)))
+
+(macro audit_create_config_dirs ((type ARG1))
+    (call file_add_entry_etc_dirs (ARG1))
+    (allow ARG1 etc_audit create_dir_perms))
+
+(macro audit_create_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call create_files_pattern (ARG1 etc_audit etc_audit)))
+
+(macro audit_create_config ((type ARG1))
+    (call audit_create_config_dirs (ARG1))
+    (call audit_create_config_files (ARG1)))
 
 (macro audit_relabel_config_dirs ((type ARG1))
     (call file_list_etc (ARG1))

@@ -1,3 +1,5 @@
+(typepermissive ldconfig.common_subject)
+
 (roleattribute ldconfig_role)
 
 (roleattribute ld_admin_role)
