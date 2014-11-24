@@ -4,7 +4,7 @@
     (call usersubject_mls_template (u systemlow systemlow systemhigh))
 
     (context home_user (u r home_user (systemlow mls_systemhigh)))
-    (filecon "/home/.*" dir home_user)
+    (filecon "/home/.*?" dir home_user)
 
     (call usersubject_generic_object_template (r common_subject))
 
@@ -18,10 +18,10 @@
     (filecon "/home/.*/\.terminfo" file user_terminfo)
 
     (context user (u r home_object (systemlow systemlow)))
-    (filecon "/home/.*/.*" any user)
+    (filecon "/home/.*/.*?" any user)
 
     (context var_spool_user (u r var_spool_object (systemlow mls_systemhigh)))
-    (filecon "/var/spool/mail/.*" file var_spool_user)
+    (filecon "/var/spool/mail/.*?" file var_spool_user)
 
     (optional user_optional_unconfined
         (call unconfined (r common_subject)))

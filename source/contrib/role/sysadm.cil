@@ -42,6 +42,10 @@
 
     (optional sysadm_optional_unconfined
         (call unconfined (r common_subject)))
+
+    (optional sysadm_optional_usermanage
+        (call usermanage_run_groupadd (common_subject r))
+        (call usermanage_run_useradd (common_subject r)))
 )
 
 (block sysadm_chfn
