@@ -355,8 +355,7 @@
 
     (call systemd_exec (common_subject))
     (call systemd_exec_helper (common_subject))
-    (call systemd_delete_all_unit_files (common_subject))
-    (call systemd_read_all_unit_files (common_subject))
+    (call systemd_manage_all_unit_files (common_subject))
     (call systemd_relabelto_unit_dirs (common_subject))
 
     (call tmpfiles_list_run (common_subject))
@@ -514,7 +513,7 @@
 (call systemd_run_filetrans (systemd.common_subject systemd_unit dir "generator.late"))
 (call systemd_run_filetrans (systemd.common_subject systemd_unit dir "system"))
 
-(call fs_associate_tmpfs (systemd_unit))
+(call fs_associate_tmpfs (systemd_unit_object_type))
 
 (type etc_systemd)
 (call file_etc_type (etc_systemd))
@@ -855,13 +854,9 @@
     (call systemd_reload_all_units (ARG1))
     (call systemd_start_all_units (ARG1)))
 
-(macro systemd_delete_all_unit_files ((type ARG1))
+(macro systemd_manage_all_unit_files ((type ARG1))
     (call systemd_search_run (ARG1))
-    (call delete_files_pattern (ARG1 systemd_unit systemd_unit_object_type)))
-
-(macro systemd_read_all_unit_files ((type ARG1))
-    (call systemd_search_run (ARG1))
-    (call read_files_pattern (ARG1 systemd_unit systemd_unit_object_type)))
+    (call manage_files_pattern (ARG1 systemd_unit systemd_unit_object_type)))
 
 (macro systemd_read_pam_config_files ((type ARG1))
     (call auth_search_pam_config (ARG1))
