@@ -548,6 +548,9 @@
     (allow ARG1 usersubject_home_type del_entry_dir_perms)
     (allow ARG1 usersubject_home_type (all_file_objects (delete))))
 
+(macro usersubject_dontaudit_read_generic_user_home_content_files ((type ARG1))
+    (dontaudit ARG1 user.home_object read_file_perms))
+
 (macro usersubject_manage_generic_home_content_files ((type ARG1))
     (call usersubject_search_home_user (ARG1))
     (call manage_files_pattern (ARG1 user.home_object user.home_object)))

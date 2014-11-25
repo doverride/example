@@ -410,6 +410,8 @@
 
     (call askpwd_run_askpwdagent (common_subject systemctl_role))
 
+    (call usersubject_dontaudit_read_generic_user_home_content_files (common_subject))
+
     (optional systemctl_optional_app
         (call app_subject_type (common_subject))
         (call app_exec_object_type (common_subject)))
