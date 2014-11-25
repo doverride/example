@@ -404,6 +404,8 @@
     (context bin_systemctl (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/systemctl" file bin_systemctl)
 
+    (allow common_subject self (capability (dac_override)))
+
     (call systemd_manage_all_units (common_subject))
 
     (call askpwd_run_askpwdagent (common_subject systemctl_role))
@@ -455,6 +457,7 @@
 (call systemd_read_state (systemd_daemon_subject_type))
 
 (allow systemctl_client_type self (capability (net_admin ipc_lock)))
+(allow systemctl_client_type self rw_fifo_file_perms)
 
 (call sys_read_crypto_sysctl (systemctl_client_type))
 (call sys_read_kernel_sysctl (systemctl_client_type))

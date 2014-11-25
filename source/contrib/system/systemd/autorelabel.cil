@@ -14,9 +14,6 @@
 
     (allow common_subject self (capability (dac_override)))
     (allow common_subject self (process (getsched)))
-    (allow common_subject self rw_fifo_file_perms)
-
-    (call bin_execute_shell_files (common_subject))
 
     (call file_read_generic_etc_files (common_subject))
     (call file_getattr_all_tmpfs_files (common_subject))

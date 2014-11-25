@@ -140,7 +140,6 @@
     (filecon "/usr/libexec/nm-dispatcher" file bin_nm_disp)
 
     (allow common_subject self (process (setpgid)))
-    (allow common_subject self rw_fifo_file_perms)
 
     (call sys_read_net_proc (common_subject))
 
