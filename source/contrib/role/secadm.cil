@@ -17,9 +17,6 @@
 
     (call seutil_admin (r common_subject))
 
-    (call usersubject_roletype_generic_pts_role (r))
-    (call usersubject_mls_template (u systemlow systemlow systemhigh))
-
     (optional secadm_optional_sudo
         (call sudo_send_signal (common_subject)))
 

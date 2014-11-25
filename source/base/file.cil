@@ -886,6 +886,9 @@
 (macro file_read_generic_etc_files ((type ARG1))
     (call read_files_pattern (ARG1 etc etc)))
 
+(macro file_list_mnt ((type ARG1))
+    (allow ARG1 mnt list_dir_perms))
+
 (macro file_list_all_etc ((type ARG1))
     (allow ARG1 file_etc_type list_dir_perms))
 

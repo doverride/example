@@ -1,12 +1,8 @@
 (block sysadm
     (blockinherit usersubject_priv_login_block)
 
-    (call usersubject_mls_template (u systemlow systemlow systemhigh))
-
     (context home_sysadm (u r home_user (systemlow mls_systemhigh)))
     (filecon "/root" dir home_sysadm)
-
-    (call usersubject_generic_object_template (r common_subject))
 
     (context sysadm_bin (u r user_bin.home_object (systemlow systemlow)))
     (filecon "/root/\.bin(/.*)?" any sysadm_bin)

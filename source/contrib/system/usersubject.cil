@@ -16,21 +16,27 @@
     (blockabstract usersubject_block)
         (blockinherit subject_block)
 
-        (user u)
-        (userrole u r)
-
         (role r)
         (roletype r subject)
 
         (call usersubject_type (subject))
+
+        (call usersubject_roletype_generic_terminals_role (r))
+)
+
+(block usersubject_login_block
+    (blockabstract usersubject_login_block)
+        (blockinherit usersubject_block)
+
+        (user u)
+        (userrole u r)
+
+        (call sys_roleallow_role (r))
 )
 
 (block usersubject_common_block
     (blockabstract usersubject_common_block)
         (blockinherit subject_common_block)
-
-        (user u)
-        (userrole u r)
 
         (role r)
         (roletype r common_subject)
@@ -42,18 +48,30 @@
     (blockabstract usersubject_common_login_block)
         (blockinherit usersubject_common_block)
 
+        (user u)
+        (userrole u r)
+
         (call sys_roleallow_role (r))
 
         (call usersubject_common_login_type (common_subject))
+        (call usersubject_generic_object_template (r common_subject))
+
+        (call usersubject_mls_template (u systemlow systemlow systemhigh))
 )
 
 (block usersubject_priv_login_block
     (blockabstract usersubject_priv_login_block)
         (blockinherit usersubject_common_block)
 
+        (user u)
+        (userrole u r)
+
         (call sys_roleallow_role (r))
 
         (call usersubject_priv_login_type (common_subject))
+        (call usersubject_generic_object_template (r common_subject))
+
+        (call usersubject_mls_template (u systemlow systemlow systemhigh))
 )
 
 (block usersubject_object_block
@@ -215,34 +233,87 @@
 
 (call utmp_read_run_files (usersubject_common_type))
 
+(allow usersubject_common_login_type self create_unix_dgram_socket_perms)
+
+(call sys_read_net_proc (usersubject_common_login_type))
+(call sys_read_kernel_sysctl (usersubject_common_login_type))
+
+(call dev_read_urandom (usersubject_common_login_type))
+(call dev_rw_inherited_ptmx (usersubject_common_login_type))
+
+(call file_list_etc (usersubject_common_login_type))
+(call file_list_mnt (usersubject_common_login_type))
+(call file_read_generic_etc_files (usersubject_common_login_type))
+(call file_read_generic_usr_files (usersubject_common_login_type))
+
+(call fs_read_sysfs_files (usersubject_common_login_type))
+
+(call sec_get_enforce_mode (usersubject_common_login_type))
+
+(call auth_nsswitch_client (usersubject_common_login_type))
+
+(call hostname_exec (usersubject_common_login_type))
+
+(call login_send_signull (usersubject_common_login_type))
+
+(call miscfiles_read_man_files (usersubject_common_login_type))
+(call miscfiles_read_net_config_files (usersubject_common_login_type))
+
+; (call seutil_exec_chcon (usersubject_common_login_type))
+
+(call usersubject_use_generic_terminals (usersubject_common_login_type))
+
+(optional usersubject_common_login_type_optional_pcitools
+    (call pcitools_exec (usersubject_common_login_type)))
+
+(optional usersubject_common_login_type_optional_ssh
+    (call ssh_rw_inherited_sshd_tcp_sockets (usersubject_common_login_type))
+    (call ssh_rw_inherited_sshd_unix_stream_sockets (usersubject_common_login_type))
+    (call ssh_rw_inherited_sshd_unix_dgram_sockets (usersubject_common_login_type)))
+
 (typeattributeset usersubject_unpriv_login_type
     (and (usersubject_common_login_type) (not (usersubject_priv_login_type))))
 
-(macro usersubject_base_template ((user ARG1)(role ARG2)(type ARG3))
-    (call subject_type (ARG3))
-    (call usersubject_type (ARG3))
-    (userrole ARG1 ARG2)
-    (roletype ARG2 ARG3))
+(macro usersubject_base_template ((role ARG1)(type ARG2))
+    (call subject_type (ARG2))
+    (call usersubject_type (ARG2))
+    (roletype ARG1 ARG2))
+
+(macro usersubject_base_login_template ((user ARG1)(role ARG2)(type ARG3))
+    (call usersubject_base_template (ARG2 ARG3))
+    (call sys_roleallow_role (ARG2))
+    (userrole ARG1 ARG2))
 
 (macro usersubject_type ((type ARG1))
     (typeattributeset usersubject_type ARG1))
 
-(macro usersubject_base_common_template ((user ARG1)(role ARG2)(type ARG3))
-    (call subject_common_type (ARG3))
-    (call usersubject_common_type (ARG3))
-    (userrole ARG1 ARG2)
-    (roletype ARG2 ARG3))
+(macro usersubject_base_common_template ((role ARG1)(type ARG2))
+    (call subject_common_type (ARG2))
+    (call usersubject_common_type (ARG2))
+    (roletype ARG1 ARG2))
+
+(macro usersubject_base_common_login_template ((user ARG1)(role ARG2)(type ARG3))
+    (call usersubject_base_common_template (ARG2 ARG3))
+    (call sys_roleallow_role (ARG2))
+    (userrole ARG1 ARG2))
 
 (macro usersubject_common_type ((type ARG1))
     (typeattributeset usersubject_common_type ARG1))
 
-(macro usersubject_base_common_login_template ((user ARG1)(role ARG2)(type ARG3))
-    (call usersubject_base_common_template (ARG1 ARG2 ARG3))
+(macro usersubject_common_login_template ((user ARG1)(role ARG2)(type ARG3))
+    (call usersubject_base_common_login_template (ARG1 ARG2 ARG3))
     (call usersubject_common_login_type (ARG3))
-    (call sys_roleallow_role (ARG2)))
+    (call usersubject_generic_object_template (ARG2 ARG3))
+    (call usersubject_mls_template (ARG1 systemlow systemlow systemhigh)))
 
 (macro usersubject_common_login_type ((type ARG1))
     (typeattributeset usersubject_common_login_type ARG1))
+
+(macro usersubject_priv_login_template ((user ARG1)(role ARG2)(type ARG3))
+    (call usersubject_base_common_login_template (ARG1 ARG2 ARG3))
+    (call usersubject_priv_login_type (ARG3))
+    (call usersubject_generic_object_template (ARG2 ARG3))
+    (call usersubject_mls_template (ARG1 systemlow systemlow systemhigh)))
 
 (macro usersubject_priv_login_type ((type ARG1))
     (call usersubject_common_login_type (ARG1))
@@ -315,7 +386,7 @@
 (macro usersubject_use_inherited_generic_pts ((type ARG1))
     (allow ARG1 user.pty_object rw_inherited_term_perms))
 
-(macro usersubject_roletype_generic_pts_role ((role ARG1))
+(macro usersubject_roletype_generic_pty_role ((role ARG1))
     (roletype ARG1 user.pty_object))
 
 (macro usersubject_use_inherited_generic_tts ((type ARG1))
@@ -323,6 +394,10 @@
 
 (macro usersubject_roletype_generic_tty_role ((role ARG1))
     (roletype ARG1 user.tty_object))
+
+(macro usersubject_roletype_generic_terminals_role ((role ARG1))
+    (call usersubject_roletype_generic_pty_role (ARG1))
+    (call usersubject_roletype_generic_tty_role (ARG1)))
 
 (macro usersubject_relabel_generic_terminals ((type ARG1))
     (call usersubject_relabel_generic_pts (ARG1))
@@ -368,10 +443,12 @@
 
 (macro usersubject_generic_pty_template ((role ARG1)(type ARG2))
     (call term_user_pty (ARG2 user.pty_object))
+    (call usersubject_use_generic_pts (ARG2))
     (roletype ARG1 user.pty_object))
 
 (macro usersubject_generic_tty_template ((role ARG1)(type ARG2))
     (call term_user_tty (ARG2 user.tty_object))
+    (call usersubject_use_generic_tts (ARG2))
     (roletype ARG1 user.tty_object))
 
 (macro usersubject_generic_terminals_template ((role ARG1)(type ARG2))

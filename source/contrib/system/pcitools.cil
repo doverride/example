@@ -20,6 +20,9 @@
     (call miscfiles_read_hwdata_files (common_subject))
 )
 
+(macro pcitools_exec ((type ARG1))
+    (call can_exec (ARG1 pcitools.bin_object)))
+
 (macro pcitools_auto_subtrans ((type ARG1))
     (call pcitools_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
