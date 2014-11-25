@@ -291,6 +291,9 @@
     (call fs_search_devpts (ARG1))
     (allow ARG1 devpts write_inherited_chr_file_perms))
 
+(macro fs_dontaudit_getattr_all_fs ((type ARG1))
+    (dontaudit ARG1 fs_type (filesystem (getattr))))
+
 (macro fs_getattr_all_fs ((type ARG1))
     (allow ARG1 fs_type (filesystem (getattr))))
 
@@ -445,8 +448,21 @@
 (macro fs_add_entry_devtmpfs_dirs ((type ARG1))
     (allow ARG1 devtmpfs add_entry_dir_perms))
 
+(macro fs_dontaudit_getattr_all_files ((type ARG1))
+    (dontaudit ARG1 fs_type (all_file_objects (getattr))))
+
 (macro fs_getattr_all_files ((type ARG1))
     (allow ARG1 fs_type (all_file_objects (getattr))))
+
+(macro fs_dontaudit_manage_all_files ((type ARG1))
+    (dontaudit ARG1 fs_type manage_file_perms))
+
+(macro fs_dontaudit_read_all_lnk_files ((type ARG1))
+    (dontaudit ARG1 fs_type read_lnk_file_perms))
+
+(macro fs_dontaudit_list_all ((type ARG1))
+    (call fs_dontaudit_getattr_all_files (ARG1))
+    (dontaudit ARG1 fs_type list_dir_perms))
 
 (macro fs_list_all ((type ARG1))
     (call fs_getattr_all_files (ARG1))

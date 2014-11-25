@@ -427,6 +427,12 @@
     (call sys_search_net_proc (ARG1))
     (allow ARG1 net_proc read_file_perms))
 
+(macro sys_dontaudit_list_all_proc ((type ARG1))
+    (dontaudit ARG1 sys_proc_type list_dir_perms))
+
+(macro sys_dontaudit_getattr_all_proc_files ((type ARG1))
+    (dontaudit ARG1 sys_proc_type (file (getattr))))
+
 (macro sys_read_crypto_sysctl ((type ARG1))
     (call sys_search_crypto_sysctl (ARG1))
     (allow ARG1 crypto_sysctl read_file_perms))
@@ -534,6 +540,12 @@
 (macro sys_search_vm_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (allow ARG1 vm_sysctl search_dir_perms))
+
+(macro sys_dontaudit_list_all_sysctl ((type ARG1))
+    (dontaudit ARG1 sys_sysctl_type list_dir_perms))
+
+(macro sys_dontaudit_getattr_all_sysctl_files ((type ARG1))
+    (dontaudit ARG1 sys_sysctl_type (file (getattr))))
 
 (macro sys_send_sigchld ((type ARG1))
     (allow ARG1 sys.common_subject (process (sigchld))))

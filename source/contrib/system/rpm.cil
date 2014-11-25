@@ -87,7 +87,7 @@
 
     (call rpm_shell_manual_subtrans_rpm_script (common_subject))
 
-    (call seutil_create_policy_config (rpm_role common_subject))
+    (call seutil_manage_policy_config (rpm_role common_subject))
     (call seutil_relabel_policy_config (common_subject))
 
     (optional rpm_optional_audit

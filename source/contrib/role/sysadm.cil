@@ -29,11 +29,6 @@
     (optional sysadm_optional_rpm
         (call rpm_run (common_subject r)))
 
-    (optional sysadm_optional_seutil
-        (call seutil_run_load_policy (common_subject r))
-        (call seutil_run_secilc (common_subject r))
-        (call seutil_run_setfiles (common_subject r)))
-
     (optional sysadm_optional_sudo
         (call sudo_send_signal (common_subject))
         (optional sysadm_optional_staff

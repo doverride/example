@@ -1,3 +1,4 @@
+secadm.r:secadm.common_subject
 sysadm.r:sysadm.common_subject
 staff.r:staff.common_subject
 user.r:user.common_subject

@@ -199,6 +199,15 @@
 (macro net_udp_bind_generic_node ((type ARG1))
     (allow ARG1 node (udp_socket (node_bind))))
 
+(macro net_dontaudit_tcp_connect_all_ports ((type ARG1))
+    (dontaudit ARG1 net_port_type (tcp_socket (name_connect))))
+
+(macro net_dontaudit_tcp_bind_all_ports ((type ARG1))
+    (dontaudit ARG1 net_port_type (tcp_socket (name_bind))))
+
+(macro net_dontaudit_udp_bind_all_ports ((type ARG1))
+    (dontaudit ARG1 net_port_type (udp_socket (name_bind))))
+
 (macro net_unconfined ((type ARG1))
     (typeattributeset net_unconfined_type ARG1))
 

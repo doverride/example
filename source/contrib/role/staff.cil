@@ -45,14 +45,25 @@
 
         (call sudo_role_template (staff.r staff.common_subject common_subject))
 
-        (call sysadm_manage_keyring (common_subject))
-        (call sysadm_send_signal (common_subject))
-        (call sysadm_shell_manual_subtrans (common_subject))
+        (optional staff_optional_sysadm
+            (call sysadm_manage_keyring (common_subject))
+            (call sysadm_send_signal (common_subject))
+            (call sysadm_shell_manual_subtrans (common_subject))
 
-        (call sysadm_userrole (staff.u))
-        (call sysadm_roleallow (staff.r))
+            (call sysadm_userrole (staff.u))
+            (call sysadm_roleallow (staff.r))
 
-        (call sysadm_send_signal (staff.common_subject))
+            (call sysadm_send_signal (staff.common_subject)))
+
+        (optional staff_optional_secadm
+            (call secadm_manage_keyring (common_subject))
+            (call secadm_send_signal (common_subject))
+            (call secadm_shell_manual_subtrans (common_subject))
+
+            (call secadm_userrole (staff.u))
+            (call secadm_roleallow (staff.r))
+
+            (call secadm_send_signal (staff.common_subject)))
     )
 )
 

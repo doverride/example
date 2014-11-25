@@ -266,8 +266,16 @@
     (allow ARG1 subject_type read_file_perms)
     (allow ARG1 subject_type read_lnk_file_perms))
 
+(macro subject_dontaudit_getattr_all_common_subjects ((type ARG1))
+    (dontaudit ARG1 subject_common_type (process (getattr))))
+
 (macro subject_getattr_all_common_subjects ((type ARG1))
     (allow ARG1 subject_common_type (process (getattr))))
+
+(macro subject_dontaudit_read_all_common_subjects_state ((type ARG1))
+    (dontaudit ARG1 subject_common_type list_dir_perms)
+    (dontaudit ARG1 subject_common_type read_file_perms)
+    (dontaudit ARG1 subject_common_type read_lnk_file_perms))
 
 (macro subject_read_all_common_subjects_state ((type ARG1))
     (allow ARG1 subject_common_type list_dir_perms)

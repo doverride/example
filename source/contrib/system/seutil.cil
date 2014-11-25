@@ -58,8 +58,10 @@
     (call seutil_create_file_context_files (common_subject))
     (call seutil_read_file_context_files (common_subject))
     (call seutil_write_file_context_files (common_subject))
+    (call seutil_create_policy_config_dirs (secilc_role common_subject))
     (call seutil_create_policy_config_files (secilc_role common_subject))
     (call seutil_write_policy_config_files (common_subject))
+    (call seutil_config_filetrans_policy_conf_dirs (secilc_role common_subject))
     (call seutil_read_source_files (common_subject))
 
     (optional secilc_optional_app
@@ -227,7 +229,7 @@
 (type selinux_conf)
 (call file_etc_type (selinux_conf))
 
-(typeattributeset seutil_object_type policy_conf)
+(typeattributeset seutil_object_type selinux_conf)
 
 (context selinux_conf (sys.u sys.r selinux_conf (systemlow systemlow)))
 (filecon "/etc/selinux(/.*)?" any selinux_conf)
@@ -346,9 +348,31 @@
 (macro seutil_send_signal_setfiles ((type ARG1))
     (allow ARG1 setfiles.common_subject (process (signal))))
 
-(macro seutil_selinux_config_filetrans ((type ARG1)(type ARG2)
+(macro seutil_config_filetrans ((type ARG1)(type ARG2)
     (class ARG3)(name ARG4))
+    (call file_search_etc (ARG1))
     (call file_type_transition_pattern (ARG1 selinux_conf ARG2 ARG3 ARG4)))
+
+(macro seutil_default_context_filetrans ((type ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call seutil_search_config (ARG1))
+    (call file_type_transition_pattern (ARG1 default_context ARG2 ARG3 ARG4)))
+
+(macro seutil_etc_filetrans_selinux_conf_dirs ((type ARG1))
+    (call file_etc_filetrans (ARG1 selinux_conf dir "selinux")))
+
+(macro seutil_config_filetrans_policy_src_dirs ((type ARG1))
+    (call seutil_config_filetrans (ARG1 policy_src dir "source")))
+
+(macro seutil_config_filetrans_policy_conf_dirs ((role ARG1)(type ARG2))
+    (call seutil_config_filetrans (ARG2 policy_conf dir "policy"))
+    (roletype ARG1 policy_conf))
+
+(macro seutil_default_context_filetrans_file_context_dirs ((type ARG1))
+    (call seutil_default_context_filetrans (ARG1 file_context dir "files")))
+
+(macro seutil_config_filetrans_default_context_dirs ((type ARG1))
+    (call seutil_config_filetrans (ARG1 default_context dir "contexts")))
 
 (macro seutil_list_config ((type ARG1))
     (call file_search_etc (ARG1))
@@ -361,17 +385,12 @@
 (macro seutil_add_entry_config_dirs ((type ARG1))
     (allow ARG1 selinux_conf add_entry_dir_perms))
 
+(macro seutil_rw_config_dirs ((type ARG1))
+    (allow ARG1 selinux_conf rw_dir_perms))
+
 (macro seutil_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 selinux_conf selinux_conf)))
-
-(macro seutil_search_default_context ((type ARG1))
-    (call seutil_search_config (ARG1))
-    (allow ARG1 default_context search_dir_perms))
-
-(macro seutil_read_default_context_files ((type ARG1))
-    (call seutil_search_config (ARG1))
-    (call read_files_pattern (ARG1 default_context default_context)))
 
 (macro seutil_create_policy_config_dirs ((role ARG1)(type ARG2))
     (call seutil_add_entry_config_dirs (ARG2))
@@ -397,10 +416,20 @@
     (call write_files_pattern (ARG1 policy_conf policy_conf))
     (typeattributeset can_write_binary_policy ARG1))
 
-(macro seutil_manage_policy_config_files ((type ARG1))
-    (call seutil_search_config (ARG1))
-    (call manage_files_pattern (ARG1 policy_conf policy_conf))
-    (typeattributeset can_write_binary_policy ARG1))
+(macro seutil_manage_policy_config_dirs ((role ARG1)(type ARG2))
+    (call seutil_rw_config_dirs (ARG2))
+    (allow ARG2 policy_conf manage_dir_perms)
+    (roletype ARG1 policy_conf))
+
+(macro seutil_manage_policy_config_files ((role ARG1)(type ARG2))
+    (call seutil_search_config (ARG2))
+    (call manage_files_pattern (ARG2 policy_conf policy_conf))
+    (typeattributeset can_write_binary_policy ARG2)
+    (roletype ARG1 policy_conf))
+
+(macro seutil_manage_policy_config ((role ARG1)(type ARG2))
+    (call seutil_manage_policy_config_dirs (ARG1 ARG2))
+    (call seutil_manage_policy_config_files (ARG1 ARG2)))
 
 (macro seutil_list_policy_config ((type ARG1))
     (call seutil_search_config (ARG1))
@@ -438,6 +467,18 @@
 (macro seutil_write_file_context_files ((type ARG1))
     (call seutil_search_default_context (ARG1))
     (call write_files_pattern (ARG1 file_context file_context)))
+
+(macro seutil_read_default_context_files ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (call read_files_pattern (ARG1 default_context default_context)))
+
+(macro seutil_rw_default_context_dirs ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (allow ARG1 default_context rw_dir_perms))
+
+(macro seutil_search_default_context ((type ARG1))
+    (call seutil_search_config (ARG1))
+    (allow ARG1 default_context search_dir_perms))
 
 (macro seutil_read_source_files ((type ARG1))
     (call seutil_search_config (ARG1))

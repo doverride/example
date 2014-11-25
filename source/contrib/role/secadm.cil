@@ -1,0 +1,44 @@
+(block secadm
+    (blockinherit usersubject_common_block)
+
+    (dontaudit common_subject self (capability (dac_override dac_read_search)))
+
+    (call seutil_manage_policy_config (r common_subject))
+    (call seutil_config_filetrans_policy_conf_dirs (r common_subject))
+
+    (call seutil_config_filetrans_default_context_dirs (common_subject))
+    (call seutil_config_filetrans_policy_src_dirs (common_subject))
+    (call seutil_default_context_filetrans_file_context_dirs (common_subject))
+    (call seutil_etc_filetrans_selinux_conf_dirs (common_subject))
+
+    (call seutil_run_load_policy (common_subject r))
+    (call seutil_run_secilc (common_subject r))
+    (call seutil_run_setfiles (common_subject r))
+
+    (call seutil_admin (r common_subject))
+
+    (call usersubject_roletype_generic_pts_role (r))
+    (call usersubject_mls_template (u systemlow systemlow systemhigh))
+
+    (optional secadm_optional_sudo
+        (call sudo_send_signal (common_subject)))
+
+    (optional secadm_optional_staff
+        (call staff_rw_inherited_fifo_files (common_subject))
+        (call staff_use_fd (common_subject)))
+)
+
+(macro secadm_roleallow ((role ARG1))
+    (roleallow ARG1 secadm.r))
+
+(macro secadm_userrole ((user ARG1))
+    (userrole ARG1 secadm.r))
+
+(macro secadm_send_signal ((type ARG1))
+    (allow ARG1 secadm.common_subject (process (signal))))
+
+(macro secadm_manage_keyring ((type ARG1))
+    (allow ARG1 secadm.common_subject (key (create search link write))))
+
+(macro secadm_shell_manual_subtrans ((type ARG1))
+    (call bin_shell_manual_subtrans (ARG1 secadm.common_subject)))

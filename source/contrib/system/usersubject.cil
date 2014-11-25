@@ -36,7 +36,6 @@
         (roletype r common_subject)
 
         (call usersubject_common_type (common_subject))
-
 )
 
 (block usersubject_common_login_block
@@ -175,10 +174,46 @@
     (blockinherit usersubject_home_object_block)
 )
 
+(allow usersubject_common_type self (process (setpgid getattr getsched)))
+(allow usersubject_common_type self create_unix_stream_socket_perms)
+(allow usersubject_common_type self rw_fifo_file_perms)
+
+(call sys_dontaudit_list_all_proc (usersubject_common_type))
+(call sys_dontaudit_getattr_all_proc_files (usersubject_common_type))
+(call sys_dontaudit_list_all_sysctl (usersubject_common_type))
+(call sys_dontaudit_getattr_all_sysctl_files (usersubject_common_type))
+
 (call bin_entry (usersubject_common_type))
 (call bin_shell_entry (usersubject_common_type))
+(call bin_execute_bin_files (usersubject_common_type))
+(call bin_execute_shell_files (usersubject_common_type))
+
+(call file_search_var_spool (usersubject_common_type))
+(call file_dontaudit_manage_all_files (usersubject_common_type))
+(call file_dontaudit_read_all_lnk_files (usersubject_common_type))
+(call file_dontaudit_list_all (usersubject_common_type))
+
+(call fs_dontaudit_getattr_all_fs (usersubject_common_type))
+(call fs_dontaudit_manage_all_files (usersubject_common_type))
+(call fs_dontaudit_read_all_lnk_files (usersubject_common_type))
+(call fs_dontaudit_list_all (usersubject_common_type))
+(call fs_getattr_fs (usersubject_common_type))
+(call fs_list_proc (usersubject_common_type))
 
 (call subject_user_exemption_target (usersubject_common_type))
+(call subject_dontaudit_getattr_all_common_subjects (usersubject_common_type))
+(call subject_dontaudit_read_all_common_subjects_state (usersubject_common_type))
+
+(call net_dontaudit_udp_bind_all_ports (usersubject_common_type))
+(call net_dontaudit_tcp_bind_all_ports (usersubject_common_type))
+(call net_dontaudit_tcp_connect_all_ports (usersubject_common_type))
+
+(call miscfiles_read_terminfo (usersubject_common_type))
+(call miscfiles_read_localization (usersubject_common_type))
+
+(call usersubject_use_generic_inherited_terminals (usersubject_common_type))
+
+(call utmp_read_run_files (usersubject_common_type))
 
 (typeattributeset usersubject_unpriv_login_type
     (and (usersubject_common_login_type) (not (usersubject_priv_login_type))))
@@ -280,8 +315,14 @@
 (macro usersubject_use_inherited_generic_pts ((type ARG1))
     (allow ARG1 user.pty_object rw_inherited_term_perms))
 
+(macro usersubject_roletype_generic_pts_role ((role ARG1))
+    (roletype ARG1 user.pty_object))
+
 (macro usersubject_use_inherited_generic_tts ((type ARG1))
     (allow ARG1 user.tty_object rw_inherited_term_perms))
+
+(macro usersubject_roletype_generic_tty_role ((role ARG1))
+    (roletype ARG1 user.tty_object))
 
 (macro usersubject_relabel_generic_terminals ((type ARG1))
     (call usersubject_relabel_generic_pts (ARG1))
