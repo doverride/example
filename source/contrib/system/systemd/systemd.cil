@@ -407,6 +407,8 @@
     (allow common_subject self (capability (dac_override)))
 
     (call systemd_manage_all_units (common_subject))
+    (call systemd_status_system (common_subject))
+    (call systemd_reload_system (common_subject))
 
     (call askpwd_run_askpwdagent (common_subject systemctl_role))
 
@@ -727,6 +729,9 @@
 
 (macro systemd_reboot_system ((type ARG1))
     (allow ARG1 systemd.common_subject (system (reboot))))
+
+(macro systemd_reload_system ((type ARG1))
+    (allow ARG1 systemd.common_subject (system (reload))))
 
 (macro systemd_status_system ((type ARG1))
     (allow ARG1 systemd.common_subject (system (status))))
