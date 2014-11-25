@@ -12,6 +12,8 @@
 
     (call dev_read_kmsg (common_subject))
 
+    (call file_dontaudit_search_all (common_subject))
+
     (call term_use_inherited_unallocated_tts (common_subject))
 
     (call miscfiles_read_localization (common_subject))

@@ -1028,6 +1028,9 @@
 (macro file_dontaudit_list_all ((type ARG1))
     (dontaudit ARG1 file_type list_dir_perms))
 
+(macro file_dontaudit_search_all ((type ARG1))
+    (dontaudit ARG1 file_type search_dir_perms))
+
 (macro file_dontaudit_manage_all_files ((type ARG1))
     (dontaudit ARG1 file_type manage_file_perms))
 
