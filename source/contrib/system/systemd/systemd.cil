@@ -1,3 +1,5 @@
+(typepermissive systemctl.common_subject)
+
 (roleattribute systemctl_role)
 
 (roleattribute systemd_admin_role)
@@ -405,9 +407,6 @@
     (optional systemctl_optional_app
         (call app_subject_type (common_subject))
         (call app_exec_object_type (common_subject)))
-
-    (optional systemctl_optional_unconfined
-        (call unconfined (systemctl_role common_subject)))
 )
 
 (block systemd_generic
