@@ -27,7 +27,7 @@
 
     (call dev_getattr_all (common_subject))
 
-    (call file_unconfined (r common_subject))
+    (call file_manage_generic_etc (r common_subject))
 
     (call fs_getattr_all_fs (common_subject))
     (call fs_getattr_devpts_chr_files (common_subject))

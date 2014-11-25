@@ -903,6 +903,12 @@
     (call file_read_all_etc_lnk_files (ARG1))
     (allow ARG1 file_etc_type read_file_perms))
 
+(macro file_manage_generic_etc ((role ARG1)(type ARG2))
+    (allow ARG2 etc manage_dir_perms)
+    (allow ARG2 etc manage_file_perms)
+    (allow ARG2 etc manage_lnk_file_perms)
+    (roletype ARG1 etc))
+
 (macro file_read_generic_etc ((type ARG1))
     (call file_list_etc (ARG1))
     (call file_read_generic_etc_lnk_files (ARG1))
