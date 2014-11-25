@@ -1,5 +1,5 @@
 (classmap all_file_objects (not_mounton_entrypoint_and_execmod manage relabel delete getattr audit_access
-    relabelfrom relabelto))
+    relabelfrom relabelto read))
 
 (classmapping all_file_objects not_mounton_entrypoint_and_execmod
     all_file_perms_except_mounton_execmod_and_entrypoint)
@@ -15,6 +15,14 @@
     all_sock_file_perms_except_mounton_and_execmod)
 (classmapping all_file_objects not_mounton_entrypoint_and_execmod
     all_fifo_file_perms_except_mounton_and_execmod)
+
+(classmapping all_file_objects read read_file_perms)
+(classmapping all_file_objects read list_dir_perms)
+(classmapping all_file_objects read read_lnk_file_perms)
+(classmapping all_file_objects read read_chr_file_perms)
+(classmapping all_file_objects read read_blk_file_perms)
+(classmapping all_file_objects read read_sock_file_perms)
+(classmapping all_file_objects read read_fifo_file_perms)
 
 (classmapping all_file_objects audit_access (file (audit_access)))
 (classmapping all_file_objects audit_access (dir (audit_access)))

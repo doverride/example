@@ -385,7 +385,6 @@
     (call file_var_log_filetrans (ARG1 sys.var_log_object file "boot.log")))
 
 (macro sys_dump_kernel ((type ARG1))
-    (call fs_search_proc (ARG1))
     (allow ARG1 self (capability (sys_rawio)))
     (allow ARG1 kcore_proc read_file_perms)
     (typeattributeset can_dump_kernel ARG1))
@@ -411,7 +410,6 @@
     (typeattributeset can_load_kernel_module ARG1))
 
 (macro sys_read_kernel_message ((type ARG1))
-    (call fs_search_proc (ARG1))
     (allow ARG1 kmsg_proc read_file_perms)
     (typeattributeset can_read_kernel_message ARG1))
 
@@ -427,30 +425,31 @@
     (call sys_search_net_proc (ARG1))
     (allow ARG1 net_proc read_file_perms))
 
+(macro sys_read_all_proc ((type ARG1))
+    (call read_files_pattern (ARG1 sys_proc_type sys_proc_type))
+    (typeattributeset can_dump_kernel ARG1)
+    (typeattributeset can_read_kernel_message ARG1))
+
 (macro sys_dontaudit_list_all_proc ((type ARG1))
     (dontaudit ARG1 sys_proc_type list_dir_perms))
 
 (macro sys_dontaudit_getattr_all_proc_files ((type ARG1))
     (dontaudit ARG1 sys_proc_type (file (getattr))))
 
-(macro sys_read_crypto_sysctl ((type ARG1))
-    (call sys_search_crypto_sysctl (ARG1))
-    (allow ARG1 crypto_sysctl read_file_perms))
-
-(macro sys_read_kernel_sysctl ((type ARG1))
-    (call sys_search_kernel_sysctl (ARG1))
-    (allow ARG1 kernel_sysctl read_file_perms))
-
-(macro sys_read_net_sysctl ((type ARG1))
-    (call sys_search_net_sysctl (ARG1))
-    (allow ARG1 net_sysctl read_file_perms))
-
-(macro sys_read_vm_overcommit_sysctl ((type ARG1))
-    (call sys_search_vm_sysctl (ARG1))
-    (allow ARG1 vm_overcommit_sysctl read_file_perms))
-
 (macro sys_request_load_module ((type ARG1))
     (allow ARG1 sys.common_subject (system (module_request))))
+
+(macro sys_read_all_sysctl ((type ARG1))
+    (call sys_read_crypto_sysctl (ARG1))
+    (call sys_read_dev_sysctl (ARG1))
+    (call sys_read_fs_sysctl (ARG1))
+    (call sys_read_generic_sysctl (ARG1))
+    (call sys_read_kernel_sysctl (ARG1))
+    (call sys_read_net_sysctl (ARG1))
+    (call sys_read_security_sysctl (ARG1))
+    (call sys_read_usermodehelper_sysctl (ARG1))
+    (call sys_read_vm_sysctl (ARG1))
+    (call sys_read_vm_overcommit_sysctl (ARG1)))
 
 (macro sys_rw_all_sysctl ((type ARG1))
     (call sys_rw_crypto_sysctl (ARG1))
@@ -464,29 +463,60 @@
     (call sys_rw_vm_sysctl (ARG1))
     (call sys_rw_vm_overcommit_sysctl (ARG1)))
 
+(macro sys_read_dev_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (call read_files_pattern (ARG1 dev_sysctl dev_sysctl)))
+
 (macro sys_rw_dev_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (call rw_files_pattern (ARG1 dev_sysctl dev_sysctl)))
+
+(macro sys_read_crypto_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (call read_files_pattern (ARG1 crypto_sysctl crypto_sysctl)))
 
 (macro sys_rw_crypto_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (call rw_files_pattern (ARG1 crypto_sysctl crypto_sysctl)))
 
+(macro sys_read_fs_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (call read_files_pattern (ARG1 fs_sysctl fs_sysctl)))
+
 (macro sys_rw_fs_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (call rw_files_pattern (ARG1 fs_sysctl fs_sysctl)))
+
+(macro sys_read_generic_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (allow ARG1 sysctl read_file_perms))
 
 (macro sys_rw_generic_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (allow ARG1 sysctl rw_file_perms))
 
+(macro sys_read_kernel_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (call read_files_pattern (ARG1 kernel_sysctl kernel_sysctl)))
+
 (macro sys_rw_kernel_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (call rw_files_pattern (ARG1 kernel_sysctl kernel_sysctl)))
 
+(macro sys_read_net_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (call read_files_pattern (ARG1 net_sysctl net_sysctl)))
+
 (macro sys_rw_net_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (call rw_files_pattern (ARG1 net_sysctl net_sysctl)))
+
+(macro sys_read_security_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (allow ARG1 fs_sysctl search_dir_perms)
+    (allow ARG1 kernel_sysctl search_dir_perms)
+    (allow ARG1 vm_sysctl search_dir_perms)
+    (allow ARG1 security_sysctl read_file_perms))
 
 (macro sys_rw_security_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
@@ -509,9 +539,17 @@
     (typeattributeset
         can_write_security_and_usermodehelper_sysctl ARG1))
 
+(macro sys_read_vm_sysctl ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (call read_files_pattern (ARG1 vm_sysctl vm_sysctl)))
+
 (macro sys_rw_vm_sysctl ((type ARG1))
     (call sys_search_sysctl (ARG1))
     (call rw_files_pattern (ARG1 vm_sysctl vm_sysctl)))
+
+(macro sys_read_vm_overcommit_sysctl ((type ARG1))
+    (call sys_search_vm_sysctl (ARG1))
+    (allow ARG1 vm_overcommit_sysctl read_file_perms))
 
 (macro sys_rw_vm_overcommit_sysctl ((type ARG1))
     (call sys_search_vm_sysctl (ARG1))

@@ -1,7 +1,7 @@
 (block secadm
     (blockinherit usersubject_common_block)
 
-    (dontaudit common_subject self (capability (dac_override dac_read_search)))
+    (allow common_subject self (capability (dac_override dac_read_search)))
 
     (call seutil_manage_policy_config (r common_subject))
     (call seutil_config_filetrans_policy_conf_dirs (r common_subject))
@@ -16,6 +16,8 @@
     (call seutil_run_setfiles (common_subject r))
 
     (call seutil_admin (r common_subject))
+
+    (call usersubject_read_generic_home_content (common_subject))
 
     (optional secadm_optional_sudo
         (call sudo_send_signal (common_subject)))

@@ -19,8 +19,38 @@
     (context var_spool_sysadm (u r user.var_spool_object (systemlow mls_systemhigh)))
     (filecon "/var/spool/mail/root" file var_spool_sysadm)
 
+    (allow common_subject self (capability (dac_override kill chown fowner fsetid sys_ptrace sys_admin)))
+    (allow common_subject self (process (ptrace setfscreate)))
+
+    (call sys_read_all_proc (common_subject))
+    (call sys_read_all_sysctl (common_subject))
+
+    (call dev_getattr_all (common_subject))
+
+    (call file_unconfined (r common_subject))
+
+    (call fs_getattr_all_fs (common_subject))
+    (call fs_getattr_devpts_chr_files (common_subject))
+
+    (call fs_read_cgroup_files (common_subject))
+
+    (call stor_write_fixed_disk (common_subject))
+    (call stor_write_removable (common_subject))
+
+    (call subject_getattr_all_common_subjects (common_subject))
+    (call subject_read_all_common_subjects_state (common_subject))
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call systemd_run_systemctl (common_subject r))
+
     (optional sysadm_optional_audit
         (call audit_run_ausearch (common_subject r)))
+
+    (optional sysadm_optional_dmsg
+        (call dmesg_run (common_subject r)))
 
     (optional sysadm_optional_rpm
         (call rpm_run (common_subject r)))
@@ -30,9 +60,6 @@
         (optional sysadm_optional_staff
             (call staff_rw_inherited_fifo_files (common_subject))
             (call staff_use_fd (common_subject))))
-
-    (optional sysadm_optional_unconfined
-        (call unconfined (r common_subject)))
 
     (optional sysadm_optional_usermanage
         (call usermanage_run_groupadd (common_subject r))

@@ -20,8 +20,6 @@
         (roletype r subject)
 
         (call usersubject_type (subject))
-
-        (call usersubject_roletype_generic_terminals_role (r))
 )
 
 (block usersubject_login_block
@@ -42,6 +40,8 @@
         (roletype r common_subject)
 
         (call usersubject_common_type (common_subject))
+
+        (call usersubject_roletype_generic_terminals_role (r))
 )
 
 (block usersubject_common_login_block
@@ -482,6 +482,10 @@
         (not_mounton_entrypoint_and_execmod)))
     (call usersubject_home_user_filetrans_user (ARG1 ARG2)))
 
+(macro usersubject_read_generic_home_content ((type ARG1))
+    (call usersubject_list_home_user (ARG1))
+    (allow ARG1 user.home_object (all_file_objects (read))))
+
 (macro usersubject_generic_bin_template ((role ARG1)(type ARG2))
     (allow ARG2 user_bin.home_object (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
@@ -524,6 +528,10 @@
     (call usersubject_home_user_filetrans
         (ARG1 ARG2 user_terminfo.home_object file ".terminfo"))
     (roletype ARG1 user_terminfo.home_object))
+
+(macro usersubject_list_home_user ((type ARG1))
+    (call file_search_home (ARG1))
+    (allow ARG1 home_user list_dir_perms))
 
 (macro usersubject_search_home_user ((type ARG1))
     (call file_search_home (ARG1))
