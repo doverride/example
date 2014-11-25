@@ -407,8 +407,9 @@
     (allow common_subject self (capability (dac_override)))
 
     (call systemd_manage_all_units (common_subject))
-    (call systemd_status_system (common_subject))
+    (call systemd_read_state_all_systemd_daemon_subjects (common_subject))
     (call systemd_reload_system (common_subject))
+    (call systemd_status_system (common_subject))
 
     (call askpwd_run_askpwdagent (common_subject systemctl_role))
 
@@ -671,6 +672,11 @@
 
 (macro systemd_link_keyring ((type ARG1))
     (allow ARG1 systemd.common_subject (key (search link))))
+
+(macro systemd_read_state_all_systemd_daemon_subjects ((type ARG1))
+    (allow ARG1 systemd_daemon_subject_type list_dir_perms)
+    (allow ARG1 systemd_daemon_subject_type read_file_perms)
+    (allow ARG1 systemd_daemon_subject_type read_lnk_file_perms))
 
 (macro systemd_send_signal_all_systemd_daemon_subjects ((type ARG1))
     (allow ARG1 systemd_daemon_subject_type (process (signal))))
