@@ -132,7 +132,7 @@
     (allow ARG1 self create_udp_socket_perms)
     (allow ARG1 dhcpd.reserved_port_object (udp_socket (name_bind))))
 
-(macro dhcp_admin ((role ARG1)(type ARG1))
+(macro dhcp_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset dhcp_admin_role ARG1)
     (typeattributeset dhcp_admin_type ARG2))

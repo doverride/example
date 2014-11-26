@@ -44,11 +44,95 @@
 
     (call auth_nsswitch_client (common_subject))
 
+    (optional sysadm_optional_bootloader
+        (call bootloader_admin (r common_subject)))
+
+    (optional sysadm_optional_dbus
+        (call dbus_admin (r common_subject)))
+
+    (optional sysadm_optional_dhcp
+        (call dhcp_admin (r common_subject)))
+
+    (optional sysadm_optional_dm
+        (call dm_admin (r common_subject)))
+
     (optional sysadm_optional_dmesg
         (call dmesg_run (common_subject r)))
 
+    (optional sysadm_optional_dnsmasq
+        (call dnsmasq_admin (r common_subject)))
+
+    (optional sysadm_optional_dracut
+        (call dracut_admin (r common_subject)))
+
+    (optional sysadm_optional_firewall
+        (call firewall_admin (r common_subject)))
+
+    (optional sysadm_optional_fstools
+        (call fstools_run (common_subject r)))
+
+    (optional sysadm_optional_fstrim
+        (call fstrim_admin (r common_subject)))
+
+    (optional sysadm_optional_getty
+        (call getty_admin (r common_subject)))
+
+    (optional sysadm_optional_hostname
+        (call hostname_run (common_subject r)))
+
+    (optional sysadm_optional_hwclock
+        (call hwclock_run (common_subject r)))
+
+    (optional sysadm_optional_iptables
+        (call iptables_admin (r common_subject)))
+
+    (optional sysadm_optional_iscsi
+        (call iscsi_admin (r common_subject)))
+
+    (optional sysadm_optional_kmod
+        (call kmod_admin (r common_subject)))
+
+    (optional sysadm_optional_ld
+        (call ld_admin (r common_subject)))
+
+    (optional sysadm_optional_login
+        (call login_admin (r common_subject)))
+
+    (optional sysadm_optional_lvm
+        (call lvm_admin (r common_subject)))
+
+    (optional sysadm_optional_mandb
+        (call mandb_admin (r common_subject)))
+
+    (optional sysadm_optional_mcelog
+        (call mcelog_admin (r common_subject)))
+
+    (optional sysadm_optional_mount
+        (call mount_run (common_subject r)))
+
+    (optional sysadm_optional_nettools
+        (call nettools_admin (r common_subject)))
+
+    (optional sysadm_optional_nm
+        (call nm_admin (r common_subject)))
+
+    (optional sysadm_optional_ntp
+        (call ntp_admin (r common_subject)))
+
+    (optional sysadm_optional_plymouth
+        (call plymouth_admin (r common_subject)))
+
+    (optional sysadm_optional_polkit
+        (call polkit_admin (r common_subject)))
+
+    (optional sysadm_optional_rpcbind
+        (call rpcbind_admin (r common_subject)))
+
     (optional sysadm_optional_rpm
         (call rpm_admin (r common_subject)))
+
+    (optional sysadm_optional_ssh
+        (call ssh_admin (r common_subject)))
 
     (optional sysadm_optional_sudo
         (call sudo_send_signal (common_subject))
@@ -57,15 +141,88 @@
             (call staff_use_fd (common_subject))))
 
     (optional sysadm_optional_systemd
-        (call coredump_admin (r common_subject))
-        (call hostnamed_admin (r common_subject))
-        (call journal_admin (r common_subject))
-        (call localed_admin (r common_subject))
-        (call logind_admin (r common_subject))
-        (call machine_admin (r common_subject))
-        (call systemd_admin (r common_subject))
-        (call tmpfiles_admin (r common_subject))
-        (call udev_admin (r common_subject)))
+            (call systemd_admin (r common_subject))
+
+            (optional sysadm_optional_askpwd
+                (call askpwd_admin (r common_subject)))
+
+            (optional sysadm_optional_autorelabel
+                (call autorelabel_admin (r common_subject)))
+
+            (optional sysadm_optional_backlight
+                (call backlight_admin (r common_subject)))
+
+            (optional sysadm_optional_binfmt
+                (call binfmt_admin (r common_subject)))
+
+            (optional sysadm_optional_coredump
+                (call coredump_admin (r common_subject)))
+
+            (optional sysadm_optional_cryptsetup
+                (call cryptsetup_admin (common_subject)))
+
+            (optional sysadm_optional_hostnamed
+                (call hostnamed_admin (r common_subject)))
+
+            (optional sysadm_optional_importstate
+                (call importstate_admin (common_subject)))
+
+            (optional sysadm_optional_initctl
+                (call initctl_admin (r common_subject)))
+
+            (optional sysadm_optional_journal
+                (call journal_admin (r common_subject)))
+
+            (optional sysadm_optional_loadmdules
+                (call loadmodules_admin (r common_subject)))
+
+            (optional sysadm_optional_localed
+                (call localed_admin (r common_subject)))
+
+            (optional sysadm_optional_logind
+                (call logind_admin (r common_subject)))
+
+            (optional sysadm_optional_machine
+                (call machine_admin (r common_subject)))
+
+            (optional sysadm_optional_randomseed
+                (call randomseed_admin (r common_subject)))
+
+            (optional sysadm_optional_remountfs
+                (call remountfs_admin (common_subject)))
+
+            (optional sysadm_optional_rfkill
+                (call rfkill_admin (r common_subject)))
+
+            (optional sysadm_optional_sessions
+                (call sessions_admin (r common_subject)))
+
+            (optional sysadm_optional_shutdown
+                (call shutdown_admin (r common_subject)))
+
+            (optional sysadm_optional_sleep
+                (call sleep_admin (common_subject)))
+
+            (optional sysadm_optional_sysctl
+                (call sysctl_admin (r common_subject)))
+
+            (optional sysadm_optional_sysusers
+                (call sysusers_admin (r common_subject)))
+
+            (optional sysadm_optional_tmpfiles
+                (call tmpfiles_admin (r common_subject)))
+
+            (optional sysadm_optional_udev
+                (call udev_admin (r common_subject)))
+
+            (optional sysadm_optional_updated
+                (call updated_admin (r common_subject)))
+
+            (optional sysadm_optional_utmp
+                (call utmp_admin (r common_subject)))
+
+            (optional sysadm_optional_vconsole
+                (call vconsole_admin (r common_subject))))
 
     (optional sysadm_optional_wpa
         (call wpa_admin (r common_subject)))

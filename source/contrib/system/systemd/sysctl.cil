@@ -49,6 +49,8 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype sysctl_admin_role sysctl_object_type)
 
+(call sysctl_run (sysctl_admin_type sysctl_admin_role))
+
 (macro sysctl_exec ((type ARG1))
     (call can_exec (ARG1 sysctl_exec_t)))
 
