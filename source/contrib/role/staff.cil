@@ -48,6 +48,16 @@
 
             (call auditadm_send_signal (staff.common_subject)))
 
+        (optional staff_optional_authadm
+            (call authadm_manage_keyring (common_subject))
+            (call authadm_send_signal (common_subject))
+            (call authadm_shell_manual_subtrans (common_subject))
+
+            (call authadm_userrole (staff.u))
+            (call authadm_roleallow (staff.r))
+
+            (call authadm_send_signal (staff.common_subject)))
+
         (optional staff_optional_sysadm
             (call sysadm_manage_keyring (common_subject))
             (call sysadm_send_signal (common_subject))

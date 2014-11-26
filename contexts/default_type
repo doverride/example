@@ -1,4 +1,5 @@
 auditadm.r:auditadm.common_subject
+authadm.r:authadm.common_subject
 secadm.r:secadm.common_subject
 sysadm.r:sysadm.common_subject
 staff.r:staff.common_subject

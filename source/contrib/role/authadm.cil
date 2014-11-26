@@ -1,0 +1,33 @@
+(block authadm
+    (blockinherit usersubject_common_block)
+
+    (allow common_subject self (capability (dac_override dac_read_search)))
+
+    (call auth_manage_shadow (r common_subject))
+
+    (call auth_run_authconfig (common_subject r))
+
+    (call auth_admin (r common_subject))
+
+    (optional authadm_optional_sudo
+        (call sudo_send_signal (common_subject)))
+
+    (optional authadm_optional_staff
+        (call staff_rw_inherited_fifo_files (common_subject))
+        (call staff_use_fd (common_subject)))
+)
+
+(macro authadm_roleallow ((role ARG1))
+    (roleallow ARG1 authadm.r))
+
+(macro authadm_userrole ((user ARG1))
+    (userrole ARG1 authadm.r))
+
+(macro authadm_send_signal ((type ARG1))
+    (allow ARG1 authadm.common_subject (process (signal))))
+
+(macro authadm_manage_keyring ((type ARG1))
+    (allow ARG1 authadm.common_subject (key (create search link write))))
+
+(macro authadm_shell_manual_subtrans ((type ARG1))
+    (call bin_shell_manual_subtrans (ARG1 authadm.common_subject)))

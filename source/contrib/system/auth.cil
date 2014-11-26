@@ -1,3 +1,5 @@
+(typepermissive authconfig.common_subject)
+
 (roleattribute authconfig_role)
 (roleattribute chkpwd_role)
 (roleattribute updpwd_role)
@@ -323,13 +325,13 @@
 (call journal_client (auth_pam_client_type))
 
 (allow auth_admin_type self (capability (kill sys_ptrace)))
+(allow auth_admin_type self (passwd (all)))
 (allow auth_admin_type auth_subject_type signal_perms)
 (allow auth_admin_type auth_subject_type (process (ptrace)))
 (call ps_subject_pattern (auth_admin_type auth_subject_type))
 (allow auth_admin_type auth_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype auth_admin_role auth_object_type)
-(call auth_unconfined (auth_admin_type))
 
 (allow auth_unconfined_type self (passwd (all)))
 
