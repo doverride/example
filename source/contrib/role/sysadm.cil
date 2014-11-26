@@ -48,9 +48,6 @@
 
     (call systemd_run_systemctl (common_subject r))
 
-    (optional sysadm_optional_audit
-        (call audit_run_ausearch (common_subject r)))
-
     (optional sysadm_optional_dmsg
         (call dmesg_run (common_subject r)))
 

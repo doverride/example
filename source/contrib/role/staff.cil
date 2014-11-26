@@ -38,6 +38,16 @@
 
         (call sudo_role_template (staff.r staff.common_subject common_subject))
 
+        (optional staff_optional_auditadm
+            (call auditadm_manage_keyring (common_subject))
+            (call auditadm_send_signal (common_subject))
+            (call auditadm_shell_manual_subtrans (common_subject))
+
+            (call auditadm_userrole (staff.u))
+            (call auditadm_roleallow (staff.r))
+
+            (call auditadm_send_signal (staff.common_subject)))
+
         (optional staff_optional_sysadm
             (call sysadm_manage_keyring (common_subject))
             (call sysadm_send_signal (common_subject))

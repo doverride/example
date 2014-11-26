@@ -1,0 +1,42 @@
+(block auditadm
+    (blockinherit usersubject_common_block)
+
+    (allow common_subject self (capability (dac_override dac_read_search)))
+
+    (call audit_manage_config (r common_subject))
+    (call audit_etc_filetrans_config_dirs (r common_subject))
+
+    (call audit_manage_audisp_config (r common_subject))
+    (call audit_etc_filetrans_audisp_config_dirs (r common_subject))
+
+    (call audit_manage_log (r common_subject))
+    (call audit_var_log_filetrans_log_dirs (r common_subject))
+
+    (call audit_run_auditctl (common_subject r))
+    (call audit_run_augenrules (common_subject r))
+    (call audit_run_ausearch (common_subject r))
+
+    (call audit_admin (r common_subject))
+
+    (optional auditadm_optional_sudo
+        (call sudo_send_signal (common_subject)))
+
+    (optional auditadm_optional_staff
+        (call staff_rw_inherited_fifo_files (common_subject))
+        (call staff_use_fd (common_subject)))
+)
+
+(macro auditadm_roleallow ((role ARG1))
+    (roleallow ARG1 auditadm.r))
+
+(macro auditadm_userrole ((user ARG1))
+    (userrole ARG1 auditadm.r))
+
+(macro auditadm_send_signal ((type ARG1))
+    (allow ARG1 auditadm.common_subject (process (signal))))
+
+(macro auditadm_manage_keyring ((type ARG1))
+    (allow ARG1 auditadm.common_subject (key (create search link write))))
+
+(macro auditadm_shell_manual_subtrans ((type ARG1))
+    (call bin_shell_manual_subtrans (ARG1 auditadm.common_subject)))
