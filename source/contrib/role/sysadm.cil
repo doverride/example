@@ -67,9 +67,6 @@
         (call tmpfiles_admin (r common_subject))
         (call udev_admin (r common_subject)))
 
-    (optional sysadm_optional_usermanage
-        (call usermanage_admin (r common_subject)))
-
     (optional sysadm_optional_wpa
         (call wpa_admin (r common_subject)))
 )

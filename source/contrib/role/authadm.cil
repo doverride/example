@@ -11,6 +11,9 @@
     (optional authadm_optional_staff
         (call staff_rw_inherited_fifo_files (common_subject))
         (call staff_use_fd (common_subject)))
+
+    (optional authadm_optional_usermanage
+        (call usermanage_admin (r common_subject)))
 )
 
 (block authadm_chfn
