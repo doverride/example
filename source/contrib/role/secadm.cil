@@ -13,7 +13,9 @@
 
     (call seutil_run_load_policy (common_subject r))
     (call seutil_run_secilc (common_subject r))
+    (call seutil_run_setenforce (common_subject r))
     (call seutil_run_setfiles (common_subject r))
+    (call seutil_run_setsebool (common_subject r))
 
     (call seutil_admin (r common_subject))
 

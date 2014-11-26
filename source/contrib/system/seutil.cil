@@ -1,5 +1,4 @@
-(typepermissive getsebool.common_subject)
-(typepermissive getenforce.common_subject)
+(typepermissive setsebool.common_subject)
 
 (roleattribute load_policy_role)
 (roleattribute secilc_role)

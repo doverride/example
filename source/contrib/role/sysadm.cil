@@ -44,6 +44,8 @@
 
     (call auth_nsswitch_client (common_subject))
 
+    (call journal_run_journalctl (common_subject r))
+
     (call systemd_run_systemctl (common_subject r))
 
     (optional sysadm_optional_audit

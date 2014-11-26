@@ -259,8 +259,6 @@
 (call miscfiles_read_man_files (usersubject_common_login_type))
 (call miscfiles_read_net_config_files (usersubject_common_login_type))
 
-; (call seutil_exec_chcon (usersubject_common_login_type))
-
 (call usersubject_use_generic_terminals (usersubject_common_login_type))
 
 (optional usersubject_common_login_type_optional_pcitools
