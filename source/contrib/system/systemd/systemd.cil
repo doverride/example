@@ -440,12 +440,16 @@
 (block systemd_kexec
     (blockinherit systemd_unit_object_block)
 
+    (typeattributeset systemd_object_type unit_object)
+
     (context unit_systemd_kexec (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*systemd-kexec.*" file unit_systemd_kexec)
 )
 
 (block systemd_power
     (blockinherit systemd_unit_object_block)
+
+    (typeattributeset systemd_object_type unit_object)
 
     (context unit_systemd_power (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*halt.*" file unit_systemd_power)
@@ -497,6 +501,7 @@
 (call file_type (systemd_unit))
 
 (typeattributeset systemd_unit_object_type systemd_unit)
+(typeattributeset systemd_object_type systemd_unit)
 
 (context systemd_unit (sys.u sys.r systemd_unit (systemlow systemlow)))
 (filecon "/usr/lib/dracut/modules\.d/.*\.service" file systemd_unit)
@@ -551,12 +556,9 @@
 (allow systemd.common_subject var_lib_systemd manage_sock_file_perms)
 (call file_var_lib_filetrans (systemd.common_subject var_lib_systemd dir "systemd"))
 
-(typeattributeset systemd_object_type systemd_unit_object_type)
-
 (allow systemd_admin_type systemd_subject_type signal_perms)
 (allow systemd_admin_type systemd_subject_type (process (ptrace)))
 (call ps_subject_pattern (systemd_admin_type systemd_subject_type))
-(allow systemd_admin_type systemd_unit_object_type (service (all)))
 (allow systemd_admin_type systemd_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype systemd_admin_role systemd_object_type)
