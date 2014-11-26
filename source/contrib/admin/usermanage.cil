@@ -233,6 +233,8 @@
 
 (call miscfiles_read_localization (passwd_subject_type))
 
+(call usermanage_read_passwd_pam_config_files (passwd_subject_type))
+
 (allow usermanage_admin_type self (capability (kill sys_ptrace)))
 (allow usermanage_admin_type usermanage_subject_type signal_perms)
 (allow usermanage_admin_type usermanage_subject_type (process (ptrace)))
@@ -300,6 +302,10 @@
 
 (macro usermanage_send_signal_useradd ((type ARG1))
     (allow ARG1 useradd.common_subject (process (signal))))
+
+(macro usermanage_read_passwd_pam_config_files ((type ARG1))
+    (call auth_search_pam_config (ARG1))
+    (allow ARG1 passwd.pam_etc_object read_file_perms))
 
 (macro usermanage_admin ((role ARG1)(type ARG2))
     (roleattributeset usermanage_admin_role ARG1)

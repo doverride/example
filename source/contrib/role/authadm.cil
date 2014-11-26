@@ -17,6 +17,18 @@
         (call staff_use_fd (common_subject)))
 )
 
+(block authadm_chfn
+    (blockinherit usermanage_chfn_subject_block)
+
+    (call usermanage_role_template_chfn (authadm.r authadm.common_subject common_subject))
+)
+
+(block authadm_passwd
+    (blockinherit usermanage_passwd_subject_block)
+
+    (call usermanage_role_template_passwd (authadm.r authadm.common_subject common_subject))
+)
+
 (macro authadm_roleallow ((role ARG1))
     (roleallow ARG1 authadm.r))
 

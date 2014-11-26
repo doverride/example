@@ -443,6 +443,7 @@
 
 (macro auth_read_authconfig_pam_config_files ((type ARG1))
     (call file_search_etc (ARG1))
+    (call auth_read_generic_pam_config_lnk_files (ARG1))
     (call read_files_pattern (ARG1 etc_pam authconfig.pam_etc_object)))
 
 (macro auth_list_pam_config ((type ARG1))
