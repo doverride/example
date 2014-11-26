@@ -440,25 +440,38 @@
     (call usersubject_generic_tty_template (ARG1 ARG2)))
 
 (macro usersubject_generic_pty_template ((role ARG1)(type ARG2))
+    (call usersubject_generic_user_pty (ARG1 ARG2))
+    (call usersubject_use_generic_pts (ARG2)))
+
+(macro usersubject_generic_user_pty ((role ARG1)(type ARG2))
     (call term_user_pty (ARG2 user.pty_object))
-    (call usersubject_use_generic_pts (ARG2))
     (roletype ARG1 user.pty_object))
 
 (macro usersubject_generic_tty_template ((role ARG1)(type ARG2))
+    (call usersubject_generic_user_tty (ARG1 ARG2))
+    (call usersubject_use_generic_tts (ARG2)))
+
+(macro usersubject_generic_user_tty ((role ARG1)(type ARG2))
     (call term_user_tty (ARG2 user.tty_object))
-    (call usersubject_use_generic_tts (ARG2))
     (roletype ARG1 user.tty_object))
 
 (macro usersubject_generic_terminals_template ((role ARG1)(type ARG2))
     (call usersubject_generic_pty_template (ARG1 ARG2))
     (call usersubject_generic_tty_template (ARG1 ARG2)))
 
+(macro usersubject_generic_terminals ((role ARG1)(type ARG2))
+    (call usersubject_generic_user_pty (ARG1 ARG2))
+    (call usersubject_generic_user_tty (ARG1 ARG2)))
+
 (macro usersubject_generic_tmpfs_template ((role ARG1)(type ARG2))
     (allow ARG2 user.user_tmpfs_object (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
-    (roletype ARG1 user.user_tmpfs_object)
+    (call usersubject_tmpfs_filetrans_user (ARG1 ARG2)))
+
+(macro usersubject_tmpfs_filetrans_user ((role ARG1)(type ARG2))
     (call fs_tmpfs_filetrans
-        (ARG2 user.user_tmpfs_object all_file_objects "*")))
+        (ARG2 user.user_tmpfs_object all_file_objects "*"))
+    (roletype ARG1 user.user_tmpfs_object))
 
 (macro usersubject_getattr_all_tmpfs ((type ARG1))
     (allow ARG1 usersubject_tmpfs_type (all_file_objects (getattr))))

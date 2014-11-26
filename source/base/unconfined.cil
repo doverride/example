@@ -1,6 +1,50 @@
 (roleattribute unconfined_role)
 (typeattribute unconfined_type)
 
+(optional unconfined_optional_usersubject
+    (block unconfineduser
+        (user u)
+        (role r)
+        (type common_subject)
+
+        (call usersubject_base_common_login_template (u r common_subject))
+
+        (call usersubject_priv_login_type (common_subject))
+        (call usersubject_mls_template (u systemlow systemlow systemhigh))
+
+        (call usersubject_generic_terminals (r common_subject))
+
+        (call usersubject_home_user_filetrans_user (r common_subject))
+        (call usersubject_tmpfs_filetrans_user (r common_subject))
+
+        (context home_unconfined (u r home_user (systemlow mls_systemhigh)))
+        (filecon "/home/jane" dir home_unconfined)
+
+        (context unconfined (u r user.home_object (systemlow systemlow)))
+        (filecon "/home/jane/.*" any unconfined)
+
+        (context var_spool_unconfined (u r user.var_spool_object (systemlow mls_systemhigh)))
+        (filecon "/var/spool/mail/jane" file var_spool_unconfined)
+
+        (call auth_manage_shadow (r common_subject))
+        (call auth_relabel_shadow (common_subject))
+
+        (call audit_manage_config (r common_subject))
+        (call audit_relabel_config (common_subject))
+
+        (call audit_manage_audisp_config (r common_subject))
+        (call audit_relabel_audisp_config (common_subject))
+
+        (call audit_manage_log (r common_subject))
+        (call audit_relabel_log (common_subject))
+
+        (call seutil_manage_policy_config (r common_subject))
+        (call seutil_relabel_policy_config (common_subject))
+
+        (call unconfined (r common_subject))
+    )
+)
+
 (allow unconfined_type self
     all_capability_perms_except_sys_module_and_sys_nice)
 (allow unconfined_type self
