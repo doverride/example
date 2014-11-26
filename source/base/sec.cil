@@ -122,6 +122,11 @@
         (true
             (allow ARG1 securityfs (security (setenforce))))))
 
+(macro sec_read_policy ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call read_files_pattern (ARG1 securityfs securityfs))
+    (allow ARG1 securityfs (security (read_policy))))
+
 (macro sec_load_policy ((type ARG1))
     (call fs_search_sysfs (ARG1))
     (call rw_files_pattern (ARG1 securityfs securityfs))

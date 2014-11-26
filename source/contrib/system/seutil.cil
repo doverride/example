@@ -1,8 +1,7 @@
-(typepermissive setsebool.common_subject)
-
 (roleattribute load_policy_role)
 (roleattribute secilc_role)
 (roleattribute setfiles_role)
+(roleattribute setools_role)
 
 (roleattribute getsebool_role)
 (roleattribute setsebool_role)
@@ -195,6 +194,22 @@
         (call app_subject_type (common_subject)))
 )
 
+(block setools
+    (blockinherit app_block)
+
+    (typeattributeset seutil_subject_type common_subject)
+
+    (roletype setools_role common_subject)
+
+    (context bin_setools (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/seinfo" file bin_setools)
+    (filecon "/usr/bin/sesearch" file bin_setools)
+
+    (call sec_read_policy (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+)
+
 (type default_context)
 (call file_type (default_context))
 
@@ -346,6 +361,18 @@
 
 (macro seutil_send_signal_setfiles ((type ARG1))
     (allow ARG1 setfiles.common_subject (process (signal))))
+
+(macro seutil_auto_subtrans_setools ((type ARG1))
+    (call seutil_send_signal_setools (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 setools.bin_object setools.common_subject)))
+
+(macro seutil_run_setools ((type ARG1)(role ARG2))
+    (call seutil_auto_subtrans_setools (ARG1))
+    (roleattributeset setools_role (ARG2)))
+
+(macro seutil_send_signal_setools ((type ARG1))
+    (allow ARG1 setools.common_subject (process (signal))))
 
 (macro seutil_config_filetrans ((type ARG1)(type ARG2)
     (class ARG3)(name ARG4))
