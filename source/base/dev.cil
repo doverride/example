@@ -352,6 +352,9 @@
 (macro dev_read_usbmon ((type ARG1))
     (allow ARG1 usbmon_dev read_chr_file_perms))
 
+(macro dev_read_wireless ((type ARG1))
+    (allow ARG1 wireless_dev read_chr_file_perms))
+
 (macro dev_rw_devtty ((type ARG1))
     (allow ARG1 devtty_dev rw_chr_file_perms))
 

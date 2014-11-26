@@ -1,3 +1,5 @@
+(typepermissive wpacli.common_subject)
+
 (typepermissive wpa.common_subject)
 (typepermissive wpacli.common_subject)
 
@@ -49,6 +51,29 @@
 
     (context var_log_wpa (sys.u sys.r var_log_object (systemlow systemlow)))
     (filecon "/var/log/wpa_supplicant\.log.*" file var_log_wpa)
+
+    (allow common_subject self (capability (net_raw net_admin)))
+    (allow common_subject self create_unix_dgram_socket_perms)
+    (allow common_subject self create_udp_socket_perms)
+    (allow common_subject self create_netlink_socket_perms)
+    (allow common_subject self create_netlink_route_socket_perms)
+    (allow common_subject self create_packet_socket_perms)
+
+    (call sys_read_net_proc (common_subject))
+
+    (call dev_read_random (common_subject))
+    (call dev_read_urandom (common_subject))
+    (call dev_read_wireless (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call fs_list_debugfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (optional wpa_optional_networkmgr
+        (call nm_dbus_chat (common_subject)))
 )
 
 (block wpacli
@@ -75,12 +100,16 @@
     (call can_exec (ARG1 wpacli.bin_object)))
 
 (macro wpa_auto_subtrans_wpacli ((type ARG1))
+    (call wpa_send_signal_wpacli (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 wpacli.bin_object wpacli.common_subject)))
 
 (macro wpa_run_wpacli ((type ARG1)(role ARG2))
     (call wpa_auto_subtrans_wpacli (ARG1))
     (roleattributeset wpacli_role ARG2))
+
+(macro wpa_send_signal_wpacli ((type ARG1))
+    (allow ARG1 wpacli.common_subject (process (signal))))
 
 (macro wpa_admin ((role ARG1)(type ARG2))
     (roleattributeset wpa_admin_role ARG1)

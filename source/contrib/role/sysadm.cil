@@ -48,7 +48,7 @@
 
     (call systemd_run_systemctl (common_subject r))
 
-    (optional sysadm_optional_dmsg
+    (optional sysadm_optional_dmesg
         (call dmesg_run (common_subject r)))
 
     (optional sysadm_optional_rpm
@@ -63,6 +63,9 @@
     (optional sysadm_optional_usermanage
         (call usermanage_run_groupadd (common_subject r))
         (call usermanage_run_useradd (common_subject r)))
+
+    (optional sysadm_optional_wpa
+        (call wpa_run_wpacli (common_subject r)))
 )
 
 (block sysadm_chfn
