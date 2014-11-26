@@ -42,6 +42,9 @@
         (call seutil_relabel_policy_config (common_subject))
 
         (call unconfined (r common_subject))
+
+        (optional unconfineduser_optional_rpm ; FIXME
+            (call rpm_run (common_subject r)))
     )
 )
 
