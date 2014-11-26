@@ -149,6 +149,7 @@
 
     (call usersubject_dontaudit_create_keyring_all_common_subjects (common_subject))
     (call usersubject_dontaudit_dynamic_subtrans_all_common_subjects (common_subject))
+    (call usersubject_dontaudit_subtrans_all_common_subjects (common_subject))
 
     (call usersubject_relabel_generic_pts (common_subject))
     (call usersubject_setattr_generic_pts (common_subject))

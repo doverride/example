@@ -600,6 +600,9 @@
 (macro usersubject_dontaudit_dynamic_subtrans_all_common_subjects ((type ARG1))
     (dontaudit ARG1 usersubject_common_type (process (dyntransition))))
 
+(macro usersubject_dontaudit_subtrans_all_common_subjects ((type ARG1))
+    (dontaudit ARG1 usersubject_common_type (process (transition))))
+
 (macro usersubject_dynamic_subtrans_all_common_login_subjects ((type ARG1))
     (call dynamic_subject_type_transition_pattern (ARG1 usersubject_common_login_type)))
 
