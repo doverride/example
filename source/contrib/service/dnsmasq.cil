@@ -60,7 +60,6 @@
     (call miscfiles_read_net_config_files (common_subject))
 )
 
-(allow dnsmasq_admin_type self (capability (kill sys_ptrace)))
 (allow dnsmasq_admin_type dnsmasq.common_subject signal_perms)
 (allow dnsmasq_admin_type dnsmasq.common_subject (process (ptrace)))
 (call ps_subject_pattern (dnsmasq_admin_type dnsmasq.common_subject))
@@ -74,5 +73,6 @@
         (ARG1 dnsmasq.bin_object dnsmasq.common_subject)))
 
 (macro dnsmasq_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset dnsmasq_admin_role ARG1)
     (typeattributeset dnsmasq_admin_type ARG2))

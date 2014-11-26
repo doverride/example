@@ -21,12 +21,16 @@
 )
 
 (macro hwclock_auto_subtrans ((type ARG1))
+    (call hwclock_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 hwclock.bin_object hwclock.common_subject)))
 
 (macro hwclock_run ((type ARG1)(role ARG2))
     (call hwclock_auto_subtrans (ARG1))
     (roleattributeset hwclock_role (ARG2)))
+
+(macro hwclock_send_signal ((type ARG1))
+    (allow ARG1 hwclock.common_subject (process (signal))))
 
 (macro hwclock_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))

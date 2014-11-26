@@ -148,7 +148,6 @@
 (typeattributeset lvm_unit_type
     (lvm.unit_object lvmetad.unit_object))
 
-(allow lvm_admin_type self (capability (kill sys_ptrace)))
 (allow lvm_admin_type lvm_subject_type signal_perms)
 (allow lvm_admin_type lvm_subject_type (process (ptrace)))
 (call ps_subject_pattern (lvm_admin_type lvm_subject_type))
@@ -156,6 +155,8 @@
 (allow lvm_admin_type lvm_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype lvm_admin_role lvm_object_type)
+
+(call lvm_run (lvm_admin_type lvm_admin_role))
 
 (macro lvm_etc_file_type ((type ARG1))
     (call file_etc_type (ARG1))
@@ -216,5 +217,6 @@
         (ARG1 lvmetad.run_object lvmetad.run_object lvmetad.common_subject)))
 
 (macro lvm_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset lvm_admin_role ARG1)
     (typeattributeset lvm_admin_type ARG2))

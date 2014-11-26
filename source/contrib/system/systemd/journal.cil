@@ -169,7 +169,6 @@
 
 (call systemd_search_run (journal_client_type))
 
-(allow journal_admin_type self (capability (kill sys_ptrace)))
 (allow journal_admin_type journal_subject_type signal_perms)
 (allow journal_admin_type journal_subject_type (process (ptrace)))
 (call ps_subject_pattern (journal_admin_type journal_subject_type))
@@ -240,5 +239,6 @@
     (typeattributeset journal_client_type ARG1))
 
 (macro journal_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset journal_admin_role ARG1)
     (typeattributeset journal_admin_type ARG2))

@@ -124,7 +124,6 @@
         (call plymouth_exec (common_subject)))
 )
 
-(allow login_admin_type self (capability (kill sys_ptrace)))
 (allow login_admin_type login_subject_type signal_perms)
 (allow login_admin_type login_subject_type (process (ptrace)))
 (call ps_subject_pattern (login_admin_type login_subject_type))
@@ -152,5 +151,6 @@
     (allow ARG1 login.pam_etc_object read_file_perms))
 
 (macro login_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset login_admin_role ARG1)
     (typeattributeset login_admin_type ARG2))

@@ -87,7 +87,6 @@
     (filecon "/usr/sbin/wpa_cli" file bin_wpacli)
 )
 
-(allow wpa_admin_type self (capability (kill sys_ptrace)))
 (allow wpa_admin_type wpa_subject_type signal_perms)
 (allow wpa_admin_type wpa_subject_type (process (ptrace)))
 (call ps_subject_pattern (wpa_admin_type wpa_subject_type))
@@ -95,6 +94,8 @@
 (allow wpa_admin_type wpa_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype wpa_admin_role wpa_object_type)
+
+(call wpa_run_wpacli (wpa_admin_type wpa_admin_role))
 
 (macro wpa_exec_wpacli ((type ARG1))
     (call can_exec (ARG1 wpacli.bin_object)))
@@ -112,5 +113,6 @@
     (allow ARG1 wpacli.common_subject (process (signal))))
 
 (macro wpa_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset wpa_admin_role ARG1)
     (typeattributeset wpa_admin_type ARG2))

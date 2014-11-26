@@ -106,12 +106,16 @@
     (call can_exec (ARG1 fstools.bin_object)))
 
 (macro fstools_auto_subtrans ((type ARG1))
+    (call fstools_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 fstools.bin_object fstools.common_subject)))
 
 (macro fstools_run ((type ARG1)(role ARG2))
     (call fstools_auto_subtrans (ARG1))
     (roleattributeset fstools_role (ARG2)))
+
+(macro fstools_send_signal ((type ARG1))
+    (allow ARG1 fstools.common_subject (process (signal))))
 
 (macro fstools_read_run_files ((type ARG1))
     (call file_search_run (ARG1))

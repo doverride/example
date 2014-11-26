@@ -47,7 +47,6 @@
     (call auth_nsswitch_client (common_subject))
 )
 
-(allow mcelog_admin_type self (capability (kill sys_ptrace)))
 (allow mcelog_admin_type mcelog.common_subject signal_perms)
 (allow mcelog_admin_type mcelog.common_subject (process (ptrace)))
 (call ps_subject_pattern (mcelog_admin_type mcelog.common_subject))
@@ -74,5 +73,6 @@
     (call file_run_filetrans (ARG1 mcelog.run_object ARG3 ARG4)))
 
 (macro mcelog_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset mcelog_admin_role ARG1)
     (typeattributeset mcelog_admin_type ARG2))

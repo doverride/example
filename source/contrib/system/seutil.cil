@@ -264,13 +264,27 @@
     (not (can_write_binary_policy)))
 (neverallow not_can_write_binary_policy policy_conf (file (create write)))
 
-(allow seutil_admin_type self (capability (kill sys_ptrace)))
 (allow seutil_admin_type seutil_subject_type signal_perms)
 (allow seutil_admin_type seutil_subject_type (process (ptrace)))
 (call ps_subject_pattern (seutil_admin_type seutil_subject_type))
 (allow seutil_admin_type seutil_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype seutil_admin_role seutil_object_type)
+
+(call seutil_manage_policy_config (seutil_admin_role seutil_admin_type))
+(call seutil_config_filetrans_policy_conf_dirs (seutil_admin_role seutil_admin_type))
+
+(call seutil_config_filetrans_default_context_dirs (seutil_admin_type))
+(call seutil_config_filetrans_policy_src_dirs (seutil_admin_type))
+(call seutil_default_context_filetrans_file_context_dirs (seutil_admin_type))
+(call seutil_etc_filetrans_selinux_conf_dirs (seutil_admin_type))
+
+(call seutil_run_load_policy (seutil_admin_type seutil_admin_role))
+(call seutil_run_secilc (seutil_admin_type seutil_admin_role))
+(call seutil_run_setenforce (seutil_admin_type seutil_admin_role))
+(call seutil_run_setfiles (seutil_admin_type seutil_admin_role))
+(call seutil_run_setools (seutil_admin_type seutil_admin_role))
+(call seutil_run_setsebool (seutil_admin_type seutil_admin_role))
 
 (macro seutil_auto_subtrans_load_policy ((type ARG1))
     (call seutil_send_signal_load_policy (ARG1))
@@ -511,5 +525,6 @@
     (call read_files_pattern (ARG1 policy_src policy_src)))
 
 (macro seutil_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset seutil_admin_role ARG1)
     (typeattributeset seutil_admin_type ARG2))

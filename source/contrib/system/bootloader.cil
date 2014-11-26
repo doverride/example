@@ -111,13 +111,14 @@
         (call rpm_read_inherited_fifo_files (common_subject)))
 )
 
-(allow bootloader_admin_type self (capability (kill sys_ptrace)))
 (allow bootloader_admin_type bootloader.common_subject signal_perms)
 (allow bootloader_admin_type bootloader.common_subject (process (ptrace)))
 (call ps_subject_pattern (bootloader_admin_type bootloader.common_subject))
 (allow bootloader_admin_type bootloader_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype bootloader_admin_role bootloader_object_type)
+
+(call bootloader_run (bootloader_admin_type bootloader_admin_role))
 
 (macro bootloader_exec ((type ARG1))
     (call can_exec (ARG1 bootloader.bin_object)))
@@ -131,5 +132,6 @@
     (roleattributeset bootloader_role (ARG2)))
 
 (macro bootloader_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset bootloader_admin_role ARG1)
     (typeattributeset bootloader_admin_type ARG2))

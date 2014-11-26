@@ -15,7 +15,6 @@
     (filecon "/var/run/systemd/initctl(/.*)?" any run_initctl)
 )
 
-(allow initctl_admin_type self (capability (kill sys_ptrace)))
 (allow initctl_admin_type initctl.common_subject signal_perms)
 (allow initctl_admin_type initctl.common_subject (process (ptrace)))
 (call ps_subject_pattern (initctl_admin_type initctl.common_subject))
@@ -29,5 +28,6 @@
         (ARG1 initctl.systemd_run_object initctl.systemd_run_object)))
 
 (macro initctl_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset initctl_admin_role ARG1)
     (typeattributeset initctl_admin_type ARG2))

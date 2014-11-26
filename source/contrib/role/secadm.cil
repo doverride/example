@@ -3,21 +3,6 @@
 
     (allow common_subject self (capability (dac_override dac_read_search)))
 
-    (call seutil_manage_policy_config (r common_subject))
-    (call seutil_config_filetrans_policy_conf_dirs (r common_subject))
-
-    (call seutil_config_filetrans_default_context_dirs (common_subject))
-    (call seutil_config_filetrans_policy_src_dirs (common_subject))
-    (call seutil_default_context_filetrans_file_context_dirs (common_subject))
-    (call seutil_etc_filetrans_selinux_conf_dirs (common_subject))
-
-    (call seutil_run_load_policy (common_subject r))
-    (call seutil_run_secilc (common_subject r))
-    (call seutil_run_setenforce (common_subject r))
-    (call seutil_run_setfiles (common_subject r))
-    (call seutil_run_setools (common_subject r))
-    (call seutil_run_setsebool (common_subject r))
-
     (call seutil_admin (r common_subject))
 
     (call usersubject_read_generic_home_content (common_subject))

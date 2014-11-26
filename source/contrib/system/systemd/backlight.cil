@@ -20,7 +20,6 @@
     (call udev_client (common_subject))
 )
 
-(allow backlight_admin_type self (capability (kill sys_ptrace)))
 (allow backlight_admin_type backlight.common_subject signal_perms)
 (allow backlight_admin_type backlight.common_subject (process (ptrace)))
 (call ps_subject_pattern (backlight_admin_type backlight.common_subject))
@@ -29,5 +28,6 @@
 (roletype backlight_admin_role backlight.systemd_var_lib_object)
 
 (macro backlight_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset backlight_admin_role ARG1)
     (typeattributeset backlight_admin_type ARG2))

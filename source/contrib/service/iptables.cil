@@ -99,7 +99,6 @@
         (call plymouth_exec (common_subject)))
 )
 
-(allow iptables_admin_type self (capability (kill sys_ptrace)))
 (allow iptables_admin_type iptables.common_subject signal_perms)
 (allow iptables_admin_type iptables.common_subject (process (ptrace)))
 (call ps_subject_pattern (iptables_admin_type iptables.common_subject))
@@ -107,6 +106,8 @@
 (allow iptables_admin_type iptables_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype iptables_admin_role iptables_object_type)
+
+(call iptables_run (iptables_admin_type iptables_admin_role))
 
 (macro iptables_exec ((type ARG1))
     (call can_exec (ARG1 iptables.bin_object)))
@@ -130,5 +131,6 @@
     (dontaudit ARG1 iptables.common_subject (rawip_socket (read write))))
 
 (macro iptables_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset iptables_admin_role ARG1)
     (typeattributeset iptables_admin_type ARG2))

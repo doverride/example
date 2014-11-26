@@ -30,10 +30,10 @@
     (call udev_client (common_subject))
 )
 
-(allow cryptsetup_admin_type self (capability (kill sys_ptrace)))
 (allow cryptsetup_admin_type cryptsetup.common_subject signal_perms)
 (allow cryptsetup_admin_type cryptsetup.common_subject (process (ptrace)))
 (call ps_subject_pattern (cryptsetup_admin_type cryptsetup.common_subject))
 
 (macro cryptsetup_admin ((type ARG1))
+    (allow ARG1 self (capability (kill sys_ptrace)))
     (typeattributeset cryptsetup_admin_type ARG1))

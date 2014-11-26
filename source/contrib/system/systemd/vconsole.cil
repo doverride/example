@@ -20,7 +20,6 @@
         (call unconfined (sys.r common_subject)))
 )
 
-(allow vconsole_admin_type self (capability (kill sys_ptrace)))
 (allow vconsole_admin_type vconsole.common_subject signal_perms)
 (allow vconsole_admin_type vconsole.common_subject (process (ptrace)))
 (call ps_subject_pattern (vconsole_admin_type vconsole.common_subject))
@@ -33,5 +32,6 @@
     (allow ARG1 vconsole.etc_object read_file_perms))
 
 (macro vconsole_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset vconsole_admin_role ARG1)
     (typeattributeset vconsole_admin_type ARG2))

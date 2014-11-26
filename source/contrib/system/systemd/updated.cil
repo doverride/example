@@ -23,7 +23,6 @@
     (call seutil_read_file_context_files (common_subject))
 )
 
-(allow updated_admin_type self (capability (kill sys_ptrace)))
 (allow updated_admin_type updated.common_subject signal_perms)
 (allow updated_admin_type updated.common_subject (process (ptrace)))
 (call ps_subject_pattern (updated_admin_type updated.common_subject))
@@ -35,5 +34,6 @@
     (allow ARG1 updated.file_object (file (getattr))))
 
 (macro updated_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset updated_admin_role ARG1)
     (typeattributeset updated_admin_type ARG2))

@@ -130,7 +130,6 @@
         (call dhcp_list_dhclient_var_lib (common_subject)))
 )
 
-(allow ntp_admin_type self (capability (kill sys_ptrace)))
 (allow ntp_admin_type ntp_subject_type signal_perms)
 (allow ntp_admin_type ntp_subject_type (process (ptrace)))
 (call ps_subject_pattern (ntp_admin_type ntp_subject_type))
@@ -138,6 +137,8 @@
 (allow ntp_admin_type ntp_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype ntp_admin_role ntp_object_type)
+
+(call ntp_run (ntp_admin_type ntp_admin_role))
 
 (macro ntp_exec_helper ((type ARG1))
     (call can_exec (ARG1 ntp_helper.bin_object)))
@@ -187,5 +188,6 @@
         (udp_socket (name_bind))))
 
 (macro ntp_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset ntp_admin_role ARG1)
     (typeattributeset ntp_admin_type ARG2))

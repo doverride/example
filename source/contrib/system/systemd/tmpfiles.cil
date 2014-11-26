@@ -100,13 +100,14 @@
 
 (typeattributeset tmpfiles_object_type tmpfiles_run_object_type)
 
-(allow tmpfiles_admin_type self (capability (kill sys_ptrace)))
 (allow tmpfiles_admin_type tmpfiles.common_subject signal_perms)
 (allow tmpfiles_admin_type tmpfiles.common_subject (process (ptrace)))
 (call ps_subject_pattern (tmpfiles_admin_type tmpfiles.common_subject))
 (allow tmpfiles_admin_type tmpfiles_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype tmpfiles_admin_role tmpfiles_object_type)
+
+(call tmpfiles_run (tmpfiles_admin_type tmpfiles_admin_role))
 
 (macro tmpfiles_run_object_type ((type ARG1))
     (typeattributeset tmpfiles_run_object_type ARG1))
@@ -173,5 +174,6 @@
     (allow ARG1 tmpfiles.common_subject (process (signal))))
 
 (macro tmpfiles_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset tmpfiles_admin_role ARG1)
     (typeattributeset tmpfiles_admin_type ARG2))

@@ -32,5 +32,6 @@
 (roletype randomseed_admin_role randomseed.systemd_var_lib_object)
 
 (macro randomseed_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset randomseed_admin_role ARG1)
     (typeattributeset randomseed_admin_type ARG2))

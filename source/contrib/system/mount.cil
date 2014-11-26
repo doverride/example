@@ -65,12 +65,16 @@
     (call can_exec (ARG1 mount.bin_object)))
 
 (macro mount_auto_subtrans ((type ARG1))
+    (call mount_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 mount.bin_object mount.common_subject)))
 
 (macro mount_run ((type ARG1)(role ARG2))
     (call mount_auto_subtrans (ARG1))
     (roleattributeset mount_role (ARG2)))
+
+(macro mount_send_signal ((type ARG1))
+    (allow ARG1 mount.common_subject (process (signal))))
 
 (macro mount_getattr_executable_files ((type ARG1))
     (allow ARG1 mount.bin_object (file (getattr))))

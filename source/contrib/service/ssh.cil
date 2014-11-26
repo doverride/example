@@ -195,7 +195,6 @@
 
 (typeattributeset ssh_object_type ssh_unit_object_type)
 
-(allow ssh_admin_type self (capability (kill sys_ptrace)))
 (allow ssh_admin_type ssh_subject_type signal_perms)
 (allow ssh_admin_type ssh_subject_type (process (ptrace)))
 (call ps_subject_pattern (ssh_admin_type ssh_subject_type))
@@ -256,5 +255,6 @@
         (ARG1 sshd.etc_object ARG2 ARG3 ARG4)))
 
 (macro ssh_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset ssh_admin_role ARG1)
     (typeattributeset ssh_admin_type ARG2))

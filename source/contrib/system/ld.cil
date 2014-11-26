@@ -48,7 +48,6 @@
         (call rpm_read_inherited_tmpfs_files (common_subject)))
 )
 
-(allow ld_admin_type self (capability (kill sys_ptrace)))
 (allow ld_admin_type ldconfig.common_subject signal_perms)
 (allow ld_admin_type ldconfig.common_subject (process (ptrace)))
 (call ps_subject_pattern (ld_admin_type ldconfig.common_subject))
@@ -56,6 +55,8 @@
 (allow ld_admin_type ld_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype ld_admin_role ld_object_type)
+
+(call ld_run_ldconfig (ld_admin_type ld_admin_role))
 
 (macro ld_exec_ldconfig ((type ARG1))
     (call can_exec (ARG1 ldconfig.bin_object)))
@@ -73,5 +74,6 @@
     (allow ARG1 ldconfig.common_subject (process (signal))))
 
 (macro ld_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset ld_admin_role ARG1)
     (typeattributeset ld_admin_type ARG2))

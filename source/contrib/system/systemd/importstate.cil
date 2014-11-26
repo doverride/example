@@ -9,10 +9,10 @@
     (filecon "/usr/lib/systemd/fedora-import-state" file bin_importstate)
 )
 
-(allow importstate_admin_type self (capability (kill sys_ptrace)))
 (allow importstate_admin_type importstate.common_subject signal_perms)
 (allow importstate_admin_type importstate.common_subject (process (ptrace)))
 (call ps_subject_pattern (importstate_admin_type importstate.common_subject))
 
 (macro importstate_admin ((type ARG1))
+    (allow ARG1 self (capability (kill sys_ptrace)))
     (typeattributeset importstate_admin_type ARG1))

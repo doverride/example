@@ -124,6 +124,13 @@
     (call utmp_read_run_files (common_subject))
 )
 
+(allow shutdown_admin_type shutdown_subject_type signal_perms)
+(allow shutdown_admin_type shutdown_subject_type (process (ptrace)))
+(call ps_subject_pattern (shutdown_admin_type shutdown_subject_type))
+(allow shutdown_admin_type shutdownd.systemd_run_object (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype shutdown_admin_role shutdownd.systemd_run_object)
+
 (macro shutdown_share_state ((type ARG1))
     (allow ARG1 shutdown.common_subject (process (share))))
 
@@ -136,5 +143,6 @@
         (ARG1 shutdownd.run_object shutdownd.run_object shutdownd.common_subject)))
 
 (macro shutdown_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset shutdown_admin_role ARG1)
     (typeattributeset shutdown_admin_type ARG2))

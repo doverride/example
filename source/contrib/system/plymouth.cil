@@ -104,7 +104,6 @@
 
 (call plymouth_stream_connect_plymouthd (plymouth_client_type))
 
-(allow plymouth_admin_type self (capability (kill sys_ptrace)))
 (allow plymouth_admin_type plymouth_subject_type signal_perms)
 (allow plymouth_admin_type plymouth_subject_type (process (ptrace)))
 (call ps_subject_pattern (plymouth_admin_type plymouth_subject_type))
@@ -112,6 +111,8 @@
 (allow plymouth_admin_type plymouth_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype plymouth_admin_role plymouth_object_type)
+
+(call plymouth_run (plymouth_admin_type plymouth_admin_role))
 
 (macro plymouth_exec ((type ARG1))
     (call can_exec (ARG1 plymouth.bin_object))
@@ -171,5 +172,6 @@
         (ARG1 plymouthd.run_object plymouthd.run_object plymouthd.common_subject)))
 
 (macro plymouth_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset plymouth_admin_role ARG1)
     (typeattributeset plymouth_admin_type ARG2))

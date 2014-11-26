@@ -324,7 +324,6 @@
 
 (call journal_client (auth_pam_client_type))
 
-(allow auth_admin_type self (capability (kill sys_ptrace)))
 (allow auth_admin_type self (passwd (all)))
 (allow auth_admin_type auth_subject_type signal_perms)
 (allow auth_admin_type auth_subject_type (process (ptrace)))
@@ -332,6 +331,10 @@
 (allow auth_admin_type auth_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype auth_admin_role auth_object_type)
+
+(call auth_manage_shadow (auth_admin_role auth_admin_type))
+
+(call auth_run_authconfig (auth_admin_type auth_admin_role))
 
 (allow auth_unconfined_type self (passwd (all)))
 
@@ -534,6 +537,7 @@
     (typeattributeset auth_pam_client_type ARG1))
 
 (macro auth_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset auth_admin_role ARG1)
     (typeattributeset auth_admin_type ARG2))
 

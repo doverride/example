@@ -3,19 +3,6 @@
 
     (allow common_subject self (capability (dac_override dac_read_search)))
 
-    (call audit_manage_config (r common_subject))
-    (call audit_etc_filetrans_config_dirs (r common_subject))
-
-    (call audit_manage_audisp_config (r common_subject))
-    (call audit_etc_filetrans_audisp_config_dirs (r common_subject))
-
-    (call audit_manage_log (r common_subject))
-    (call audit_var_log_filetrans_log_dirs (r common_subject))
-
-    (call audit_run_auditctl (common_subject r))
-    (call audit_run_augenrules (common_subject r))
-    (call audit_run_ausearch (common_subject r))
-
     (call audit_admin (r common_subject))
 
     (optional auditadm_optional_sudo

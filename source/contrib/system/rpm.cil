@@ -178,7 +178,6 @@
 
 (typeattributeset rpm_object_type rpm_etc_file_type)
 
-(allow rpm_admin_type self (capability (kill sys_ptrace)))
 (allow rpm_admin_type rpm_subject_type signal_perms)
 (allow rpm_admin_type rpm_subject_type (process (ptrace)))
 (call ps_subject_pattern (rpm_admin_type rpm_subject_type))
@@ -186,6 +185,8 @@
 (allow rpm_admin_type rpm_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype rpm_admin_role rpm_object_type)
+
+(call rpm_run (rpm_admin_type rpm_admin_role))
 
 (macro rpm_exec ((type ARG1))
     (call can_exec (ARG1 rpm.bin_object)))
@@ -233,5 +234,6 @@
     (allow ARG1 rpm.common_subject (fifo_file (read))))
 
 (macro rpm_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset rpm_admin_role ARG1)
     (typeattributeset rpm_admin_type ARG2))

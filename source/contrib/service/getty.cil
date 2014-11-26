@@ -38,7 +38,6 @@
         (call plymouth_exec (common_subject)))
 )
 
-(allow getty_admin_type self (capability (kill sys_ptrace)))
 (allow getty_admin_type getty.common_subject signal_perms)
 (allow getty_admin_type getty.common_subject (process (ptrace)))
 (call ps_subject_pattern (getty_admin_type getty.common_subject))
@@ -52,5 +51,6 @@
     (allow ARG1 getty.unit_object (service (start))))
 
 (macro getty_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset getty_admin_role ARG1)
     (typeattributeset getty_admin_type ARG2))

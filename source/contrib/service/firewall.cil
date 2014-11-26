@@ -85,7 +85,6 @@
         (call nm_dbus_chat (common_subject)))
 )
 
-(allow firewall_admin_type self (capability (kill sys_ptrace)))
 (allow firewall_admin_type firewall_subject_type signal_perms)
 (allow firewall_admin_type firewall_subject_type (process (ptrace)))
 (call ps_subject_pattern (firewall_admin_type firewall_subject_type))
@@ -93,6 +92,8 @@
 (allow firewall_admin_type firewall_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype firewall_admin_role firewall_object_type)
+
+(call firewall_run_firewallcmd (firewall_admin_type firewall_admin_role))
 
 (macro firewall_auto_subtrans_firewallcmd ((type ARG1))
     (call auto_subject_type_transition_pattern
@@ -130,5 +131,6 @@
     (allow ARG1 firewalld.tmpfs_object (file (read write))))
 
 (macro firewall_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset firewall_admin_role ARG1)
     (typeattributeset firewall_admin_type ARG2))

@@ -1,3 +1,5 @@
+(typepermissive localectl.common_subject)
+
 (roleattribute localectl_role)
 
 (roleattribute localed_admin_role)
@@ -22,9 +24,6 @@
     (optional localectl_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
-
-    (optional localectl_optional_unconfined
-        (call unconfined (localectl_role common_subject)))
 )
 
 (block localed
@@ -67,13 +66,14 @@
     (call vconsole_read_config_files (common_subject))
 )
 
-(allow localed_admin_type self (capability (kill sys_ptrace)))
 (allow localed_admin_type localed_subject_type signal_perms)
 (allow localed_admin_type localed_subject_type (process (ptrace)))
 (call ps_subject_pattern (localed_admin_type localed_subject_type))
 (allow localed_admin_type localed_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype localed_admin_role localed_object_type)
+
+(call localed_run_localectl (localed_admin_type localed_admin_role))
 
 (macro localed_exec_localectl ((type ARG1))
     (call can_exec (ARG1 localectl.bin_object))
@@ -99,5 +99,6 @@
     (allow ARG1 localed.etc_object read_file_perms))
 
 (macro localed_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset localed_admin_role ARG1)
     (typeattributeset localed_admin_type ARG2))

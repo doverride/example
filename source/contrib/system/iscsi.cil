@@ -99,7 +99,6 @@
 (typeattributeset iscsi_unit_type
     (iscsid.unit_object iscsiuio.unit_object))
 
-(allow iscsi_admin_type self (capability (kill sys_ptrace)))
 (allow iscsi_admin_type iscsi_subject_type signal_perms)
 (allow iscsi_admin_type iscsi_subject_type (process (ptrace)))
 (call ps_subject_pattern (iscsi_admin_type iscsi_subject_type))
@@ -107,6 +106,8 @@
 (allow iscsi_admin_type iscsi_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype iscsi_admin_role iscsi_object_type)
+
+(call iscsi_run_iscsiadm (iscsi_admin_type iscsi_admin_role))
 
 (macro iscsi_auto_subtrans_iscsiadm ((type ARG1))
     (call iscsi_send_signal_iscsiadm (ARG1))
@@ -127,5 +128,6 @@
     (allow ARG1 iscsid.unit_object (service (reload))))
 
 (macro iscsi_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset iscsi_admin_role ARG1)
     (typeattributeset iscsi_admin_type ARG2))

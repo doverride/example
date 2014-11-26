@@ -3,14 +3,10 @@
 
     (allow common_subject self (capability (dac_override dac_read_search)))
 
-    (call auth_manage_shadow (r common_subject))
-
-    (call auth_run_authconfig (common_subject r))
-
     (call auth_admin (r common_subject))
 
     (optional authadm_optional_sudo
-        (call sudo_send_signal (common_subject)))
+        (call sudo_admin (r common_subject)))
 
     (optional authadm_optional_staff
         (call staff_rw_inherited_fifo_files (common_subject))
@@ -27,6 +23,15 @@
     (blockinherit usermanage_passwd_subject_block)
 
     (call usermanage_role_template_passwd (authadm.r authadm.common_subject common_subject))
+)
+
+(optional authadm_optional_visudo
+    (block authadm_visudo
+        (blockinherit sudo_visudo_subject_block)
+
+        (call sudo_role_template_visudo
+            (authadm.r authadm.common_subject common_subject))
+    )
 )
 
 (macro authadm_roleallow ((role ARG1))

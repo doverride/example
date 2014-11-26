@@ -62,7 +62,6 @@
         (call app_subject_type (common_subject)))
 )
 
-(allow kmod_admin_type self (capability (kill sys_ptrace)))
 (allow kmod_admin_type kmod.common_subject signal_perms)
 (allow kmod_admin_type kmod.common_subject (process (ptrace)))
 (call ps_subject_pattern (kmod_admin_type kmod.common_subject))
@@ -71,13 +70,19 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype kmod_admin_role kmod_object_type)
 
+(call kmod_run (kmod_admin_type kmod_admin_role))
+
 (macro kmod_auto_subtrans ((type ARG1))
+    (call kmod_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 kmod.bin_object kmod.common_subject)))
 
 (macro kmod_run ((type ARG1)(role ARG2))
     (call kmod_auto_subtrans (ARG1))
     (roleattributeset kmod_role (ARG2)))
+
+(macro kmod_send_signal ((type ARG1))
+    (allow ARG1 kmod.common_subject (process (signal))))
 
 (macro kmod_list_config ((type ARG1))
     (call file_search_etc (ARG1))
@@ -100,5 +105,6 @@
     (allow ARG1 kmod.usr_object relabel_file_perms))
 
 (macro kmod_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset kmod_admin_role ARG1)
     (typeattributeset kmod_admin_type ARG2))

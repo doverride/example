@@ -52,5 +52,6 @@
         (ARG1 fsck.run_object fsck.run_object)))
 
 (macro fsck_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capabity (kill sys_ptrace)))
     (roleattributeset fsck_admin_role ARG1)
     (typeattributeset fsck_admin_type ARG2))

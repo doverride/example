@@ -72,7 +72,6 @@
     (call systemd_stream_connect (common_subject))
 )
 
-(allow hostnamed_admin_type self (capability (kill sys_ptrace)))
 (allow hostnamed_admin_type hostnamed_subject_type signal_perms)
 (allow hostnamed_admin_type hostnamed_subject_type (process (ptrace)))
 (call ps_subject_pattern (hostnamed_admin_type hostnamed_subject_type))
@@ -106,5 +105,6 @@
     (allow ARG1 hostnamectl.common_subject (process (signal))))
 
 (macro hostnamed_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset hostnamed_admin_role ARG1)
     (typeattributeset hostnamed_admin_type ARG2))

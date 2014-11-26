@@ -17,7 +17,6 @@
     (call journal_client (common_subject))
 )
 
-(allow binfmt_admin_type self (capability (kill sys_ptrace)))
 (allow binfmt_admin_type binfmt.common_subject signal_perms)
 (allow binfmt_admin_type binfmt.common_subject (process (ptrace)))
 (call ps_subject_pattern (binfmt_admin_type binfmt.common_subject))
@@ -35,5 +34,6 @@
         (ARG1 binfmt.etc_object binfmt.etc_object)))
 
 (macro binfmt_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset binfmt_admin_role ARG1)
     (typeattributeset binfmt_admin_type ARG2))

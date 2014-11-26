@@ -48,7 +48,7 @@
         (call dmesg_run (common_subject r)))
 
     (optional sysadm_optional_rpm
-        (call rpm_run (common_subject r)))
+        (call rpm_admin (r common_subject)))
 
     (optional sysadm_optional_sudo
         (call sudo_send_signal (common_subject))
@@ -60,17 +60,18 @@
         (call coredump_admin (r common_subject))
         (call hostnamed_admin (r common_subject))
         (call journal_admin (r common_subject))
+        (call localed_admin (r common_subject))
         (call logind_admin (r common_subject))
         (call machine_admin (r common_subject))
         (call systemd_admin (r common_subject))
+        (call tmpfiles_admin (r common_subject))
         (call udev_admin (r common_subject)))
 
     (optional sysadm_optional_usermanage
-        (call usermanage_run_groupadd (common_subject r))
-        (call usermanage_run_useradd (common_subject r)))
+        (call usermanage_admin (r common_subject)))
 
     (optional sysadm_optional_wpa
-        (call wpa_run_wpacli (common_subject r)))
+        (call wpa_admin (r common_subject)))
 )
 
 (block sysadm_chfn
@@ -83,15 +84,6 @@
     (blockinherit usermanage_passwd_subject_block)
 
     (call usermanage_role_template_passwd (sysadm.r sysadm.common_subject common_subject))
-)
-
-(optional sysadm_optional_visudo
-    (block sysadm_visudo
-        (blockinherit sudo_visudo_subject_block)
-
-        (call sudo_role_template_visudo
-            (sysadm.r sysadm.common_subject common_subject))
-    )
 )
 
 (macro sysadm_roleallow ((role ARG1))

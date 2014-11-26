@@ -30,5 +30,6 @@
 (roletype rfkill_admin_role rfkill.systemd_var_lib_object)
 
 (macro rfkill_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset rfkill_admin_role ARG1)
     (typeattributeset rfkill_admin_type ARG2))

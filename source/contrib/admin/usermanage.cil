@@ -235,13 +235,15 @@
 
 (call usermanage_read_passwd_pam_config_files (passwd_subject_type))
 
-(allow usermanage_admin_type self (capability (kill sys_ptrace)))
 (allow usermanage_admin_type usermanage_subject_type signal_perms)
 (allow usermanage_admin_type usermanage_subject_type (process (ptrace)))
 (call ps_subject_pattern (usermanage_admin_type usermanage_subject_type))
 (allow usermanage_admin_type usermanage_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype usermanage_admin_role usermanage_object_type)
+
+(call usermanage_run_groupadd (usermanage_admin_type usermanage_admin_role))
+(call usermanage_run_useradd (usermanage_admin_type usermanage_admin_role))
 
 (macro usermanage_chfn_subject_type ((type ARG1))
     (typeattributeset chfn_subject_type ARG1))
@@ -308,5 +310,6 @@
     (allow ARG1 passwd.pam_etc_object read_file_perms))
 
 (macro usermanage_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset usermanage_admin_role ARG1)
     (typeattributeset usermanage_admin_type ARG2))

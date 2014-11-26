@@ -143,7 +143,6 @@
 
 (typeattributeset polkit_object_type polkit_etc_file_type)
 
-(allow polkit_admin_type self (capability (kill sys_ptrace)))
 (allow polkit_admin_type polkit_subject_type signal_perms)
 (allow polkit_admin_type polkit_subject_type (process (ptrace)))
 (call ps_subject_pattern (polkit_admin_type polkit_subject_type))
@@ -151,6 +150,9 @@
 (allow polkit_admin_type polkit_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype polkit_admin_role polkit_object_type)
+
+(call polkit_run_pkladm (polkit_admin_type polkit_admin_role))
+(call polkit_run_pklauth (polkit_admin_type polkit_admin_role))
 
 (macro polkit_exec_helper ((type ARG1))
     (call can_exec (ARG1 polkit_helper.bin_object)))
@@ -219,5 +221,6 @@
     (allow polkitd.common_subject ARG1 (dbus (send_msg))))
 
 (macro polkit_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset polkit_admin_role ARG1)
     (typeattributeset polkit_admin_type ARG2))

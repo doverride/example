@@ -553,7 +553,6 @@
 
 (typeattributeset systemd_object_type systemd_unit_object_type)
 
-(allow systemd_admin_type self (capability (kill sys_ptrace)))
 (allow systemd_admin_type systemd_subject_type signal_perms)
 (allow systemd_admin_type systemd_subject_type (process (ptrace)))
 (call ps_subject_pattern (systemd_admin_type systemd_subject_type))
@@ -877,6 +876,7 @@
     (allow systemd.common_subject ARG1 (dbus (send_msg))))
 
 (macro systemd_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset systemd_admin_role ARG1)
     (typeattributeset systemd_admin_type ARG2))
 

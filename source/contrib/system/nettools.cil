@@ -142,7 +142,6 @@
         (call app_subject_type (common_subject)))
 )
 
-(allow nettools_admin_type self (capability (kill sys_ptrace)))
 (allow nettools_admin_type nettools_subject_type signal_perms)
 (allow nettools_admin_type nettools_subject_type (process (ptrace)))
 (call ps_subject_pattern (nettools_admin_type nettools_subject_type))
@@ -150,6 +149,11 @@
 (allow nettools_admin_type arp.unit_object (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype nettools_admin_role arp.unit_object)
+
+(call nettools_run (nettools_admin_type nettools_admin_role))
+(call nettools_run_ping (nettools_admin_type nettools_admin_role))
+(call nettools_run_traceroute (nettools_admin_type nettools_admin_role))
+(call nettools_run_arp (nettools_admin_type nettools_admin_role))
 
 (macro nettools_exec ((type ARG1))
     (call can_exec (ARG1 nettools.bin_object)))
@@ -172,7 +176,7 @@
 (macro nettools_auto_subtrans_ping ((type ARG1))
     (call nettools_send_signal_ping (ARG1))
     (call auto_subject_type_transition_pattern
-        (ARG1 ping.bin_object common_subject)))
+        (ARG1 ping.bin_object ping.common_subject)))
 
 (macro nettools_run_ping ((type ARG1)(role ARG2))
     (call nettools_auto_subtrans_ping (ARG1))
@@ -211,5 +215,6 @@
     (allow ARG1 arp.common_subject (process (signal))))
 
 (macro nettools_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset nettools_admin_role ARG1)
     (typeattributeset nettools_admin_type ARG2))

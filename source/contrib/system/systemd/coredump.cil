@@ -85,7 +85,6 @@
 (call miscfiles_read_terminfo (coredumpctl_client_type))
 (call miscfiles_read_localization (coredumpctl_client_type))
 
-(allow coredump_admin_type self (capability (kill sys_ptrace)))
 (allow coredump_admin_type coredump_subject_type signal_perms)
 (allow coredump_admin_type coredump_subject_type (process (ptrace)))
 (call ps_subject_pattern (coredump_admin_type coredump_subject_type))
@@ -124,5 +123,6 @@
         (ARG1 coredump.systemd_var_lib_object coredump.systemd_var_lib_object)))
 
 (macro coredump_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset coredump_admin_role ARG1)
     (typeattributeset coredump_admin_type ARG2))

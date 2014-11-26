@@ -40,7 +40,6 @@
     (call miscfiles_read_localization (common_subject))
 )
 
-(allow mandb_admin_type self (capability (kill sys_ptrace)))
 (allow mandb_admin_type mandb.common_subject signal_perms)
 (allow mandb_admin_type mandb.common_subject (process (ptrace)))
 (call ps_subject_pattern (mandb_admin_type mandb.common_subject))
@@ -63,5 +62,6 @@
         (ARG1 mandb.var_cache_object mandb.var_cache_object)))
 
 (macro mandb_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset mandb_admin_role ARG1)
     (typeattributeset mandb_admin_type ARG2))

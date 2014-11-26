@@ -20,4 +20,5 @@
 (call ps_subject_pattern (remountfs_admin_type remountfs.common_subject))
 
 (macro remountfs_admin ((type ARG1))
+    (allow ARG1 self (capability (kill sys_ptrace)))
     (typeattributeset remountfs_admin_type ARG1))

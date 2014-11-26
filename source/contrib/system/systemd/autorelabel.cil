@@ -41,7 +41,6 @@
     (call systemd_reboot_system (common_subject))
 )
 
-(allow autorelabel_admin_type self (capability (kill sys_ptrace)))
 (allow autorelabel_admin_type autorelabel.common_subject signal_perms)
 (allow autorelabel_admin_type autorelabel.common_subject (process (ptrace)))
 (call ps_subject_pattern (autorelabel_admin_type autorelabel.common_subject))
@@ -50,5 +49,6 @@
 (roletype autorelabel_admin_role autorelabel.flag_object)
 
 (macro autorelabel_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset autorelabel_admin_role ARG1)
     (typeattributeset autorelabel_admin_type ARG2))

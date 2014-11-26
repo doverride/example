@@ -133,7 +133,6 @@
     (call udev_list_run (common_subject))
 )
 
-(allow logind_admin_type self (capability (kill sys_ptrace)))
 (allow logind_admin_type logind_subject_type signal_perms)
 (allow logind_admin_type logind_subject_type (process (ptrace)))
 (call ps_subject_pattern (logind_admin_type logind_subject_type))
@@ -199,5 +198,6 @@
     (typeattributeset logind_loginctl_client_type ARG1))
 
 (macro logind_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset logind_admin_role ARG1)
     (typeattributeset logind_admin_type ARG2))

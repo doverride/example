@@ -58,7 +58,6 @@
     (filecon "/var/run/systemd/machines(/.*)?" any systemd_run_machined)
 )
 
-(allow machine_admin_type self (capability (kill sys_ptrace)))
 (allow machine_admin_type machine_subject_type signal_perms)
 (allow machine_admin_type machine_subject_type (process (ptrace)))
 (call ps_subject_pattern (machine_admin_type machine_subject_type))
@@ -109,5 +108,6 @@
         (ARG1 machined.systemd_run_object machined.systemd_run_object)))
 
 (macro machine_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset machine_admin_role ARG1)
     (typeattributeset machine_admin_type ARG2))

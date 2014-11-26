@@ -20,7 +20,6 @@
     (call journal_client (common_subject))
 )
 
-(allow sessions_admin_type self (capability (kill sys_ptrace)))
 (allow sessions_admin_type sessions.common_subject signal_perms)
 (allow sessions_admin_type sessions.common_subject (process (ptrace)))
 (call ps_subject_pattern (sessions_admin_type sessions.common_subject))
@@ -36,5 +35,6 @@
     (call file_run_filetrans (ARG1 sessions.run_object file "*")))
 
 (macro sessions_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset sessions_admin_role ARG1)
     (typeattributeset sessions_admin_type ARG2))

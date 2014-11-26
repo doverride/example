@@ -17,10 +17,10 @@
     (call systemd_search_config (common_subject))
 )
 
-(allow sleep_admin_type self (capability (kill sys_ptrace)))
 (allow sleep_admin_type sleep.common_subject signal_perms)
 (allow sleep_admin_type sleep.common_subject (process (ptrace)))
 (call ps_subject_pattern (sleep_admin_type sleep.common_subject))
 
 (macro sleep_admin ((type ARG1))
+    (allow ARG1 self (capability (kill sys_ptrace)))
     (typeattributeset sleep_admin_type ARG1))

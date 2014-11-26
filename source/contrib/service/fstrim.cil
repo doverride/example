@@ -36,7 +36,6 @@
         (call app_subject_type (common_subject)))
 )
 
-(allow fstrim_admin_type self (capability (kill sys_ptrace)))
 (allow fstrim_admin_type fstrim.common_subject signal_perms)
 (allow fstrim_admin_type fstrim.common_subject (process (ptrace)))
 (call ps_subject_pattern (fstrim_admin_type fstrim.common_subject))
@@ -44,6 +43,8 @@
 (allow fstrim_admin_type fstrim_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype fstrim_admin_role fstrim_object_type)
+
+(call fstrim_run (fstrim_admin_type fstrim_admin_role))
 
 (macro fstrim_auto_subtrans ((type ARG1))
     (call auto_subject_type_transition_pattern
@@ -53,6 +54,7 @@
     (call fstrim_auto_subtrans (ARG1))
     (roleattributeset fstrim_role (ARG2)))
 
-(macro fstrim_admin ((role ARG1)(type ARG1))
+(macro fstrim_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset fstrim_admin_role ARG1)
     (typeattributeset fstrim_admin_type ARG2))

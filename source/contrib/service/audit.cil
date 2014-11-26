@@ -186,7 +186,6 @@
 
 (typeattributeset audit_subject_type audit_audisp_daemon_type)
 
-(allow audit_admin_type self (capability (kill sys_ptrace)))
 (allow audit_admin_type audit_subject_type signal_perms)
 (allow audit_admin_type audit_subject_type (process (ptrace)))
 (call ps_subject_pattern (audit_admin_type audit_subject_type))
@@ -194,6 +193,19 @@
 (allow audit_admin_type audit_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype audit_admin_role audit_object_type)
+
+(call audit_manage_config (audit_admin_role audit_admin_type))
+(call audit_etc_filetrans_config_dirs (audit_admin_role audit_admin_type))
+
+(call audit_manage_audisp_config (audit_admin_role audit_admin_type))
+(call audit_etc_filetrans_audisp_config_dirs (audit_admin_role audit_admin_type))
+
+(call audit_manage_log (audit_admin_role audit_admin_type))
+(call audit_var_log_filetrans_log_dirs (audit_admin_role audit_admin_type))
+
+(call audit_run_auditctl (audit_admin_type audit_admin_role))
+(call audit_run_augenrules (audit_admin_type audit_admin_role))
+(call audit_run_ausearch (audit_admin_type audit_admin_role))
 
 (macro audit_client ((type ARG1))
     (typeattributeset audit_client_subject_type (ARG1)))
@@ -418,5 +430,6 @@
     (allow ARG1 auditd.common_subject (fd (use))))
 
 (macro audit_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset audit_admin_role ARG1)
     (typeattributeset audit_admin_type ARG2))

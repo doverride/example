@@ -71,7 +71,6 @@
         (call app_subject_type (common_subject)))
 )
 
-(allow askpwd_admin_type self (capability (kill sys_ptrace)))
 (allow askpwd_admin_type askpwd_subject_type signal_perms)
 (allow askpwd_admin_type askpwd_subject_type (process (ptrace)))
 (call ps_subject_pattern (askpwd_admin_type askpwd_subject_type))
@@ -127,5 +126,6 @@
         (ARG1 askpwd.systemd_run_object askpwd.systemd_run_object)))
 
 (macro askpwd_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset askpwd_admin_role ARG1)
     (typeattributeset askpwd_admin_type ARG2))

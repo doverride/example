@@ -231,7 +231,6 @@
 (call nm_stream_connect (nm_client_type))
 (call nm_dbus_chat (nm_client_type))
 
-(allow nm_admin_type self (capability (kill sys_ptrace)))
 (allow nm_admin_type nm_subject_type signal_perms)
 (allow nm_admin_type nm_subject_type (process (ptrace)))
 (call ps_subject_pattern (nm_admin_type nm_subject_type))
@@ -239,6 +238,8 @@
 (allow nm_admin_type nm_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype nm_admin_role nm_object_type)
+
+(call nm_run_nmcli (nm_admin_type nm_admin_role))
 
 (macro nm_exec_helper ((type ARG1))
     (call can_exec (ARG1 nm_helper.bin_object)))
@@ -301,5 +302,6 @@
     (allow nm.common_subject ARG1 (dbus (send_msg))))
 
 (macro nm_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset nm_admin_role ARG1)
     (typeattributeset nm_admin_type ARG2))

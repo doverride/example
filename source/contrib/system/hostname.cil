@@ -27,9 +27,13 @@
     (call can_exec (ARG1 hostname.bin_object)))
 
 (macro hostname_auto_subtrans ((type ARG1))
+    (call hostname_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
         (ARG1 hostname.bin_object hostname.common_subject)))
 
 (macro hostname_run ((type ARG1)(role ARG2))
     (call hostname_auto_subtrans (ARG1))
     (roleattributeset hostname_role (ARG2)))
+
+(macro hostname_send_signal ((type ARG1))
+    (allow ARG1 hostname.common_subject (process (signal))))

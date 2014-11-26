@@ -101,7 +101,6 @@
     (call udev_client (common_subject))
 )
 
-(allow dm_admin_type self (capability (kill sys_ptrace)))
 (allow dm_admin_type dm_subject_type signal_perms)
 (allow dm_admin_type dm_subject_type (process (ptrace)))
 (call ps_subject_pattern (dm_admin_type dm_subject_type))
@@ -109,6 +108,9 @@
 (allow dm_admin_type dm_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype dm_admin_role dm_object_type)
+
+(call dm_run_dmsetup (dm_admin_type dm_admin_role))
+(call dm_run_dmcrypt (dm_admin_type dm_admin_role))
 
 (macro dm_auto_subtrans_dmcrypt ((type ARG1))
     (call auto_subject_type_transition_pattern
@@ -130,5 +132,6 @@
     (allow ARG1 dmcrypt.common_subject rw_sem_perms))
 
 (macro dm_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset dm_admin_role ARG1)
     (typeattributeset dm_admin_type ARG2))

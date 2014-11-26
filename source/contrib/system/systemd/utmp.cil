@@ -26,7 +26,6 @@
     (call systemd_stream_connect (common_subject))
 )
 
-(allow utmp_admin_type self (capability (kill sys_ptrace)))
 (allow utmp_admin_type utmp.common_subject signal_perms)
 (allow utmp_admin_type utmp.common_subject (process (ptrace)))
 (call ps_subject_pattern (utmp_admin_type utmp.common_subject))
@@ -43,5 +42,6 @@
     (allow ARG1 utmp.run_object rw_file_perms))
 
 (macro utmp_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset utmp_admin_role ARG1)
     (typeattributeset utmp_admin_type ARG2))
