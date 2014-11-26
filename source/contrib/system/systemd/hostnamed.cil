@@ -80,6 +80,8 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype hostnamed_admin_role hostnamed_object_type)
 
+(call hostnamed_run_hostnamectl (hostnamed_admin_type hostnamed_admin_role))
+
 (macro hostnamed_exec_hostnamectl ((type ARG1))
     (call can_exec (ARG1 hostnamectl.bin_object))
     (call hostnamed_hostnamectl_client_type (ARG1)))

@@ -1,3 +1,5 @@
+(typepermissive coredumpctl.common_subject)
+
 (roleattribute coredumpctl_role)
 
 (roleattribute coredump_admin_role)
@@ -90,6 +92,8 @@
 (allow coredump_admin_type coredump_object_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (roletype coredump_admin_role coredump_object_type)
+
+(call coredump_run_coredumpctl (coredump_admin_type coredump_admin_role))
 
 (macro coredump_exec_coredumpctl ((type ARG1))
     (call can_exec (ARG1 coredumpctl.bin_object))

@@ -44,10 +44,6 @@
 
     (call auth_nsswitch_client (common_subject))
 
-    (call journal_run_journalctl (common_subject r))
-
-    (call systemd_run_systemctl (common_subject r))
-
     (optional sysadm_optional_dmesg
         (call dmesg_run (common_subject r)))
 
@@ -59,6 +55,15 @@
         (optional sysadm_optional_staff
             (call staff_rw_inherited_fifo_files (common_subject))
             (call staff_use_fd (common_subject))))
+
+    (optional sysadm_optional_systemd
+        (call coredump_admin (r common_subject))
+        (call hostnamed_admin (r common_subject))
+        (call journal_admin (r common_subject))
+        (call logind_admin (r common_subject))
+        (call machine_admin (r common_subject))
+        (call systemd_admin (r common_subject))
+        (call udev_admin (r common_subject)))
 
     (optional sysadm_optional_usermanage
         (call usermanage_run_groupadd (common_subject r))

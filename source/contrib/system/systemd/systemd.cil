@@ -562,6 +562,8 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype systemd_admin_role systemd_object_type)
 
+(call systemd_run_systemctl (systemd_admin_type systemd_admin_role))
+
 (allow systemd_unconfined_type systemd.common_subject (system (halt reboot
     status start stop undefined enable disable reload)))
 

@@ -66,6 +66,8 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype machine_admin_role machine_object_type)
 
+(call machine_run_machinectl (machine_admin_type machine_admin_role))
+
 (macro machine_exec_machinectl ((type ARG1))
     (call can_exec (ARG1 machinectl.bin_object))
     (call machine_machinectl_client_type (ARG1)))
@@ -107,5 +109,5 @@
         (ARG1 machined.systemd_run_object machined.systemd_run_object)))
 
 (macro machine_admin ((role ARG1)(type ARG2))
-    (typeattributeset machine_admin_role ARG1)
+    (roleattributeset machine_admin_role ARG1)
     (typeattributeset machine_admin_type ARG2))

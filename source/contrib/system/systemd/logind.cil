@@ -142,6 +142,8 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype logind_admin_role logind_object_type)
 
+(call logind_run_loginctl (logind_admin_type logind_admin_role))
+
 (allow logind.common_subject logind_client_type read_file_perms)
 (allow logind.common_subject logind_client_type list_dir_perms)
 (allow logind.common_subject logind_client_type read_lnk_file_perms)

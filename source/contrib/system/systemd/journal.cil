@@ -178,6 +178,8 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype journal_admin_role journal_object_type)
 
+(call journal_run_journalctl (journal_admin_type journal_admin_role))
+
 (macro journal_exec_journalctl ((type ARG1))
     (call can_exec (ARG1 journalctl.bin_object))
     (call journal_journalctl_client_type (ARG1)))

@@ -177,6 +177,8 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype udev_admin_role udev_object_type)
 
+(call udev_run_udevadm (udev_admin_type udev_admin_role))
+
 (macro udev_exec_helper ((type ARG1))
     (call can_exec (ARG1 udev_helper.bin_object)))
 
