@@ -16,11 +16,14 @@
     (context staff (u r user.home_object (systemlow systemlow)))
     (filecon "/home/john/.*" any staff)
 
+    (context staff_config (u r user.home_config_object (systemlow systemlow)))
+    (filecon "/home/john/\.config(/.*)?" any staff_config)
+
     (context var_spool_staff (u r user.var_spool_object (systemlow mls_systemhigh)))
     (filecon "/var/spool/mail/john" file var_spool_staff)
 
-    (context staff_systemd (u r systemd.home_object (systemlow systemlow)))
-    (filecon "/home/john/\.config/systemd(/.*)?" any staff_systemd)
+    (context staff_config_systemd (u r systemd.home_config_object (systemlow systemlow)))
+    (filecon "/home/john/\.config/systemd(/.*)?" any staff_config_systemd)
 )
 
 (block staff_chfn

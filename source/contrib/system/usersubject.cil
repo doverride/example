@@ -6,6 +6,7 @@
 (typeattribute usersubject_unpriv_login_type)
 
 (typeattribute usersubject_home_type)
+(typeattribute usersubject_home_config_type)
 (typeattribute usersubject_tmpfs_type)
 (typeattribute usersubject_mail_spool_type)
 
@@ -63,9 +64,9 @@
             (call systemd_relabel_generic_user_tmpfs (common_subject))
             (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (r common_subject))
 
-            (call systemd_manage_generic_home (r common_subject))
-            (call systemd_relabel_generic_home (common_subject))
-            (call systemd_generic_home_content_filetrans_generic_home_dirs (r common_subject)))
+            (call systemd_manage_generic_home_config (r common_subject))
+            (call systemd_relabel_generic_home_config (common_subject))
+            (call systemd_generic_home_config_filetrans_generic_home_config_dirs (r common_subject)))
 
         (optional usersubject_common_login_block_optional_askpwd
             (call askpwd_run_askpwdagent (common_subject r)))
@@ -90,9 +91,9 @@
             (call systemd_relabel_generic_user_tmpfs (common_subject))
             (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (r common_subject))
 
-            (call systemd_manage_generic_home (r common_subject))
-            (call systemd_relabel_generic_home (common_subject))
-            (call systemd_generic_home_content_filetrans_generic_home_dirs (r common_subject)))
+            (call systemd_manage_generic_home_config (r common_subject))
+            (call systemd_relabel_generic_home_config (common_subject))
+            (call systemd_generic_home_config_filetrans_generic_home_config_dirs (r common_subject)))
 
         (optional usersubject_priv_login_block_optional_askpwd
             (call askpwd_run_askpwdagent (common_subject r)))
@@ -101,6 +102,7 @@
 (block usersubject_object_block
     (blockabstract usersubject_object_block)
         (blockinherit usersubject_maintains_home_files_block)
+        (blockinherit usersubject_maintains_home_config_files_block)
         (blockinherit usersubject_maintains_single_mail_spool_file_block)
         (blockinherit usersubject_maintains_tmpfs_files_block)
         (blockinherit usersubject_maintains_pty_object_block)
@@ -122,6 +124,23 @@
 
         (call usersubject_home_user_filetrans
             (r common_subject home_object all_file_objects "*"))
+)
+
+(block usersubject_home_config_object_block
+    (blockabstract usersubject_home_config_object_block)
+        (type home_config_object)
+        (call usersubject_home_config_type (home_config_object))
+)
+
+(block usersubject_maintains_home_config_files_block
+    (blockabstract usersubject_maintains_home_config_files_block)
+        (blockinherit usersubject_home_config_object_block)
+
+        (allow common_subject home_config_object (all_file_objects
+            (not_mounton_entrypoint_and_execmod)))
+
+        (call usersubject_home_user_filetrans_home_config_dirs
+            (r common_subject))
 )
 
 (block usersubject_tmpfs_object_block
@@ -329,9 +348,9 @@
         (call systemd_relabel_generic_user_tmpfs (ARG3))
         (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (ARG2 ARG3))
 
-        (call systemd_manage_generic_home (ARG2 ARG3))
-        (call systemd_relabel_generic_home (ARG3))
-        (call systemd_generic_home_content_filetrans_generic_home_dirs (ARG2 ARG3)))
+        (call systemd_manage_generic_home_config (ARG2 ARG3))
+        (call systemd_relabel_generic_home_config (ARG3))
+        (call systemd_generic_home_config_filetrans_generic_home_config_dirs (ARG2 ARG3)))
 
     (optional usersubject_common_login_template_optional_askpwd
         (call askpwd_run_askpwdagent (ARG3 ARG2))))
@@ -350,9 +369,9 @@
         (call systemd_relabel_generic_user_tmpfs (ARG3))
         (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (ARG2 ARG3))
 
-        (call systemd_manage_generic_home (ARG2 ARG3))
-        (call systemd_relabel_generic_home (ARG3))
-        (call systemd_generic_home_content_filetrans_generic_home_dirs (ARG2 ARG3)))
+        (call systemd_manage_generic_home_config (ARG2 ARG3))
+        (call systemd_relabel_generic_home_config (ARG3))
+        (call systemd_generic_home_config_filetrans_generic_home_config_dirs (ARG2 ARG3)))
 
     (optional usersubject_priv_login_template_optional_askpwd
         (call askpwd_run_askpwdagent (ARG3 ARG2))))
@@ -368,6 +387,10 @@
 (macro usersubject_home_type ((type ARG1))
     (call file_type (ARG1))
     (typeattributeset usersubject_home_type ARG1))
+
+(macro usersubject_home_config_type ((type ARG1))
+    (call usersubject_home_type (ARG1))
+    (typeattributeset usersubject_home_config_type ARG1))
 
 (macro usersubject_tmpfs_type ((type ARG1))
     (call file_tmpfs_type (ARG1))
@@ -478,6 +501,7 @@
     (call usersubject_generic_cert_template (ARG1 ARG2))
     (call usersubject_generic_terminfo_template (ARG1 ARG2))
     (call usersubject_generic_home_template (ARG1 ARG2))
+    (call usersubject_generic_home_config_template (ARG1 ARG2))
     (call usersubject_generic_mail_spool_template (ARG1 ARG2))
     (call usersubject_generic_tmpfs_template (ARG1 ARG2))
     (call usersubject_generic_pty_template (ARG1 ARG2))
@@ -550,6 +574,12 @@
     (roletype ARG1 user_bin.home_object)
     (call usersubject_home_user_filetrans_bin (ARG1 ARG2)))
 
+(macro usersubject_generic_home_config_template ((role ARG1)(type ARG2))
+    (allow ARG2 user.home_config_object (all_file_objects
+        (not_mounton_entrypoint_and_execmod)))
+    (roletype ARG1 user.home_config_object)
+    (call usersubject_home_user_filetrans_home_config_dirs (ARG1 ARG2)))
+
 (macro usersubject_generic_cert_template ((role ARG1)(type ARG2))
     (allow ARG2 user_cert.home_object (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
@@ -594,6 +624,24 @@
         (ARG1 ARG2 user_bin.home_object dir ".bin"))
     (roletype ARG1 user_bin.home_object))
 
+(macro usersubject_home_user_filetrans_home_config_dirs ((role ARG1)(type ARG2))
+    (call usersubject_home_user_filetrans
+        (ARG1 ARG2 user.home_config_object dir ".config"))
+    (roletype ARG1 user.home_config_object))
+
+(macro usersubject_list_generic_home_config ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 user.home_config_object list_dir_perms))
+
+(macro usersubject_search_generic_home_config ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 user.home_config_object search_dir_perms))
+
+(macro usersubject_generic_home_config_filetrans ((role ARG1)(type ARG2)(type ARG3)
+    (class ARG4)(name ARG5))
+    (call file_type_transition_pattern (ARG2 user.home_config_object ARG3 ARG4 ARG5))
+    (roletype ARG1 ARG3))
+
 (macro usersubject_home_user_filetrans_cert ((role ARG1)(type ARG2))
     (call usersubject_home_user_filetrans
         (ARG1 ARG2 user_cert.home_object dir ".pki"))
@@ -622,6 +670,10 @@
 (macro usersubject_rw_generic_home_content_dirs ((type ARG1))
     (call usersubject_search_home_user (ARG1))
     (allow ARG1 user.home_object rw_dir_perms))
+
+(macro usersubject_rw_generic_home_config_dirs ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 user.home_config_object rw_dir_perms))
 
 (macro usersubject_search_generic_home_content ((type ARG1))
     (call usersubject_search_home_user (ARG1))
