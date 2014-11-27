@@ -374,10 +374,10 @@
         (context user_tmpfs_systemd (sys.u sys.r user_tmpfs_object (systemlow systemlow)))
         (filecon "/var/run/user/.*/systemd(/.*)?" any user_tmpfs_systemd)
 
-        (call systemd_manage_generic_user_tmpfs_dirs (sys.r common_subject))
-        (call systemd_manage_generic_user_tmpfs_sock_files (sys.r common_subject))
+        (call systemd_manage_generic_user_tmpfs (sys.r common_subject))
+        (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (sys.r common_subject))
 
-        (call fs_tmpfs_filetrans (common_subject user_tmpfs_object dir "systemd"))
+        (blockinherit usersubject_home_object_block)
 
         (call usersubject_link_keyring_all_common_login_subjects (common_subject))
         (call usersubject_search_home_user (common_subject)))
@@ -412,7 +412,7 @@
 
     (call askpwd_run_askpwdagent (common_subject systemctl_role))
 
-    (call usersubject_dontaudit_read_generic_user_home_content_files (common_subject))
+    (call usersubject_dontaudit_read_generic_home_content_files (common_subject))
 
     (optional systemctl_optional_app
         (call app_subject_type (common_subject))
@@ -711,9 +711,9 @@
 (macro systemd_relabel_generic_user_tmpfs_dirs ((type ARG1))
     (allow ARG1 systemd.user_tmpfs_object relabel_dir_perms))
 
-(macro systemd_manage_generic_user_tmpfs_dirs ((role ARG1)(type ARG1))
-    (call fs_search_tmpfs (ARG1))
-    (allow ARG1 systemd.user_tmpfs_object manage_dir_perms)
+(macro systemd_manage_generic_user_tmpfs_dirs ((role ARG1)(type ARG2))
+    (call fs_search_tmpfs (ARG2))
+    (allow ARG2 systemd.user_tmpfs_object manage_dir_perms)
     (roletype ARG1 systemd.user_tmpfs_object))
 
 (macro systemd_delete_generic_user_tmpfs_dirs ((type ARG1))
@@ -724,16 +724,67 @@
 (macro systemd_relabel_generic_user_tmpfs_sock_files ((type ARG1))
     (allow ARG1 systemd.user_tmpfs_object relabel_sock_file_perms))
 
-(macro systemd_manage_generic_user_tmpfs_sock_files ((role ARG1)(type ARG1))
-    (call fs_search_tmpfs (ARG1))
+(macro systemd_manage_generic_user_tmpfs_sock_files ((role ARG1)(type ARG2))
+    (call fs_search_tmpfs (ARG2))
     (call manage_sock_files_pattern
-        (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object))
+        (ARG2 systemd.user_tmpfs_object systemd.user_tmpfs_object))
     (roletype ARG1 systemd.user_tmpfs_object))
 
 (macro systemd_delete_generic_user_tmpfs_sock_files ((type ARG1))
     (call fs_search_tmpfs (ARG1))
     (call delete_sock_files_pattern
         (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object)))
+
+(macro systemd_manage_generic_user_tmpfs ((role ARG1)(type ARG2))
+    (call systemd_manage_generic_user_tmpfs_dirs (ARG1 ARG2))
+    (call systemd_manage_generic_user_tmpfs_sock_files (ARG1 ARG2)))
+
+(macro systemd_relabel_generic_user_tmpfs ((type ARG1))
+    (call systemd_relabel_generic_user_tmpfs_dirs (ARG1))
+    (call systemd_relabel_generic_user_tmpfs_sock_files (ARG1)))
+
+(macro systemd_delete_generic_user_tmpfs ((type ARG1))
+    (call systemd_delete_generic_user_tmpfs_dirs (ARG1))
+    (call systemd_delete_generic_user_tmpfs_sock_files (ARG1)))
+
+(macro systemd_tmpfs_filetrans_generic_user_tmpfs_dirs ((role ARG1)(type ARG2))
+    (call fs_tmpfs_filetrans (ARG2 systemd.user_tmpfs_object dir "systemd"))
+    (roletype ARG1 systemd.user_tmpfs_object))
+
+(macro systemd_manage_generic_home ((role ARG1)(type ARG2))
+    (call usersubject_rw_generic_home_content_dirs (ARG2))
+    (allow ARG2 systemd.home_object (all_file_objects (manage)))
+    (roletype ARG1 systemd.home_object))
+
+(macro systemd_list_generic_home ((type ARG1))
+    (call usersubject_search_generic_home_content (ARG1))
+    (allow ARG1 systemd.home_object list_dir_perms))
+
+(macro systemd_search_generic_home ((type ARG1))
+    (call usersubject_search_generic_home_content (ARG1))
+    (allow ARG1 systemd.home_object search_dir_perms))
+
+(macro systemd_read_generic_home_files ((type ARG1))
+    (call usersubject_search_generic_home_content (ARG1))
+    (call read_files_pattern
+        (ARG1 systemd.home_object systemd.home_object)))
+
+(macro systemd_read_generic_home_lnk_files ((type ARG1))
+    (call usersubject_search_generic_home_content (ARG1))
+    (call read_lnk_files_pattern
+        (ARG1 systemd.home_object systemd.home_object)))
+
+(macro systemd_read_generic_home ((type ARG1))
+    (call systemd_read_generic_home_files (ARG1))
+    (call systemd_read_generic_home_lnk_files (ARG1)))
+
+(macro systemd_relabel_generic_home ((type ARG1))
+    (call usersubject_search_generic_home_content (ARG1))
+    (allow ARG1 systemd.home_object (all_file_objects (relabel))))
+
+(macro systemd_generic_home_content_filetrans_generic_home_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_content_filetrans
+        (ARG1 ARG2 systemd.home_object dir "systemd")))
 
 (macro systemd_reboot_system ((type ARG1))
     (allow ARG1 systemd.common_subject (system (reboot))))

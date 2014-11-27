@@ -1003,6 +1003,11 @@
 (macro file_rw_home_dirs ((type ARG1))
     (allow ARG1 home rw_dir_perms))
 
+(macro file_home_filetrans ((type ARG1)(type ARG2)
+    (class ARG3)(name ARG4))
+    (call file_type_transition_pattern
+        (ARG1 home ARG2 ARG3 ARG4)))
+
 (macro file_sec_type ((type ARG1))
     (call sys_object_type (ARG1))
     (typeattributeset file_type ARG1)

@@ -23,6 +23,7 @@
 (block firewalld
     (blockinherit systemd_daemon_block)
 
+    (typeattributeset firewall_object_type unit_object)
     (typeattributeset firewall_subject_type common_subject)
 
     (context bin_firewalld (sys.u sys.r bin_object (systemlow systemlow)))

@@ -57,6 +57,15 @@
         (call usersubject_generic_object_template (r common_subject))
 
         (call usersubject_mls_template (u systemlow systemlow systemhigh))
+
+        (optional usersubject_common_login_block_optional_systemd
+            (call systemd_manage_generic_user_tmpfs (r common_subject))
+            (call systemd_relabel_generic_user_tmpfs (common_subject))
+            (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (r common_subject))
+
+            (call systemd_manage_generic_home (r common_subject))
+            (call systemd_relabel_generic_home (common_subject))
+            (call systemd_generic_home_content_filetrans_generic_home_dirs (r common_subject)))
 )
 
 (block usersubject_priv_login_block
@@ -72,6 +81,15 @@
         (call usersubject_generic_object_template (r common_subject))
 
         (call usersubject_mls_template (u systemlow systemlow systemhigh))
+
+        (optional usersubject_priv_login_block_optional_systemd
+            (call systemd_manage_generic_user_tmpfs (r common_subject))
+            (call systemd_relabel_generic_user_tmpfs (common_subject))
+            (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (r common_subject))
+
+            (call systemd_manage_generic_home (r common_subject))
+            (call systemd_relabel_generic_home (common_subject))
+            (call systemd_generic_home_content_filetrans_generic_home_dirs (r common_subject)))
 )
 
 (block usersubject_object_block
@@ -302,7 +320,16 @@
     (call usersubject_base_common_login_template (ARG1 ARG2 ARG3))
     (call usersubject_common_login_type (ARG3))
     (call usersubject_generic_object_template (ARG2 ARG3))
-    (call usersubject_mls_template (ARG1 systemlow systemlow systemhigh)))
+    (call usersubject_mls_template (ARG1 systemlow systemlow systemhigh))
+
+    (optional usersubject_common_login_template_optional_systemd
+        (call systemd_manage_generic_user_tmpfs (ARG2 ARG3))
+        (call systemd_relabel_generic_user_tmpfs (ARG3))
+        (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (ARG2 ARG3))
+
+        (call systemd_manage_generic_home (ARG2 ARG3))
+        (call systemd_relabel_generic_home (ARG3))
+        (call systemd_generic_home_content_filetrans_generic_home_dirs (ARG2 ARG3))))
 
 (macro usersubject_common_login_type ((type ARG1))
     (typeattributeset usersubject_common_login_type ARG1))
@@ -311,7 +338,16 @@
     (call usersubject_base_common_login_template (ARG1 ARG2 ARG3))
     (call usersubject_priv_login_type (ARG3))
     (call usersubject_generic_object_template (ARG2 ARG3))
-    (call usersubject_mls_template (ARG1 systemlow systemlow systemhigh)))
+    (call usersubject_mls_template (ARG1 systemlow systemlow systemhigh))
+
+    (optional usersubject_priv_login_template_optional_systemd
+        (call systemd_manage_generic_user_tmpfs (ARG2 ARG3))
+        (call systemd_relabel_generic_user_tmpfs (ARG3))
+        (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (ARG2 ARG3))
+
+        (call systemd_manage_generic_home (ARG2 ARG3))
+        (call systemd_relabel_generic_home (ARG3))
+        (call systemd_generic_home_content_filetrans_generic_home_dirs (ARG2 ARG3))))
 
 (macro usersubject_priv_login_type ((type ARG1))
     (call usersubject_common_login_type (ARG1))
@@ -480,18 +516,21 @@
     (allow ARG2 user.var_spool_object rw_file_perms)
     (roletype ARG1 user.var_spool_object))
 
-(macro usersubject_manage_mail_spool_files ((type ARG1))
-    (call file_rw_var_spool_dirs (ARG1))
-    (allow ARG1 user.var_spool_object manage_file_perms))
+(macro usersubject_manage_generic_mail_spool_files ((role ARG1)(type ARG2))
+    (call file_rw_var_spool_dirs (ARG2))
+    (allow ARG2 user.var_spool_object manage_file_perms)
+    (roletype ARG1 user.var_spool_object))
 
-(macro usersubject_var_spool_filetrans_mail_spool_files ((type ARG1)(name ARG2))
-    (call file_search_var (ARG1))
-    (call file_var_spool_filetrans (ARG1 user.var_spool_object file ARG2)))
+(macro usersubject_var_spool_filetrans_generic_mail_spool_files ((role ARG1)(type ARG2)(name ARG3))
+    (call file_search_var (ARG2))
+    (call file_var_spool_filetrans (ARG2 user.var_spool_object file ARG3))
+    (roletype ARG1 user.var_spool_object))
 
 (macro usersubject_generic_home_template ((role ARG1)(type ARG2))
     (allow ARG2 user.home_object (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
-    (call usersubject_home_user_filetrans_user (ARG1 ARG2)))
+    (call usersubject_home_user_filetrans_user (ARG1 ARG2))
+    (roletype ARG1 home_user))
 
 (macro usersubject_read_generic_home_content ((type ARG1))
     (call usersubject_list_home_user (ARG1))
@@ -515,10 +554,27 @@
     (roletype ARG1 user_terminfo.home_object)
     (call usersubject_home_user_filetrans_terminfo (ARG1 ARG2))) 
 
+(macro usersubject_manage_home_user_dirs ((role ARG1)(type ARG2))
+    (call file_rw_home_dirs (ARG2))
+    (allow ARG2 home_user manage_dir_perms)
+    (roletype ARG1 home_user))
+
+(macro usersubject_relabel_home_user_dirs ((type ARG1))
+    (allow ARG1 home_user relabel_dir_perms))
+
+(macro usersubject_home_filetrans_home_user_dirs ((role ARG1)(type ARG2))
+    (call file_home_filetrans (ARG2 home_user dir "*"))
+    (roletype ARG1 home_user))
+
 (macro usersubject_home_user_filetrans ((role ARG1)(type ARG2)(type ARG3)
     (class ARG4)(name ARG5))
     (call file_type_transition_pattern (ARG2 home_user ARG3 ARG4 ARG5))
-    (roletype ARG1 home_user))
+    (roletype ARG1 ARG3))
+
+(macro usersubject_generic_home_content_filetrans ((role ARG1)(type ARG2)(type ARG3)
+    (class ARG4)(name ARG5))
+    (call file_type_transition_pattern (ARG2 user.home_object ARG3 ARG4 ARG5))
+    (roletype ARG1 ARG3))
 
 (macro usersubject_home_user_filetrans_user ((role ARG1)(type ARG2))
     (call usersubject_home_user_filetrans
@@ -548,10 +604,6 @@
     (call file_search_home (ARG1))
     (allow ARG1 home_user search_dir_perms))
 
-(macro usersubject_manage_home_user_dirs ((type ARG1))
-    (call file_rw_home_dirs (ARG1))
-    (allow ARG1 home_user manage_dir_perms))
-
 (macro usersubject_list_all_home_content ((type ARG1))
     (allow ARG1 usersubject_home_type list_dir_perms))
 
@@ -559,12 +611,21 @@
     (allow ARG1 usersubject_home_type del_entry_dir_perms)
     (allow ARG1 usersubject_home_type (all_file_objects (delete))))
 
-(macro usersubject_dontaudit_read_generic_user_home_content_files ((type ARG1))
+(macro usersubject_rw_generic_home_content_dirs ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 user.home_object rw_dir_perms))
+
+(macro usersubject_search_generic_home_content ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 user.home_object search_dir_perms))
+
+(macro usersubject_dontaudit_read_generic_home_content_files ((type ARG1))
     (dontaudit ARG1 user.home_object read_file_perms))
 
-(macro usersubject_manage_generic_home_content_files ((type ARG1))
-    (call usersubject_search_home_user (ARG1))
-    (call manage_files_pattern (ARG1 user.home_object user.home_object)))
+(macro usersubject_manage_generic_home_content_files ((role ARG1)(type ARG2))
+    (call usersubject_search_home_user (ARG2))
+    (call manage_files_pattern (ARG2 user.home_object user.home_object))
+    (roletype ARG1 user.home_object))
 
 (macro usersubject_list_cert ((type ARG1))
     (call usersubject_search_home_user (ARG1))
@@ -587,10 +648,11 @@
     (call usersubject_read_cert_lnk_files (ARG1))
     (allow ARG1 user_cert.home_object read_file_perms))
 
-(macro usersubject_manage_cert ((type ARG1))
-    (allow ARG1 user_cert.home_object manage_dir_perms)
-    (allow ARG1 user_cert.home_object manage_lnk_file_perms)
-    (allow ARG1 user_cert.home_object manage_file_perms))
+(macro usersubject_manage_cert ((role ARG1)(type ARG2))
+    (allow ARG2 user_cert.home_object manage_dir_perms)
+    (allow ARG2 user_cert.home_object manage_lnk_file_perms)
+    (allow ARG2 user_cert.home_object manage_file_perms)
+    (roletype ARG1 user_cert.home_object))
 
 (macro usersubject_read_terminfo_files ((type ARG1))
     (call usersubject_search_home_user (ARG1))
