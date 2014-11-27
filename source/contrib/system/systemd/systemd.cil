@@ -348,6 +348,8 @@
     (call plymouth_stream_connect_plymouthd (common_subject))
     (call plymouth_use_fd_plymouthd (common_subject))
 
+    (call polkit_dbus_chat_polkitd (common_subject))
+
     (call seutil_read_default_context_files (common_subject))
     (call seutil_read_file_context_files (common_subject))
 
@@ -409,6 +411,7 @@
 
     (call systemd_manage_all_units (common_subject))
     (call systemd_read_state_all_systemd_daemon_subjects (common_subject))
+
     (call systemd_reload_system (common_subject))
     (call systemd_status_system (common_subject))
 

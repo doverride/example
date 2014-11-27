@@ -282,11 +282,10 @@
 
 (call dev_rw_inherited_ptmx (usersubject_common_login_type))
 
-(call file_list_etc (usersubject_common_login_type))
 (call file_list_mnt (usersubject_common_login_type))
 (call file_search_run_user (usersubject_common_login_type))
-(call file_read_generic_etc_files (usersubject_common_login_type))
-(call file_read_generic_usr_files (usersubject_common_login_type))
+(call file_read_generic_etc (usersubject_common_login_type))
+(call file_read_generic_usr (usersubject_common_login_type))
 
 (call fs_list_tmpfs (usersubject_common_login_type))
 
