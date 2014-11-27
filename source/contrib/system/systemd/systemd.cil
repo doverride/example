@@ -712,7 +712,7 @@
     (allow ARG1 systemd.user_tmpfs_object relabel_dir_perms))
 
 (macro systemd_manage_generic_user_tmpfs_dirs ((role ARG1)(type ARG2))
-    (call fs_search_tmpfs (ARG2))
+    (call file_search_run_user (ARG2))
     (allow ARG2 systemd.user_tmpfs_object manage_dir_perms)
     (roletype ARG1 systemd.user_tmpfs_object))
 
@@ -725,13 +725,13 @@
     (allow ARG1 systemd.user_tmpfs_object relabel_sock_file_perms))
 
 (macro systemd_manage_generic_user_tmpfs_sock_files ((role ARG1)(type ARG2))
-    (call fs_search_tmpfs (ARG2))
+    (call file_search_run_user (ARG2))
     (call manage_sock_files_pattern
         (ARG2 systemd.user_tmpfs_object systemd.user_tmpfs_object))
     (roletype ARG1 systemd.user_tmpfs_object))
 
 (macro systemd_delete_generic_user_tmpfs_sock_files ((type ARG1))
-    (call fs_search_tmpfs (ARG1))
+    (call file_search_run_user (ARG1))
     (call delete_sock_files_pattern
         (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object)))
 
