@@ -779,8 +779,9 @@
         (ARG1 systemd.home_config_object systemd.home_config_object)))
 
 (macro systemd_read_generic_home_config ((type ARG1))
-    (call systemd_read_generic_home_config_files (ARG1))
-    (call systemd_read_generic_home_config_lnk_files (ARG1)))
+    (call systemd_list_generic_home_config (ARG1))
+    (call systemd_read_generic_home_config_lnk_files (ARG1))
+    (allow ARG1 systemd.home_config_object read_file_perms))
 
 (macro systemd_relabel_generic_home_config ((type ARG1))
     (call usersubject_search_generic_home_config (ARG1))
