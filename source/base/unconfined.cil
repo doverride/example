@@ -8,23 +8,41 @@
         (type common_subject)
 
         (call usersubject_base_common_login_template (u r common_subject))
-
         (call usersubject_priv_login_type (common_subject))
         (call usersubject_mls_template (u systemlow systemlow systemhigh))
-
         (call usersubject_generic_terminals (r common_subject))
-
         (call usersubject_home_user_filetrans_user (r common_subject))
+        (call usersubject_home_user_filetrans_bin (r common_subject))
+        (call usersubject_home_user_filetrans_home_config_dirs (r common_subject))
+        (call usersubject_home_user_filetrans_cert (r common_subject))
+        (call usersubject_home_user_filetrans_terminfo (r common_subject))
         (call usersubject_tmpfs_filetrans_user (r common_subject))
+
+        (call systemd_generic_home_config_filetrans_generic_home_config_dirs (r common_subject))
 
         (context home_unconfined (u r home_user (systemlow mls_systemhigh)))
         (filecon "/home/jane" dir home_unconfined)
 
+        (context unconfined_bin (u r user_bin.home_object (systemlow systemlow)))
+        (filecon "/home/jane/\.bin(/.*)?" any unconfined_bin)
+
+        (context unconfined_cert (u r user_cert.home_object (systemlow systemlow)))
+        (filecon "/home/jane/\.pki(/.*)?" any unconfined_cert)
+
+        (context user_terminfo (u r user_terminfo.home_object (systemlow systemlow)))
+        (filecon "/home/jane/\.terminfo" file user_terminfo)
+
         (context unconfined (u r user.home_object (systemlow systemlow)))
         (filecon "/home/jane/.*" any unconfined)
 
+        (context unconfined_config (u r user.home_config_object (systemlow systemlow)))
+        (filecon "/home/jane/\.config(/.*)?" any unconfined_config)
+
         (context var_spool_unconfined (u r user.var_spool_object (systemlow mls_systemhigh)))
         (filecon "/var/spool/mail/jane" file var_spool_unconfined)
+
+        (context unconfined_config_systemd (u r systemd.home_config_object (systemlow systemlow)))
+        (filecon "/home/jane/\.config/systemd(/.*)?" any unconfined_config_systemd)
 
         (call auth_manage_shadow (r common_subject))
         (call auth_relabel_shadow (common_subject))
