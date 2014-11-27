@@ -296,6 +296,8 @@
 
 (call hostname_exec (usersubject_common_login_type))
 
+(call journal_exec_journalctl (usersubject_common_login_type))
+
 (call login_send_signull (usersubject_common_login_type))
 
 (call miscfiles_read_man_files (usersubject_common_login_type))

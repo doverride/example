@@ -146,6 +146,9 @@
 (call fs_getattr_fs (journalctl_client_type))
 (call fs_getattr_tmpfs (journalctl_client_type))
 
+(call journal_list_log (journalctl_client_type))
+(call journal_read_log_files (journalctl_client_type))
+
 (call machine_read_config_files (journalctl_client_type))
 
 (call miscfiles_read_terminfo (journalctl_client_type))
