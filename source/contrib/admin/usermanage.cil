@@ -167,7 +167,7 @@
     (filecon "/usr/sbin/groupadd" file bin_groupadd)
     (filecon "/usr/sbin/groupdel" file bin_groupadd)
     (filecon "/usr/sbin/groupmod" file bin_groupadd)
-    (filecon "/usr/sbin/gpasswd" file bin_groupadd)
+    (filecon "/usr/bin/gpasswd" file bin_groupadd)
 
     (allow common_subject self (capability (dac_override)))
     (allow common_subject self (process (setfscreate)))
