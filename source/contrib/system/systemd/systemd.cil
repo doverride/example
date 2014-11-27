@@ -400,7 +400,6 @@
     (blockinherit systemd_daemon_no_unit_block)
 
     (typeattributeset systemctl_client_type common_subject)
-    (typeattributeset systemd_subject_type common_subject)
 
     (roletype systemctl_role common_subject)
 
@@ -412,6 +411,7 @@
     (call systemd_manage_all_units (common_subject))
     (call systemd_read_state_all_systemd_daemon_subjects (common_subject))
 
+    (call systemd_systemctl_client_type (common_subject))
     (call systemd_reload_system (common_subject))
     (call systemd_status_system (common_subject))
 
@@ -478,6 +478,7 @@
 (call dev_read_urandom (systemctl_client_type))
 
 (call fs_getattr_fs (systemctl_client_type))
+(call fs_getattr_tmpfs (systemctl_client_type))
 (call fs_read_sysfs_files (systemctl_client_type))
 (call fs_list_cgroup (systemctl_client_type))
 (call fs_read_cgroup_files (systemctl_client_type))

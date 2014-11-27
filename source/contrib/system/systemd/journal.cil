@@ -13,7 +13,6 @@
     (blockinherit systemd_daemon_no_unit_block)
 
     (typeattributeset journal_subject_type common_subject)
-    (typeattributeset journalctl_client_type common_subject)
 
     (roletype journalctl_role common_subject)
 
@@ -26,6 +25,7 @@
 
     (call term_use_inherited_unallocated_tts (common_subject))
 
+    (call journal_journalctl_client_type (common_subject))
     (call journal_list_run (common_subject))
     (call journal_manage_log_files (common_subject))
     (call journal_manage_var_lib_files (common_subject))
@@ -235,7 +235,7 @@
     (allow ARG1 journald.unit_object (service (stop))))
 
 (macro journal_client ((type ARG1))
-    (dontaudit ARG1 self (capability (net_admin))) ; FIXME
+    (dontaudit ARG1 self (capability (net_admin)))
     (allow ARG1 self (unix_dgram_socket (sendto)))
     (typeattributeset journal_client_type ARG1))
 
