@@ -66,6 +66,9 @@
             (call systemd_manage_generic_home (r common_subject))
             (call systemd_relabel_generic_home (common_subject))
             (call systemd_generic_home_content_filetrans_generic_home_dirs (r common_subject)))
+
+        (optional usersubject_common_login_block_optional_askpwd
+            (call askpwd_run_askpwdagent (common_subject r)))
 )
 
 (block usersubject_priv_login_block
@@ -90,6 +93,9 @@
             (call systemd_manage_generic_home (r common_subject))
             (call systemd_relabel_generic_home (common_subject))
             (call systemd_generic_home_content_filetrans_generic_home_dirs (r common_subject)))
+
+        (optional usersubject_priv_login_block_optional_askpwd
+            (call askpwd_run_askpwdagent (common_subject r)))
 )
 
 (block usersubject_object_block
@@ -254,17 +260,13 @@
 (allow usersubject_common_login_type self create_unix_dgram_socket_perms)
 
 (call sys_read_net_proc (usersubject_common_login_type))
-(call sys_read_kernel_sysctl (usersubject_common_login_type))
 
-(call dev_read_urandom (usersubject_common_login_type))
 (call dev_rw_inherited_ptmx (usersubject_common_login_type))
 
 (call file_list_etc (usersubject_common_login_type))
 (call file_list_mnt (usersubject_common_login_type))
 (call file_read_generic_etc_files (usersubject_common_login_type))
 (call file_read_generic_usr_files (usersubject_common_login_type))
-
-(call fs_read_sysfs_files (usersubject_common_login_type))
 
 (call sec_get_enforce_mode (usersubject_common_login_type))
 
@@ -277,7 +279,7 @@
 (call miscfiles_read_man_files (usersubject_common_login_type))
 (call miscfiles_read_net_config_files (usersubject_common_login_type))
 
-(call usersubject_use_generic_terminals (usersubject_common_login_type))
+(call systemd_exec_systemctl (usersubject_common_login_type))
 
 (optional usersubject_common_login_type_optional_pcitools
     (call pcitools_exec (usersubject_common_login_type)))
@@ -329,7 +331,10 @@
 
         (call systemd_manage_generic_home (ARG2 ARG3))
         (call systemd_relabel_generic_home (ARG3))
-        (call systemd_generic_home_content_filetrans_generic_home_dirs (ARG2 ARG3))))
+        (call systemd_generic_home_content_filetrans_generic_home_dirs (ARG2 ARG3)))
+
+    (optional usersubject_common_login_template_optional_askpwd
+        (call askpwd_run_askpwdagent (ARG3 ARG2))))
 
 (macro usersubject_common_login_type ((type ARG1))
     (typeattributeset usersubject_common_login_type ARG1))
@@ -347,7 +352,10 @@
 
         (call systemd_manage_generic_home (ARG2 ARG3))
         (call systemd_relabel_generic_home (ARG3))
-        (call systemd_generic_home_content_filetrans_generic_home_dirs (ARG2 ARG3))))
+        (call systemd_generic_home_content_filetrans_generic_home_dirs (ARG2 ARG3)))
+
+    (optional usersubject_priv_login_template_optional_askpwd
+        (call askpwd_run_askpwdagent (ARG3 ARG2))))
 
 (macro usersubject_priv_login_type ((type ARG1))
     (call usersubject_common_login_type (ARG1))
