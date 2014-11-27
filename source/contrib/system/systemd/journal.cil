@@ -153,9 +153,6 @@
 
 (call systemd_stream_connect (journalctl_client_type))
 
-(allow journal_client_type self (capability (net_admin))) ; FIXME
-(allow journal_client_type self (unix_dgram_socket (sendto)))
-
 (call dgram_send_pattern
     (journal_client_type journald.systemd_run_object journald.systemd_run_object journald.common_subject))
 
@@ -238,6 +235,8 @@
     (allow ARG1 journald.unit_object (service (stop))))
 
 (macro journal_client ((type ARG1))
+    (dontaudit ARG1 self (capability (net_admin))) ; FIXME
+    (allow ARG1 self (unix_dgram_socket (sendto)))
     (typeattributeset journal_client_type ARG1))
 
 (macro journal_admin ((role ARG1)(type ARG2))
