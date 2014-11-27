@@ -21,8 +21,7 @@
     (context bin_coredumpctl (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/coredumpctl" file bin_coredumpctl)
 
-    (allow common_subject self (capability (dac_override)))
-    (allow common_subject self rw_fifo_file_perms)
+    (allow common_subject self (capability (dac_override net_admin)))
 
     (call term_use_inherited_unallocated_tts (common_subject))
 
@@ -67,8 +66,6 @@
     (call journal_client (common_subject))
 )
 
-(allow coredumpctl_client_type self (capability (net_admin ipc_lock)))
-
 (call sys_read_crypto_sysctl (coredumpctl_client_type))
 
 (call bin_execute_bin_files (coredumpctl_client_type))
@@ -99,6 +96,8 @@
     (call coredump_coredumpctl_client_type (ARG1)))
 
 (macro coredump_coredumpctl_client_type ((type ARG1))
+    (allow ARG1 self (capability (ipc_lock)))
+    (allow ARG1 self rw_fifo_file_perms)
     (typeattributeset coredumpctl_client_type ARG1))
 
 (macro coredump_auto_subtrans_coredumpctl ((type ARG1))
