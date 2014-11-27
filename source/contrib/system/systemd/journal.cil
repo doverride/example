@@ -235,7 +235,6 @@
     (allow ARG1 journald.unit_object (service (stop))))
 
 (macro journal_client ((type ARG1))
-    (dontaudit ARG1 self (capability (net_admin)))
     (allow ARG1 self (unix_dgram_socket (sendto)))
     (typeattributeset journal_client_type ARG1))
 
