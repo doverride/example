@@ -1,0 +1,87 @@
+(typepermissive avahi_autoipd.common_subject)
+(typepermissive avahid.common_subject)
+
+(roleattribute avahi_admin_role)
+(typeattribute avahi_admin_type)
+
+(typeattribute avahi_object_type)
+(typeattribute avahi_subject_type)
+
+(block avahid
+    (blockinherit systemd_daemon_socket_activated_block)
+
+    (typeattributeset avahi_object_type unit_object)
+    (typeattributeset avahi_subject_type common_subject)
+
+    (context bin_avahid (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/avahi-daemon" file bin_avahid)
+
+    (context unit_avahid (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*avahi-daemon.*" file unit_avahid)
+
+    (blockinherit file_maintains_run_dirs_and_sock_files_block)
+
+    (typeattributeset avahi_object_type run_object)
+
+    (call systemd_socket_activated_object_type (run_object))
+
+    (context run_avahid (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/avahi-daemon(/.*)?" any run_avahid)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset avahi_object_type etc_object)
+
+    (context etc_avahid (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/avahi(/.*)?" any etc_avahid)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset avahi_object_type dbus_etc_object)
+
+    (context dbus_etc_avahid (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/avahi-dbus\.conf" file dbus_etc_avahid)
+
+    (allow common_subject self (capability (chown setgid setuid sys_chroot)))
+    (allow common_subject self (process (setcap setrlimit signal)))
+
+    (call sys_read_kernel_sysctl (common_subject))
+
+    (call dev_read_urandom (common_subject))
+
+    (call net_udp_bind_generic_node (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call dns_udp_bind_mdns_port (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call systemd_stream_connect (common_subject))
+)
+
+(block avahi_autoipd
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset avahi_subject_type common_subject)
+
+    (context bin_avahi_autoipd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/avahi-autoipd" file bin_avahi_autoipd)
+)
+
+(allow avahi_admin_type avahi_subject_type signal_perms)
+(allow avahi_admin_type avahi_subject_type (process (ptrace)))
+(call ps_subject_pattern (avahi_admin_type avahi_subject_type))
+(allow avahi_admin_type avahid.unit_object (service (all)))
+(allow avahi_admin_type avahi_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype avahi_admin_role avahi_object_type)
+
+(macro avahi_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (roleattributeset avahi_admin_role ARG1)
+    (typeattributeset avahi_admin_type ARG2))
