@@ -24,5 +24,3 @@
     select etc files without things becoming high maintenance.
 
 * cover runuser as its setuid and maintains pam config. maybe it makes sense to run this label it sudo_exec_t (akmods runs runuser)
-
-* confined users arent allowed to manage session units because the systemd session daemon currently runs with the systemd system daemons' credentials
