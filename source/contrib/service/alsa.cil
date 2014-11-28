@@ -1,0 +1,107 @@
+(roleattribute alsactl_role)
+
+(roleattribute alsa_admin_role)
+(typeattribute alsa_admin_type)
+
+(typeattribute alsactl_client_type)
+
+(typeattribute alsa_object_type)
+
+(block alsactl
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset alsa_object_type unit_object)
+
+    (roletype alsactl_role common_subject)
+
+    (context bin_alsactl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/alsactl" file bin_alsactl)
+
+    (context unit_alsactl (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*alsa-state.*" file unit_alsactl)
+    (filecon "/usr/lib/systemd/system/[^/]*alsa-restore.*" file unit_alsactl)
+    (filecon "/usr/lib/systemd/system/[^/]*alsa-store.*" file unit_alsactl)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset alsa_object_type etc_object)
+
+    (context etc_alsactl (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/alsa(/.*)?" any etc_alsactl)
+    (filecon "/etc/asound\.conf(/.*)?" any etc_alsactl)
+
+    (blockinherit file_maintains_single_run_file_block)
+
+    (typeattributeset alsa_object_type run_object)
+
+    (context run_alsactl (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/alsactl\.pid" file run_alsactl)
+
+    (blockinherit file_maintains_single_run_lock_file_block)
+
+    (typeattributeset alsa_object_type run_lock_object)
+
+    (context run_lock_alsactl (sys.u sys.r run_lock_object (systemlow systemlow)))
+    (filecon "/var/run/lock/asound\.state\.lock" file run_lock_alsactl)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset alsa_object_type var_lib_object)
+
+    (context var_lib_alsactl (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/alsa(/.*)?" any var_lib_alsactl)
+
+    (dontaudit common_subject self (capability (sys_tty_config)))
+    (allow common_subject self (process (getsched setsched)))
+
+    (call sys_use_fd (common_subject))
+
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_devtmpfs_chr_files (common_subject)) ; FIXME
+
+    (call dev_rw_sound (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call udev_rw_inherited_udp_sockets (common_subject))
+
+    (optional alsactl_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+)
+
+(allow alsa_admin_type alsactl.common_subject signal_perms)
+(allow alsa_admin_type alsactl.common_subject (process (ptrace)))
+(call ps_subject_pattern (alsa_admin_type alsactl.common_subject))
+(allow alsa_admin_type alsactl.unit_object (service (all)))
+(allow alsa_admin_type alsa_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype alsa_admin_role alsa_object_type)
+
+(call alsa_run_alsactl (alsa_admin_type alsa_admin_role))
+
+(macro alsa_exec_alsactl ((type ARG1))
+    (call can_exec (ARG1 alsactl.bin_object))
+    (call alsa_alsactl_client (ARG1)))
+
+(macro alsa_alsactl_client ((type ARG1))
+    (typeattributeset alsactl_client_type ARG1))
+
+(macro alsa_auto_subtrans_alsactl ((type ARG1))
+    (call alsa_send_signal_alsactl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 alsactl.bin_object alsactl.common_subject)))
+
+(macro alsa_run_alsactl ((type ARG1)(role ARG2))
+    (call alsa_auto_subtrans_alsactl (ARG1))
+    (roleattributeset alsactl_role ARG2))
+
+(macro alsa_send_signal_alsactl ((type ARG1))
+    (allow ARG1 alsactl.common_subject (process (signal))))
+
+(macro alsa_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (roleattributeset alsa_admin_role ARG1)
+    (typeattributeset alsa_admin_type ARG2))

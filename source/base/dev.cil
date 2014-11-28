@@ -388,6 +388,9 @@
 (macro dev_rw_ptmx ((type ARG1))
     (allow ARG1 ptmx_dev rw_chr_file_perms))
 
+(macro dev_rw_sound ((type ARG1))
+    (allow ARG1 sound_dev rw_chr_file_perms))
+
 (macro dev_rw_urandom ((type ARG1))
     (allow ARG1 urandom_dev rw_chr_file_perms))
 

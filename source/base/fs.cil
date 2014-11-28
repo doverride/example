@@ -248,6 +248,9 @@
 (macro fs_manage_devtmpfs_files ((type ARG1))
     (allow ARG1 devtmpfs manage_file_perms))
 
+(macro fs_read_devtmpfs_chr_files ((type ARG1))
+    (allow ARG1 devtmpfs read_chr_file_perms))
+
 (macro fs_manage_devtmpfs_chr_files ((type ARG1))
     (call fs_rw_devtmpfs_dirs (ARG1))
     (allow ARG1 devtmpfs manage_chr_file_perms))

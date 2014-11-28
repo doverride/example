@@ -50,6 +50,9 @@
 
     (call auth_nsswitch_client (common_subject))
 
+    (optional sysadm_optional_alsa
+        (call alsa_admin (r common_subject)))
+
     (optional sysadm_optional_bootloader
         (call bootloader_admin (r common_subject)))
 
