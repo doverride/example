@@ -521,12 +521,18 @@
     (systemd_session_role systemd_session_subject_type))
 (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs
     (systemd_session_role systemd_session_subject_type))
+(call systemd_tmpfs_filetrans_generic_user_tmpfs_files
+    (systemd_session_role systemd_session_subject_type))
 
 (call systemd_read_all_unit_files (systemd_session_subject_type))
 (call systemd_dgram_send (systemd_session_subject_type))
 (call systemd_read_config_files (systemd_session_subject_type))
 (call systemd_read_state (systemd_session_subject_type))
 (call systemd_rw_unix_stream_sockets (systemd_session_subject_type))
+(call systemd_manage_generic_home_config_dirs
+    (systemd_session_role systemd_session_subject_type))
+(call systemd_manage_generic_home_config_lnk_files
+    (systemd_session_role systemd_session_subject_type))
 (call systemd_read_generic_home_config (systemd_session_subject_type))
 (call systemd_send_signal (systemd_session_subject_type))
 
@@ -675,6 +681,8 @@
     (allow ARG2 ARG3 (process (signal)))
     (allow ARG2 ARG3 rw_unix_stream_socket_perms)
     (allow ARG2 ARG3 (unix_stream_socket (connectto)))
+
+    (allow ARG2 ARG3 (system (reload disable)))
 
     (call ps_subject_pattern (ARG2 ARG3))
     (call ps_subject_pattern (ARG3 ARG2))
@@ -842,6 +850,19 @@
     (call delete_dirs_pattern
         (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object)))
 
+(macro systemd_relabel_generic_user_tmpfs_files ((type ARG1))
+    (allow ARG1 systemd.user_tmpfs_object relabel_file_perms))
+
+(macro systemd_manage_generic_user_tmpfs_files ((role ARG1)(type ARG2))
+    (call file_search_run_user (ARG2))
+    (allow ARG2 systemd.user_tmpfs_object manage_file_perms)
+    (roletype ARG1 systemd.user_tmpfs_object))
+
+(macro systemd_delete_generic_user_tmpfs_files ((type ARG1))
+    (call fs_del_entry_tmpfs_dirs (ARG1))
+    (call delete_files_pattern
+        (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object)))
+
 (macro systemd_relabel_generic_user_tmpfs_sock_files ((type ARG1))
     (allow ARG1 systemd.user_tmpfs_object relabel_sock_file_perms))
 
@@ -858,19 +879,38 @@
 
 (macro systemd_manage_generic_user_tmpfs ((role ARG1)(type ARG2))
     (call systemd_manage_generic_user_tmpfs_dirs (ARG1 ARG2))
+    (call systemd_manage_generic_user_tmpfs_files (ARG1 ARG2))
     (call systemd_manage_generic_user_tmpfs_sock_files (ARG1 ARG2)))
 
 (macro systemd_relabel_generic_user_tmpfs ((type ARG1))
     (call systemd_relabel_generic_user_tmpfs_dirs (ARG1))
+    (call systemd_relabel_generic_user_tmpfs_files (ARG1))
     (call systemd_relabel_generic_user_tmpfs_sock_files (ARG1)))
 
 (macro systemd_delete_generic_user_tmpfs ((type ARG1))
     (call systemd_delete_generic_user_tmpfs_dirs (ARG1))
+    (call systemd_delete_generic_user_tmpfs_files (ARG1))
     (call systemd_delete_generic_user_tmpfs_sock_files (ARG1)))
 
 (macro systemd_tmpfs_filetrans_generic_user_tmpfs_dirs ((role ARG1)(type ARG2))
     (call fs_tmpfs_filetrans (ARG2 systemd.user_tmpfs_object dir "systemd"))
     (roletype ARG1 systemd.user_tmpfs_object))
+
+(macro systemd_tmpfs_filetrans_generic_user_tmpfs_files ((role ARG1)(type ARG2))
+    (call fs_tmpfs_filetrans (ARG2 systemd.user_tmpfs_object file "*"))
+    (roletype ARG1 systemd.user_tmpfs_object))
+
+(macro systemd_manage_generic_home_config_dirs ((role ARG1)(type ARG2))
+    (call usersubject_search_generic_home_config (ARG2))
+    (call manage_dirs_pattern
+        (ARG2 systemd.home_config_object systemd.home_config_object))
+    (roletype ARG1 systemd.home_config_object))
+
+(macro systemd_manage_generic_home_config_lnk_files ((role ARG1)(type ARG2))
+    (call usersubject_search_generic_home_config (ARG2))
+    (call manage_lnk_files_pattern
+        (ARG2 systemd.home_config_object systemd.home_config_object))
+    (roletype ARG1 systemd.home_config_object))
 
 (macro systemd_manage_generic_home_config ((role ARG1)(type ARG2))
     (call usersubject_rw_generic_home_config_dirs (ARG2))
