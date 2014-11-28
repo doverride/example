@@ -1,5 +1,8 @@
 (typepermissive systemctl.common_subject)
 
+(roleattribute systemd_session_role)
+(typeattribute systemd_session_subject_type)
+
 (roleattribute systemctl_role)
 
 (roleattribute systemd_admin_role)
@@ -21,6 +24,13 @@
 (typeattribute systemd_var_lib_object_type)
 
 (typeattribute systemd_unconfined_type)
+
+(block systemd_session_subject_block
+    (blockabstract systemd_session_subject_block)
+        (blockinherit app_subject_block)
+
+        (call systemd_session_subject_type (common_subject))
+)
 
 (block systemd_maintains_single_pid_file_block
     (blockabstract systemd_maintains_single_pid_file_block)
@@ -275,7 +285,7 @@
     (call fs_getattr_all (common_subject))
     (call fs_list_autofs (common_subject)) ; BUG /proc/sys/fs/binfmt_misc
     (call fs_list_binfmt_misc (common_subject)) ; BUG /proc/sys/fs/binfmt_misc
-    (call fs_manage_cgroup_dirs (common_subject))
+    (call fs_manage_cgroup_dirs (sys.r common_subject))
     (call fs_manage_devtmpfs_dirs (common_subject))
     (call fs_manage_devtmpfs_lnk_files (common_subject))
     (call fs_manage_devtmpfs_chr_files (common_subject))
@@ -302,6 +312,9 @@
     (call sec_compute_access_vector (common_subject))
     (call sec_compute_create_context (common_subject))
     (call sec_list (common_subject))
+
+    (call subject_identity_change_exemption (common_subject))
+    (call subject_role_change_exemption (common_subject))
 
     (call stor_read_fixed_disk (common_subject))
     (call stor_read_removable (common_subject))
@@ -373,20 +386,25 @@
 
     (optional systemd_optional_usersubject
         (blockinherit usersubject_tmpfs_object_block)
-
-        (context user_tmpfs_systemd (sys.u sys.r user_tmpfs_object (systemlow systemlow)))
-        (filecon "/var/run/user/.*/systemd(/.*)?" any user_tmpfs_systemd)
-
-        (call systemd_manage_generic_user_tmpfs (sys.r common_subject))
-        (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (sys.r common_subject))
-
         (blockinherit usersubject_home_config_object_block)
 
+        (call bin_shell_manual_subtrans (common_subject systemd_session_subject_type)))
+
+        (call sec_validate_context (common_subject))
+        (call sec_compute_user_contexts (common_subject))
+
+        (call systemd_create_keyring_all_systemd_session_subjects (common_subject))
+        (call systemd_noatsecure_all_systemd_session_subjects (common_subject))
         (call systemd_read_generic_home_config (common_subject))
+        (call systemd_send_sigchld_all_session_subjects (common_subject))
 
         (call usersubject_link_keyring_all_common_login_subjects (common_subject))
-        (call usersubject_search_home_user (common_subject)))
-)
+
+        (optional systemd_optional_unconfined
+            (call unconfined_noatsecure_all_unconfined_user_subjects (common_subject))
+            (call unconfined_send_sigchld_all_unconfined_user_subjects (common_subject))
+            (call unconfined_create_keyring_all_unconfined_user_subjects (common_subject))
+            (call unconfined_shell_manual_subtrans_all_unconfined_user_subjects (common_subject))))
 
 (block systemd_helper
     (blockinherit bin_object_block)
@@ -413,6 +431,7 @@
     (call systemd_read_state_all_systemd_daemon_subjects (common_subject))
 
     (call systemd_systemctl_client_type (common_subject))
+    (call systemd_read_state (common_subject))
     (call systemd_reload_system (common_subject))
     (call systemd_status_system (common_subject))
 
@@ -467,6 +486,53 @@
     (filecon "/usr/lib/systemd/system/[^/]*suspend.*" file unit_systemd_power)
 )
 
+(allow systemd_session_subject_type self (process (setfscreate)))
+(allow systemd_session_subject_type self create_unix_stream_stream_socket_perms)
+(allow systemd_session_subject_type self create_netlink_selinux_socket_perms)
+
+(call app_entry (systemd_session_subject_type systemd.bin_object))
+
+(call sys_read_kernel_sysctl (systemd_session_subject_type))
+
+(call dev_getattr_all (systemd_session_subject_type))
+(call dev_read_urandom (systemd_session_subject_type))
+
+(call file_read_generic_usr (systemd_session_subject_type))
+
+(call fs_read_sysfs_files (systemd_session_subject_type))
+(call fs_read_sysfs_lnk_files (systemd_session_subject_type))
+(call fs_manage_cgroup_dirs (systemd_session_role systemd_session_subject_type))
+(call fs_rw_cgroup_files (systemd_session_subject_type))
+
+(call sec_list (systemd_session_subject_type))
+(call sec_compute_access_vector (systemd_session_subject_type))
+
+(call subject_user_exemption_target (systemd_session_subject_type))
+
+(call audit_client (systemd_session_subject_type))
+
+(call auth_nsswitch_client (systemd_session_subject_type))
+
+(call journal_client (systemd_session_subject_type))
+
+(call miscfiles_read_localization (systemd_session_subject_type))
+
+(call systemd_manage_generic_user_tmpfs
+    (systemd_session_role systemd_session_subject_type))
+(call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs
+    (systemd_session_role systemd_session_subject_type))
+
+(call systemd_read_all_unit_files (systemd_session_subject_type))
+(call systemd_dgram_send (systemd_session_subject_type))
+(call systemd_read_config_files (systemd_session_subject_type))
+(call systemd_read_state (systemd_session_subject_type))
+(call systemd_rw_unix_stream_sockets (systemd_session_subject_type))
+(call systemd_read_generic_home_config (systemd_session_subject_type))
+(call systemd_send_signal (systemd_session_subject_type))
+
+(call udev_client (systemd_session_subject_type))
+(call udev_list_run (systemd_session_subject_type))
+
 (call systemd_rw_unix_stream_sockets (systemd_daemon_subject_type))
 (call systemd_read_state (systemd_daemon_subject_type))
 
@@ -498,7 +564,7 @@
 (call systemd_dgram_send (systemctl_client_type))
 (call systemd_search_unit (systemctl_client_type))
 (call systemd_stream_connect (systemctl_client_type))
-(call systemd_read_state (systemctl_client_type))
+(call systemd_dontaudit_read_state (systemctl_client_type))
 (call systemd_use_fd (systemctl_client_type))
 
 (type systemd_unit)
@@ -591,6 +657,33 @@
 (macro systemd_var_lib_object_type ((type ARG1))
     (typeattributeset systemd_var_lib_object_type ARG1))
 
+(macro systemd_session_subject_type ((type ARG1))
+    (typeattributeset systemd_session_subject_type ARG1))
+
+(macro systemd_create_keyring_all_systemd_session_subjects ((type ARG1))
+    (allow ARG1 self (process (setkeycreate)))
+    (allow ARG1 systemd_session_subject_type (key (create search link write))))
+
+(macro systemd_noatsecure_all_systemd_session_subjects ((type ARG1))
+    (allow ARG1 systemd_session_subject_type (process (noatsecure))))
+
+(macro systemd_session_role_template ((role ARG1)(type ARG2)(type ARG3))
+    (roletype ARG1 ARG3)
+
+    (roleattributeset systemd_session_role ARG1)
+
+    (allow ARG2 ARG3 (process (signal)))
+    (allow ARG2 ARG3 rw_unix_stream_socket_perms)
+    (allow ARG2 ARG3 (unix_stream_socket (connectto)))
+
+    (call ps_subject_pattern (ARG2 ARG3))
+    (call ps_subject_pattern (ARG3 ARG2))
+
+    (call bin_auto_subtrans (ARG3 ARG2))
+    (call bin_shell_auto_subtrans (ARG3 ARG2))
+
+    (call fs_manage_cgroup_dirs (ARG1 ARG3)))
+
 (macro systemd_daemon ((type ARG1)(type ARG2))
     (call auto_subject_type_transition_pattern (systemd.common_subject ARG2 ARG1))
     (call systemd_daemon_subject_type (ARG1)))
@@ -644,6 +737,17 @@
 (macro systemd_search_unit ((type ARG1))
     (allow ARG1 systemd_unit search_dir_perms))
 
+(macro systemd_list_unit ((type ARG1))
+    (allow ARG1 systemd_unit list_dir_perms))
+
+(macro systemd_read_unit_lnk_files ((type ARG1))
+    (call read_lnk_files_pattern (ARG1 systemd_unit systemd_unit)))
+
+(macro systemd_dontaudit_read_state ((type ARG1))
+    (dontaudit ARG1 systemd.common_subject read_file_perms)
+    (dontaudit ARG1 systemd.common_subject list_dir_perms)
+    (dontaudit ARG1 systemd.common_subject read_lnk_file_perms))
+
 (macro systemd_read_state ((type ARG1))
     (allow ARG1 systemd.common_subject read_file_perms)
     (allow ARG1 systemd.common_subject list_dir_perms)
@@ -657,6 +761,10 @@
 (macro systemd_search_config ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 etc_systemd search_dir_perms))
+
+(macro systemd_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 etc_systemd etc_systemd)))
 
 (macro systemd_list_run ((type ARG1))
     (call file_search_run (ARG1))
@@ -674,6 +782,9 @@
 
 (macro systemd_send_sigchld ((type ARG1))
     (allow ARG1 systemd.common_subject (process (sigchld))))
+
+(macro systemd_send_sigchld_all_session_subjects ((type ARG1))
+    (allow ARG1 systemd_session_subject_type (process (sigchld))))
 
 (macro systemd_send_signal ((type ARG1))
     (allow ARG1 systemd.common_subject (process (signal))))
@@ -811,6 +922,9 @@
 (macro systemd_stop_generic_units ((type ARG1))
     (allow ARG1 systemd_unit (service (stop))))
 
+(macro systemd_stop_generic_session_units ((type ARG1))
+    (allow ARG1 systemd.home_config_object (service (stop))))
+
 (macro systemd_stop_transient_units ((type ARG1))
     (allow ARG1 self (service (stop))))
 
@@ -822,6 +936,9 @@
 
 (macro systemd_status_generic_units ((type ARG1))
     (allow ARG1 systemd_unit (service (status))))
+
+(macro systemd_status_generic_session_units ((type ARG1))
+    (allow ARG1 systemd.home_config_object (service (status))))
 
 (macro systemd_status_transient_units ((type ARG1))
     (allow ARG1 self (service (status))))
@@ -835,6 +952,9 @@
 (macro systemd_disable_generic_units ((type ARG1))
     (allow ARG1 systemd_unit (service (disable))))
 
+(macro systemd_disable_generic_session_units ((type ARG1))
+    (allow ARG1 systemd.home_config_object (service (disable))))
+
 (macro systemd_disable_transient_units ((type ARG1))
     (allow ARG1 self (service (disable))))
 
@@ -846,6 +966,9 @@
 
 (macro systemd_enable_generic_units ((type ARG1))
     (allow ARG1 systemd_unit (service (enable))))
+
+(macro systemd_enable_generic_session_units ((type ARG1))
+    (allow ARG1 systemd.home_config_object (service (enable))))
 
 (macro systemd_enable_transient_units ((type ARG1))
     (allow ARG1 self (service (enable))))
@@ -859,6 +982,9 @@
 (macro systemd_reload_generic_units ((type ARG1))
     (allow ARG1 systemd_unit (service (reload))))
 
+(macro systemd_reload_generic_session_units ((type ARG1))
+    (allow ARG1 systemd.home_config_object (service (reload))))
+
 (macro systemd_reload_transient_units ((type ARG1))
     (allow ARG1 self (service (reload))))
 
@@ -870,6 +996,9 @@
 
 (macro systemd_start_generic_units ((type ARG1))
     (allow ARG1 systemd_unit (service (start))))
+
+(macro systemd_start_generic_session_units ((type ARG1))
+    (allow ARG1 systemd.home_config_object (service (start))))
 
 (macro systemd_start_power_units ((type ARG1))
     (allow ARG1 systemd_power.unit_object (service (start))))
@@ -890,6 +1019,14 @@
     (call systemd_enable_generic_units (ARG1))
     (call systemd_reload_generic_units (ARG1))
     (call systemd_start_generic_units (ARG1)))
+
+(macro systemd_manage_generic_session_units ((type ARG1))
+    (call systemd_stop_generic_session_units (ARG1))
+    (call systemd_status_generic_session_units (ARG1))
+    (call systemd_disable_generic_session_units (ARG1))
+    (call systemd_enable_generic_session_units (ARG1))
+    (call systemd_reload_generic_session_units (ARG1))
+    (call systemd_start_generic_session_units (ARG1)))
 
 (macro systemd_manage_transient_units ((type ARG1))
     (call systemd_stop_transient_units (ARG1))
@@ -914,6 +1051,12 @@
     (call systemd_enable_all_units (ARG1))
     (call systemd_reload_all_units (ARG1))
     (call systemd_start_all_units (ARG1)))
+
+(macro systemd_read_all_unit_files ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (call systemd_read_unit_lnk_files (ARG1))
+    (call systemd_list_unit (ARG1))
+    (allow ARG1 systemd_unit_object_type read_file_perms))
 
 (macro systemd_manage_all_unit_files ((type ARG1))
     (call systemd_search_run (ARG1))

@@ -1,6 +1,8 @@
 (roleattribute unconfined_role)
 (typeattribute unconfined_type)
 
+(typeattribute unconfined_user_subject_type)
+
 (optional unconfined_optional_usersubject
     (block unconfineduser
         (user u)
@@ -19,6 +21,8 @@
         (call usersubject_tmpfs_filetrans_user (r common_subject))
 
         (call systemd_generic_home_config_filetrans_generic_home_config_dirs (r common_subject))
+
+        (call unconfined_user_subject_type (common_subject))
 
         (context home_unconfined (u r home_user (systemlow mls_systemhigh)))
         (filecon "/home/jane" dir home_unconfined)
@@ -43,6 +47,9 @@
 
         (context unconfined_config_systemd (u r systemd.home_config_object (systemlow systemlow)))
         (filecon "/home/jane/\.config/systemd(/.*)?" any unconfined_config_systemd)
+
+        (context unconfined_tmpfs_systemd (u r systemd.user_tmpfs_object (systemlow systemlow)))
+        (filecon "/var/run/user/1002/systemd(/.*)?" any unconfined_tmpfs_systemd)
 
         (call auth_manage_shadow (r common_subject))
         (call auth_relabel_shadow (common_subject))
@@ -78,8 +85,8 @@
 (call dev_unconfined (unconfined_role unconfined_type))
 (call file_unconfined (unconfined_role unconfined_type))
 (call subject_unconfined (unconfined_role unconfined_type))
+(call fs_unconfined (unconfined_role unconfined_type))
 
-(call fs_unconfined (unconfined_type))
 (call net_unconfined (unconfined_type))
 (call sec_unconfined (unconfined_type))
 (call sys_unconfined (unconfined_type))
@@ -95,6 +102,22 @@
 
 (optional unconfined_optional_systemd
     (call systemd_unconfined (unconfined_type)))
+
+(macro unconfined_user_subject_type ((type ARG1))
+    (typeattributeset unconfined_user_subject_type ARG1))
+
+(macro unconfined_noatsecure_all_unconfined_user_subjects ((type ARG1))
+    (allow ARG1 unconfined_user_subject_type (process (noatsecure))))
+
+(macro unconfined_send_sigchld_all_unconfined_user_subjects ((type ARG1))
+    (allow ARG1 unconfined_user_subject_type (process (sigchld))))
+
+(macro unconfined_create_keyring_all_unconfined_user_subjects ((type ARG1))
+    (allow ARG1 self (process (setkeycreate)))
+    (allow ARG1 unconfined_user_subject_type (key (create search link write))))
+
+(macro unconfined_shell_manual_subtrans_all_unconfined_user_subjects ((type ARG1))
+    (call bin_shell_manual_subtrans (ARG1 unconfined_user_subject_type)))
 
 (macro unconfined ((role ARG1)(type ARG2))
     (roleattributeset unconfined_role ARG1)

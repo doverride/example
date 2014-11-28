@@ -8,6 +8,7 @@
 
 (typeattribute fs_type)
 
+(roleattribute fs_unconfined_role)
 (typeattribute fs_unconfined_type)
 
 (type aio)
@@ -155,6 +156,8 @@
 (allow fs_unconfined_type fs_type (all_file_objects
     (not_mounton_entrypoint_and_execmod)))
 (allow fs_unconfined_type fs_type (filesystem (all)))
+
+(roletype fs_unconfined_role fs_type)
 
 (macro fs_type ((type ARG1))
     (call sys_object_type (ARG1))
@@ -339,9 +342,10 @@
 (macro fs_read_generic_proc_lnk_files ((type ARG1))
     (allow ARG1 proc read_lnk_file_perms))
 
-(macro fs_manage_cgroup_dirs ((type ARG1))
-    (call fs_search_sysfs (ARG1))
-    (call manage_dirs_pattern (ARG1 tmpfs cgroup)))
+(macro fs_manage_cgroup_dirs ((role ARG1)(type ARG2))
+    (call fs_search_sysfs (ARG2))
+    (call manage_dirs_pattern (ARG2 tmpfs cgroup))
+    (roletype ARG1 cgroup))
 
 (macro fs_list_cgroup ((type ARG1))
     (call fs_search_sysfs (ARG1))
@@ -432,7 +436,7 @@
     (call read_files_pattern (ARG1 tmpfs tmpfs)))
 
 (macro fs_read_tmpfs_lnk_files ((type ARG1))
-    (call read_files_pattern (ARG1 tmpfs tmpfs)))
+    (call read_lnk_files_pattern (ARG1 tmpfs tmpfs)))
 
 (macro fs_manage_tmpfs_lnk_files ((type ARG1))
     (call fs_rw_tmpfs_dirs (ARG1))
@@ -475,8 +479,9 @@
     (call fs_list_all (ARG1))
     (allow ARG1 fs_type (all_file_objects (relabel))))
 
-(macro fs_unconfined ((type ARG1))
-    (typeattributeset fs_unconfined_type ARG1))
+(macro fs_unconfined ((role ARG1)(type ARG2))
+    (roleattributeset fs_unconfined_role ARG1)
+    (typeattributeset fs_unconfined_type ARG2))
 
 (context fs (sys.u sys.r fs (systemlow systemlow)))
 (sidcontext fs fs)

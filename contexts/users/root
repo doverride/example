@@ -1,3 +1,4 @@
 sys.r:sshd.common_subject sysadm.r:sysadm.common_subject
 sys.r:login.common_subject sysadm.r:sysadm.common_subject
+sys.r:systemd.common_subject sysadm.r:sysadm_systemd.common_subject
 sysadm.r:sysadm.common_subject sysadm.r:sysadm.common_subject

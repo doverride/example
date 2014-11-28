@@ -147,8 +147,8 @@
 (call dev_unconfined (rpm_role rpm_subject_type))
 (call file_unconfined (rpm_role rpm_subject_type))
 (call subject_unconfined (rpm_role rpm_subject_type))
+(call fs_unconfined (rpm_role rpm_subject_type))
 
-(call fs_unconfined (rpm_subject_type))
 (call net_unconfined (rpm_subject_type))
 (call sec_unconfined (rpm_subject_type))
 (call sys_unconfined (rpm_subject_type))
