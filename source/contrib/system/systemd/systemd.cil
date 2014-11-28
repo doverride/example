@@ -486,7 +486,7 @@
     (filecon "/usr/lib/systemd/system/[^/]*suspend.*" file unit_systemd_power)
 )
 
-(allow systemd_session_subject_type self (process (setfscreate)))
+(allow systemd_session_subject_type self (process (getsched setfscreate)))
 (allow systemd_session_subject_type self create_unix_stream_stream_socket_perms)
 (allow systemd_session_subject_type self create_netlink_selinux_socket_perms)
 
@@ -824,6 +824,10 @@
     (call file_search_var_lib (ARG1))
     (call file_type_transition_pattern
         (ARG1 var_lib_systemd ARG2 ARG3 ARG4)))
+
+(macro systemd_list_generic_user_tmpfs ((type ARG1))
+    (call file_search_run_user (ARG1))
+    (allow ARG1 systemd.user_tmpfs_object list_dir_perms))
 
 (macro systemd_relabel_generic_user_tmpfs_dirs ((type ARG1))
     (allow ARG1 systemd.user_tmpfs_object relabel_dir_perms))

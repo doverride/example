@@ -20,6 +20,7 @@
         (call usersubject_home_user_filetrans_terminfo (r common_subject))
         (call usersubject_tmpfs_filetrans_user (r common_subject))
 
+        (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (r common_subject))
         (call systemd_generic_home_config_filetrans_generic_home_config_dirs (r common_subject))
 
         (call unconfined_user_subject_type (common_subject))
