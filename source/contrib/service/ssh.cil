@@ -138,7 +138,7 @@
     (portcon "tcp" 22 port_sshd)
     (portcon "udp" 22 port_sshd)
 
-    (dontaudit common_subject self (key (all)))
+    (allow common_subject self key (search link write)))
 
     (allow common_subject sshd_net.common_subject (process (sigkill)))
 
