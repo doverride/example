@@ -1089,6 +1089,14 @@
 (macro file_search_var_tmp ((type ARG1))
     (call search_dirs_pattern (ARG1 var var_tmp)))
 
+(macro file_manage_var_tmp_dirs ((type ARG1))
+    (call file_search_var (ARG1))
+    (allow ARG1 var_tmp manage_dir_perms))
+
+(macro file_manage_var_tmp_lnk_files ((type ARG1))
+    (call file_search_var (ARG1))
+    (call manage_lnk_files_pattern (ARG1 var_tmp var_tmp)))
+
 (macro file_read_var_tmp_lnk_files ((type ARG1))
     (allow ARG1 var_tmp read_lnk_file_perms))
 
