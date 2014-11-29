@@ -31,7 +31,7 @@
 
 (block systemd_session_subject_block
     (blockabstract systemd_session_subject_block)
-        (blockinherit app_subject_block)
+        (blockinherit subject_common_block)
 
         (call systemd_session_subject_type (common_subject))
 )
@@ -426,8 +426,6 @@
 (block systemctl
     (blockinherit systemd_daemon_no_unit_block)
 
-    (typeattributeset systemctl_client_type common_subject)
-
     (roletype systemctl_role common_subject)
 
     (context bin_systemctl (sys.u sys.r bin_object (systemlow systemlow)))
@@ -499,7 +497,7 @@
 (allow systemd_session_subject_type self create_unix_stream_stream_socket_perms)
 (allow systemd_session_subject_type self create_netlink_selinux_socket_perms)
 
-(call app_entry (systemd_session_subject_type systemd.bin_object))
+(call subject_entry (systemd_session_subject_type systemd.bin_object))
 
 (call sys_read_kernel_sysctl (systemd_session_subject_type))
 
