@@ -31,7 +31,7 @@
     (filecon "/etc/pam\.d/login" file pam_login)
 
     (allow common_subject self (capability (kill fsetid fowner sys_tty_config
-        dac_override)))
+        dac_override sys_admin)))
     (allow common_subject self rw_fifo_file_perms)
 
     (call sys_link_keyring (common_subject))
