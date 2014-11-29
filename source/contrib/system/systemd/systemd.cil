@@ -14,7 +14,9 @@
 (typeattribute systemd_daemon_subject_type)
 (typeattribute systemd_socket_activated_object_type)
 (typeattribute systemd_socket_activated_subject_type)
+
 (typeattribute systemd_pid_object_type)
+(typeattribute systemd_run_dir_object_type)
 
 (typeattribute systemd_unit_object_type)
 (typeattribute systemd_session_unit_object_type)
@@ -257,6 +259,8 @@
         relabel_sock_file_perms)
 
     (allow common_subject systemd_pid_object_type manage_file_perms)
+
+    (allow common_subject systemd_run_dir_object_type manage_dir_perms)
 
     (call sys_mounton_mountpoint_dirs (common_subject))
     (call sys_read_net_proc (common_subject))
@@ -658,6 +662,9 @@
 
 (macro systemd_pid_object_type ((type ARG1))
     (typeattributeset systemd_pid_object_type ARG1))
+
+(macro systemd_run_dir_object_type ((type ARG1))
+    (typeattributeset systemd_run_dir_object_type ARG1))
 
 (macro systemd_run_object_type ((type ARG1))
     (typeattributeset systemd_run_object_type ARG1))
