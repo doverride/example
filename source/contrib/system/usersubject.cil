@@ -293,6 +293,8 @@
 
 (call auth_nsswitch_client (usersubject_common_login_type))
 
+(call consoletype_exec (usersubject_common_login_type))
+
 (call hostname_exec (usersubject_common_login_type))
 
 (call journal_exec_journalctl (usersubject_common_login_type))
