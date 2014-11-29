@@ -12,10 +12,12 @@
 (typeattribute systemd_subject_type)
 
 (typeattribute systemd_daemon_subject_type)
-(typeattribute systemd_unit_object_type)
 (typeattribute systemd_socket_activated_object_type)
 (typeattribute systemd_socket_activated_subject_type)
 (typeattribute systemd_pid_object_type)
+
+(typeattribute systemd_unit_object_type)
+(typeattribute systemd_session_unit_object_type)
 
 (typeattribute systemctl_client_type)
 
@@ -388,6 +390,8 @@
         (blockinherit usersubject_tmpfs_object_block)
         (blockinherit usersubject_home_config_object_block)
 
+        (call systemd_session_unit_object_type (home_config_object))
+
         (call bin_shell_manual_subtrans (common_subject systemd_session_subject_type)))
 
         (call sec_validate_context (common_subject))
@@ -431,6 +435,7 @@
     (call systemd_read_state_all_systemd_daemon_subjects (common_subject))
 
     (call systemd_systemctl_client_type (common_subject))
+    (call systemd_read_generic_home_config (common_subject))
     (call systemd_read_state (common_subject))
     (call systemd_reload_system (common_subject))
     (call systemd_status_system (common_subject))
@@ -659,6 +664,10 @@
 
 (macro systemd_unit_object_type ((type ARG1))
     (typeattributeset systemd_unit_object_type ARG1))
+
+(macro systemd_session_unit_object_type ((type ARG1))
+    (call systemd_unit_object_type (ARG1))
+    (typeattributeset systemd_session_unit_object_type ARG1))
 
 (macro systemd_var_lib_object_type ((type ARG1))
     (typeattributeset systemd_var_lib_object_type ARG1))
