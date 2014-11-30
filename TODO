@@ -24,3 +24,5 @@
     select etc files without things becoming high maintenance.
 
 * cover runuser as its setuid and maintains pam config. maybe it makes sense to run this label it sudo_exec_t (akmods runs runuser)
+
+* double check bluetooth socket activated socket. currently var_lib_object but i suspect it may be the tmpfs_object (fifo_file) instead
