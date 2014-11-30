@@ -738,6 +738,11 @@
     (allow ARG1 self rw_fifo_file_perms)
     (typeattributeset systemctl_client_type ARG1))
 
+(macro systemd_system_service_admin ((type ARG1))
+    (call systemd_exec_systemctl (ARG1))
+    (call systemd_reload_system (ARG1))
+    (call systemd_status_system (ARG1)))
+
 (macro systemd_auto_subtrans_systemctl ((type ARG1))
     (call systemd_send_signal_systemctl (ARG1))
     (call auto_subject_type_transition_pattern

@@ -231,6 +231,8 @@
 (call nm_stream_connect (nm_client_type))
 (call nm_dbus_chat (nm_client_type))
 
+(call systemd_system_service_admin (nm_admin_type))
+
 (allow nm_admin_type nm_subject_type signal_perms)
 (allow nm_admin_type nm_subject_type (process (ptrace)))
 (call ps_subject_pattern (nm_admin_type nm_subject_type))

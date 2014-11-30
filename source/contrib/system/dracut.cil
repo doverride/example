@@ -56,6 +56,8 @@
     (filecon "/var/run/initramfs(/.*)?" any run_initramfs)
 )
 
+(call systemd_system_service_admin (dracut_admin_type))
+
 (allow dracut_admin_type dracut_initramfs_restore.common_subject signal_perms)
 (allow dracut_admin_type dracut_initramfs_restore.common_subject (process (ptrace)))
 (call ps_subject_pattern (dracut_admin_type dracut_initramfs_restore.common_subject))

@@ -86,6 +86,8 @@
         (call nm_dbus_chat (common_subject)))
 )
 
+(call systemd_system_service_admin (firewall_admin_type))
+
 (allow firewall_admin_type firewall_subject_type signal_perms)
 (allow firewall_admin_type firewall_subject_type (process (ptrace)))
 (call ps_subject_pattern (firewall_admin_type firewall_subject_type))

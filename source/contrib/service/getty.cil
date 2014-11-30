@@ -38,6 +38,8 @@
         (call plymouth_exec (common_subject)))
 )
 
+(call systemd_system_service_admin (getty_admin_type))
+
 (allow getty_admin_type getty.common_subject signal_perms)
 (allow getty_admin_type getty.common_subject (process (ptrace)))
 (call ps_subject_pattern (getty_admin_type getty.common_subject))

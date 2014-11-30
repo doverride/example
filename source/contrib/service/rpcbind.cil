@@ -40,6 +40,8 @@
     (filecon "/var/lib/rpcbind(/.*)?" any var_lib_rpcbind)
 )
 
+(call systemd_system_service_admin (rpcbind_admin_type))
+
 (allow rpcbind_admin_type rpcbind.common_subject signal_perms)
 (allow rpcbind_admin_type rpcbind.common_subject (process (ptrace)))
 (call ps_subject_pattern (rpcbind_admin_type rpcbind.common_subject))

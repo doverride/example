@@ -47,6 +47,8 @@
     (call auth_nsswitch_client (common_subject))
 )
 
+(call systemd_system_service_admin (mcelog_admin_type))
+
 (allow mcelog_admin_type mcelog.common_subject signal_perms)
 (allow mcelog_admin_type mcelog.common_subject (process (ptrace)))
 (call ps_subject_pattern (mcelog_admin_type mcelog.common_subject))

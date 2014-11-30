@@ -186,6 +186,8 @@
 
 (typeattributeset audit_subject_type audit_audisp_daemon_type)
 
+(call systemd_system_service_admin (audit_admin_type))
+
 (allow audit_admin_type audit_subject_type signal_perms)
 (allow audit_admin_type audit_subject_type (process (ptrace)))
 (call ps_subject_pattern (audit_admin_type audit_subject_type))

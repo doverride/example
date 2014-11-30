@@ -36,6 +36,8 @@
         (call app_subject_type (common_subject)))
 )
 
+(call systemd_system_service_admin (fstrim_admin_type))
+
 (allow fstrim_admin_type fstrim.common_subject signal_perms)
 (allow fstrim_admin_type fstrim.common_subject (process (ptrace)))
 (call ps_subject_pattern (fstrim_admin_type fstrim.common_subject))

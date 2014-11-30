@@ -124,6 +124,8 @@
         (call plymouth_exec (common_subject)))
 )
 
+(call systemd_system_service_admin (login_admin_type))
+
 (allow login_admin_type login_subject_type signal_perms)
 (allow login_admin_type login_subject_type (process (ptrace)))
 (call ps_subject_pattern (login_admin_type login_subject_type))

@@ -99,6 +99,8 @@
 (typeattributeset iscsi_unit_type
     (iscsid.unit_object iscsiuio.unit_object))
 
+(call systemd_system_service_admin (iscsi_admin_type))
+
 (allow iscsi_admin_type iscsi_subject_type signal_perms)
 (allow iscsi_admin_type iscsi_subject_type (process (ptrace)))
 (call ps_subject_pattern (iscsi_admin_type iscsi_subject_type))

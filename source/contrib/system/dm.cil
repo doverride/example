@@ -101,6 +101,8 @@
     (call udev_client (common_subject))
 )
 
+(call systemd_system_service_admin (dm_admin_type))
+
 (allow dm_admin_type dm_subject_type signal_perms)
 (allow dm_admin_type dm_subject_type (process (ptrace)))
 (call ps_subject_pattern (dm_admin_type dm_subject_type))

@@ -72,6 +72,8 @@
         (call app_subject_type (common_subject)))
 )
 
+(call systemd_system_service_admin (alsa_admin_type))
+
 (allow alsa_admin_type alsactl.common_subject signal_perms)
 (allow alsa_admin_type alsactl.common_subject (process (ptrace)))
 (call ps_subject_pattern (alsa_admin_type alsactl.common_subject))

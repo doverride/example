@@ -136,6 +136,8 @@
     (call udev_list_run (common_subject))
 )
 
+(call systemd_system_service_admin (logind_admin_type))
+
 (allow logind_admin_type logind_subject_type signal_perms)
 (allow logind_admin_type logind_subject_type (process (ptrace)))
 (call ps_subject_pattern (logind_admin_type logind_subject_type))

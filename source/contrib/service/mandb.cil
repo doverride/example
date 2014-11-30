@@ -40,6 +40,8 @@
     (call miscfiles_read_localization (common_subject))
 )
 
+(call systemd_system_service_admin (mandb_admin_type))
+
 (allow mandb_admin_type mandb.common_subject signal_perms)
 (allow mandb_admin_type mandb.common_subject (process (ptrace)))
 (call ps_subject_pattern (mandb_admin_type mandb.common_subject))

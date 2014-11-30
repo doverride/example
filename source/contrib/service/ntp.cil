@@ -130,6 +130,8 @@
         (call dhcp_list_dhclient_var_lib (common_subject)))
 )
 
+(call systemd_system_service_admin (ntp_admin_type))
+
 (allow ntp_admin_type ntp_subject_type signal_perms)
 (allow ntp_admin_type ntp_subject_type (process (ptrace)))
 (call ps_subject_pattern (ntp_admin_type ntp_subject_type))

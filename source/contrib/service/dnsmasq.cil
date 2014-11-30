@@ -60,6 +60,8 @@
     (call miscfiles_read_net_config_files (common_subject))
 )
 
+(call systemd_system_service_admin (dnsmasq_admin_type))
+
 (allow dnsmasq_admin_type dnsmasq.common_subject signal_perms)
 (allow dnsmasq_admin_type dnsmasq.common_subject (process (ptrace)))
 (call ps_subject_pattern (dnsmasq_admin_type dnsmasq.common_subject))

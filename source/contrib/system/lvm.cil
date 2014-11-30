@@ -148,6 +148,8 @@
 (typeattributeset lvm_unit_type
     (lvm.unit_object lvmetad.unit_object))
 
+(call systemd_system_service_admin (lvm_admin_type))
+
 (allow lvm_admin_type lvm_subject_type signal_perms)
 (allow lvm_admin_type lvm_subject_type (process (ptrace)))
 (call ps_subject_pattern (lvm_admin_type lvm_subject_type))

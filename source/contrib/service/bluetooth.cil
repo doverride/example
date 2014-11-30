@@ -100,6 +100,8 @@
         (call nm_dbus_chat (common_subject)))
 )
 
+(call systemd_system_service_admin (bluetooth_admin_type))
+
 (allow bluetooth_admin_type bluetooth_subject_type signal_perms)
 (allow bluetooth_admin_type bluetooth_subject_type (process (ptrace)))
 (call ps_subject_pattern (bluetooth_admin_type bluetooth_subject_type))

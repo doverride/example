@@ -99,6 +99,8 @@
         (call plymouth_exec (common_subject)))
 )
 
+(call systemd_system_service_admin (iptables_admin_type))
+
 (allow iptables_admin_type iptables.common_subject signal_perms)
 (allow iptables_admin_type iptables.common_subject (process (ptrace)))
 (call ps_subject_pattern (iptables_admin_type iptables.common_subject))

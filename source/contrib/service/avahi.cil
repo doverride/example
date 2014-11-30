@@ -73,6 +73,8 @@
     (filecon "/usr/sbin/avahi-autoipd" file bin_avahi_autoipd)
 )
 
+(call systemd_system_service_admin (avahi_admin_type))
+
 (allow avahi_admin_type avahi_subject_type signal_perms)
 (allow avahi_admin_type avahi_subject_type (process (ptrace)))
 (call ps_subject_pattern (avahi_admin_type avahi_subject_type))

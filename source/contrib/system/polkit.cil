@@ -143,6 +143,8 @@
 
 (typeattributeset polkit_object_type polkit_etc_file_type)
 
+(call systemd_system_service_admin (polkit_admin_type))
+
 (allow polkit_admin_type polkit_subject_type signal_perms)
 (allow polkit_admin_type polkit_subject_type (process (ptrace)))
 (call ps_subject_pattern (polkit_admin_type polkit_subject_type))

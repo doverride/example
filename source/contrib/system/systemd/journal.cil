@@ -166,6 +166,8 @@
 
 (call systemd_search_run (journal_client_type))
 
+(call systemd_system_service_admin (journal_admin_type))
+
 (allow journal_admin_type journal_subject_type signal_perms)
 (allow journal_admin_type journal_subject_type (process (ptrace)))
 (call ps_subject_pattern (journal_admin_type journal_subject_type))
