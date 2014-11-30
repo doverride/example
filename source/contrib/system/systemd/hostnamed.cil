@@ -97,6 +97,10 @@
     (call hostnamed_auto_subtrans_hostnamectl (ARG1))
     (roleattributeset hostnamectl_role (ARG2)))
 
+(macro hostnamed_dbus_chat ((type ARG1))
+    (allow ARG1 hostnamed.common_subject (dbus (send_msg)))
+    (allow hostnamed.common_subject ARG1 (dbus (send_msg))))
+
 (macro hostnamed_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 hostnamed.etc_object read_file_perms))

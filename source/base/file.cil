@@ -510,6 +510,15 @@
         (call fs_tmpfs_filetrans (common_subject tmpfs_object file "*"))
 )
 
+(block file_maintains_single_tmpfs_fifo_file_block
+    (blockabstract file_maintains_single_tmpfs_fifo_file_block)
+        (blockinherit file_tmpfs_object_block)
+
+        (allow common_subject tmpfs_object manage_fifo_file_perms)
+
+        (call fs_tmpfs_filetrans (common_subject tmpfs_object fifo_file "*"))
+)
+
 (block file_maintains_tmpfs_dirs_and_files_block
     (blockabstract file_maintains_tmpfs_dirs_and_files_block)
         (blockinherit file_tmpfs_object_block)

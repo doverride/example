@@ -1,0 +1,135 @@
+(roleattribute bluetoothctl_role)
+
+(roleattribute bluetooth_admin_role)
+(typeattribute bluetooth_admin_type)
+
+(typeattribute bluetooth_object_type)
+(typeattribute bluetooth_subject_type)
+
+(block bluetoothctl
+    (blockinherit app_block)
+
+    (typeattributeset bluetooth_subject_type common_subject)
+
+    (roletype bluetoothctl_role common_subject)
+
+    (context bin_bluetoothctl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/bccmd" file bin_bluetoothctl)
+    (filecon "/usr/bin/bluemoon" file bin_bluetoothctl)
+    (filecon "/usr/bin/bluetoothctl" file bin_bluetoothctl)
+    (filecon "/usr/bin/btmon" file bin_bluetoothctl)
+    (filecon "/usr/bin/ciptool" file bin_bluetoothctl)
+    (filecon "/usr/bin/hciattach" file bin_bluetoothctl)
+    (filecon "/usr/bin/hciconfig" file bin_bluetoothctl)
+    (filecon "/usr/bin/hcidump" file bin_bluetoothctl)
+    (filecon "/usr/bin/hcitool" file bin_bluetoothctl)
+    (filecon "/usr/bin/l2ping" file bin_bluetoothctl)
+    (filecon "/usr/bin/l2test" file bin_bluetoothctl)
+    (filecon "/usr/bin/rctest" file bin_bluetoothctl)
+    (filecon "/usr/bin/rfcomm" file bin_bluetoothctl)
+    (filecon "/usr/bin/sdptool" file bin_bluetoothctl)
+
+    (allow common_subject self (capability (net_raw)))
+    (allow common_subject self create_socket_perms)
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call bluetooth_dbus_chat_bluetoothd (common_subject))
+
+    (call dbus_system_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+    (call miscfiles_read_terminfo (common_subject))
+)
+
+(block bluetoothd
+    (blockinherit systemd_daemon_socket_activated_block)
+
+    (typeattributeset bluetooth_object_type unit_object)
+    (typeattributeset bluetooth_subject_type common_subject)
+
+    (context bin_bluetoothd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/bluetooth/bluetoothd" file bin_bluetoothd)
+
+    (context unit_bluetoothd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*bluetooth.*" file unit_bluetoothd)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset bluetooth_object_type dbus_etc_object)
+
+    (context dbus_etc_bluetoothd (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/bluetooth\.conf" file dbus_etc_bluetoothd)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset bluetooth_object_type var_lib_object)
+
+    (context var_lib_bluetoothd (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/bluetooth(/.*)?" any var_lib_bluetoothd)
+
+    (blockinherit file_maintains_single_tmpfs_fifo_file_block)
+
+    (typeattributeset bluetooth_object_type tmpfs_object)
+
+    (allow common_subject self (capability (net_bind_service)))
+    (allow common_subject self create_socket_perms)
+    (allow common_subject self (socket (listen accept)))
+
+    (call sys_request_load_module (common_subject))
+
+    (call dev_read_urandom (common_subject))
+    (call dev_rw_wireless (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call hostnamed_dbus_chat (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call systemd_stream_connect (common_subject))
+
+    (call udev_client (common_subject))
+
+    (optional bluetoothd_optional_nm
+        (call nm_dbus_chat (common_subject)))
+)
+
+(allow bluetooth_admin_type bluetooth_subject_type signal_perms)
+(allow bluetooth_admin_type bluetooth_subject_type (process (ptrace)))
+(call ps_subject_pattern (bluetooth_admin_type bluetooth_subject_type))
+(allow bluetooth_admin_type bluetoothd.unit_object (service (all)))
+(allow bluetooth_admin_type bluetooth_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype bluetooth_admin_role bluetooth_object_type)
+
+(call bluetooth_run_bluetoothctl (bluetooth_admin_type bluetooth_admin_role))
+
+(macro bluetooth_exec_bluetoothctl ((type ARG1))
+    (call can_exec (ARG1 bluetoothctl.bin_object)))
+
+(macro bluetooth_auto_subtrans_bluetoothctl ((type ARG1))
+    (call bluetooth_send_signal_bluetoothctl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 bluetoothctl.bin_object bluetoothctl.common_subject)))
+
+(macro bluetooth_run_bluetoothctl ((type ARG1)(role ARG2))
+    (call bluetooth_auto_subtrans_bluetoothctl (ARG1))
+    (roleattributeset bluetoothctl_role ARG2))
+
+(macro bluetooth_send_signal_bluetoothctl ((type ARG1))
+    (allow ARG1 bluetoothctl.common_subject (process (signal))))
+
+(macro bluetooth_dbus_chat_bluetoothd ((type ARG1))
+    (allow ARG1 bluetoothd.common_subject (dbus (send_msg)))
+    (allow bluetoothd.common_subject ARG1 (dbus (send_msg))))
+
+(macro bluetooth_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (roleattributeset bluetooth_admin_role ARG1)
+    (typeattributeset bluetooth_admin_type ARG2))

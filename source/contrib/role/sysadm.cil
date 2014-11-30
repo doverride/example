@@ -59,6 +59,9 @@
     (optional sysadm_optional_avahi
         (call avahi_admin (r common_subject)))
 
+    (optional sysadm_optional_bluetooth
+        (call bluetooth_admin (r common_subject)))
+
     (optional sysadm_optional_bootloader
         (call bootloader_admin (r common_subject)))
 
