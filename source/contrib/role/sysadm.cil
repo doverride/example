@@ -68,6 +68,9 @@
     (optional sysadm_optional_consoletype
         (call consoletype_run (common_subject r)))
 
+    (optional sysadm_optional_cups
+        (call cups_admin (r common_subject)))
+
     (optional sysadm_optional_dbus
         (call dbus_admin (r common_subject)))
 

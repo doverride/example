@@ -162,6 +162,17 @@
         (call file_run_filetrans (common_subject run_object dir "*"))
 )
 
+(block file_maintains_run_dirs_files_and_sock_files_block
+    (blockabstract file_maintains_run_dirs_files_and_sock_files_block)
+        (blockinherit file_run_object_block)
+
+        (allow common_subject run_object manage_file_perms)
+        (allow common_subject run_object manage_dir_perms)
+        (allow common_subject run_object manage_sock_file_perms)
+
+        (call file_run_filetrans (common_subject run_object dir "*"))
+)
+
 (block file_maintains_run_dirs_and_sock_files_block
     (blockabstract file_maintains_run_dirs_and_sock_files_block)
         (blockinherit file_run_object_block)
@@ -350,6 +361,17 @@
 
         (allow common_subject var_lib_object manage_file_perms)
         (allow common_subject var_lib_object manage_dir_perms)
+
+        (call file_var_lib_filetrans (common_subject var_lib_object dir "*"))
+)
+
+(block file_maintains_var_lib_dirs_files_and_sock_files_block
+    (blockabstract file_maintains_var_lib_dirs_files_and_sock_files_block)
+        (blockinherit file_var_lib_object_block)
+
+        (allow common_subject var_lib_object manage_file_perms)
+        (allow common_subject var_lib_object manage_dir_perms)
+        (allow common_subject var_lib_object manage_sock_file_perms)
 
         (call file_var_lib_filetrans (common_subject var_lib_object dir "*"))
 )

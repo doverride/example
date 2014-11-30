@@ -1,0 +1,200 @@
+(typepermissive cupsctl.common_subject)
+
+(roleattribute cupsctl_role)
+
+(roleattribute cups_admin_role)
+(typeattribute cups_admin_type)
+
+(typeattribute cups_object_type)
+(typeattribute cups_subject_type)
+
+(typeattribute cups_unit_type)
+
+(block cups
+    (blockinherit net_hi_reserved_port_object_block)
+
+    (context hi_reserved_port_cups (sys.u sys.r hi_reserved_port_object
+        (systemlow systemlow)))
+    (portcon "tcp" 631 hi_reserved_port_cups)
+    (portcon "udp" 631 hi_reserved_port_cups)
+)
+
+(block cupsctl
+    (blockinherit app_block)
+
+    (typeattributeset cups_subject_type common_subject)
+
+    (roletype cupsctl_role common_subject)
+
+    (context bin_cupsctl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/accept" file bin_cupsctl)
+    (filecon "/usr/sbin/cupsaccept" file bin_cupsctl)
+    (filecon "/usr/sbin/cupsaddsmb" file bin_cupsctl)
+    (filecon "/usr/sbin/cupsctl" file bin_cupsctl)
+    (filecon "/usr/sbin/cupsdisable" file bin_cupsctl)
+    (filecon "/usr/sbin/cupsenable" file bin_cupsctl)
+    (filecon "/usr/sbin/cupsfilter" file bin_cupsctl)
+    (filecon "/usr/sbin/cupsreject" file bin_cupsctl)
+)
+
+(block cupsd
+    (blockinherit systemd_daemon_socket_activated_block)
+
+    (typeattributeset cups_object_type unit_object)
+    (typeattributeset cups_subject_type common_subject)
+
+    (context bin_cupsd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/cupsd" file bin_cupsd)
+
+    (context unit_cupsd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*cups.*" file unit_cupsd)
+
+    (blockinherit file_maintains_var_cache_dirs_and_files_block)
+
+    (typeattributeset cups_object_type var_cache_object)
+
+    (context var_cache_cupsd (sys.u sys.r var_cache_object (systemlow systemlow)))
+    (filecon "/var/cache/cups(/.*)?" any var_cache_cupsd)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset cups_object_type etc_object)
+
+    (context etc_cupsd (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/cups(/.*)?" any etc_cupsd)
+
+    (blockinherit auth_maintains_single_pam_etc_file_block)
+
+    (typeattributeset cups_object_type pam_etc_object)
+
+    (context pam_etc_cupsd (sys.u sys.r pam_etc_object (systemlow systemlow)))
+    (filecon "/etc/pam\.d/cups" file pam_etc_cupsd)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset cups_object_type dbus_etc_object)
+
+    (context dbus_etc_cupsd (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/cups\.conf" file dbus_etc_cupsd)
+
+    (blockinherit file_maintains_var_log_dirs_and_files_block)
+
+    (typeattributeset cups_object_type var_log_object)
+
+    (context var_log_cupsd (sys.u sys.r var_log_object (systemlow systemlow)))
+    (filecon "/var/log/cups(/.*)?" any var_log_cupsd)
+
+    (blockinherit file_maintains_run_dirs_files_and_sock_files_block)
+
+    (typeattributeset cups_object_type run_object)
+
+    (call systemd_socket_activated_object_type (run_object))
+
+    (context run_cupsd (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/cups(/.*)?" any run_cupsd)
+
+    (blockinherit file_maintains_var_spool_dirs_and_files_block)
+
+    (typeattributeset cups_object_type var_spool_object)
+
+    (context var_spool_cupsd (sys.u sys.r var_spool_object (systemlow systemlow)))
+    (filecon "/var/spool/cups(/.*)?" any var_spool_cupsd)
+
+    (allow common_subject self (capability (dac_override chown fsetid)))
+    (allow common_subject self (unix_stream_socket (listen accept)))
+
+    (call bin_execute_bin_files (common_subject))
+
+    (call dev_read_urandom (common_subject))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+
+    (call net_tcp_bind_generic_node (common_subject))
+
+    (call audit_client (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call cups_list_spool (common_subject))
+    (call cups_tcp_bind_cups_port (common_subject))
+    (call cups_manage_config_files (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call systemd_stream_connect (common_subject))
+)
+
+(block cups_browsed
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset cups_object_type unit_object)
+    (typeattributeset cups_subject_type common_subject)
+
+    (context bin_cups_browsed (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/cups-browsed" file bin_cups_browsed)
+
+    (context unit_cups_browsed (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*cups-browsed.*" file unit_cups_browsed)
+)
+
+(block cups_helper
+    (blockinherit bin_object_block)
+
+    (context bin_cupsd_helper (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/cups/daemon/.*" file bin_cupsd_helper)
+)
+
+(typeattributeset cups_unit_type (cupsd.unit_object cups_browsed.unit_object))
+
+(allow cups_admin_type cups_subject_type signal_perms)
+(allow cups_admin_type cups_subject_type (process (ptrace)))
+(call ps_subject_pattern (cups_admin_type cups_subject_type))
+(allow cups_admin_type cups_unit_type (service (all)))
+(allow cups_admin_type cups_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype cups_admin_role cups_object_type)
+
+(call cups_run_cupsctl (cups_admin_type cups_admin_role))
+
+(macro cups_exec_cupsctl ((type ARG1))
+    (call can_exec (ARG1 cupsctl.bin_object)))
+
+(macro cups_auto_subtrans_cupsctl ((type ARG1))
+    (call cups_send_signal_cupsctl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 cupsctl.bin_object cupsctl.common_subject)))
+
+(macro cups_run_cupsctl ((type ARG1)(role ARG2))
+    (call cups_auto_subtrans_cupsctl (ARG1))
+    (roleattributeset cupsctl_role ARG2))
+
+(macro cups_send_signal_cupsctl ((type ARG1))
+    (allow ARG1 cupsctl.common_subject (process (signal))))
+
+(macro cups_list_spool ((type ARG1))
+    (call file_search_var_spool (ARG1))
+    (allow ARG1 cupsd.var_spool_object list_dir_perms))
+
+(macro cups_manage_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call manage_files_pattern (ARG1 cupsd.etc_object cupsd.etc_object)))
+
+(macro cups_stream_connect_cupsd ((type ARG1))
+    (call file_search_run (ARG1))
+    (call stream_connect_pattern
+        (ARG1 cupsd.run_object cupsd.run_object cupsd.common_subject)))
+
+(macro cups_tcp_bind_cups_port ((type ARG1))
+    (allow ARG1 self (capability (net_bind_service)))
+    (allow ARG1 self create_tcp_stream_socket_perms)
+    (allow ARG1 cups.hi_reserved_port_object (tcp_socket (name_bind))))
+
+(macro cups_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset cups_admin_role ARG1)
+    (typeattributeset cups_admin_type ARG2))

@@ -61,9 +61,11 @@
     (context dbus_etc_bluetoothd (sys.u sys.r dbus_etc_object (systemlow systemlow)))
     (filecon "/etc/dbus-1/system\.d/bluetooth\.conf" file dbus_etc_bluetoothd)
 
-    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+    (blockinherit file_maintains_var_lib_dirs_files_and_sock_files_block)
 
     (typeattributeset bluetooth_object_type var_lib_object)
+
+    (call systemd_socket_activated_object_type (var_lib_object))
 
     (context var_lib_bluetoothd (sys.u sys.r var_lib_object (systemlow systemlow)))
     (filecon "/var/lib/bluetooth(/.*)?" any var_lib_bluetoothd)
