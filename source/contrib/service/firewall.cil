@@ -86,8 +86,6 @@
         (call nm_dbus_chat (common_subject)))
 )
 
-(call systemd_system_service_admin (firewall_admin_type))
-
 (allow firewall_admin_type firewall_subject_type signal_perms)
 (allow firewall_admin_type firewall_subject_type (process (ptrace)))
 (call ps_subject_pattern (firewall_admin_type firewall_subject_type))
@@ -135,5 +133,6 @@
 
 (macro firewall_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset firewall_admin_role ARG1)
     (typeattributeset firewall_admin_type ARG2))

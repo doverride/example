@@ -104,8 +104,6 @@
 
 (call plymouth_stream_connect_plymouthd (plymouth_client_type))
 
-(call systemd_system_service_admin (plymouth_admin_type))
-
 (allow plymouth_admin_type plymouth_subject_type signal_perms)
 (allow plymouth_admin_type plymouth_subject_type (process (ptrace)))
 (call ps_subject_pattern (plymouth_admin_type plymouth_subject_type))
@@ -175,5 +173,6 @@
 
 (macro plymouth_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset plymouth_admin_role ARG1)
     (typeattributeset plymouth_admin_type ARG2))

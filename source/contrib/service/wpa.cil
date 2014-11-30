@@ -87,8 +87,6 @@
     (filecon "/usr/sbin/wpa_cli" file bin_wpacli)
 )
 
-(call systemd_system_service_admin (wpa_admin_type))
-
 (allow wpa_admin_type wpa_subject_type signal_perms)
 (allow wpa_admin_type wpa_subject_type (process (ptrace)))
 (call ps_subject_pattern (wpa_admin_type wpa_subject_type))
@@ -116,5 +114,6 @@
 
 (macro wpa_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset wpa_admin_role ARG1)
     (typeattributeset wpa_admin_type ARG2))

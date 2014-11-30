@@ -99,8 +99,6 @@
         (call plymouth_exec (common_subject)))
 )
 
-(call systemd_system_service_admin (iptables_admin_type))
-
 (allow iptables_admin_type iptables.common_subject signal_perms)
 (allow iptables_admin_type iptables.common_subject (process (ptrace)))
 (call ps_subject_pattern (iptables_admin_type iptables.common_subject))
@@ -134,5 +132,6 @@
 
 (macro iptables_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset iptables_admin_role ARG1)
     (typeattributeset iptables_admin_type ARG2))

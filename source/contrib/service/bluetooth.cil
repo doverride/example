@@ -100,8 +100,6 @@
         (call nm_dbus_chat (common_subject)))
 )
 
-(call systemd_system_service_admin (bluetooth_admin_type))
-
 (allow bluetooth_admin_type bluetooth_subject_type signal_perms)
 (allow bluetooth_admin_type bluetooth_subject_type (process (ptrace)))
 (call ps_subject_pattern (bluetooth_admin_type bluetooth_subject_type))
@@ -133,5 +131,6 @@
 
 (macro bluetooth_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset bluetooth_admin_role ARG1)
     (typeattributeset bluetooth_admin_type ARG2))

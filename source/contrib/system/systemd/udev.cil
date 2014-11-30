@@ -168,8 +168,6 @@
 (call udev_read_config_files (udev_client_type))
 (call udev_read_run_files (udev_client_type))
 
-(call systemd_system_service_admin (udev_admin_type))
-
 (allow udev_admin_type udev_subject_type signal_perms)
 (allow udev_admin_type udev_subject_type (process (ptrace)))
 (call ps_subject_pattern (udev_admin_type udev_subject_type))
@@ -246,5 +244,6 @@
 
 (macro udev_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset udev_admin_role ARG1)
     (typeattributeset udev_admin_type ARG2))

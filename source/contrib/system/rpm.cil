@@ -178,8 +178,6 @@
 
 (typeattributeset rpm_object_type rpm_etc_file_type)
 
-(call systemd_system_service_admin (rpm_admin_type))
-
 (allow rpm_admin_type rpm_subject_type signal_perms)
 (allow rpm_admin_type rpm_subject_type (process (ptrace)))
 (call ps_subject_pattern (rpm_admin_type rpm_subject_type))
@@ -237,5 +235,6 @@
 
 (macro rpm_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset rpm_admin_role ARG1)
     (typeattributeset rpm_admin_type ARG2))

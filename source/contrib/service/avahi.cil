@@ -73,8 +73,6 @@
     (filecon "/usr/sbin/avahi-autoipd" file bin_avahi_autoipd)
 )
 
-(call systemd_system_service_admin (avahi_admin_type))
-
 (allow avahi_admin_type avahi_subject_type signal_perms)
 (allow avahi_admin_type avahi_subject_type (process (ptrace)))
 (call ps_subject_pattern (avahi_admin_type avahi_subject_type))
@@ -85,5 +83,6 @@
 
 (macro avahi_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset avahi_admin_role ARG1)
     (typeattributeset avahi_admin_type ARG2))

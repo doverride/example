@@ -99,8 +99,6 @@
 (typeattributeset iscsi_unit_type
     (iscsid.unit_object iscsiuio.unit_object))
 
-(call systemd_system_service_admin (iscsi_admin_type))
-
 (allow iscsi_admin_type iscsi_subject_type signal_perms)
 (allow iscsi_admin_type iscsi_subject_type (process (ptrace)))
 (call ps_subject_pattern (iscsi_admin_type iscsi_subject_type))
@@ -131,5 +129,6 @@
 
 (macro iscsi_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset iscsi_admin_role ARG1)
     (typeattributeset iscsi_admin_type ARG2))

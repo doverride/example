@@ -40,8 +40,6 @@
     (filecon "/var/lib/rpcbind(/.*)?" any var_lib_rpcbind)
 )
 
-(call systemd_system_service_admin (rpcbind_admin_type))
-
 (allow rpcbind_admin_type rpcbind.common_subject signal_perms)
 (allow rpcbind_admin_type rpcbind.common_subject (process (ptrace)))
 (call ps_subject_pattern (rpcbind_admin_type rpcbind.common_subject))
@@ -52,5 +50,6 @@
 
 (macro rpcbind_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset rpcbind_admin_role ARG1)
     (typeattributeset rpcbind_admin_type ARG2))

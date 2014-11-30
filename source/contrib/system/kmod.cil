@@ -62,8 +62,6 @@
         (call app_subject_type (common_subject)))
 )
 
-(call systemd_system_service_admin (kmod_admin_type))
-
 (allow kmod_admin_type kmod.common_subject signal_perms)
 (allow kmod_admin_type kmod.common_subject (process (ptrace)))
 (call ps_subject_pattern (kmod_admin_type kmod.common_subject))
@@ -108,5 +106,6 @@
 
 (macro kmod_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset kmod_admin_role ARG1)
     (typeattributeset kmod_admin_type ARG2))

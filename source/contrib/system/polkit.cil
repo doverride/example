@@ -143,8 +143,6 @@
 
 (typeattributeset polkit_object_type polkit_etc_file_type)
 
-(call systemd_system_service_admin (polkit_admin_type))
-
 (allow polkit_admin_type polkit_subject_type signal_perms)
 (allow polkit_admin_type polkit_subject_type (process (ptrace)))
 (call ps_subject_pattern (polkit_admin_type polkit_subject_type))
@@ -224,5 +222,6 @@
 
 (macro polkit_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset polkit_admin_role ARG1)
     (typeattributeset polkit_admin_type ARG2))

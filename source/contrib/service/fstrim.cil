@@ -36,8 +36,6 @@
         (call app_subject_type (common_subject)))
 )
 
-(call systemd_system_service_admin (fstrim_admin_type))
-
 (allow fstrim_admin_type fstrim.common_subject signal_perms)
 (allow fstrim_admin_type fstrim.common_subject (process (ptrace)))
 (call ps_subject_pattern (fstrim_admin_type fstrim.common_subject))
@@ -58,5 +56,6 @@
 
 (macro fstrim_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset fstrim_admin_role ARG1)
     (typeattributeset fstrim_admin_type ARG2))

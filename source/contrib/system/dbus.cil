@@ -111,8 +111,6 @@
 (call dbus_read_var_lib_files (dbus_system_client_type))
 (call dbus_stream_connect_system (dbus_system_client_type))
 
-(call systemd_system_service_admin (dbus_admin_type))
-
 (allow dbus_admin_type dbus_subject_type signal_perms)
 (allow dbus_admin_type dbus_subject_type (process (ptrace)))
 (call ps_subject_pattern (dbus_admin_type dbus_subject_type))
@@ -185,6 +183,7 @@
 
 (macro dbus_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset dbus_admin_role ARG1)
     (typeattributeset dbus_admin_type ARG2))
 

@@ -142,8 +142,6 @@
         (call app_subject_type (common_subject)))
 )
 
-(call systemd_system_service_admin (nettools_admin_type))
-
 (allow nettools_admin_type nettools_subject_type signal_perms)
 (allow nettools_admin_type nettools_subject_type (process (ptrace)))
 (call ps_subject_pattern (nettools_admin_type nettools_subject_type))
@@ -218,5 +216,6 @@
 
 (macro nettools_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset nettools_admin_role ARG1)
     (typeattributeset nettools_admin_type ARG2))

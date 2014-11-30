@@ -231,8 +231,6 @@
 (call nm_stream_connect (nm_client_type))
 (call nm_dbus_chat (nm_client_type))
 
-(call systemd_system_service_admin (nm_admin_type))
-
 (allow nm_admin_type nm_subject_type signal_perms)
 (allow nm_admin_type nm_subject_type (process (ptrace)))
 (call ps_subject_pattern (nm_admin_type nm_subject_type))
@@ -305,5 +303,6 @@
 
 (macro nm_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset nm_admin_role ARG1)
     (typeattributeset nm_admin_type ARG2))

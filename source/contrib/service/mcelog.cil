@@ -47,8 +47,6 @@
     (call auth_nsswitch_client (common_subject))
 )
 
-(call systemd_system_service_admin (mcelog_admin_type))
-
 (allow mcelog_admin_type mcelog.common_subject signal_perms)
 (allow mcelog_admin_type mcelog.common_subject (process (ptrace)))
 (call ps_subject_pattern (mcelog_admin_type mcelog.common_subject))
@@ -76,5 +74,6 @@
 
 (macro mcelog_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset mcelog_admin_role ARG1)
     (typeattributeset mcelog_admin_type ARG2))

@@ -101,8 +101,6 @@
     (call udev_client (common_subject))
 )
 
-(call systemd_system_service_admin (dm_admin_type))
-
 (allow dm_admin_type dm_subject_type signal_perms)
 (allow dm_admin_type dm_subject_type (process (ptrace)))
 (call ps_subject_pattern (dm_admin_type dm_subject_type))
@@ -135,5 +133,6 @@
 
 (macro dm_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
     (roleattributeset dm_admin_role ARG1)
     (typeattributeset dm_admin_type ARG2))
