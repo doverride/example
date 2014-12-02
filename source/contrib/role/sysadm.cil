@@ -282,6 +282,7 @@
     (allow ARG1 sysadm.common_subject (process (signal))))
 
 (macro sysadm_manage_keyring ((type ARG1))
+    (allow ARG1 self (process (setkeycreate)))
     (allow ARG1 sysadm.common_subject (key (create search link write))))
 
 (macro sysadm_shell_manual_subtrans ((type ARG1))
