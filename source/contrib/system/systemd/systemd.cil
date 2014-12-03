@@ -704,7 +704,10 @@
     (call bin_auto_subtrans (ARG3 ARG2))
     (call bin_shell_auto_subtrans (ARG3 ARG2))
 
-    (call fs_manage_cgroup_dirs (ARG1 ARG3)))
+    (call fs_manage_cgroup_dirs (ARG1 ARG3))
+
+    (call systemd_exec_systemctl (ARG2))
+    (call systemd_manage_generic_session_units (ARG2)))
 
 (macro systemd_daemon ((type ARG1)(type ARG2))
     (call auto_subject_type_transition_pattern (systemd.common_subject ARG2 ARG1))

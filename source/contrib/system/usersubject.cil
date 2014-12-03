@@ -304,9 +304,6 @@
 (call miscfiles_read_man_files (usersubject_common_login_type))
 (call miscfiles_read_net_config_files (usersubject_common_login_type))
 
-(call systemd_exec_systemctl (usersubject_common_login_type))
-(call systemd_manage_generic_session_units (usersubject_common_login_type))
-
 (optional usersubject_common_login_type_optional_pcitools
     (call pcitools_exec (usersubject_common_login_type)))
 
