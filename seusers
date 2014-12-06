@@ -1,5 +1,5 @@
 sys.u:sys.u
 root:sysadm.u
-jane:unconfineduser.u
+joe:unconfineduser.u
 john:staff.u
 __default__:user.u
