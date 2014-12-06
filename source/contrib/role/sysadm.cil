@@ -98,6 +98,12 @@
     (optional sysadm_optional_fstrim
         (call fstrim_admin (r common_subject)))
 
+    (optional sysadm_optional_fuse
+        (call fuse_admin (r common_subject)))
+
+    (optional sysadm_optional_gdm
+        (call gdm_admin (r common_subject)))
+
     (optional sysadm_optional_getty
         (call getty_admin (r common_subject)))
 
@@ -250,6 +256,9 @@
 
     (optional sysadm_optional_wpa
         (call wpa_admin (r common_subject)))
+
+    (optional sysadm_optional_xserver
+        (call xserver_admin (r common_subject)))
 )
 
 (block sysadm_chfn
