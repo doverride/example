@@ -278,6 +278,8 @@
         (blockinherit systemd_session_subject_block)
 
         (call systemd_session_role_template (sysadm.r sysadm.common_subject common_subject))
+
+        (allow common_subject self (capability (dac_override)))
     )
 )
 
