@@ -26,3 +26,5 @@
 * cover runuser as its setuid and maintains pam config. maybe it makes sense to run this label it sudo_exec_t (akmods runs runuser)
 
 * double check bluetooth socket activated socket. currently var_lib_object but i suspect it may be the tmpfs_object (fifo_file) instead
+
+* create a template for gui app common rules (then apply that to gdm as well, gdm runs gui apps in it own domain and currently added individual macros)
