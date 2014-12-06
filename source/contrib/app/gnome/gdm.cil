@@ -187,7 +187,7 @@
         ; (call mozilla_check_exec_firefox_executable_files (common_subject)))
 
     (optional gdm_optional_nm
-        (call nm_dbus_chat (common_subject)))
+        (call nm_client (common_subject)))
 
     ; (optional gdm_optional_udisks
         ; (call udisks_dbus_chat (common_subject)))
