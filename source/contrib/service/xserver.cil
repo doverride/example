@@ -99,6 +99,10 @@
         (call gdm_rw_inherited_stream_sockets (common_subject))
         (call gdm_read_state (common_subject))
         (call gdm_read_run_files (common_subject)))
+
+    (optional xserver_optional_unconfined
+        (call unconfined_rw_shm_all_unconfined_user_subjects (common_subject))
+        (call unconfined_read_state_all_unconfined_user_subjects (common_subject)))
 )
 
 (block xserver_wrap
