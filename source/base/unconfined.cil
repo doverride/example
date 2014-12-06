@@ -134,6 +134,11 @@
 (macro unconfined_rw_shm_all_unconfined_user_subjects ((type ARG1))
     (allow ARG1 unconfined_user_subject_type rw_shm_perms))
 
+(macro unconfined_read_state ((type ARG1))
+    (allow ARG1 unconfined_type list_dir_perms)
+    (allow ARG1 unconfined_type read_file_perms)
+    (allow ARG1 unconfined_type read_lnk_file_perms))
+
 (macro unconfined_read_state_all_unconfined_user_subjects ((type ARG1))
     (allow ARG1 unconfined_user_subject_type list_dir_perms)
     (allow ARG1 unconfined_user_subject_type read_file_perms)

@@ -129,6 +129,9 @@
 
     (optional nm_optinal_polkit
         (call polkit_dbus_chat_polkitd (common_subject)))
+
+    (optional nm_optional_unconfined
+        (call unconfined_read_state (common_subject)))
 )
 
 (block nm_disp
