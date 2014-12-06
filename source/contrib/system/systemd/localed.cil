@@ -98,6 +98,10 @@
     (call file_search_etc (ARG1))
     (allow ARG1 localed.etc_object read_file_perms))
 
+(macro localed_dbus_chat ((type ARG1))
+    (allow ARG1 localed.common_subject (dbus (send_msg)))
+    (allow localed.common_subject ARG1 (dbus (send_msg))))
+
 (macro localed_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset localed_admin_role ARG1)

@@ -551,6 +551,28 @@
         (call fs_tmpfs_filetrans (common_subject tmpfs_object dir "*"))
 )
 
+(block file_maintains_tmpfs_dirs_files_and_sock_files_block
+    (blockabstract file_maintains_tmpfs_dirs_files_and_sock_files_block)
+        (blockinherit file_tmpfs_object_block)
+
+        (allow common_subject tmpfs_object manage_file_perms)
+        (allow common_subject tmpfs_object manage_dir_perms)
+        (allow common_subject tmpfs_object manage_sock_file_perms)
+
+        (call fs_tmpfs_filetrans (common_subject tmpfs_object dir "*"))
+)
+
+(block file_maintains_tmpfs_files_and_sock_files_block
+    (blockabstract file_maintains_tmpfs_files_and_sock_files_block)
+        (blockinherit file_tmpfs_object_block)
+
+        (allow common_subject tmpfs_object manage_file_perms)
+        (allow common_subject tmpfs_object manage_sock_file_perms)
+
+        (call fs_tmpfs_filetrans (common_subject tmpfs_object file "*"))
+        (call fs_tmpfs_filetrans (common_subject tmpfs_object sock_file "*"))
+)
+
 (block file_maintains_tmpfs_objects_block
     (blockabstract file_maintains_tmpfs_objects_block)
         (blockinherit file_tmpfs_object_block)

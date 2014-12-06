@@ -1,2 +1,3 @@
 sys.r:login.common_subject user.r:user.common_subject
+sys.r:gdm.common_subject user.r:user.common_subject
 sys.r:sshd.common_subject user.r:user.common_subject

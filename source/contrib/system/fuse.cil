@@ -1,0 +1,86 @@
+(roleattribute fusermount_role)
+(roleattribute ulockmgr_role)
+
+(roleattribute fuse_admin_role)
+(typeattribute fuse_admin_type)
+
+(typeattribute fuse_subject_type)
+
+(block fusermount
+    (blockinherit app_block)
+
+    (typeattributeset fuse_subject_type common_subject)
+
+    (roletype fusermount_role common_subject)
+
+    (context bin_fusermount (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/fusermount" file bin_fusermount)
+
+    (blockinherit file_maintains_single_etc_file_block)
+
+    (context etc_fuse (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/fuse\.conf" file etc_fuse)
+
+    (allow common_subject self (capability (dac_override)))
+
+    (call dev_rw_fuse (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call fs_list_debugfs (common_subject))
+    (call fs_mount_fuse (common_subject))
+    (call fs_unmount_fuse (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+)
+
+(block ulockmgr
+    (blockinherit app_block)
+
+    (typeattributeset fuse_subject_type common_subject)
+
+    (roletype ulockmgr_role common_subject)
+
+    (context bin_ulockmgr (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/ulockmgr_server" file bin_ulockmgr)
+)
+
+(allow fuse_admin_type fuse_subject_type signal_perms)
+(allow fuse_admin_type fuse_subject_type (process (ptrace)))
+(call ps_subject_pattern (fuse_admin_type fuse_subject_type))
+(allow fuse_admin_type fusermount.etc_object (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype fuse_admin_role fusermount.etc_object)
+
+(call fuse_run_fusermount (fuse_admin_type fuse_admin_role))
+(call fuse_run_ulockmgr (fuse_admin_type fuse_admin_role))
+
+(macro fuse_auto_subtrans_fusermount ((type ARG1))
+    (call fuse_send_signal_fusermount (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 fusermount.bin_object fusermount.common_subject)))
+
+(macro fuse_run_fusermount ((type ARG1)(role ARG2))
+    (call fuse_auto_subtrans_fusermount (ARG1))
+    (roleattributeset fusermount_role ARG2))
+
+(macro fuse_send_signal_fusermount ((type ARG1))
+    (allow ARG1 fusermount.common_subject (process (signal))))
+
+(macro fuse_auto_subtrans_ulockmgr ((type ARG1))
+    (call fuse_send_signal_ulockmgr (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 ulockmgr.bin_object ulockmgr.common_subject)))
+
+(macro fuse_run_ulockmgr ((type ARG1)(role ARG2))
+    (call fuse_auto_subtrans_ulockmgr (ARG1))
+    (roleattributeset ulockmgr_role ARG2))
+
+(macro fuse_send_signal_ulockmgr ((type ARG1))
+    (allow ARG1 ulockmgr.common_subject (process (signal))))
+
+(macro fuse_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (roleattributeset fuse_admin_role ARG1)
+    (typeattributeset fuse_admin_type ARG2))
+

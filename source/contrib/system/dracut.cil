@@ -53,7 +53,8 @@
     (call sys_mountpoint_type (run_object))
 
     (context run_initramfs (sys.u sys.r run_object (systemlow systemlow)))
-    (filecon "/var/run/initramfs(/.*)?" any run_initramfs)
+    (filecon "/var/run/initramfs" dir run_initramfs)
+    (filecon "/var/run/initramfs/.*" any ())
 )
 
 (allow dracut_admin_type dracut_initramfs_restore.common_subject signal_perms)

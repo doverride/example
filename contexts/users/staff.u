@@ -1,5 +1,6 @@
 staff.r:staff.common_subject staff.r:staff.common_subject
 staff.r:staff_sudo.common_subject staff.r:staff.common_subject
+sys.r:gdm.common_subject staff.r:staff.common_subject
 sys.r:login.common_subject staff.r:staff.common_subject
 sys.r:systemd.common_subject staff.r:staff_systemd.common_subject
 sys.r:sshd.common_subject staff.r:staff.common_subject

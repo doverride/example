@@ -1,4 +1,5 @@
 sys.r:sshd.common_subject unconfineduser.r:unconfineduser.common_subject
+sys.r:gdm.common_subject unconfineduser.r:unconfineduser.common_subject
 sys.r:login.common_subject unconfineduser.r:unconfineduser.common_subject
 sys.r:systemd.common_subject unconfineduser.r:unconfineduser.common_subject
 unconfineduser.r:unconfineduser.common_subject unconfineduser.r:unconfineduser.common_subject

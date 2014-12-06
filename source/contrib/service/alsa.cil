@@ -101,6 +101,10 @@
 (macro alsa_send_signal_alsactl ((type ARG1))
     (allow ARG1 alsactl.common_subject (process (signal))))
 
+(macro alsa_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 alsactl.etc_object alsactl.etc_object)))
+
 (macro alsa_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
     (call systemd_system_service_admin (ARG2))

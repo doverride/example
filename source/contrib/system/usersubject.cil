@@ -4,6 +4,7 @@
 (typeattribute usersubject_common_login_type)
 (typeattribute usersubject_priv_login_type)
 (typeattribute usersubject_unpriv_login_type)
+(typeattribute usersubject_gui_login_type)
 
 (typeattribute usersubject_home_type)
 (typeattribute usersubject_home_config_type)
@@ -72,6 +73,13 @@
             (call askpwd_run_askpwdagent (common_subject r)))
 )
 
+(block usersubject_common_gui_login_block
+    (blockabstract usersubject_common_gui_login_block)
+        (blockinherit usersubject_common_login_block)
+
+        (call usersubject_gui_login_type (common_subject))
+)
+
 (block usersubject_priv_login_block
     (blockabstract usersubject_priv_login_block)
         (blockinherit usersubject_common_block)
@@ -97,6 +105,13 @@
 
         (optional usersubject_priv_login_block_optional_askpwd
             (call askpwd_run_askpwdagent (common_subject r)))
+)
+
+(block usersubject_priv_gui_login_block
+    (blockabstract usersubject_priv_gui_login_block)
+        (blockinherit usersubject_priv_login_block)
+
+        (call usersubject_gui_login_type (common_subject))
 )
 
 (block usersubject_object_block
@@ -312,6 +327,13 @@
     (call ssh_rw_inherited_sshd_unix_stream_sockets (usersubject_common_login_type))
     (call ssh_rw_inherited_sshd_unix_dgram_sockets (usersubject_common_login_type)))
 
+(optional usersubject_gui_login_type_optional_xserver
+    (call xserver_xsession_exec_files_entry_subject (usersubject_gui_login_type)))
+
+(optional usersubject_gui_login_type_optional_gdm
+    (call gdm_client (usersubject_gui_login_type))
+    (call gdm_rw_inherited_stream_sockets (usersubject_gui_login_type)))
+
 (typeattributeset usersubject_unpriv_login_type
     (and (usersubject_common_login_type) (not (usersubject_priv_login_type))))
 
@@ -362,6 +384,13 @@
 (macro usersubject_common_login_type ((type ARG1))
     (typeattributeset usersubject_common_login_type ARG1))
 
+(macro user_subject_common_gui_login_template ((user ARG1)(role ARG2)(type ARG3))
+    (call usersubject_common_login_template (ARG1 ARG2 ARG3))
+    (call usersubject_gui_login_type (ARG3)))
+
+(macro usersubject_gui_login_type ((type ARG1))
+    (typeattributeset usersubject_gui_login_type ARG1))
+
 (macro usersubject_priv_login_template ((user ARG1)(role ARG2)(type ARG3))
     (call usersubject_base_common_login_template (ARG1 ARG2 ARG3))
     (call usersubject_priv_login_type (ARG3))
@@ -383,6 +412,10 @@
 (macro usersubject_priv_login_type ((type ARG1))
     (call usersubject_common_login_type (ARG1))
     (typeattributeset usersubject_priv_login_type ARG1))
+
+(macro usersubject_priv_gui_login_template ((user ARG1)(role ARG2)(type ARG3))
+    (call usersubject_priv_login_template (ARG1 ARG2 ARG3))
+    (call usersubject_gui_login_type (ARG3)))
 
 (macro usersubject_mls_template ((user ARG1)(level ARG2)(level ARG3)(level ARG4))
     (userlevel ARG1 ARG3)

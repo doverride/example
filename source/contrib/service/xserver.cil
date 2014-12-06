@@ -1,0 +1,190 @@
+(roleattribute xserver_role)
+(roleattribute xserver_wrap_role)
+
+(roleattribute xserver_admin_role)
+(typeattribute xserver_admin_type)
+
+(typeattribute xserver_object_type)
+(typeattribute xserver_subject_type)
+
+(block xserver
+    (blockinherit app_block)
+
+    (typeattributeset xserver_subject_type common_subject)
+
+    (roletype xserver_role common_subject)
+
+    (context bin_xserver (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/Xorg" file bin_xserver)
+    (filecon "/usr/libexec/Xorg\.bin" file bin_xserver)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset xserver_object_type etc_object)
+
+    (context etc_xserver (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/X11(/.*)?" any etc_xserver)
+    (filecon "/etc/X.*\.hosts" file etc_xserver)
+
+    (blockinherit file_maintains_single_var_log_file_block)
+
+    (typeattributeset xserver_object_type var_log_object)
+
+    (context var_log_xserver (sys.u sys.r var_log_object (systemlow systemlow)))
+    (filecon "/var/log/Xorg.*\.log.*" file var_log_xserver)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset xserver_object_type var_lib_object)
+
+    (context var_lib_xserver (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/xkb(/.*)?" any var_lib_xserver)
+
+    (blockinherit file_maintains_tmpfs_files_and_sock_files_block)
+
+    (typeattributeset xserver_object_type tmpfs_object)
+
+    (blockinherit net_unreserved_port_object_block)
+
+    (context port_xserver (sys.u sys.r unreserved_port_object (systemlow systemlow)))
+    (portcon "tcp" 6000 port_xserver)
+    (portcon "udp" 6000 port_xserver)
+
+    (allow common_subject self (capability (dac_override setgid setuid sys_admin
+        sys_rawio ipc_owner sys_ptrace)))
+    (allow common_subject self (process (getpgid setpgid)))
+    (allow common_subject self (unix_stream_socket (accept listen)))
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call sys_write_mtrr_proc (common_subject))
+
+    (call bin_execute_bin_files (common_subject))
+    (call bin_execute_shell_files (common_subject))
+
+    (call dev_rw_xserver_misc (common_subject))
+    (call dev_rw_framebuf (common_subject))
+    (call dev_rw_dri (common_subject))
+    (call dev_rw_event (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+    (call file_read_generic_usr_files (common_subject))
+
+    (call fs_list_sysfs (common_subject))
+    (call fs_rw_sysfs_files (common_subject))
+    (call fs_rw_inherited_tmpfs_files (common_subject))
+
+    (call net_tcp_bind_generic_node (common_subject))
+
+    (call term_use_unallocated_tts (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_client (common_subject))
+
+    (call logind_client (common_subject))
+
+    (call miscfiles_read_net_config_files (common_subject))
+    (call miscfiles_read_fonts_files (common_subject))
+    (call miscfiles_read_localization (common_subject))
+
+    (call udev_client (common_subject))
+
+    (optional xserver_optional_gdm
+        (call gdm_getpgid (common_subject))
+        (call gdm_setpgid (common_subject))
+        (call gdm_rw_shm (common_subject))
+        (call gdm_rw_inherited_tmpfs_files (common_subject))
+        (call gdm_rw_inherited_stream_sockets (common_subject))
+        (call gdm_read_state (common_subject))
+        (call gdm_read_run_files (common_subject)))
+)
+
+(block xserver_wrap
+    (blockinherit app_block)
+
+    (typeattributeset xserver_subject_type common_subject)
+
+    (roletype xserver_wrap_role common_subject)
+
+    (context bin_xserver_wrap (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/Xorg\.wrap" file bin_xserver_wrap)
+
+    (call xserver_run (common_subject xserver_wrap_role))
+    (call xserver_read_config_files (common_subject))
+
+    (optional xserver_wrap_optional_gdm
+        (call gdm_rw_inherited_stream_sockets (common_subject)))
+)
+
+(block xsession
+    (blockinherit bin_object_block)
+
+    (context bin_xsession (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/etc/X11/xinit/Xsession" any bin_xsession)
+)
+
+(allow xserver_admin_type xserver_subject_type signal_perms)
+(allow xserver_admin_type xserver_subject_type (process (ptrace)))
+(call ps_subject_pattern (xserver_admin_type xserver_subject_type))
+(allow xserver_admin_type xserver_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype xserver_admin_role xserver_object_type)
+
+(call xserver_run (xserver_admin_type xserver_admin_role))
+
+(macro xserver_auto_subtrans ((type ARG1))
+    (call xserver_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 xserver.bin_object xserver.common_subject)))
+
+(macro xserver_run ((type ARG1)(role ARG2))
+    (call xserver_auto_subtrans (ARG1))
+    (roleattributeset xserver_role ARG2))
+
+(macro xserver_send_signal ((type ARG1))
+    (allow ARG1 xserver.common_subject (process (signal))))
+
+(macro xserver_auto_subtrans_wrap ((type ARG1))
+    (call xserver_send_signal_wrap (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 xserver_wrap.bin_object xserver_wrap.common_subject)))
+
+(macro xserver_run_wrap ((type ARG1)(role ARG2))
+    (call xserver_auto_subtrans_wrap (ARG1))
+    (roleattributeset xserver_wrap_role ARG2))
+
+(macro xserver_send_signal_wrap ((type ARG1))
+    (allow ARG1 xserver_wrap.common_subject (process (signal))))
+
+(macro xserver_xsession_manual_subject_type_transition ((type ARG1)(type ARG2))
+    (call xserver_search_config (ARG1))
+    (call manual_subject_type_transition_pattern (ARG1 xsession.bin_object ARG2)))
+
+(macro xserver_xsession_exec_files_entry_subject ((type ARG1))
+    (call subject_entry (ARG1 xsession.bin_object)))
+
+(macro xserver_search_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 xserver.etc_object search_dir_perms))
+
+(macro xserver_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 xserver.etc_object xserver.etc_object)))
+
+(macro xserver_read_state ((type ARG1))
+    (allow ARG1 xserver.common_subject list_dir_perms)
+    (allow ARG1 xserver.common_subject read_file_perms)
+    (allow ARG1 xserver.common_subject read_lnk_file_perms))
+
+(macro xserver_stream_connect ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (call stream_connect_pattern
+        (ARG1 xserver.tmpfs_object xserver.tmpfs_object xserver.common_subject)))
+
+(macro xserver_use_fd ((type ARG1))
+    (allow ARG1 xserver.common_subject (fd (use))))
+
+(macro xserver_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (roleattributeset xserver_admin_role ARG1)
+    (typeattributeset xserver_admin_type ARG2))

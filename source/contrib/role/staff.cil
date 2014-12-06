@@ -1,5 +1,5 @@
 (block staff
-    (blockinherit usersubject_common_login_block)
+    (blockinherit usersubject_common_gui_login_block)
 
     (context home_staff (u r home_user (systemlow mls_systemhigh)))
     (filecon "/home/john" dir home_staff)

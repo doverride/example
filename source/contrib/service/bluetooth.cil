@@ -34,7 +34,7 @@
 
     (call file_read_generic_etc_files (common_subject))
 
-    (call bluetooth_dbus_chat_bluetoothd (common_subject))
+    (call bluetooth_dbus_chat (common_subject))
 
     (call dbus_system_client (common_subject))
 
@@ -127,7 +127,7 @@
 (macro bluetooth_send_signal_bluetoothctl ((type ARG1))
     (allow ARG1 bluetoothctl.common_subject (process (signal))))
 
-(macro bluetooth_dbus_chat_bluetoothd ((type ARG1))
+(macro bluetooth_dbus_chat ((type ARG1))
     (allow ARG1 bluetoothd.common_subject (dbus (send_msg)))
     (allow bluetoothd.common_subject ARG1 (dbus (send_msg))))
 

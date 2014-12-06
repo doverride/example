@@ -10,7 +10,7 @@
         (type common_subject)
 
         (call usersubject_base_common_login_template (u r common_subject))
-        (call usersubject_priv_login_type (common_subject))
+        (call usersubject_gui_login_type (common_subject))
         (call usersubject_mls_template (u systemlow systemlow systemhigh))
         (call usersubject_generic_terminals (r common_subject))
         (call usersubject_home_user_filetrans_user (r common_subject))

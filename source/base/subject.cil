@@ -125,7 +125,7 @@
 (typeattribute not_can_execstack)
 (typeattributeset not_can_execstack
     (and (subject_type) (not (can_execstack))))
-(neverallow not_can_mmap_low self (process (execmem execstack)))
+(neverallow not_can_execstack self (process (execstack)))
 
 (typeattribute can_mmap_low)
 (typeattribute not_can_mmap_low)
@@ -333,6 +333,7 @@
     (typeattributeset can_execmem ARG1))
 
 (macro subject_execstack ((type ARG1))
+    (typeattributeset can_execmem ARG1)
     (typeattributeset can_execstack ARG1)
     (booleanif execstack
         (true
@@ -340,6 +341,7 @@
 
 (macro subject_execstack_uncond ((type ARG1))
     (allow ARG1 self (process (execmem execstack)))
+    (typeattributeset can_execmem ARG1)
     (typeattributeset can_execstack ARG1))
 
 (macro subject_mmap_low ((type ARG1))

@@ -1,0 +1,233 @@
+(roleattribute gdm_admin_role)
+(typeattribute gdm_admin_type)
+
+(typeattribute gdm_object_type)
+
+(typeattribute gdm_client_type)
+
+(block gdm
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset gdm_object_type unit_object)
+
+    (context bin_gdm (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/gdm" file bin_gdm)
+
+    (context unit_gdm (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*gdm.*" file unit_gdm)
+
+    (blockinherit file_maintains_var_cache_dirs_and_files_block)
+
+    (typeattributeset gdm_object_type var_cache_object)
+
+    (context var_cache_gdm (sys.u sys.r var_cache_object (systemlow systemlow)))
+    (filecon "/var/cache/gdm(/.*)?" any var_cache_gdm)
+
+    (blockinherit file_maintains_var_log_dirs_and_files_block)
+
+    (typeattributeset gdm_object_type var_log_object)
+
+    (context var_log_gdm (sys.u sys.r var_log_object (systemlow systemlow)))
+    (filecon "/var/log/gdm(/.*)?" any var_log_gdm)
+
+    (blockinherit file_maintains_run_dirs_and_files_block)
+
+    (typeattributeset gdm_object_type run_object)
+
+    (context run_gdm (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/gdm(/.*)?" any run_gdm)
+
+    (blockinherit file_maintains_tmpfs_dirs_files_and_sock_files_block)
+
+    (typeattributeset gdm_object_type tmpfs_object)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset gdm_object_type var_lib_object)
+
+    (context var_lib_gdm (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/gdm(/.*)?" any var_lib_gdm)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset gdm_object_type etc_object)
+
+    (context etc_gdm (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/gdm(/.*)?" any etc_gdm)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset gdm_object_type dbus_etc_object)
+
+    (context dbus_etc_gdm (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/gdm\.conf" file dbus_etc_gdm)
+
+    (blockinherit auth_maintains_single_pam_etc_file_block)
+
+    (typeattributeset gdm_object_type pam_etc_object)
+
+    (context pam_etc_gdm (sys.u sys.r pam_etc_object (systemlow systemlow)))
+    (filecon "/etc/pam\.d/gdm-autologin" file pam_etc_gdm)
+    (filecon "/etc/pam\.d/gdm-fingerprint" file pam_etc_gdm)
+    (filecon "/etc/pam\.d/gdm-launch-environment" file pam_etc_gdm)
+    (filecon "/etc/pam\.d/gdm-password" file pam_etc_gdm)
+    (filecon "/etc/pam\.d/gdm-pin" file pam_etc_gdm)
+    (filecon "/etc/pam\.d/gdm-smartcard" file pam_etc_gdm)
+
+    (allow common_subject self (capability (fsetid fowner dac_override kill)))
+    (allow common_subject self (process (setpgid setcap setrlimit getsched)))
+    (allow common_subject self (unix_stream_socket (listen accept connectto)))
+    (allow common_subject self (key (search read view write link)))
+    (allow common_subject self create_shm_perms)
+    (allow common_subject self create_netlink_selinux_socket_perms)
+    (allow common_subject self rw_fifo_file_perms)
+
+    (allow common_subject gdm.tmpfs_object (dir (mounton))) ; $XDG_RUNTIME_DIR/.gvfs
+
+    (call sys_read_kernel_sysctl (common_subject))
+    (call sys_request_load_module (common_subject))
+
+    (call dev_read_urandom (common_subject))
+    (call dev_rw_sound (common_subject))
+    (call dev_rw_dri (common_subject))
+
+    (call file_list_etc (common_subject))
+    (call file_read_generic_etc_files (common_subject))
+    (call file_read_generic_usr_files (common_subject))
+
+    (call fs_getattr_proc (common_subject))
+    (call fs_getattr_fs (common_subject))
+    (call fs_getattr_tmpfs (common_subject))
+    (call fs_list_proc (common_subject))
+    (call fs_list_devtmpfs (common_subject))
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+
+    (call sec_list (common_subject))
+    (call sec_compute_access_vector (common_subject))
+    (call sec_compute_create_context (common_subject))
+
+    (call subject_execmem_uncond (common_subject))
+
+    ; (call accountsservice_dbus_chat (common_subject))
+
+    (call app_execute_all_exec_files (common_subject))
+
+    (call alsa_read_config_files (common_subject))
+
+    ; (call atspi_read_config_files (common_subject))
+
+    (call auth_login_program (common_subject))
+    (call auth_rw_pam_console_run_files (common_subject))
+
+    (call dbus_system_service (common_subject))
+    (call dbus_list_config (common_subject))
+    (call dbus_read_generic_config_files (common_subject))
+
+    ; (call dconf_read_config_files (common_subject))
+
+    (call fuse_run_fusermount (common_subject sys.r))
+
+    (call journal_client (common_subject))
+
+    (call localed_dbus_chat (common_subject))
+
+    (call logind_list_run (common_subject))
+
+    (call machine_list_run (common_subject))
+    (call machine_read_config_files (common_subject))
+
+    (call miscfiles_read_fonts_config (common_subject))
+    (call miscfiles_read_fonts_files (common_subject))
+    (call miscfiles_read_fonts_cache_files (common_subject))
+    (call miscfiles_read_hwdata_files (common_subject))
+    (call miscfiles_read_generic_cert_files (common_subject))
+
+    ; (call pa_read_config_files (common_subject))
+
+    (call plymouth_exec (common_subject))
+
+    (call polkit_dbus_chat_polkitd (common_subject))
+
+    ; (call rtkit_dbus_chat_rtkitd (common_subject))
+    ; (call rtkit_client (common_subject))
+
+    (call systemd_dbus_chat (common_subject))
+    (call systemd_status_system (common_subject))
+    (call systemd_getattr_unit_dirs (common_subject))
+
+    (call udev_client (common_subject))
+
+    ; (call upower_dbus_chat (common_subject))
+
+    (call usersubject_search_home_user (common_subject))
+
+    (call xserver_xsession_manual_subject_type_transition (common_subject gdm_client_type))
+    (call xserver_read_config_files (common_subject))
+    (call xserver_read_state (common_subject))
+    (call xserver_auto_subtrans (common_subject))
+    (call xserver_stream_connect (common_subject))
+    (call xserver_use_fd (common_subject))
+
+    (optional gdm_optional_bluetooth
+        (call bluetooth_dbus_chat (common_subject)))
+
+    ; (optional gdm_optional_color
+        ; (call color_dbus_chat (common_subject)))
+
+    ; (optional gdm_optional_geoclue
+        ; (call geoclue_dbus_chat (common_subject)))
+
+    ; (optional gdm_optional_mm
+        ; (call mm_dbus_chat (common_subject)))
+
+    ; (optional gdm_optional_mozilla
+        ; (call mozilla_check_exec_firefox_executable_files (common_subject)))
+
+    (optional gdm_optional_nm
+        (call nm_dbus_chat (common_subject)))
+
+    ; (optional gdm_optional_udisks
+        ; (call udisks_dbus_chat (common_subject)))
+)
+
+(allow gdm_admin_type gdm.common_subject signal_perms)
+(allow gdm_admin_type gdm.common_subject (process (ptrace)))
+(call ps_subject_pattern (gdm_admin_type gdm.common_subject))
+(allow gdm_admin_type gdm.unit_object (service (all)))
+(allow gdm_admin_type gdm_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype gdm_admin_role gdm_object_type)
+
+(macro gdm_client ((type ARG1))
+    (typeattributeset gdm_client_type ARG1))
+
+(macro gdm_getpgid ((type ARG1))
+    (allow ARG1 gdm.common_subject (process (getpgid))))
+
+(macro gdm_setpgid ((type ARG1))
+    (allow ARG1 gdm.common_subject (process (setpgid))))
+
+(macro gdm_rw_shm ((type ARG1))
+    (allow ARG1 gdm.common_subject rw_shm_perms))
+
+(macro gdm_rw_inherited_tmpfs_files ((type ARG1))
+    (allow ARG1 gdm.tmpfs_object (file (read write))))
+
+(macro gdm_rw_inherited_stream_sockets ((type ARG1))
+    (allow ARG1 gdm.common_subject (unix_stream_socket (read write))))
+
+(macro gdm_read_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call read_files_pattern (ARG1 gdm.run_object gdm.run_object)))
+
+(macro gdm_read_state ((type ARG1))
+    (allow ARG1 gdm.common_subject list_dir_perms)
+    (allow ARG1 gdm.common_subject read_file_perms)
+    (allow ARG1 gdm.common_subject read_lnk_file_perms))
+
+(macro gdm_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset gdm_admin_role ARG1)
+    (typeattributeset gdm_admin_type ARG2))

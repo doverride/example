@@ -373,6 +373,9 @@
 (macro dev_rw_framebuf ((type ARG1))
     (allow ARG1 framebuf_dev rw_chr_file_perms))
 
+(macro dev_rw_fuse ((type ARG1))
+    (allow ARG1 fuse_dev rw_chr_file_perms))
+
 (macro dev_rw_kmsg ((type ARG1))
     (allow ARG1 kmsg_dev rw_chr_file_perms))
 
@@ -399,6 +402,9 @@
 
 (macro dev_rw_wireless ((type ARG1))
     (allow ARG1 wireless_dev rw_chr_file_perms))
+
+(macro dev_rw_xserver_misc ((type ARG1))
+    (allow ARG1 xserver_misc_dev rw_chr_file_perms))
 
 (macro dev_rw_zero ((type ARG1))
     (allow ARG1 zero_dev rw_chr_file_perms))
