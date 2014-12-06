@@ -39,6 +39,8 @@
 
     (blockinherit file_maintains_tmpfs_dirs_files_and_sock_files_block)
 
+    (call fs_tmpfs_filetrans (common_subject tmpfs_object file "*"))
+
     (typeattributeset gdm_object_type tmpfs_object)
 
     (blockinherit file_maintains_var_lib_dirs_and_files_block)
