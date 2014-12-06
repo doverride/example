@@ -66,6 +66,7 @@
 
         (call seutil_manage_policy_config (r common_subject))
         (call seutil_relabel_policy_config (common_subject))
+        (call seutil_config_filetrans_policy_conf_dirs (r common_subject))
 
         (call unconfined (r common_subject))
 
@@ -103,6 +104,11 @@
 
 (optional unconfined_optional_systemd
     (call systemd_unconfined (unconfined_type)))
+
+(call seutil_config_filetrans_default_context_dirs (unconfined_role unconfined_type))
+(call seutil_config_filetrans_policy_src_dirs (unconfined_role unconfined_type))
+(call seutil_default_context_filetrans_file_context_dirs (unconfined_role unconfined_type))
+(call seutil_etc_filetrans_selinux_conf_dirs (unconfined_role unconfined_type))
 
 (macro unconfined_user_subject_type ((type ARG1))
     (typeattributeset unconfined_user_subject_type ARG1))
