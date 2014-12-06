@@ -43,7 +43,8 @@
     (filecon "/etc/dbus-1/system\.d/avahi-dbus\.conf" file dbus_etc_avahid)
 
     (allow common_subject self (capability (chown setgid setuid sys_chroot)))
-    (allow common_subject self (process (setcap setrlimit signal)))
+    (allow common_subject self (process (setcap setrlimit)))
+    (allow common_subject self rw_fifo_file_perms)
 
     (call sys_read_kernel_sysctl (common_subject))
 
