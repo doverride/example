@@ -57,12 +57,15 @@
 
         (call audit_manage_config (r common_subject))
         (call audit_relabel_config (common_subject))
+        (call audit_etc_filetrans_config_dirs (r common_subject))
 
         (call audit_manage_audisp_config (r common_subject))
         (call audit_relabel_audisp_config (common_subject))
+        (call audit_etc_filetrans_audisp_config_dirs (r common_subject))
 
         (call audit_manage_log (r common_subject))
         (call audit_relabel_log (common_subject))
+        (call audit_var_log_filetrans_log_dirs (r common_subject))
 
         (call seutil_manage_policy_config (r common_subject))
         (call seutil_relabel_policy_config (common_subject))
