@@ -417,6 +417,10 @@
     (call usersubject_priv_login_template (ARG1 ARG2 ARG3))
     (call usersubject_gui_login_type (ARG3)))
 
+(macro usersubject_priv_gui_login_type ((type ARG1))
+    (call usersubject_priv_login_type (ARG1))
+    (call usersubject_gui_login_type (ARG1)))
+
 (macro usersubject_mls_template ((user ARG1)(level ARG2)(level ARG3)(level ARG4))
     (userlevel ARG1 ARG3)
     (userrange ARG1 (ARG3 ARG4)))
