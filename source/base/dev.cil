@@ -40,6 +40,7 @@
 
 (type devtty_dev)
 (call dev_type (devtty_dev))
+(call fs_associate_tmpfs (devtty_dev))
 
 (context devtty_dev (sys.u sys.r devtty_dev (systemlow systemlow)))
 (filecon "/dev/tty" char devtty_dev)
@@ -107,6 +108,7 @@
 
 (type null_dev)
 (call dev_type (null_dev))
+(call fs_associate_tmpfs (null_dev))
 
 (type nvram_dev)
 (call dev_type (nvram_dev))
@@ -128,6 +130,7 @@
 
 (type random_dev)
 (call dev_type (random_dev))
+(call fs_associate_tmpfs (random_dev))
 
 (context random_dev (sys.u sys.r random_dev (systemlow systemlow)))
 (filecon "/dev/random" char random_dev)
@@ -152,6 +155,7 @@
 
 (type urandom_dev)
 (call dev_type (urandom_dev))
+(call fs_associate_tmpfs (urandom_dev))
 
 (context urandom_dev (sys.u sys.r urandom_dev (systemlow systemlow)))
 (filecon "/dev/urandom" char urandom_dev)
@@ -208,6 +212,7 @@
 
 (type zero_dev)
 (call dev_type (zero_dev))
+(call fs_associate_tmpfs (zero_dev))
 
 (context zero_dev (sys.u sys.r zero_dev (systemlow systemlow)))
 (filecon "/dev/zero" char zero_dev)

@@ -641,6 +641,9 @@
 (macro usersubject_relabel_home_user_dirs ((type ARG1))
     (allow ARG1 home_user relabel_dir_perms))
 
+(macro usersubject_mounton_home_user_dirs ((type ARG1))
+    (allow ARG1 home_user (dir (mounton))))
+
 (macro usersubject_home_filetrans_home_user_dirs ((role ARG1)(type ARG2))
     (call file_home_filetrans (ARG2 home_user dir "*"))
     (roletype ARG1 home_user))

@@ -408,6 +408,8 @@
 
         (call usersubject_link_keyring_all_common_login_subjects (common_subject))
 
+        (call usersubject_mounton_home_user_dirs (common_subject)) ; FIXME
+
         (optional systemd_optional_unconfined
             (call unconfined_noatsecure_all_unconfined_user_subjects (common_subject))
             (call unconfined_send_sigchld_all_unconfined_user_subjects (common_subject))
