@@ -427,7 +427,7 @@
 
 (macro sys_write_mtrr_proc ((type ARG1))
     (call fs_search_proc (ARG1))
-    (allow ARG1 mtrr_proc read_file_perms))
+    (allow ARG1 mtrr_proc write_file_perms))
 
 (macro sys_read_all_proc ((type ARG1))
     (call read_files_pattern (ARG1 sys_proc_type sys_proc_type))
