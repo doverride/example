@@ -172,7 +172,6 @@
     (call usersubject_search_home_user (common_subject))
 
     (call xserver_xsession_manual_subject_type_transition (common_subject gdm_client_type))
-    (call xserver_siginh (common_subject))
     (call xserver_read_config_files (common_subject))
     (call xserver_read_state (common_subject))
     (call xserver_auto_subtrans (common_subject))
