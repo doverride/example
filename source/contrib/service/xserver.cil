@@ -1,5 +1,4 @@
 (typepermissive xserver.common_subject)
-(typepermissive xserver_wrap.common_subject)
 
 (roleattribute xserver_role)
 (roleattribute xserver_wrap_role)
@@ -203,6 +202,9 @@
 
 (macro xserver_use_fd ((type ARG1))
     (allow ARG1 xserver.common_subject (fd (use))))
+
+(macro xserver_siginh ((type ARG1))
+    (allow ARG1 xserver.common_subject (process (siginh))))
 
 (macro xserver_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
