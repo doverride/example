@@ -57,6 +57,7 @@
     (call sys_use_fd (common_subject))
 
     (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
     (call fs_read_devtmpfs_chr_files (common_subject)) ; FIXME
 
     (call dev_rw_sound (common_subject))

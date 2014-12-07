@@ -1,4 +1,5 @@
 (typepermissive xserver.common_subject)
+(typepermissive xserver_wrap.common_subject)
 
 (roleattribute xserver_role)
 (roleattribute xserver_wrap_role)
