@@ -1,0 +1,112 @@
+(roleattribute udisksctl_role)
+
+(roleattribute udisks_admin_role)
+(typeattribute udisks_admin_type)
+
+(typeattribute udisks_object_type)
+(typeattribute udisks_subject_type)
+
+(block udisksctl
+    (blockinherit app_block)
+
+    (typeattributeset udisks_subject_type common_subject)
+
+    (roletype udisksctl_role common_subject)
+
+    (context bin_udisksctl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/udisksctl" file bin_udisksctl)
+)
+
+(block udisksd
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset udisks_object_type unit_object)
+    (typeattributeset udisks_subject_type common_subject)
+
+    (context bin_udisksd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/lib/udisks2/udisksd" file bin_udisksd)
+    (filecon "/usr/sbin/umount\.udisks2" file bin_udisksd)
+
+    (context unit_udisksd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*udisks2.*" file unit_udisksd)
+
+    (blockinherit file_maintains_run_dirs_and_files_block)
+
+    (typeattributeset udisks_object_type run_object)
+
+    (context run_udisksd (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/udisks2(/.*)?" any run_udisksd)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset udisks_object_type var_lib_object)
+
+    (context var_lib_udisksd (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/udisks2(/.*)?" any var_lib_udisksd)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset udisks_object_type etc_object)
+
+    (context etc_udisksd (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/udisks2(/.*)?" file etc_udisksd)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset udisks_object_type dbus_etc_object)
+
+    (context dbus_etc_udisksd (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.UDisks2\.conf" file dbus_etc_udisksd)
+
+    (allow common_subject self (capability (sys_rawio)))
+
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+
+    (call file_read_generic_etc (common_subject))
+
+    (call stor_read_fixed_disk (common_subject))
+    (call stor_read_removable (common_subject))
+    (call stor_read_scsi_generic (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call polkit_dbus_chat_polkitd (common_subject))
+
+    (call udev_client (common_subject))
+)
+
+(allow udisks_admin_type udisks_subject_type signal_perms)
+(allow udisks_admin_type udisks_subject_type (process (ptrace)))
+(call ps_subject_pattern (udisks_admin_type udisks_subject_type))
+(allow udisks_admin_type udisksd.unit_object (service (all)))
+(allow udisks_admin_type udisks_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype udisks_admin_role udisks_object_type)
+
+(call udisks_run_udisksctl (udisks_admin_type udisks_admin_role))
+
+(macro udisks_auto_subtrans_udisksctl ((type ARG1))
+    (call udisks_send_signal_udisksctl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 udisksctl.bin_object udisksctl.common_subject)))
+
+(macro udisks_run_udisksctl ((type ARG1)(role ARG2))
+    (call udisks_auto_subtrans_udisksctl (ARG1))
+    (roleattributeset udisksctl_role ARG2))
+
+(macro udisks_send_signal_udisksctl ((type ARG1))
+    (allow ARG1 udisksctl.common_subject (process (signal))))
+
+(macro udisks_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset udisks_admin_role ARG1)
+    (typeattributeset udisks_admin_type ARG2))

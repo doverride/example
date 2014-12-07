@@ -257,6 +257,9 @@
             (optional sysadm_optional_vconsole
                 (call vconsole_admin (r common_subject))))
 
+    (optional sysadm_optional_udisks
+        (call udisks_admin (r common_subject)))
+
     (optional sysadm_optional_wpa
         (call wpa_admin (r common_subject)))
 
