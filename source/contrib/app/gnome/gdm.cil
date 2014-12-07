@@ -51,7 +51,7 @@
     (context var_lib_gdm (sys.u sys.r var_lib_object (systemlow systemlow)))
     (filecon "/var/lib/gdm(/.*)?" any var_lib_gdm)
 
-    (blockinherit file_maintains_etc_dirs_and_files_block)
+    (blockinherit file_maintains_etc_dirs_files_and_lnk_files_block)
 
     (typeattributeset gdm_object_type etc_object)
 
@@ -85,6 +85,7 @@
     (allow common_subject self create_netlink_selinux_socket_perms)
     (allow common_subject self rw_fifo_file_perms)
 
+    (allow common_subject gdm.tmpfs_object mmap_file_perms;
     (allow common_subject gdm.tmpfs_object (dir (mounton))) ; $XDG_RUNTIME_DIR/.gvfs
 
     (call sys_read_kernel_sysctl (common_subject))
@@ -225,8 +226,8 @@
 (macro gdm_rw_inherited_tmpfs_files ((type ARG1))
     (allow ARG1 gdm.tmpfs_object (file (read write))))
 
-(macro gdm_rw_inherited_stream_sockets ((type ARG1))
-    (allow ARG1 gdm.common_subject (unix_stream_socket (read write))))
+(macro gdm_rw_stream_sockets ((type ARG1))
+    (allow ARG1 gdm.common_subject (unix_stream_socket (getattr read write))))
 
 (macro gdm_use_fd ((type ARG1))
     (allow ARG1 gdm.common_subject (fd (use))))

@@ -99,7 +99,7 @@
         (call gdm_setpgid (common_subject))
         (call gdm_rw_shm (common_subject))
         (call gdm_rw_inherited_tmpfs_files (common_subject))
-        (call gdm_rw_inherited_stream_sockets (common_subject))
+        (call gdm_rw_stream_sockets (common_subject))
         (call gdm_read_state (common_subject))
         (call gdm_read_run_files (common_subject))
         (call gdm_send_signal (common_subject)))
@@ -123,7 +123,7 @@
     (call xserver_read_config_files (common_subject))
 
     (optional xserver_wrap_optional_gdm
-        (call gdm_rw_inherited_stream_sockets (common_subject)))
+        (call gdm_rw_stream_sockets (common_subject)))
 )
 
 (block xsession

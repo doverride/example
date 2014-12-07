@@ -332,7 +332,7 @@
 
 (optional usersubject_gui_login_type_optional_gdm
     (call gdm_client (usersubject_gui_login_type))
-    (call gdm_rw_inherited_stream_sockets (usersubject_gui_login_type)))
+    (call gdm_rw_stream_sockets (usersubject_gui_login_type)))
 
 (typeattributeset usersubject_unpriv_login_type
     (and (usersubject_common_login_type) (not (usersubject_priv_login_type))))

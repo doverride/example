@@ -78,6 +78,8 @@
         (optional unconfineduser_optional_rpm ; FIXME
             (call rpm_run (common_subject r)))
     )
+
+    (call usersubject_mounton_generic_tmpfs_dirs (unconfined_user_subject_type))
 )
 
 (allow unconfined_type self
