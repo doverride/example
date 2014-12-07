@@ -9,6 +9,7 @@
 (typeattribute file_not_sec_type)
 
 (typeattribute file_boot_type)
+(typeattribute file_flag_type)
 (typeattribute file_etc_type)
 (typeattribute file_mnt_type)
 (typeattribute file_run_type)
@@ -105,7 +106,7 @@
 (block file_flag_object_block
     (blockabstract file_flag_object_block)
         (type flag_object)
-        (call file_type (flag_object))
+        (call file_flag_type (flag_object))
 )
 
 (block file_maintains_single_flag_file_block
@@ -805,12 +806,21 @@
     (typeattributeset file_type ARG1)
     (typeattributeset file_auth_type ARG1))
 
+(macro file_dontaudit_read_auth ((type ARG1))
+    (dontaudit ARG1 file_auth_type list_dir_perms)
+    (dontaudit ARG1 file_auth_type read_file_perms)
+    (dontaudit ARG1 file_auth_type read_lnk_file_perms))
+
 (macro file_add_entry_generic_var_log ((type ARG1))
     (allow ARG1 var_log add_entry_dir_perms))
 
 (macro file_boot_type ((type ARG1))
     (call file_type (ARG1))
     (typeattributeset file_boot_type ARG1))
+
+(macro file_flag_type ((type ARG1))
+    (call file_type (ARG1))
+    (typeattributeset file_flag_type ARG1))
 
 (macro file_cache_type ((type ARG1))
     (call file_type (ARG1))
@@ -1065,6 +1075,11 @@
     (call sys_object_type (ARG1))
     (typeattributeset file_type ARG1)
     (typeattributeset file_sec_type ARG1))
+
+(macro file_dontaudit_read_sec ((type ARG1))
+    (dontaudit ARG1 file_sec_type list_dir_perms)
+    (dontaudit ARG1 file_sec_type read_file_perms)
+    (dontaudit ARG1 file_sec_type read_lnk_file_perms))
 
 (macro file_getattr_all_tmpfs_files ((type ARG1))
     (call fs_search_tmpfs (ARG1))

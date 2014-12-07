@@ -221,6 +221,9 @@
             (optional sysadm_optional_randomseed
                 (call randomseed_admin (r common_subject)))
 
+            (optional sysadm_optional_readahead
+                (call readahead_admin (r common_subject)))
+
             (optional sysadm_optional_remountfs
                 (call remountfs_admin (common_subject)))
 
