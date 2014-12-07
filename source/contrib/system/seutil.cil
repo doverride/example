@@ -109,6 +109,7 @@
     (call seutil_relabel_policy_config (common_subject))
 
     (call systemd_use_fd (common_subject))
+    (call systemd_rw_unix_stream_sockets (common_subject))
 
     (optional setfiles_optional_app
         (call app_exec_object_type (bin_object))
