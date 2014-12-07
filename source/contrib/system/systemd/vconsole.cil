@@ -1,3 +1,5 @@
+(typepermissive vconsole.common_subject)
+
 (roleattribute vconsole_admin_role)
 (typeattribute vconsole_admin_type)
 
@@ -13,15 +15,21 @@
     (filecon "/etc/vconsole\.conf" file etc_vconsole)
 
     (allow common_subject self (capability (sys_tty_config)))
+    (allow common_subject self rw_fifo_file_perms)
+    (allow common_subject self create_unix_stream_socket_perms)
 
     (call sys_use_fd (common_subject))
 
     (call term_use_unallocated_tts (common_subject))
 
+    (call fs_list_rootfs (common_subject))
     (call fs_write_inherited_devpts_chr_files (common_subject))
     (call fs_rw_sysfs_files (common_subject))
 
     (call bin_execute_bin_files (common_subject))
+    (call bin_execute_shell_files (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
 
     (call journal_client (common_subject))
 )

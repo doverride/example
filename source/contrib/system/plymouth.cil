@@ -87,7 +87,7 @@
     (call dev_rw_ptmx (common_subject))
 
     (call file_read_generic_etc_files (common_subject))
-    (call file_read_generic_usr_files (common_subject))
+    (call file_read_generic_usr (common_subject))
 
     (call fs_getattr_devpts (common_subject))
     (call fs_rw_devpts_chr_files (common_subject))

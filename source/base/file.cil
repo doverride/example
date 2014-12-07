@@ -1124,6 +1124,9 @@
 (macro file_read_all_files_except ((type ARG1))
     (call read_files_pattern (ARG1 file_except file_except)))
 
+(macro file_dontaudit_relabel_all ((type ARG1))
+    (dontaudit ARG1 file_type (all_file_objects (relabel))))
+
 (macro file_relabel_all_except ((type ARG1))
     (call file_list_all_except (ARG1))
     (allow ARG1 file_except (all_file_objects (relabel))))

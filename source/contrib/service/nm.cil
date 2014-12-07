@@ -1,3 +1,4 @@
+(typepermissive nm.common_subject)
 (typepermissive nm_online.common_subject)
 
 (roleattribute nmcli_role)

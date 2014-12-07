@@ -1,4 +1,5 @@
 (typepermissive systemctl.common_subject)
+(typepermissive systemd_generic.common_subject)
 
 (roleattribute systemd_session_role)
 (typeattribute systemd_session_subject_type)
@@ -458,6 +459,7 @@
     (call systemd_systemctl_client_type (common_subject))
     (call systemd_read_generic_home_config (common_subject))
     (call systemd_read_state (common_subject))
+    (call systemd_reboot_system (common_subject))
     (call systemd_reload_system (common_subject))
     (call systemd_status_system (common_subject))
 

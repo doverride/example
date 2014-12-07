@@ -1,3 +1,5 @@
+(typepermissive gdm.common_subject)
+
 (roleattribute gdm_admin_role)
 (typeattribute gdm_admin_type)
 
