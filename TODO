@@ -28,3 +28,5 @@
 * double check bluetooth socket activated socket. currently var_lib_object but i suspect it may be the tmpfs_object (fifo_file) instead
 
 * create a template for gui app common rules (then apply that to gdm as well, gdm runs gui apps in it own domain and currently added individual macros)
+
+* mdadm: shutdown executes mdadm, and i believe that shutdown (mdadm) wants to read/list /run/mdadm

@@ -38,11 +38,14 @@
     (call dev_rw_lvm_control (common_subject))
     (call dev_write_kmsg (common_subject))
 
-    (call file_list_all_except (common_subject)) ; FIXME
+    (call file_read_generic_etc (common_subject))
+    (call file_read_generic_usr (common_subject))
 
     (call fs_getattr_sysfs (common_subject))
     (call fs_list_proc (common_subject))
+    (call fs_list_devtmpfs (common_subject))
     (call fs_read_devtmpfs_lnk_files (common_subject))
+    (call fs_list_sysfs (common_subject))
     (call fs_read_sysfs_files (common_subject))
     (call fs_read_sysfs_lnk_files (common_subject))
     (call fs_delete_cgroup_dirs (common_subject))
@@ -56,6 +59,7 @@
     (call dracut_manage_initramfs_run_dirs (common_subject))
     (call dracut_manage_initramfs_run_files (common_subject))
     (call dracut_mounton_initramfs_run_dirs (common_subject))
+    (call dracut_read_initramfs_run_lnk_files (common_subject))
 
     (call sec_get_enforce_mode (common_subject))
 
@@ -73,6 +77,8 @@
     (call term_use_console (common_subject))
 
     (call fstools_exec (common_subject))
+
+    (call kdump_read_kdump_executable_files (common_subject))
 
     (call lvm_exec (common_subject))
 

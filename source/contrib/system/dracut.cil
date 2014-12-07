@@ -78,6 +78,9 @@
     (call exec_files_pattern
         (ARG1 initramfs.run_object initramfs.run_object)))
 
+(macro dracut_read_initramfs_run_lnk_files ((type ARG1))
+    (allow ARG1 initramfs.run_object read_lnk_file_perms))
+
 (macro dracut_manage_initramfs_run_files ((type ARG1))
     (call file_search_run (ARG1))
     (call manage_files_pattern
