@@ -107,7 +107,7 @@
 
     (call dev_read_urandom (common_subject))
 
-    (call file_read_generic_usr_files (common_subject))
+    (call file_read_generic_usr (common_subject))
 
     (call fs_getattr_fs (common_subject))
 
@@ -120,6 +120,8 @@
     (call cups_list_spool (common_subject))
     (call cups_tcp_bind_cups_port (common_subject))
     (call cups_manage_config_files (common_subject))
+
+    (call dbus_system_client (common_subject))
 
     (call journal_client (common_subject))
 

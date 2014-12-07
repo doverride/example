@@ -83,6 +83,7 @@
 
     (call file_list_var_tmp (common_subject))
     (call file_read_generic_etc_files (common_subject))
+    (call file_read_generic_usr (common_subject))
 
     (call auth_nsswitch_client (common_subject))
 

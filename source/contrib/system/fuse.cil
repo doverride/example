@@ -25,13 +25,21 @@
 
     (call dev_rw_fuse (common_subject))
 
-    (call file_read_generic_etc_files (common_subject))
+    (call file_read_generic_etc (common_subject))
 
     (call fs_list_debugfs (common_subject))
+    (call fs_search_tmpfs (common_subject))
     (call fs_mount_fuse (common_subject))
     (call fs_unmount_fuse (common_subject))
 
     (call auth_nsswitch_client (common_subject))
+
+    (optional fusermount_optional_gdm
+        (call gdm_mounton_tmpfs_dirs (common_subject))
+        (call gdm_rw_inherited_stream_sockets (common_subject)))
+
+    (optional fusermount_optional_usersubject
+        (call usersubject_mounton_generic_tmpfs_dirs (common_subject)))
 )
 
 (block ulockmgr
@@ -79,8 +87,10 @@
 (macro fuse_send_signal_ulockmgr ((type ARG1))
     (allow ARG1 ulockmgr.common_subject (process (signal))))
 
+(macro fuse_use_fusermount_fd ((type ARG1))
+    (allow ARG1 fusermount.common_subject (fd (use))))
+
 (macro fuse_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset fuse_admin_role ARG1)
     (typeattributeset fuse_admin_type ARG2))
-

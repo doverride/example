@@ -19,7 +19,7 @@
     (context unit_avahid (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*avahi-daemon.*" file unit_avahid)
 
-    (blockinherit file_maintains_run_dirs_and_sock_files_block)
+    (blockinherit file_maintains_run_dirs_files_and_sock_files_block)
 
     (typeattributeset avahi_object_type run_object)
 

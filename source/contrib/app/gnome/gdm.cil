@@ -39,6 +39,7 @@
 
     (blockinherit file_maintains_tmpfs_dirs_files_and_sock_files_block)
 
+    (call fs_tmpfs_filetrans (common_subject tmpfs_object sock_file "*"))
     (call fs_tmpfs_filetrans (common_subject tmpfs_object file "*"))
 
     (typeattributeset gdm_object_type tmpfs_object)
@@ -90,12 +91,14 @@
     (call sys_request_load_module (common_subject))
 
     (call dev_read_urandom (common_subject))
+    (call dev_rw_fuse (common_subject))
     (call dev_rw_sound (common_subject))
     (call dev_rw_dri (common_subject))
 
     (call file_list_etc (common_subject))
+    (call file_list_var_tmp (common_subject))
     (call file_read_generic_etc_files (common_subject))
-    (call file_read_generic_usr_files (common_subject))
+    (call file_read_generic_usr (common_subject))
 
     (call fs_getattr_proc (common_subject))
     (call fs_getattr_fs (common_subject))
@@ -104,6 +107,7 @@
     (call fs_list_devtmpfs (common_subject))
     (call fs_list_sysfs (common_subject))
     (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
 
     (call sec_list (common_subject))
     (call sec_compute_access_vector (common_subject))
@@ -120,8 +124,9 @@
     ; (call atspi_read_config_files (common_subject))
 
     (call auth_login_program (common_subject))
-    (call auth_rw_pam_console_run_files (common_subject))
+    (call auth_manage_pam_console_run_files (common_subject))
 
+    (call dbus_exec_dbusd (common_subject))
     (call dbus_system_service (common_subject))
     (call dbus_list_config (common_subject))
     (call dbus_read_generic_config_files (common_subject))
@@ -129,6 +134,7 @@
     ; (call dconf_read_config_files (common_subject))
 
     (call fuse_run_fusermount (common_subject sys.r))
+    (call fuse_use_fusermount_fd (common_subject))
 
     (call journal_client (common_subject))
 
@@ -140,10 +146,10 @@
     (call machine_read_config_files (common_subject))
 
     (call miscfiles_read_fonts_config (common_subject))
-    (call miscfiles_read_fonts_files (common_subject))
+    (call miscfiles_read_fonts (common_subject))
     (call miscfiles_read_fonts_cache_files (common_subject))
     (call miscfiles_read_hwdata_files (common_subject))
-    (call miscfiles_read_generic_cert_files (common_subject))
+    (call miscfiles_read_generic_cert (common_subject))
 
     ; (call pa_read_config_files (common_subject))
 
@@ -188,8 +194,8 @@
     (optional gdm_optional_nm
         (call nm_client (common_subject)))
 
-    ; (optional gdm_optional_udisks
-        ; (call udisks_dbus_chat (common_subject)))
+    (optional gdm_optional_udisks
+        (call udisks_dbus_chat (common_subject)))
 
     (optional gdm_optional_unconfined
         (call unconfined_read_state_all_unconfined_user_subjects (common_subject))
@@ -222,6 +228,21 @@
 (macro gdm_rw_inherited_stream_sockets ((type ARG1))
     (allow ARG1 gdm.common_subject (unix_stream_socket (read write))))
 
+(macro gdm_use_fd ((type ARG1))
+    (allow ARG1 gdm.common_subject (fd (use))))
+
+(macro gdm_list_var_lib ((type ARG1))
+    (call file_search_var_lib (ARG1))
+    (allow ARG1 gdm.var_lib_object list_dir_perms))
+
+(macro gdm_search_var_lib ((type ARG1))
+    (call file_search_var_lib (ARG1))
+    (allow ARG1 gdm.var_lib_object search_dir_perms))
+
+(macro gdm_read_inherited_var_lib_files ((type ARG1))
+    (call gdm_use_fd (ARG1))
+    (allow ARG1 gdm.var_lib_object (file (read))))
+
 (macro gdm_read_run_files ((type ARG1))
     (call file_search_run (ARG1))
     (call read_files_pattern (ARG1 gdm.run_object gdm.run_object)))
@@ -230,6 +251,32 @@
     (allow ARG1 gdm.common_subject list_dir_perms)
     (allow ARG1 gdm.common_subject read_file_perms)
     (allow ARG1 gdm.common_subject read_lnk_file_perms))
+
+(macro gdm_send_signal ((type ARG1))
+    (allow ARG1 gdm.common_subject (process (signal))))
+
+(macro gdm_link_keyring ((type ARG1))
+    (allow ARG1 gdm.common_subject (key (search link))))
+
+(macro gdm_dontaudit_audit_access_tmpfs_dirs ((type ARG1))
+    (dontaudit ARG1 gdm.tmpfs_object (dir (audit_access))))
+
+(macro gdm_list_tmpfs ((type ARG1))
+    (call file_search_run_user (ARG1))
+    (allow ARG1 gdm.tmpfs_object list_dir_perms))
+
+(macro gdm_mounton_tmpfs_dirs ((type ARG1))
+    (call gdm_dontaudit_audit_access_tmpfs_dirs (ARG1))
+    (call gdm_list_tmpfs (ARG1))
+    (call gdm_setattr_tmpfs_dirs (ARG1))
+    (allow ARG1 gdm.tmpfs_object (dir (mounton))))
+
+(macro gdm_delete_tmpfs ((type ARG1))
+    (call fs_del_entry_tmpfs (ARG1))
+    (allow ARG1 gdm.tmpfs_object (all_file_objects (delete))))
+
+(macro gdm_setattr_tmpfs_dirs ((type ARG1))
+    (allow ARG1 gdm.tmpfs_object (dir (setattr))))
 
 (macro gdm_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))

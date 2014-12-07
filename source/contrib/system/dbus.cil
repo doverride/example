@@ -94,6 +94,12 @@
     (call seutil_read_default_context_files (common_subject))
 
     (call systemd_getattr_unit_dirs (common_subject))
+
+    (optional dbusd_optional_gdm
+        (call gdm_read_inherited_var_lib_files (common_subject)))
+
+    (optional dbusd_optional_usersubject
+        (call usersubject_read_inherited_generic_home_content_files (common_subject)))
 )
 
 (type etc_dbus)
@@ -122,6 +128,9 @@
 (call dbus_acquire_system_service (dbus_unconfined_type))
 (call dbus_chat_all_unconfined_subjects (dbus_unconfined_type))
 (call dbus_chat_all_system_client_subjects (dbus_unconfined_type))
+
+(macro dbus_exec_dbusd ((type ARG1))
+    (call can_exec (ARG1 dbusd.bin_object)))
 
 (macro dbus_etc_file_type ((type ARG1))
     (call file_etc_type (ARG1))

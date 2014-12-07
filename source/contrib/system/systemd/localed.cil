@@ -64,6 +64,9 @@
     (call systemd_stream_connect (common_subject))
 
     (call vconsole_read_config_files (common_subject))
+
+    (optional localed_optional_xserver
+        (call xserver_read_config_files (common_subject)))
 )
 
 (allow localed_admin_type localed_subject_type signal_perms)

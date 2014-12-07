@@ -390,6 +390,21 @@
 
     (call utmp_rw_run_files (common_subject))
 
+    (optional systemd_optional_cups
+        (call cups_list_spool (common_subject)))
+
+    (optional systemd_optional_dhcp
+        (call dhcp_list_dhclient_var_lib (common_subject)))
+
+    (optional systemd_optional_gdm
+        (call gdm_link_keyring (common_subject)))
+
+    (optional systemd_optional_iscsi
+        (call iscsi_list_var_lib (common_subject)))
+
+    (optional systemd_optional_ntp
+        (call ntp_exec_helper (common_subject)))
+
     (optional systemd_optional_usersubject
         (blockinherit usersubject_tmpfs_object_block)
         (blockinherit usersubject_home_config_object_block)
@@ -547,6 +562,9 @@
 
 (call udev_client (systemd_session_subject_type))
 (call udev_list_run (systemd_session_subject_type))
+
+(optional systemd_session_subject_type_optional_gdm
+    (call gdm_search_var_lib (systemd_session_subject_type)))
 
 (call systemd_rw_unix_stream_sockets (systemd_daemon_subject_type))
 (call systemd_read_state (systemd_daemon_subject_type))
@@ -870,7 +888,7 @@
     (roletype ARG1 systemd.user_tmpfs_object))
 
 (macro systemd_delete_generic_user_tmpfs_dirs ((type ARG1))
-    (call fs_del_entry_tmpfs_dirs (ARG1))
+    (call fs_del_entry_tmpfs (ARG1))
     (call delete_dirs_pattern
         (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object)))
 
@@ -883,7 +901,7 @@
     (roletype ARG1 systemd.user_tmpfs_object))
 
 (macro systemd_delete_generic_user_tmpfs_files ((type ARG1))
-    (call fs_del_entry_tmpfs_dirs (ARG1))
+    (call fs_del_entry_tmpfs (ARG1))
     (call delete_files_pattern
         (ARG1 systemd.user_tmpfs_object systemd.user_tmpfs_object)))
 

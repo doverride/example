@@ -60,11 +60,14 @@
 
     (allow common_subject self (capability (sys_rawio)))
 
+    (call dev_read_urandom (common_subject))
+
     (call fs_list_sysfs (common_subject))
     (call fs_read_sysfs_files (common_subject))
     (call fs_read_sysfs_lnk_files (common_subject))
 
     (call file_read_generic_etc (common_subject))
+    (call file_read_generic_usr (common_subject))
 
     (call stor_read_fixed_disk (common_subject))
     (call stor_read_removable (common_subject))
@@ -104,6 +107,10 @@
 
 (macro udisks_send_signal_udisksctl ((type ARG1))
     (allow ARG1 udisksctl.common_subject (process (signal))))
+
+(macro udisks_dbus_chat ((type ARG1))
+    (allow ARG1 udisksd.common_subject (dbus (send_msg)))
+    (allow udisksd.common_subject ARG1 (dbus (send_msg))))
 
 (macro udisks_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))

@@ -588,6 +588,22 @@
 (macro usersubject_write_generic_tmpfs_sock_files ((type ARG1))
     (call write_sock_files_pattern (ARG1 user.user_tmpfs_object user.user_tmpfs_object)))
 
+(macro usersubject_dontaudit_audit_access_generic_tmpfs_dirs ((type ARG1))
+    (dontaudit ARG1 user.user_tmpfs_object (dir (audit_access))))
+
+(macro usersubject_list_generic_tmpfs ((type ARG1))
+    (call file_search_run_user (ARG1))
+    (allow ARG1 user.user_tmpfs_object list_dir_perms))
+
+(macro usersubject_mounton_generic_tmpfs_dirs ((type ARG1))
+    (call usersubject_dontaudit_audit_access_generic_tmpfs_dirs (ARG1))
+    (call usersubject_list_generic_tmpfs (ARG1))
+    (call usersubject_setattr_generic_tmpfs_dirs (ARG1))
+    (allow ARG1 user.user_tmpfs_object (dir (mounton))))
+
+(macro usersubject_setattr_generic_tmpfs_dirs ((type ARG1))
+    (allow ARG1 user.user_tmpfs_object (dir (setattr))))
+
 (macro usersubject_generic_mail_spool_template ((role ARG1)(type ARG2))
     (allow ARG2 user.var_spool_object rw_file_perms)
     (roletype ARG1 user.var_spool_object))
@@ -803,6 +819,17 @@
 (macro usersubject_create_keyring_all_common_login_subjects ((type ARG1))
     (allow ARG1 self (process (setkeycreate)))
     (allow ARG1 usersubject_common_login_type (key (create search link write))))
+
+(macro usersubject_use_fd_all_common_login_subjects ((type ARG1))
+    (allow ARG1 usersubject_common_login_type (fd (use))))
+
+(macro usersubject_read_inherited_generic_home_content_files ((type ARG1))
+    (call usersubject_use_fd_all_common_login_subjects (ARG1))
+    (allow ARG1 user.home_object (file (read))))
+
+(macro usersubject_delete_all_tmpfs ((type ARG1))
+    (call fs_del_entry_tmpfs (ARG1))
+    (allow ARG1 usersubject_tmpfs_type (all_file_objects (delete))))
 
 (macro usersubject_link_keyring_all_common_login_subjects ((type ARG1))
     (allow ARG1 usersubject_common_login_type (key (search link))))

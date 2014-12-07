@@ -384,7 +384,7 @@
     (allow ARG1 cgroup rw_file_perms))
 
 (macro fs_delete_cgroup_dirs ((type ARG1))
-    (call fs_del_entry_tmpfs_dirs (ARG1))
+    (call fs_del_entry_tmpfs (ARG1))
     (call delete_dirs_pattern (ARG1 cgroup cgroup)))
 
 (macro fs_read_sysfs_files ((type ARG1))
@@ -434,7 +434,7 @@
 (macro fs_rw_tmpfs_dirs ((type ARG1))
     (allow ARG1 tmpfs rw_dir_perms))
 
-(macro fs_del_entry_tmpfs_dirs ((type ARG1))
+(macro fs_del_entry_tmpfs ((type ARG1))
     (allow ARG1 tmpfs del_entry_dir_perms))
 
 (macro fs_relabelfrom_tmpfs ((type ARG1))

@@ -70,6 +70,7 @@
     (call sys_read_kernel_sysctl (common_subject))
 
     (call dev_getattr_dri (common_subject))
+    (call dev_getattr_kvm (common_subject))
     (call dev_getattr_sound (common_subject))
     (call dev_getattr_wireless (common_subject))
     (call dev_getattr_v4l (common_subject))
@@ -77,6 +78,7 @@
     (call dev_rw_event (common_subject))
     (call dev_setattr_dri (common_subject))
     (call dev_rw_dri (common_subject))
+    (call dev_setattr_kvm (common_subject))
     (call dev_setattr_sound (common_subject))
     (call dev_setattr_wireless (common_subject))
     (call dev_setattr_v4l (common_subject))
@@ -96,8 +98,11 @@
     (call sec_get_enforce_mode (common_subject))
 
     (call stor_getattr_fixed_disk (common_subject))
+    (call stor_setattr_fixed_disk (common_subject))
     (call stor_getattr_removable (common_subject))
+    (call stor_setattr_removable (common_subject))
     (call stor_getattr_scsi_generic (common_subject))
+    (call stor_setattr_scsi_generic (common_subject))
 
     (call term_use_unallocated_tts (common_subject))
 
@@ -115,8 +120,6 @@
     (call seutil_read_config_files (common_subject))
     (call seutil_read_file_context_files (common_subject))
 
-    (call systemd_delete_generic_user_tmpfs (common_subject))
-
     (call systemd_dbus_chat (common_subject))
     (call systemd_status_generic_units (common_subject))
     (call systemd_status_system (common_subject))
@@ -129,11 +132,15 @@
     (call systemd_start_transient_systemd_units (common_subject))
     (call systemd_stream_connect (common_subject))
 
+    (call usersubject_delete_all_tmpfs (common_subject))
     (call usersubject_setattr_generic_terminals (common_subject))
     (call usersubject_use_generic_terminals (common_subject))
 
     (call udev_client (common_subject))
     (call udev_list_run (common_subject))
+
+    (optional logind_optional_gdm
+        (call gdm_delete_tmpfs (common_subject)))
 )
 
 (allow logind_admin_type logind_subject_type signal_perms)

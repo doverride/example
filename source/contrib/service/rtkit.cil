@@ -93,7 +93,7 @@
 
 (macro rtkit_dbus_chat ((type ARG1))
     (allow ARG1 rtkitd.common_subject (dbus (send_msg)))
-    (allow rtkitd.common_subject self (dbus (send_msg))))
+    (allow rtkitd.common_subject ARG1 (dbus (send_msg))))
 
 (macro rtkit_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))

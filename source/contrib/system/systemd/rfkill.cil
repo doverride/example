@@ -16,6 +16,7 @@
 
     (call fs_list_sysfs (common_subject))
     (call fs_rw_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
 
     (call journal_client (common_subject))
 

@@ -486,10 +486,6 @@
     (call file_search_run (ARG1))
     (call read_files_pattern (ARG1 pam_console.run_object pam_console.run_object)))
 
-(macro auth_rw_pam_console_run_files ((type ARG1))
-    (call file_search_run (ARG1))
-    (call rw_files_pattern (ARG1 pam_console.run_object pam_console.run_object)))
-
 (macro auth_read_passwd ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 password.etc_object read_file_perms))

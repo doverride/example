@@ -15,6 +15,9 @@
     (optional notify_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
+
+    (optional notify_optional_readahead
+        (call readahead_manage_run_files (common_subject)))
 )
 
 (macro notify_exec ((type ARG1))

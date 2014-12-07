@@ -857,7 +857,7 @@
 
 (macro file_run_lock_filetrans ((type ARG1)(type ARG2)
     (class ARG3)(name ARG4))
-    (call file_search_run (ARG1))
+    (call file_search_run_lock (ARG1))
     (call file_type_transition_pattern
         (ARG1 run_lock ARG2 ARG3 ARG4)))
 
@@ -1043,8 +1043,12 @@
 (macro file_relabelto_run_lock_dirs ((type ARG1))
     (allow ARG1 run_lock relabelto_dir_perms))
 
+(macro file_read_run_lock_lnk_files ((type ARG1))
+    (allow ARG1 run_lock read_lnk_file_perms))
+
 (macro file_search_run_lock ((type ARG1))
     (call file_search_run (ARG1))
+    (call file_read_run_lock_lnk_files (ARG1))
     (allow ARG1 run_lock search_dir_perms))
 
 (macro file_read_all_run_lock_files ((type ARG1))

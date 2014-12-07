@@ -68,6 +68,10 @@
     (call file_spec_exception
         (readahead_readable_object_exception_type ARG1)))
 
+(macro readahead_manage_run_files ((type ARG1))
+    (call systemd_search_run (ARG1))
+    (call manage_files_pattern (ARG1 readahead.systemd_run_object readahead.systemd_run_object)))
+
 (macro readahead_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
     (roleattributeset readahead_admin_role ARG1)

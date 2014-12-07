@@ -71,6 +71,12 @@
 (filecon "/dev/kmsg" char kmsg_dev)
 (filecon "/dev/mcelog" char kmsg_dev)
 
+(type kvm_dev)
+(call dev_type (kvm_dev))
+
+(context kvm_dev (sys.u sys.r kvm_dev (systemlow systemlow)))
+(filecon "/dev/kvm" char kvm_dev)
+
 (type loop_control_dev)
 (call dev_type (loop_control_dev))
 
@@ -287,6 +293,12 @@
 
 (macro dev_setattr_dri ((type ARG1))
     (allow ARG1 dri_dev (chr_file (setattr))))
+
+(macro dev_setattr_kvm ((type ARG1))
+    (allow ARG1 kvm_dev (chr_file (setattr))))
+
+(macro dev_getattr_kvm ((type ARG1))
+    (allow ARG1 kvm_dev (chr_file (getattr))))
 
 (macro dev_getattr_sound ((type ARG1))
     (allow ARG1 sound_dev (chr_file (getattr))))

@@ -45,6 +45,10 @@
     (call fs_rw_sysfs_files (common_subject))
 
     (call auth_nsswitch_client (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
 )
 
 (allow mcelog_admin_type mcelog.common_subject signal_perms)

@@ -18,7 +18,7 @@
     (filecon "/usr/bin/Xorg" file bin_xserver)
     (filecon "/usr/libexec/Xorg\.bin" file bin_xserver)
 
-    (blockinherit file_maintains_etc_dirs_and_files_block)
+    (blockinherit file_maintains_etc_dirs_files_and_lnk_files_block)
 
     (typeattributeset xserver_object_type etc_object)
 
@@ -67,10 +67,11 @@
     (call dev_rw_event (common_subject))
 
     (call file_read_generic_etc_files (common_subject))
-    (call file_read_generic_usr_files (common_subject))
+    (call file_read_generic_usr (common_subject))
 
     (call fs_list_sysfs (common_subject))
     (call fs_rw_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
     (call fs_rw_inherited_tmpfs_files (common_subject))
 
     (call net_tcp_bind_generic_node (common_subject))
@@ -91,6 +92,8 @@
 
     (call usersubject_rw_inherited_generic_tmpfs_files (common_subject))
 
+    (call xserver_run_wrap (common_subject xserver_role))
+
     (optional xserver_optional_gdm
         (call gdm_getpgid (common_subject))
         (call gdm_setpgid (common_subject))
@@ -98,7 +101,8 @@
         (call gdm_rw_inherited_tmpfs_files (common_subject))
         (call gdm_rw_inherited_stream_sockets (common_subject))
         (call gdm_read_state (common_subject))
-        (call gdm_read_run_files (common_subject)))
+        (call gdm_read_run_files (common_subject))
+        (call gdm_send_signal (common_subject)))
 
     (optional xserver_optional_unconfined
         (call unconfined_rw_shm_all_unconfined_user_subjects (common_subject))
@@ -169,9 +173,16 @@
 (macro xserver_xsession_exec_files_entry_subject ((type ARG1))
     (call subject_entry (ARG1 xsession.bin_object)))
 
+(macro xserver_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 xserver.etc_object list_dir_perms))
+
 (macro xserver_search_config ((type ARG1))
     (call file_search_etc (ARG1))
     (allow ARG1 xserver.etc_object search_dir_perms))
+
+(macro xserver_read_config_lnk_files ((type ARG1))
+    (allow ARG1 xserver.etc_object read_lnk_file_perms))
 
 (macro xserver_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))

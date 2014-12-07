@@ -127,6 +127,10 @@
 (macro iscsi_reload_iscsid ((type ARG1))
     (allow ARG1 iscsid.unit_object (service (reload))))
 
+(macro iscsi_list_var_lib ((type ARG1))
+    (call file_search_var_lib (ARG1))
+    (allow ARG1 iscsid.var_lib_object list_dir_perms))
+
 (macro iscsi_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
     (call systemd_system_service_admin (ARG2))
