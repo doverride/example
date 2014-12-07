@@ -155,7 +155,7 @@
 
     ; (call pa_read_config_files (common_subject))
 
-    (call plymouth_exec (common_subject))
+    (call plymouth_auto_subtrans (common_subject))
 
     (call polkit_dbus_chat_polkitd (common_subject))
 
