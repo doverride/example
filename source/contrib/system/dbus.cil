@@ -125,6 +125,8 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype dbus_admin_role dbus_object_type)
 
+(allow dbus_unconfined_type self (dbus (acquire_svc)))
+
 (call dbus_acquire_system_service (dbus_unconfined_type))
 (call dbus_chat_all_unconfined_subjects (dbus_unconfined_type))
 (call dbus_chat_all_system_client_subjects (dbus_unconfined_type))

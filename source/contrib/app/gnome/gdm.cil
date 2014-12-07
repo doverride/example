@@ -85,6 +85,7 @@
     (allow common_subject self (key (search read view write link)))
     (allow common_subject self create_shm_perms)
     (allow common_subject self create_netlink_selinux_socket_perms)
+    (allow common_subject self (dbus (acquire_svc)))
     (allow common_subject self rw_fifo_file_perms)
 
     (allow common_subject gdm.tmpfs_object mmap_file_perms)
