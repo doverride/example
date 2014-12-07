@@ -191,6 +191,10 @@
 
     ; (optional gdm_optional_udisks
         ; (call udisks_dbus_chat (common_subject)))
+
+    (optional gdm_optional_unconfined
+        (call unconfined_read_state_all_unconfined_user_subjects (common_subject))
+        (call unconfined_stream_connect_all_unconfined_user_subjects (common_subject)))
 )
 
 (allow gdm_admin_type gdm.common_subject signal_perms)

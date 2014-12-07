@@ -65,7 +65,8 @@
         (call nm_stream_connect (common_subject)))
 
     (optional dhclient_optional_ntp
-        (call ntp_auto_subtrans (common_subject)))
+        (call ntp_auto_subtrans (common_subject))
+        (call ntp_exec_helper (common_subject)))
 )
 
 (block dhcp

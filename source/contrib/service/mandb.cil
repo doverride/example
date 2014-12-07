@@ -32,7 +32,7 @@
     (allow common_subject self (capability (fsetid)))
     (allow common_subject self rw_fifo_file_perms)
 
-    (call file_read_generic_etc_files (common_subject))
+    (call file_read_generic_etc (common_subject))
 
     (call fs_getattr_fs (common_subject))
 
