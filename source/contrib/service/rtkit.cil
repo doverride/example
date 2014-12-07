@@ -1,0 +1,102 @@
+(roleattribute rtkitctl_role)
+
+(roleattribute rtkit_admin_role)
+(typeattribute rtkit_admin_type)
+
+(typeattribute rtkit_client_type)
+
+(typeattribute rtkit_object_type)
+(typeattribute rtkit_subject_type)
+
+(block rtkitctl
+    (blockinherit app_block)
+
+    (typeattributeset rtkit_subject_type common_subject)
+
+    (roletype rtkitctl_role common_subject)
+
+    (context bin_rtkitctl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/rtkitctl" file bin_rtkitctl)
+)
+
+(block rtkitd
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset rtkit_subject_type common_subject)
+    (typeattributeset rtkit_object_type unit_object)
+
+    (context bin_rtkitd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/rtkit-daemon" file bin_rtkitd)
+
+    (context unit_rtkitd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*rtkit-daemon.*" file unit_rtkitd)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset rtkit_object_type dbus_etc_object)
+
+    (context dbus_etc_rtkitd (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.RealtimeKit1\.conf" file dbus_etc_rtkitd)
+
+    (blockinherit file_tmpfs_object_block)
+
+    (typeattributeset rtkit_object_type tmpfs_object)
+
+    (allow common_subject self (capability (sys_nice sys_chroot setuid setgid sys_ptrace)))
+    (allow common_subject self (process (setsched setcap setrlimit)))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call polkit_dbus_chat_polkitd (common_subject))
+
+    (optional rtkitd_optional_unconfined
+        (call unconfined_getsched (common_subject))
+        (call unconfined_setsched (common_subject))
+        (call unconfined_read_state (common_subject)))
+)
+
+(allow rtkitd.common_subject rtkit_client_type (process (getsched setsched)))
+(allow rtkitd.common_subject rtkit_client_type list_dir_perms)
+(allow rtkitd.common_subject rtkit_client_type read_file_perms)
+(allow rtkitd.common_subject rtkit_client_type read_lnk_file_perms)
+
+(call rtkit_dbus_chat (rtkit_client_type))
+
+(allow rtkit_admin_type rtkit_subject_type signal_perms)
+(allow rtkit_admin_type rtkit_subject_type (process (ptrace)))
+(call ps_subject_pattern (rtkit_admin_type rtkit_subject_type))
+(allow rtkit_admin_type rtkitd.unit_object (service (all)))
+(allow rtkit_admin_type rtkit_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype rtkit_admin_role rtkit_object_type)
+
+(call rtkit_run_rtkitctl (rtkit_admin_type rtkit_admin_role))
+
+(macro rtkit_client ((type ARG1))
+    (typeattributeset rtkit_client_type ARG1))
+
+(macro rtkit_auto_subtrans_rtkitctl ((type ARG1))
+    (call rtkit_send_signal_rtkitctl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 rtkitctl.bin_object rtkitctl.common_subject)))
+
+(macro rtkit_run_rtkitctl ((type ARG1)(role ARG2))
+    (call rtkit_auto_subtrans_rtkitctl (ARG1))
+    (roleattributeset rtkitctl_role ARG2))
+
+(macro rtkit_send_signal_rtkitctl ((type ARG1))
+    (allow ARG1 rtkitctl.common_subject (process (signal))))
+
+(macro rtkit_dbus_chat ((type ARG1))
+    (allow ARG1 rtkitd.common_subject (dbus (send_msg)))
+    (allow rtkitd.common_subject self (dbus (send_msg))))
+
+(macro rtkit_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset rtkit_admin_role ARG1)
+    (typeattributeset rtkit_admin_type ARG2))

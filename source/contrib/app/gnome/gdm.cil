@@ -151,8 +151,7 @@
 
     (call polkit_dbus_chat_polkitd (common_subject))
 
-    ; (call rtkit_dbus_chat_rtkitd (common_subject))
-    ; (call rtkit_client (common_subject))
+    (call rtkit_client (common_subject))
 
     (call systemd_dbus_chat (common_subject))
     (call systemd_status_system (common_subject))

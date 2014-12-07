@@ -161,6 +161,9 @@
     (optional sysadm_optional_rpm
         (call rpm_admin (r common_subject)))
 
+    (optional sysadm_optional_rtkit
+        (call rtkit_admin (r common_subject)))
+
     (optional sysadm_optional_ssh
         (call ssh_admin (r common_subject)))
 
