@@ -90,6 +90,10 @@
 (macro kdump_status_kdumpctl_unit ((type ARG1))
     (allow ARG1 kdumpctl.unit_object (service (status))))
 
+(macro kdump_list_var ((type ARG1))
+    (call file_list_var (ARG1))
+    (allow ARG1 kdump.var_object list_dir_perms))
+
 (macro kdump_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
     (call systemd_system_service_admin (ARG2))

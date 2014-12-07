@@ -356,6 +356,8 @@
     (call journal_relabelto_log_dirs (common_subject))
     (call journal_relabelto_log_files (common_subject))
 
+    (call kdump_list_var (common_subject))
+
     (call logind_read_run_files (common_subject))
 
     (call miscfiles_read_localization (common_subject))

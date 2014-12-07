@@ -14,7 +14,14 @@
 
     (allow common_subject self (capability (sys_tty_config)))
 
+    (call sys_use_fd (common_subject))
+
+    (call term_use_unallocated_tts (common_subject))
+
     (call fs_write_inherited_devpts_chr_files (common_subject))
+    (call fs_rw_sysfs_files (common_subject))
+
+    (call bin_execute_bin_files (common_subject))
 
     (call journal_client (common_subject))
 )
