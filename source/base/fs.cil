@@ -78,6 +78,7 @@
 
 (type dosfs)
 (call fs_type (dosfs))
+(call sys_mountpoint_type (dosfs))
 
 (context dosfs (sys.u sys.r dosfs (systemlow systemlow)))
 (genfscon "vfat" "/" dosfs)

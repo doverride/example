@@ -829,6 +829,7 @@
 
 (macro usersubject_delete_all_tmpfs ((type ARG1))
     (call fs_del_entry_tmpfs (ARG1))
+    (allow ARG1 usersubject_tmpfs_type del_entry_dir_perms)
     (allow ARG1 usersubject_tmpfs_type (all_file_objects (delete))))
 
 (macro usersubject_link_keyring_all_common_login_subjects ((type ARG1))

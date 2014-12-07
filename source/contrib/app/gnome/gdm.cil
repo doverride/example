@@ -85,7 +85,7 @@
     (allow common_subject self create_netlink_selinux_socket_perms)
     (allow common_subject self rw_fifo_file_perms)
 
-    (allow common_subject gdm.tmpfs_object mmap_file_perms;
+    (allow common_subject gdm.tmpfs_object mmap_file_perms)
     (allow common_subject gdm.tmpfs_object (dir (mounton))) ; $XDG_RUNTIME_DIR/.gvfs
 
     (call sys_read_kernel_sysctl (common_subject))
@@ -274,6 +274,7 @@
 
 (macro gdm_delete_tmpfs ((type ARG1))
     (call fs_del_entry_tmpfs (ARG1))
+    (allow ARG1 gdm.tmpfs_object del_entry_dir_perms)
     (allow ARG1 gdm.tmpfs_object (all_file_objects (delete))))
 
 (macro gdm_setattr_tmpfs_dirs ((type ARG1))

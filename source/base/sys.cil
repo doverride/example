@@ -624,6 +624,9 @@
 (macro sys_search_invalid ((type ARG1))
     (allow ARG1 invalid search_dir_perms))
 
+(macro sys_dontaudit_list_invalid ((type ARG1))
+    (dontaudit ARG1 invalid list_dir_perms))
+
 (macro sys_read_invalid_files ((type ARG1))
     (call read_files_pattern (ARG1 invalid invalid)))
 

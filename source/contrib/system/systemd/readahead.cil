@@ -32,6 +32,8 @@
     (allow common_subject self (capability (sys_admin fowner dac_override)))
     (allow common_subject self (process (setsched)))
 
+    (call sys_dontaudit_list_invalid (common_subject))
+
     (call dev_read_urandom (common_subject))
     (call dev_write_kmsg (common_subject))
 
