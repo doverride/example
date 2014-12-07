@@ -268,6 +268,17 @@
     (call fs_rw_devtmpfs_dirs (ARG1))
     (allow ARG1 devtmpfs manage_chr_file_perms))
 
+(macro fs_add_entry_devtmpfs_dirs ((type ARG1))
+    (allow ARG1 devtmpfs add_entry_dir_perms))
+
+(macro fs_create_devtmpfs_chr_files ((type ARG1))
+    (allow ARG1 self (capability (mknod)))
+    (call fs_add_entry_devtmpfs_dirs (ARG1))
+    (allow ARG1 devtmpfs create_chr_file_perms))
+
+(macro fs_setattr_devtmpfs_chr_files ((type ARG1))
+    (allow ARG1 devtmpfs (chr_file (setattr))))
+
 (macro fs_relabelfrom_devtmpfs_chr_files ((type ARG1))
     (allow ARG1 devtmpfs relabelfrom_chr_file_perms))
 
@@ -470,9 +481,6 @@
 
 (macro fs_search_devtmpfs ((type ARG1))
     (allow ARG1 devtmpfs search_dir_perms))
-
-(macro fs_add_entry_devtmpfs_dirs ((type ARG1))
-    (allow ARG1 devtmpfs add_entry_dir_perms))
 
 (macro fs_dontaudit_getattr_all_files ((type ARG1))
     (dontaudit ARG1 fs_type (all_file_objects (getattr))))
