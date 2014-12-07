@@ -14,6 +14,8 @@
 
     (allow common_subject self (capability (sys_tty_config)))
 
+    (call fs_write_inherited_devpts_chr_files (common_subject))
+
     (call journal_client (common_subject))
 )
 
@@ -24,8 +26,13 @@
     (not_mounton_entrypoint_and_execmod)))
 (roletype vconsole_admin_role vconsole.etc_object)
 
-(macro vconsole_exec ((type ARG1))
-    (call can_exec (ARG1 vconsole.bin_object)))
+(macro vconsole_auto_subtrans ((type ARG1))
+    (call vconsole_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 vconsole.bin_object vconsole.common_subject)))
+
+(macro vconsole_send_signal ((type ARG1))
+    (allow ARG1 vconsole.common_subject (process (signal))))
 
 (macro vconsole_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))

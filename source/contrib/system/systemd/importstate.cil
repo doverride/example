@@ -10,9 +10,14 @@
 
     (allow common_subject self create_unix_stream_socket_perms)
 
+    (call bin_execute_bin_files (common_subject))
     (call bin_mprot_read_shell_files (common_subject))
 
+    (call fs_list_tmpfs (common_subject))
+
     (call auth_nsswitch_client (common_subject))
+
+    (call dracut_search_initramfs_run (common_subject))
 
     (call miscfiles_read_localization (common_subject))
 )

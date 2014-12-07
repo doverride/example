@@ -118,6 +118,9 @@
 
     (call journal_client (common_subject))
 
+    (call kdump_start_kdumpctl_unit (common_subject))
+    (call kdump_status_kdumpctl_unit (common_subject))
+
     (call kmod_list_config (common_subject))
     (call kmod_read_config_files (common_subject))
     (call kmod_read_modules_dep_files (common_subject))
@@ -140,7 +143,11 @@
 
     (call udev_exec_helper (common_subject))
 
-    (call vconsole_exec (common_subject))
+    (call vconsole_auto_subtrans (common_subject))
+
+    (optional udevd_optional_alsa
+        (call alsa_auto_subtrans_alsactl (common_subject))
+        (call alsa_read_config_files (common_subject)))
 )
 
 (block udev_helper

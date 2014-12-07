@@ -119,6 +119,9 @@
     (optional sysadm_optional_iscsi
         (call iscsi_admin (r common_subject)))
 
+    (optional sysadm_optional_kdump
+        (call kdump_admin (r common_subject)))
+
     (optional sysadm_optional_kmod
         (call kmod_admin (r common_subject)))
 

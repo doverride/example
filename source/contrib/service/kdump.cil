@@ -1,0 +1,97 @@
+(roleattribute kdumpctl_role)
+
+(roleattribute kdump_admin_role)
+(typeattribute kdump_admin_type)
+
+(typeattribute kdump_object_type)
+(typeattribute kdump_subject_type)
+
+(block kdumpctl
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset kdump_object_type unit_object)
+    (typeattributeset kdump_subject_type common_subject)
+
+    (roletype kdumpctl_role common_subject)
+
+    (context bin_kdumpctl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/kdumpctl" file bin_kdumpctl)
+
+    (context unit_kdumpctl (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*kdump.*" file unit_kdumpctl)
+
+    (optional kdumpctl_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+)
+
+(block kdump
+    (blockinherit subject_system_entry_block)
+
+    (typeattributeset kdump_subject_type common_subject)
+
+    (context bin_kdump (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/kdump" file bin_kdump)
+    (filecon "/usr/sbin/kexec" file bin_kdump)
+    (filecon "/usr/sbin/makedumpfile" file bin_kdump)
+    (filecon "/usr/sbin/mkdumprd" file bin_kdump)
+    (filecon "/usr/sbin/vmcore-dmesg" file bin_kdump)
+
+    (blockinherit file_maintains_single_etc_file_block)
+
+    (typeattributeset kdump_object_type etc_object)
+
+    (context etc_kdump (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/kdump\.conf" file etc_kdump)
+    (filecon "/etc/makedumpfile\.conf\.sample" file etc_kdump)
+    (filecon "/etc/sysconfig/kdump" file etc_kdump)
+
+    (blockinherit file_maintains_var_dirs_and_files_block)
+
+    (typeattributeset kdump_object_type var_object)
+
+    (context var_kdump (sys.u sys.r var_object (systemlow systemlow)))
+    (filecon "/var/crash(/.*)?" any var_kdump)
+)
+
+(allow kdump_admin_type kdump_subject_type signal_perms)
+(allow kdump_admin_type kdump_subject_type (process (ptrace)))
+(call ps_subject_pattern (kdump_admin_type kdump_subject_type))
+(allow kdump_admin_type kdumpctl.unit_object (service (all)))
+(allow kdump_admin_type kdump_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype kdump_admin_role kdump_object_type)
+
+(call kdump_run_kdumpctl (kdump_admin_type kdump_admin_role))
+
+(macro kdump_auto_subtrans ((type ARG1))
+    (call kdump_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 kdump.bin_object kdump.common_subject)))
+
+(macro kdump_send_signal ((type ARG1))
+    (allow ARG1 kdump.common_subject (process (signal))))
+
+(macro kdump_auto_subtrans_kdumpctl ((type ARG1))
+    (call kdump_send_signal_kdumpctl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 kdumpctl.bin_object kdumpctl.common_subject)))
+
+(macro kdump_run_kdumpctl ((type ARG1)(role ARG2))
+    (call kdump_auto_subtrans_kdumpctl (ARG1))
+    (roleattributeset kdumpctl_role ARG2))
+
+(macro kdump_send_signal_kdumpctl ((type ARG1))
+    (allow ARG1 kdumpctl.common_subject (process (signal))))
+
+(macro kdump_start_kdumpctl_unit ((type ARG1))
+    (allow ARG1 kdumpctl.unit_object (service (start))))
+
+(macro kdump_status_kdumpctl_unit ((type ARG1))
+    (allow ARG1 kdumpctl.unit_object (service (status))))
+
+(macro kdump_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset kdump_admin_role ARG1)
+    (typeattributeset kdump_admin_type ARG2))
