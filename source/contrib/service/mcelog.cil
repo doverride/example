@@ -1,3 +1,5 @@
+(typepermissive mcelog.common_subject)
+
 (roleattribute mcelog_admin_role)
 (typeattribute mcelog_admin_type)
 

@@ -1,3 +1,5 @@
+(typepermissive plymouthd.common_subject)
+
 (roleattribute plymouth_role)
 
 (typeattribute plymouth_client_type)
