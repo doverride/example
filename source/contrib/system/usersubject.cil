@@ -815,8 +815,14 @@
     (call usersubject_search_home_user (ARG1))
     (allow ARG1 home_user_cache search_dir_perms))
 
+(macro usersubject_create_generic_home_cache_dirs ((role ARG1)(type ARG2))
+    (call create_dirs_pattern (ARG2 home_user home_user_cache))
+    (roletype ARG1 home_user_cache))
+
 (macro usersubject_generic_home_cache_filetrans ((role ARG1)(type ARG2)(type ARG3)
     (class ARG4)(name ARG5))
+    (call usersubject_create_generic_home_cache_dirs (ARG1 ARG2))
+    (call usersubject_home_user_filetrans_home_cache_dirs (ARG1 ARG2))
     (call file_type_transition_pattern (ARG2 home_user_cache ARG3 ARG4 ARG5))
     (roletype ARG1 ARG3))
 
@@ -833,8 +839,14 @@
     (call usersubject_search_home_user (ARG1))
     (allow ARG1 home_user_config search_dir_perms))
 
+(macro usersubject_create_generic_home_config_dirs ((role ARG1)(type ARG2))
+    (call create_dirs_pattern (ARG2 home_user home_user_config))
+    (roletype ARG1 home_user_config))
+
 (macro usersubject_generic_home_config_filetrans ((role ARG1)(type ARG2)(type ARG3)
     (class ARG4)(name ARG5))
+    (call usersubject_create_generic_home_config_dirs (ARG1 ARG2))
+    (call usersubject_home_user_filetrans_home_config_dirs (ARG1 ARG2))
     (call file_type_transition_pattern (ARG2 home_user_config ARG3 ARG4 ARG5))
     (roletype ARG1 ARG3))
 
@@ -851,8 +863,14 @@
     (call usersubject_search_home_user (ARG1))
     (allow ARG1 home_user_data search_dir_perms))
 
+(macro usersubject_create_generic_home_data_dirs ((role ARG1)(type ARG2))
+    (call create_dirs_pattern (ARG2 home_user home_user_data))
+    (roletype ARG1 home_user_data))
+
 (macro usersubject_generic_home_data_filetrans ((role ARG1)(type ARG2)(type ARG3)
     (class ARG4)(name ARG5))
+    (call usersubject_create_generic_home_data_dirs (ARG1 ARG2))
+    (call usersubject_home_user_filetrans_home_data_dirs (ARG1 ARG2))
     (call file_type_transition_pattern (ARG2 home_user_data ARG3 ARG4 ARG5))
     (roletype ARG1 ARG3))
 
