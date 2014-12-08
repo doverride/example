@@ -30,6 +30,3 @@
 * create a template for gui app common rules (then apply that to gdm as well, gdm runs gui apps in it own domain and currently added individual macros)
 
 * mdadm: shutdown executes mdadm, and i believe that shutdown (mdadm) wants to read/list /run/mdadm
-
-* have to redo the usersubject_read_generic_inherited_home_content_files (its for .local/share/icc) even unconfined will create XDG dirs with type transition
-    so its going to be atleast user.data_home_object instead of user.home_object
