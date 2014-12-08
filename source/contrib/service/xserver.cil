@@ -90,7 +90,7 @@
 
     (call udev_client (common_subject))
 
-    (call usersubject_rw_inherited_generic_tmpfs_files (common_subject))
+    (call usersubject_dontaudit_rw_inherited_generic_tmpfs_files (common_subject))
 
     (call xserver_run_wrap (common_subject xserver_role))
 

@@ -1011,5 +1011,5 @@
 (macro usersubject_send_signal_all_common_login_subjects ((type ARG1))
     (allow ARG1 usersubject_common_login_type (process (signal))))
 
-(macro usersubject_rw_inherited_generic_tmpfs_files ((type ARG1))
+(macro usersubject_dontaudit_rw_inherited_generic_tmpfs_files ((type ARG1))
     (allow ARG1 user.user_tmpfs_object (file (read write))))
