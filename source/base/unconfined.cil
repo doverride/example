@@ -14,12 +14,12 @@
         (call usersubject_mls_template (u systemlow systemlow systemhigh))
         (call usersubject_generic_terminals (r common_subject))
         (call usersubject_home_user_filetrans_user (r common_subject))
-        (call usersubject_home_user_filetrans_bin (r common_subject))
-        (call usersubject_generic_home_data_filetrans_bin (r common_subject))
+        (call usersubject_home_user_filetrans_home_bin_dirs (r common_subject))
+        (call usersubject_generic_home_data_filetrans_home_bin_dirs (r common_subject))
         (call usersubject_home_user_filetrans_home_config_dirs (r common_subject))
         (call usersubject_home_user_filetrans_home_data_dirs (r common_subject))
-        (call usersubject_home_user_filetrans_cert (r common_subject))
-        (call usersubject_home_user_filetrans_terminfo (r common_subject))
+        (call usersubject_home_user_filetrans_home_cert_dirs (r common_subject))
+        (call usersubject_home_user_filetrans_home_terminfo_files (r common_subject))
         (call usersubject_tmpfs_filetrans_user (r common_subject))
 
         (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (r common_subject))
@@ -30,23 +30,23 @@
         (context home_unconfined (u r home_user (systemlow mls_systemhigh)))
         (filecon "/home/joe" dir home_unconfined)
 
-        (context unconfined_bin (u r user_bin.home_object (systemlow systemlow)))
+        (context unconfined_bin (u r home_user_bin (systemlow systemlow)))
         (filecon "/home/joe/\.bin(/.*)?" any unconfined_bin)
         (filecon "/home/joe/\.local/bin(/.*)?" any unconfined_bin)
 
-        (context unconfined_cert (u r user_cert.home_object (systemlow systemlow)))
+        (context unconfined_cert (u r home_user_cert (systemlow systemlow)))
         (filecon "/home/joe/\.pki(/.*)?" any unconfined_cert)
 
-        (context user_terminfo (u r user_terminfo.home_object (systemlow systemlow)))
+        (context user_terminfo (u r terminfo.home_object (systemlow systemlow)))
         (filecon "/home/joe/\.terminfo" file user_terminfo)
 
         (context unconfined (u r user.home_object (systemlow systemlow)))
         (filecon "/home/joe/.*" any unconfined)
 
-        (context unconfined_config (u r user.home_config_object (systemlow systemlow)))
+        (context unconfined_config (u r home_user_config (systemlow systemlow)))
         (filecon "/home/joe/\.config(/.*)?" any unconfined_config)
 
-        (context unconfined_data (u r user.home_data_object (systemlow systemlow)))
+        (context unconfined_data (u r home_user_data (systemlow systemlow)))
         (filecon "/home/joe/\.local(/.*)?" any unconfined_data)
 
         (context var_spool_unconfined (u r user.var_spool_object (systemlow mls_systemhigh)))

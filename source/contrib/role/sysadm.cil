@@ -4,23 +4,23 @@
     (context home_sysadm (u r home_user (systemlow mls_systemhigh)))
     (filecon "/root" dir home_sysadm)
 
-    (context sysadm_bin (u r user_bin.home_object (systemlow systemlow)))
+    (context sysadm_bin (u r home_user_bin (systemlow systemlow)))
     (filecon "/root/\.bin(/.*)?" any sysadm_bin)
     (filecon "/root/\.local/bin(/.*)?" any sysadm_bin)
 
-    (context sysadm_cert (u r user_cert.home_object (systemlow systemlow)))
+    (context sysadm_cert (u r home_user_cert (systemlow systemlow)))
     (filecon "/root/\.pki(/.*)?" any sysadm_cert)
 
-    (context sysadm_terminfo (u r user_terminfo.home_object (systemlow systemlow)))
+    (context sysadm_terminfo (u r terminfo.home_object (systemlow systemlow)))
     (filecon "/root/\.terminfo" file sysadm_terminfo)
 
     (context sysadm (u r user.home_object (systemlow systemlow)))
     (filecon "/root/.*" any sysadm)
 
-    (context sysadm_config (u r user.home_config_object (systemlow systemlow)))
+    (context sysadm_config (u r home_user_config (systemlow systemlow)))
     (filecon "/root/\.config(/.*)?" any sysadm_config)
 
-    (context sysadm_data (u r user.home_data_object (systemlow systemlow)))
+    (context sysadm_data (u r home_user_data (systemlow systemlow)))
     (filecon "/root/\.local(/.*)?" any sysadm_data)
 
     (context var_spool_sysadm (u r user.var_spool_object (systemlow mls_systemhigh)))

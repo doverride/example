@@ -4,23 +4,23 @@
     (context home_staff (u r home_user (systemlow mls_systemhigh)))
     (filecon "/home/john" dir home_staff)
 
-    (context staff_bin (u r user_bin.home_object (systemlow systemlow)))
+    (context staff_bin (u r home_user_bin (systemlow systemlow)))
     (filecon "/home/john/\.bin(/.*)?" any staff_bin)
     (filecon "/home/john/\.local/bin(/.*)?" any staff_bin)
 
-    (context staff_cert (u r user_cert.home_object (systemlow systemlow)))
+    (context staff_cert (u r home_user_cert (systemlow systemlow)))
     (filecon "/home/john/\.pki(/.*)?" any staff_cert)
 
-    (context staff_terminfo (u r user_terminfo.home_object (systemlow systemlow)))
+    (context staff_terminfo (u r terminfo.home_object (systemlow systemlow)))
     (filecon "/home/john/\.terminfo" file staff_terminfo)
 
     (context staff (u r user.home_object (systemlow systemlow)))
     (filecon "/home/john/.*" any staff)
 
-    (context staff_config (u r user.home_config_object (systemlow systemlow)))
+    (context staff_config (u r home_user_config (systemlow systemlow)))
     (filecon "/home/john/\.config(/.*)?" any staff_config)
 
-    (context staff_data (u r user.home_data_object (systemlow systemlow)))
+    (context staff_data (u r home_user_data (systemlow systemlow)))
     (filecon "/home/john/\.local(/.*)?" any staff_data)
 
     (context var_spool_staff (u r user.var_spool_object (systemlow mls_systemhigh)))
