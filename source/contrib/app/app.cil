@@ -49,7 +49,7 @@
 
 (macro app_execute_all_exec_files ((type ARG1))
     (call app_execute_all_app_exec_files (ARG1))
-    (call bin_execute_bin_files (ARG1))
+    (call bin_execute_all_bin_files (ARG1))
     (call bin_execute_shell_files (ARG1)))
 
 (macro app_entry ((type ARG1)(type ARG2))
