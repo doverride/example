@@ -159,6 +159,9 @@
     (optional sysadm_optional_ntp
         (call ntp_admin (r common_subject)))
 
+    (optional sysadm_optional_pcsc
+        (call pcsc_admin (r common_subject)))
+
     (optional sysadm_optional_plymouth
         (call plymouth_admin (r common_subject)))
 

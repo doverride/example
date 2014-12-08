@@ -1,0 +1,71 @@
+(roleattribute pcsc_admin_role)
+(typeattribute pcsc_admin_type)
+
+(typeattribute pcsc_object_type)
+
+(block pcscd
+    (blockinherit systemd_daemon_socket_activated_block)
+
+    (typeattributeset pcsc_object_type unit_object)
+
+    (context bin_pcscd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/pcscd" file bin_pcscd)
+
+    (context unit_pcscd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*pcscd.*" file unit_pcscd)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset pcsc_object_type etc_object)
+
+    (context etc_pcscd (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/reader\.conf\.d(/.*)?" any etc_pcscd)
+
+    (blockinherit file_maintains_run_dirs_files_and_sock_files_block)
+
+    (typeattributeset pcsc_object_type run_object)
+
+    (call systemd_socket_activated_object_type (run_object))
+
+    (context run_pcscd (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/pcscd(/.*)?" any run_pcscd)
+
+    (allow common_subject self (unix_stream_socket (listen accept)))
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call dev_rw_usb (common_subject))
+
+    (call fs_list_devtmpfs (common_subject))
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+
+    (call dbus_system_client (common_subject))
+
+    (call pcsc_list_config (common_subject))
+
+    (call polkit_dbus_chat_polkitd (common_subject))
+
+    (call udev_client (common_subject))
+
+    (optional pcsc_optional_unconfined
+        (call unconfined_read_state_all_unconfined_user_subjects (common_subject)))
+)
+
+(allow pcsc_admin_type pcscd.common_subject signal_perms)
+(allow pcsc_admin_type pcscd.common_subject (process (ptrace)))
+(call ps_subject_pattern (pcsc_admin_type pcscd.common_subject))
+(allow pcsc_admin_type pcscd.unit_object (service (all)))
+(allow pcsc_admin_type pcsc_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype pcsc_admin_role pcsc_object_type)
+
+(macro pcsc_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 pcscd.etc_object list_dir_perms))
+
+(macro pcsc_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset pcsc_admin_role ARG1)
+    (typeattributeset pcsc_admin_type ARG2))
