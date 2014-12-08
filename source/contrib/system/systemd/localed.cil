@@ -52,6 +52,8 @@
 
     (call dev_read_urandom (common_subject))
 
+    (call fs_search_tmpfs (common_subject))
+
     (call dbus_system_service (common_subject))
 
     (call journal_client (common_subject))

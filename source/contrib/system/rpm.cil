@@ -224,14 +224,14 @@
 
 (macro rpm_read_inherited_tmpfs_files ((type ARG1))
     (call rpm_use_fd (ARG1))
-    (allow ARG1 rpm.tmpfs_object (file (read))))
+    (allow ARG1 rpm.tmpfs_object (file (ioctl read))))
 
 (macro rpm_use_fd ((type ARG1))
     (allow ARG1 rpm.common_subject (fd (use))))
 
 (macro rpm_read_inherited_fifo_files ((type ARG1))
     (call rpm_use_fd (ARG1))
-    (allow ARG1 rpm.common_subject (fifo_file (read))))
+    (allow ARG1 rpm.common_subject (fifo_file (ioctl read))))
 
 (macro rpm_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))

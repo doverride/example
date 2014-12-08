@@ -459,6 +459,10 @@
     (call fs_search_devpts (ARG1))
     (allow ARG1 usersubject_pty_type rw_term_perms))
 
+(macro usersubject_create_generic_pts ((role ARG1)(type ARG2))
+    (call term_create_pty (ARG2 user.pty_object))
+    (roletype ARG1 user.pty_object))
+
 (macro usersubject_use_all_tts ((type ARG1))
     (allow ARG1 usersubject_tty_type rw_term_perms))
 

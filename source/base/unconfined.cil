@@ -54,6 +54,8 @@
 
         (allow common_subject self (process (setsched)))
 
+        (call usersubject_create_generic_pts (r common_subject))
+
         (call auth_manage_shadow (r common_subject))
         (call auth_relabel_shadow (common_subject))
 

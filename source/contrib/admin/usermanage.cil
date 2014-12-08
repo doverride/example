@@ -154,6 +154,11 @@
     (optional useradd_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
+
+    (optional useradd_optional_rpm
+        (call rpm_append_inherited_tmpfs_files (common_subject))
+        (call rpm_read_inherited_tmpfs_files (common_subject))
+        (call rpm_read_inherited_fifo_files (common_subject)))
 )
 
 (block groupadd
@@ -199,6 +204,11 @@
     (optional groupadd_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
+
+    (optional groupadd_optional_rpm
+        (call rpm_append_inherited_tmpfs_files (common_subject))
+        (call rpm_read_inherited_tmpfs_files (common_subject))
+        (call rpm_read_inherited_fifo_files (common_subject)))
 )
 
 (allow passwd_subject_type self (capability (setuid dac_override chown fsetid)))
