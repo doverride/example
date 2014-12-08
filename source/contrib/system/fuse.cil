@@ -37,6 +37,9 @@
     (optional fusermount_optional_gdm
         (call gdm_mounton_tmpfs_dirs (common_subject))
         (call gdm_rw_stream_sockets (common_subject)))
+
+    (optional fusermount_optional_usersubject
+        (call gvfs_mounton_user_gvfsd_tmpfs_dirs (common_subject)))
 )
 
 (block ulockmgr
