@@ -8,6 +8,7 @@
 
 (typeattribute usersubject_home_type)
 (typeattribute usersubject_home_config_type)
+(typeattribute usersubject_home_data_type)
 (typeattribute usersubject_tmpfs_type)
 (typeattribute usersubject_mail_spool_type)
 
@@ -118,6 +119,7 @@
     (blockabstract usersubject_object_block)
         (blockinherit usersubject_maintains_home_files_block)
         (blockinherit usersubject_maintains_home_config_files_block)
+        (blockinherit usersubject_maintains_home_data_files_block)
         (blockinherit usersubject_maintains_single_mail_spool_file_block)
         (blockinherit usersubject_maintains_tmpfs_files_block)
         (blockinherit usersubject_maintains_pty_object_block)
@@ -155,6 +157,23 @@
             (not_mounton_entrypoint_and_execmod)))
 
         (call usersubject_home_user_filetrans_home_config_dirs
+            (r common_subject))
+)
+
+(block usersubject_home_data_object_block
+    (blockabstract usersubject_home_data_object_block)
+        (type home_data_object)
+        (call usersubject_home_data_type (home_data_object))
+)
+
+(block usersubject_maintains_home_data_files_block
+    (blockabstract usersubject_maintains_home_data_files_block)
+        (blockinherit usersubject_home_data_object_block)
+
+        (allow common_subject home_data_object (all_file_objects
+            (not_mounton_entrypoint_and_execmod)))
+
+        (call usersubject_home_user_filetrans_home_data_dirs
             (r common_subject))
 )
 
@@ -433,6 +452,10 @@
     (call usersubject_home_type (ARG1))
     (typeattributeset usersubject_home_config_type ARG1))
 
+(macro usersubject_home_data_type ((type ARG1))
+    (call usersubject_home_type (ARG1))
+    (typeattributeset usersubject_home_data_type ARG1))
+
 (macro usersubject_tmpfs_type ((type ARG1))
     (call file_tmpfs_type (ARG1))
     (typeattributeset usersubject_tmpfs_type ARG1))
@@ -547,6 +570,7 @@
     (call usersubject_generic_terminfo_template (ARG1 ARG2))
     (call usersubject_generic_home_template (ARG1 ARG2))
     (call usersubject_generic_home_config_template (ARG1 ARG2))
+    (call usersubject_generic_home_data_template (ARG1 ARG2))
     (call usersubject_generic_mail_spool_template (ARG1 ARG2))
     (call usersubject_generic_tmpfs_template (ARG1 ARG2))
     (call usersubject_generic_pty_template (ARG1 ARG2))
@@ -636,13 +660,20 @@
     (allow ARG2 user_bin.home_object (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
     (roletype ARG1 user_bin.home_object)
-    (call usersubject_home_user_filetrans_bin (ARG1 ARG2)))
+    (call usersubject_home_user_filetrans_bin (ARG1 ARG2))
+    (call usersubject_generic_home_data_filetrans_bin (ARG1 ARG2)))
 
 (macro usersubject_generic_home_config_template ((role ARG1)(type ARG2))
     (allow ARG2 user.home_config_object (all_file_objects
         (not_mounton_entrypoint_and_execmod)))
     (roletype ARG1 user.home_config_object)
     (call usersubject_home_user_filetrans_home_config_dirs (ARG1 ARG2)))
+
+(macro usersubject_generic_home_data_template ((role ARG1)(type ARG2))
+    (allow ARG2 user.home_data_object (all_file_objects
+        (not_mounton_entrypoint_and_execmod)))
+    (roletype ARG1 user.home_data_object)
+    (call usersubject_home_user_filetrans_home_data_dirs (ARG1 ARG2)))
 
 (macro usersubject_generic_cert_template ((role ARG1)(type ARG2))
     (allow ARG2 user_cert.home_object (all_file_objects
@@ -691,6 +722,11 @@
         (ARG1 ARG2 user_bin.home_object dir ".bin"))
     (roletype ARG1 user_bin.home_object))
 
+(macro usersubject_generic_home_data_filetrans_bin ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_data_filetrans
+        (ARG1 ARG2 user_bin.home_object dir "bin"))
+    (roletype ARG1 user_bin.home_object))
+
 (macro usersubject_home_user_filetrans_home_config_dirs ((role ARG1)(type ARG2))
     (call usersubject_home_user_filetrans
         (ARG1 ARG2 user.home_config_object dir ".config"))
@@ -707,6 +743,24 @@
 (macro usersubject_generic_home_config_filetrans ((role ARG1)(type ARG2)(type ARG3)
     (class ARG4)(name ARG5))
     (call file_type_transition_pattern (ARG2 user.home_config_object ARG3 ARG4 ARG5))
+    (roletype ARG1 ARG3))
+
+(macro usersubject_home_user_filetrans_home_data_dirs ((role ARG1)(type ARG2))
+    (call usersubject_home_user_filetrans
+        (ARG1 ARG2 user.home_data_object dir ".local"))
+    (roletype ARG1 user.home_data_object))
+
+(macro usersubject_list_generic_home_data ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 user.home_data_object list_dir_perms))
+
+(macro usersubject_search_generic_home_data ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 user.home_data_object search_dir_perms))
+
+(macro usersubject_generic_home_data_filetrans ((role ARG1)(type ARG2)(type ARG3)
+    (class ARG4)(name ARG5))
+    (call file_type_transition_pattern (ARG2 user.home_data_object ARG3 ARG4 ARG5))
     (roletype ARG1 ARG3))
 
 (macro usersubject_home_user_filetrans_cert ((role ARG1)(type ARG2))
@@ -741,6 +795,10 @@
 (macro usersubject_rw_generic_home_config_dirs ((type ARG1))
     (call usersubject_search_home_user (ARG1))
     (allow ARG1 user.home_config_object rw_dir_perms))
+
+(macro usersubject_rw_generic_home_data_dirs ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 user.home_data_object rw_dir_perms))
 
 (macro usersubject_search_generic_home_content ((type ARG1))
     (call usersubject_search_home_user (ARG1))

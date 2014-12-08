@@ -6,6 +6,7 @@
 
     (context sysadm_bin (u r user_bin.home_object (systemlow systemlow)))
     (filecon "/root/\.bin(/.*)?" any sysadm_bin)
+    (filecon "/root/\.local/bin(/.*)?" any sysadm_bin)
 
     (context sysadm_cert (u r user_cert.home_object (systemlow systemlow)))
     (filecon "/root/\.pki(/.*)?" any sysadm_cert)
@@ -18,6 +19,9 @@
 
     (context sysadm_config (u r user.home_config_object (systemlow systemlow)))
     (filecon "/root/\.config(/.*)?" any sysadm_config)
+
+    (context sysadm_data (u r user.home_data_object (systemlow systemlow)))
+    (filecon "/root/\.local(/.*)?" any sysadm_data)
 
     (context var_spool_sysadm (u r user.var_spool_object (systemlow mls_systemhigh)))
     (filecon "/var/spool/mail/root" file var_spool_sysadm)
