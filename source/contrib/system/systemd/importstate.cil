@@ -14,6 +14,7 @@
     (call bin_mprot_read_shell_files (common_subject))
 
     (call file_dontaudit_relabel_all (common_subject))
+    (call file_dontaudit_setattr_all (common_subject))
 
     (call fs_list_tmpfs (common_subject))
 

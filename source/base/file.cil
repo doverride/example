@@ -1128,6 +1128,9 @@
 (macro file_dontaudit_relabel_all ((type ARG1))
     (dontaudit ARG1 file_type (all_file_objects (relabel))))
 
+(macro file_dontaudit_setattr_all ((type ARG1))
+    (dontaudit ARG1 file_type (all_file_objects (setattr))))
+
 (macro file_relabel_all_except ((type ARG1))
     (call file_list_all_except (ARG1))
     (allow ARG1 file_except (all_file_objects (relabel))))
