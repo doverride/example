@@ -17,6 +17,9 @@
     (context staff (u r user.home_object (systemlow systemlow)))
     (filecon "/home/john/.*" any staff)
 
+    (context staff_cache (u r home_user_cache (systemlow systemlow)))
+    (filecon "/home/john/\.cache(/.*)?" any staff_cache)
+
     (context staff_config (u r home_user_config (systemlow systemlow)))
     (filecon "/home/john/\.config(/.*)?" any staff_config)
 

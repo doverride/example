@@ -17,6 +17,9 @@
     (context sysadm (u r user.home_object (systemlow systemlow)))
     (filecon "/root/.*" any sysadm)
 
+    (context sysadm_cache (u r home_user_cache (systemlow systemlow)))
+    (filecon "/root/\.cache(/.*)?" any sysadm_cache)
+
     (context sysadm_config (u r home_user_config (systemlow systemlow)))
     (filecon "/root/\.config(/.*)?" any sysadm_config)
 

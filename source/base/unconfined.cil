@@ -16,6 +16,7 @@
         (call usersubject_home_user_filetrans_user (r common_subject))
         (call usersubject_home_user_filetrans_home_bin_dirs (r common_subject))
         (call usersubject_generic_home_data_filetrans_home_bin_dirs (r common_subject))
+        (call usersubject_home_user_filetrans_home_cache_dirs (r common_subject))
         (call usersubject_home_user_filetrans_home_config_dirs (r common_subject))
         (call usersubject_home_user_filetrans_home_data_dirs (r common_subject))
         (call usersubject_home_user_filetrans_home_cert_dirs (r common_subject))
@@ -42,6 +43,9 @@
 
         (context unconfined (u r user.home_object (systemlow systemlow)))
         (filecon "/home/joe/.*" any unconfined)
+
+        (context unconfined_cache (u r home_user_cache (systemlow systemlow)))
+        (filecon "/home/joe/\.cache(/.*)?" any unconfined_cache)
 
         (context unconfined_config (u r home_user_config (systemlow systemlow)))
         (filecon "/home/joe/\.config(/.*)?" any unconfined_config)
