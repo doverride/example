@@ -15,6 +15,9 @@
 
     (call file_dontaudit_relabel_all (common_subject))
     (call file_dontaudit_setattr_all (common_subject))
+    (call file_setattr_generic_etc_dirs (common_subject))
+    (call file_setattr_var_dirs (common_subject))
+    (call file_setattr_var_lib_dirs (common_subject))
 
     (call fs_list_tmpfs (common_subject))
 
@@ -25,8 +28,15 @@
     (call dracut_search_initramfs_run (common_subject))
 
     (call miscfiles_read_localization (common_subject))
+    (call miscfiles_read_net_config (common_subject))
+    (call miscfiles_setattr_net_config (common_subject))
 
     (call seutil_auto_subtrans_setfiles (common_subject))
+
+    (optional importstate_optional_dhcp
+        (call dhcp_list_dhclient_var_lib (common_subject))
+        (call dhcp_read_dhclient_var_lib_files (common_subject))
+        (call dhcp_setattr_dhclient_var_lib (common_subject)))
 )
 
 (allow importstate_admin_type importstate.common_subject signal_perms)

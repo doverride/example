@@ -950,6 +950,9 @@
 (macro file_read_generic_etc_files ((type ARG1))
     (call read_files_pattern (ARG1 etc etc)))
 
+(macro file_setattr_generic_etc_dirs ((type ARG1))
+    (allow ARG1 etc (dir (setattr))))
+
 (macro file_list_mnt ((type ARG1))
     (allow ARG1 mnt list_dir_perms))
 
@@ -991,6 +994,9 @@
 
 (macro file_search_var_lib ((type ARG1))
     (call search_dirs_pattern (ARG1 var var_lib)))
+
+(macro file_setattr_var_lib_dirs ((type ARG1))
+    (allow ARG1 var_lib (dir (setattr))))
 
 (macro file_list_var_log ((type ARG1))
     (call list_dirs_pattern (ARG1 var var_log)))
@@ -1061,6 +1067,9 @@
 
 (macro file_search_var ((type ARG1))
     (allow ARG1 var search_dir_perms))
+
+(macro file_setattr_var_dirs ((type ARG1))
+    (allow ARG1 var (dir (setattr))))
 
 (macro file_list_home ((type ARG1))
     (allow ARG1 home list_dir_perms))

@@ -329,6 +329,11 @@
     (call miscfiles_read_net_config_lnk_files (ARG1))
     (allow ARG1 net.etc_object read_file_perms))
 
+(macro miscfiles_setattr_net_config ((type ARG1))
+    (allow ARG1 net.etc_object (dir (setattr)))
+    (allow ARG1 net.etc_object (file (setattr)))
+    (allow ARG1 net.etc_object (lnk_file (setattr))))
+
 (macro miscfiles_manage_net_config_files ((type ARG1))
     (call file_rw_etc_dirs (ARG1))
     (allow ARG1 net.etc_object manage_file_perms))

@@ -128,6 +128,10 @@
     (call read_files_pattern
         (ARG1 dhclient.var_lib_object dhclient.var_lib_object)))
 
+(macro dhcp_setattr_dhclient_var_lib ((type ARG1))
+    (allow ARG1 dhclient.var_lib_object (dir (setattr)))
+    (allow ARG1 dhclient.var_lib_object (file (setattr))))
+
 (macro dhcp_udp_bind_dhcp_port ((type ARG1))
     (allow ARG1 self (capability (net_bind_service)))
     (allow ARG1 self create_udp_socket_perms)
