@@ -87,6 +87,12 @@
 
         (call unconfined (r common_subject))
 
+        (optional unconfineduser_optional_gsd
+            (call gsd_home_data_filetrans_icc_home_data_dirs (r common_subject))
+
+            (context unconfined_gsd_icc_data (u r icc.home_data_object (systemlow systemlow)))
+            (filecon "/home/joe/\.local/share/icc(/.*)?" any unconfined_gsd_icc_data))
+
         (optional unconfineduser_optional_rpm ; FIXME
             (call rpm_run (common_subject r)))
     )
@@ -147,6 +153,9 @@
 
 (macro unconfined_rw_shm_all_unconfined_user_subjects ((type ARG1))
     (allow ARG1 unconfined_user_subject_type rw_shm_perms))
+
+(macro unconfined_use_fd_all_unconfined_user_subjects ((type ARG1))
+    (allow ARG1 unconfined_user_subject_type (fd (use))))
 
 (macro unconfined_getsched ((type ARG1))
     (allow ARG1 unconfined_type (process (getsched))))

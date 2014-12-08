@@ -98,8 +98,11 @@
     (optional dbusd_optional_gdm
         (call gdm_read_inherited_var_lib_files (common_subject)))
 
-    (optional dbusd_optional_usersubject
-        (call usersubject_read_inherited_generic_home_content_files (common_subject)))
+    (optional dbusd_optional_gsd
+        (call gsd_read_inherited_icc_home_data_files (common_subject)))
+
+    (optional dbusd_optional_unconfined
+        (call unconfined_use_fd_all_unconfined_user_subjects (common_subject)))
 )
 
 (type etc_dbus)

@@ -185,6 +185,10 @@
     (call file_search_etc (ARG1))
     (call manage_files_pattern (ARG1 cupsd.etc_object cupsd.etc_object)))
 
+(macro cups_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 cupsd.etc_object cupsd.etc_object)))
+
 (macro cups_stream_connect_cupsd ((type ARG1))
     (call file_search_run (ARG1))
     (call stream_connect_pattern

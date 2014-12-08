@@ -34,6 +34,21 @@
 
     (context user_tmpfs_systemd (u r systemd.user_tmpfs_object (systemlow systemlow)))
     (filecon "/var/run/user/.*/systemd(/.*)?" any user_tmpfs_systemd)
+
+    (optional user_optional_gsd
+        (call gsd_manage_gsd_home_data (r common_subject))
+        (call gsd_relabel_gsd_home_data (common_subject))
+        (call gsd_home_data_filetrans_gsd_home_data_dirs (r common_subject))
+
+        (context user_gsd_data (u r gsd.home_data_object (systemlow systemlow)))
+        (filecon "/home/.*/\.local/share/gnome-settings-daemon(/.*)?" any user_gsd_data)
+
+        (call gsd_manage_icc_home_data (r common_subject))
+        (call gsd_relabel_icc_home_data (common_subject))
+        (call gsd_home_data_filetrans_icc_home_data_dirs (r common_subject))
+
+        (context user_gsd_icc_data (u r icc.home_data_object (systemlow systemlow)))
+        (filecon "/home/.*/\.local/share/icc(/.*)?" any user_gsd_icc_data))
 )
 
 (block user_chfn

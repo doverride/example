@@ -1000,10 +1000,6 @@
 (macro usersubject_use_fd_all_common_login_subjects ((type ARG1))
     (allow ARG1 usersubject_common_login_type (fd (use))))
 
-(macro usersubject_read_inherited_generic_home_content_files ((type ARG1))
-    (call usersubject_use_fd_all_common_login_subjects (ARG1))
-    (allow ARG1 user.home_object (file (read))))
-
 (macro usersubject_delete_all_tmpfs ((type ARG1))
     (call fs_del_entry_tmpfs (ARG1))
     (allow ARG1 usersubject_tmpfs_type del_entry_dir_perms)

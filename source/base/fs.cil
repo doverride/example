@@ -216,6 +216,9 @@
 (macro fs_getattr_devpts ((type ARG1))
     (allow ARG1 devpts (filesystem (getattr))))
 
+(macro fs_getattr_dosfs ((type ARG1))
+    (allow ARG1 dosfs (filesystem (getattr))))
+
 (macro fs_getattr_devtmpfs ((type ARG1))
     (allow ARG1 devtmpfs (filesystem (getattr))))
 

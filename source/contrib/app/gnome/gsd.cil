@@ -1,0 +1,148 @@
+(roleattribute gsd_role)
+
+(block gsd
+    (blockinherit app_block)
+
+    (roletype gsd_role common_subject)
+
+    (context bin_gsd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/gnome-settings-daemon" file bin_gsd)
+
+    (blockinherit usersubject_home_data_object_block)
+
+    (allow common_subject self (unix_stream_socket (listen accept)))
+
+    (allow common_subject home_data_object manage_dir_perms)
+    (allow common_subject home_data_object manage_file_perms)
+
+    (call usersubject_generic_home_data_filetrans
+        (gsd_role common_subject home_data_object dir "gnome-settings-daemon"))
+
+    (allow common_subject icc.home_data_object manage_dir_perms)
+    (allow common_subject icc.home_data_object manage_file_perms)
+
+    (call usersubject_generic_home_data_filetrans
+        (gsd_role common_subject icc.home_data_object dir "icc"))
+
+    (call dev_rw_wireless (common_subject))
+
+    (call file_list_boot (common_subject))
+    (call file_read_generic_etc (common_subject))
+
+    (call fs_list_tmpfs (common_subject))
+    (call fs_read_devtmpfs_lnk_files (common_subject))
+    (call fs_getattr_fs (common_subject))
+    (call fs_getattr_dosfs (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    ; (call color_dbus_chat_colord (common_subject))
+
+    (call cups_read_config_files (common_subject))
+    (call cups_stream_connect_cupsd (common_subject))
+
+    (call dbus_system_client (common_subject))
+
+    (call hostnamed_dbus_chat (common_subject))
+
+    (call localed_dbus_chat (common_subject))
+
+    (call logind_client (common_subject))
+
+    (call miscfiles_read_hwdata_files (common_subject))
+
+    ; (call mm_dbus_chat (common_subject))
+
+    (call nm_dbus_chat (common_subject))
+
+    (call systemd_dbus_chat (common_subject))
+    (call systemd_status_system (common_subject))
+
+    (call udev_client (common_subject))
+
+    (call udisks_dbus_chat (common_subject))
+
+    ; (call upower_dbus_chat_upowerd (common_subject))
+)
+
+(block gsd_printer
+    (blockinherit app_block)
+
+    (roletype gsd_role common_subject)
+
+    (context bin_gsd_printer (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/gsd-printer" file bin_gsd_printer)
+
+    (call dbus_system_service (common_subject))
+
+    (call cups_read_config_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+)
+
+(block gsd_helper
+    (blockinherit bin_object_block)
+
+    (context bin_gsd_helper (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/gnome-settings-daemon-localeexec" file bin_gsd_helper)
+    (filecon "/usr/libexec/gsd-backlight-helper" file bin_gsd_helper)
+    (filecon "/usr/libexec/gsd-locate-pointer" file bin_gsd_helper)
+    (filecon "/usr/libexec/gsd-wacom-oled-helper" file bin_gsd_helper)
+)
+
+(block icc
+    (blockinherit usersubject_home_data_object_block)
+)
+
+(macro gsd_auto_subtrans ((type ARG1))
+    (call gsd_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 gsd.bin_object gsd.common_subject)))
+
+(macro gsd_run ((type ARG1)(role ARG2))
+    (call gsd_auto_subtrans (ARG1))
+    (roleattributeset gsd_role ARG2))
+
+(macro gsd_send_signal ((type ARG1))
+    (allow ARG1 gsd.common_subject (process (signal))))
+
+(macro gsd_auto_subtrans_printer ((type ARG1))
+    (call gsd_send_signal_printer (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 gsd_printer.bin_object gsd_printer.common_subject)))
+
+(macro gsd_run_printer ((type ARG1)(role ARG2))
+    (call gsd_auto_subtrans_printer (ARG1))
+    (roleattributeset gsd_role ARG2))
+
+(macro gsd_manage_gsd_home_data ((role ARG1)(type ARG2))
+    (allow ARG2 gsd.home_data_object manage_dir_perms)
+    (allow ARG2 gsd.home_data_object manage_file_perms)
+    (roletype ARG1 gsd.home_data_object))
+
+(macro gsd_relabel_gsd_home_data ((type ARG1))
+    (allow ARG1 gsd.home_data_object relabel_dir_perms)
+    (allow ARG1 gsd.home_data_object relabel_file_perms))
+
+(macro gsd_home_data_filetrans_gsd_home_data_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_data_filetrans
+        (ARG1 ARG2 gsd.home_data_object dir "gnome-settings-daemon")))
+
+(macro gsd_read_inherited_icc_home_data_files ((type ARG1))
+    (allow ARG1 icc.home_data_object (file (read))))
+
+(macro gsd_manage_icc_home_data ((role ARG1)(type ARG2))
+    (allow ARG2 icc.home_data_object manage_dir_perms)
+    (allow ARG2 icc.home_data_object manage_file_perms)
+    (roletype ARG1 icc.home_data_object))
+
+(macro gsd_relabel_icc_home_data ((type ARG1))
+    (allow ARG1 icc.home_data_object relabel_dir_perms)
+    (allow ARG1 icc.home_data_object relabel_file_perms))
+
+(macro gsd_home_data_filetrans_icc_home_data_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_data_filetrans
+        (ARG1 ARG2 icc.home_data_object dir "icc")))
+
+(macro gsd_send_signal_printer ((type ARG1))
+    (allow ARG1 gsd_printer.common_subject (process (signal))))
