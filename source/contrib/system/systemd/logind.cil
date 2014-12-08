@@ -141,6 +141,9 @@
 
     (optional logind_optional_gdm
         (call gdm_delete_tmpfs (common_subject)))
+
+    (optional logind_optional_unconfined
+        (call unconfined_read_state_all_unconfined_user_subjects (common_subject)))
 )
 
 (allow logind_admin_type logind_subject_type signal_perms)
