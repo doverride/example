@@ -1012,4 +1012,4 @@
     (allow ARG1 usersubject_common_login_type (process (signal))))
 
 (macro usersubject_dontaudit_rw_inherited_generic_tmpfs_files ((type ARG1))
-    (allow ARG1 user.user_tmpfs_object (file (read write))))
+    (dontaudit ARG1 user.user_tmpfs_object (file (read write))))
