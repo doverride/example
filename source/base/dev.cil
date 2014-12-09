@@ -135,6 +135,13 @@
 (context ppp_dev (sys.u sys.r ppp_dev (systemlow systemlow)))
 (filecon "/dev/ppp" char ppp_dev)
 
+(type printer_dev)
+(call dev_type (printer_dev))
+
+(context printer_dev (sys.u sys.r printer_dev (systemlow systemlow)))
+(filecon "/dev/lp.*" char printer_dev)
+(filecon "/dev/usblp.*" char printer_dev)
+
 (type ptmx_dev)
 (call dev_type (ptmx_dev))
 

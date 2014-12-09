@@ -60,8 +60,6 @@
     (call dev_manage_all (common_subject))
     (call dev_relabel_all (common_subject))
 
-    (call fs_create_devtmpfs_chr_files (common_subject))
-    (call fs_setattr_devtmpfs_chr_files (common_subject))
     (call fs_manage_devtmpfs_dirs (common_subject))
     (call fs_manage_devtmpfs_lnk_files (common_subject))
     (call fs_manage_tmpfs_dirs (common_subject))
