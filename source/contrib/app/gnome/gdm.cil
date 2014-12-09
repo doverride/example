@@ -233,9 +233,21 @@
 (macro gdm_use_fd ((type ARG1))
     (allow ARG1 gdm.common_subject (fd (use))))
 
+(macro gdm_list_config ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 gdm.etc_object list_dir_perms))
+
+(macro gdm_read_config_lnk_files ((type ARG1))
+    (allow ARG1 gdm.etc_object read_lnk_file_perms))
+
 (macro gdm_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern (ARG1 gdm.etc_object gdm.etc_object)))
+
+(macro gdm_read_config ((type ARG1))
+    (call gdm_list_config (ARG1))
+    (call gdm_read_config_lnk_files (ARG1))
+    (call gdm_read_config_files (ARG1)))
 
 (macro gdm_list_var_lib ((type ARG1))
     (call file_search_var_lib (ARG1))
