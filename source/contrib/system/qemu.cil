@@ -1,0 +1,74 @@
+(roleattribute qemu_role)
+
+(roleattribute qemu_admin_role)
+(typeattribute qemu_admin_type)
+
+(typeattribute qemu_object_type)
+(typeattribute qemu_subject_type)
+
+(block qemu
+    (blockinherit app_block)
+
+    (typeattributeset qemu_subject_type common_subject)
+
+    (roletype qemu_role common_subject)
+
+    (context bin_qemu (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/qemu-img" file bin_qemu)
+    (filecon "/usr/bin/qemu-io" file bin_qemu)
+    (filecon "/usr/bin/qemu-kvm" file bin_qemu)
+    (filecon "/usr/bin/qemu-nbd" file bin_qemu)
+    (filecon "/usr/bin/qemu-system-i386" file bin_qemu)
+    (filecon "/usr/bin/qemu-system-x86_64" file bin_qemu)
+)
+
+(block qemu_ga
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset qemu_object_type unit_object)
+    (typeattributeset qemu_subject_type common_subject)
+
+    (context bin_qemu_ga (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/qemu-ga" file bin_qemu_ga)
+
+    (context unit_qemu_ga (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*qemu-guest-agent.*" file unit_qemu_ga)
+
+    (blockinherit file_maintains_single_run_file_block)
+
+    (typeattributeset qemu_object_type run_object)
+
+    (context run_qemu_ga (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/qga\.state" file run_qemu_ga)
+)
+
+(allow qemu_admin_type qemu_subject_type signal_perms)
+(allow qemu_admin_type qemu_subject_type (process (ptrace)))
+(call ps_subject_pattern (qemu_admin_type qemu_subject_type))
+(allow qemu_admin_type qemu_ga.unit_object (service (all)))
+(allow qemu_admin_type qemu_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype qemu_admin_role qemu_object_type)
+
+(call qemu_run (qemu_admin_type qemu_admin_role))
+
+(macro qemu_exec ((type ARG1))
+    (call can_exec (ARG1 qemu.bin_object)))
+
+(macro qemu_auto_subtrans ((type ARG1))
+    (call qemu_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 qemu.bin_object qemu.common_subject)))
+
+(macro qemu_run ((type ARG1)(role ARG2))
+    (call qemu_auto_subtrans (ARG1))
+    (roleattributeset qemu_role ARG2))
+
+(macro qemu_send_signal ((type ARG1))
+    (allow ARG1 qemu.common_subject (process (signal))))
+
+(macro qemu_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset qemu_admin_role ARG1)
+    (typeattributeset qemu_admin_type ARG2))

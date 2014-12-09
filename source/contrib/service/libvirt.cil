@@ -119,7 +119,7 @@
     (call miscfiles_read_hwdata_files (common_subject))
     (call miscfiles_read_net_config_files (common_subject))
 
-    ; (call qemu_getattr_qemu_executable_files (common_subject)) ; temporary to make it shut up
+    (call qemu_exec (common_subject))
 
     (call seutil_read_config_files (common_subject))
     (call seutil_read_file_context_files (common_subject))

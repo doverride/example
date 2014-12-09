@@ -130,9 +130,6 @@
     (call plymouth_auto_subtrans (ARG1))
     (roleattributeset plymouth_role ARG2))
 
-(macro plymouth_getattr_plymouthd_exec_files ((type ARG1))
-    (allow ARG1 plymouthd.bin_object (file (getattr))))
-
 (macro plymouth_read_config_files ((type ARG1))
     (call file_search_etc (ARG1))
     (call read_files_pattern

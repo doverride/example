@@ -186,6 +186,9 @@
     (optional sysadm_optional_ppp
         (call ppp_admin (r common_subject)))
 
+    (optional sysadm_optional_qemu
+        (call qemu_admin (r common_subject)))
+
     (optional sysadm_optional_rpcbind
         (call rpcbind_admin (r common_subject)))
 

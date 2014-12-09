@@ -85,7 +85,7 @@
     (call mount_exec (common_subject))
     (call mount_manage_run_files (common_subject))
 
-    (call plymouth_getattr_plymouthd_exec_files (common_subject))
+    (call plymouth_exec (common_subject))
     (call plymouth_use_fd_plymouthd (common_subject))
 
     (call systemd_getattr_unit_dirs (common_subject))
