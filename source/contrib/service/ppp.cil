@@ -1,0 +1,66 @@
+(roleattribute ppp_admin_role)
+(typeattribute ppp_admin_type)
+
+(typeattribute ppp_object_type)
+
+(block pppd
+    (blockinherit subject_system_entry_block)
+
+    (context bin_pppd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/pppd" file bin_pppd)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset ppp_object_type etc_object)
+
+    (context etc_pppd (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/ppp(/.*)?" any etc_pppd)
+
+    (blockinherit file_maintains_run_lock_dirs_and_files_block)
+
+    (typeattributeset ppp_object_type run_lock_object)
+
+    (context run_lock_pppd (sys.u sys.r run_lock_object (systemlow systemlow)))
+    (filecon "/run/lock/ppp(/.*)?" any run_lock_pppd)
+
+    (blockinherit file_maintains_var_log_dirs_and_files_block)
+
+    (typeattributeset ppp_object_type var_log_object)
+
+    (context var_log_pppd (sys.u sys.r var_log_object (systemlow systemlow)))
+    (filecon "/var/log/ppp(/.*)?" any var_log_pppd)
+
+    (blockinherit auth_maintains_single_pam_etc_file_block)
+
+    (typeattributeset ppp_object_type pam_etc_object)
+
+    (context pam_etc_pppd (sys.u sys.r pam_etc_object (systemlow systemlow)))
+    (filecon "/etc/pam\.d/ppp" file pam_etc_pppd)
+
+    (blockinherit file_maintains_run_dirs_and_files_block)
+
+    (typeattributeset ppp_object_type run_object)
+
+    (context run_pppd (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/ppp(/.*)?" any run_pppd)
+)
+
+(allow ppp_admin_type pppd.common_subject signal_perms)
+(allow ppp_admin_type pppd.common_subject (process (ptrace)))
+(call ps_subject_pattern (ppp_admin_type pppd.common_subject))
+(allow ppp_admin_type ppp_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype ppp_admin_role ppp_object_type)
+
+(macro ppp_auto_subtrans ((type ARG1))
+    (call ppp_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 pppd.bin_object pppd.common_subject)))
+
+(macro ppp_send_signal ((type ARG1))
+    (allow ARG1 pppd.common_subject (process (signal))))
+
+(macro ppp_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (roleattributeset ppp_admin_role ARG1)
+    (typeattributeset ppp_admin_type ARG2))

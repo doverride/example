@@ -183,6 +183,9 @@
     (optional sysadm_optional_polkit
         (call polkit_admin (r common_subject)))
 
+    (optional sysadm_optional_ppp
+        (call ppp_admin (r common_subject)))
+
     (optional sysadm_optional_rpcbind
         (call rpcbind_admin (r common_subject)))
 
