@@ -132,6 +132,10 @@
 (macro firewall_rw_inherited_tmpfs_files ((type ARG1))
     (allow ARG1 firewalld.tmpfs_object (file (read write))))
 
+(macro firewall_dbus_chat ((type ARG1))
+    (allow ARG1 firewalld.common_subject (dbus (send_msg)))
+    (allow firewalld.common_subject ARG1 (dbus (send_msg))))
+
 (macro firewall_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
     (call systemd_system_service_admin (ARG2))

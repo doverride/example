@@ -216,6 +216,9 @@
 (macro fs_getattr_devpts ((type ARG1))
     (allow ARG1 devpts (filesystem (getattr))))
 
+(macro fs_getattr_hugetlbfs ((type ARG1))
+    (allow ARG1 hugetlbfs (filesystem (getattr))))
+
 (macro fs_getattr_dosfs ((type ARG1))
     (allow ARG1 dosfs (filesystem (getattr))))
 
@@ -237,6 +240,9 @@
 (macro fs_list_binfmt_misc ((type ARG1))
     (call sys_search_fs_sysctl (ARG1))
     (allow ARG1 binfmt_misc list_dir_perms))
+
+(macro fs_manage_hugetlbfs_dirs ((type ARG1))
+    (call manage_dirs_pattern (ARG1 hugetlbfs hugetlbfs)))
 
 (macro fs_read_binfmt_misc_files ((type ARG1))
     (call sys_search_fs_sysctl (ARG1))

@@ -1,0 +1,184 @@
+(roleattribute libvirt_admin_role)
+(typeattribute libvirt_admin_type)
+
+(typeattribute libvirt_object_type)
+(typeattribute libvirt_subject_type)
+
+(typeattribute libvirt_unit_object_type)
+
+(block libvirtd
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset libvirt_object_type unit_object)
+    (typeattributeset libvirt_unit_object_type unit_object)
+    (typeattributeset libvirt_subject_type common_subject)
+
+    (context bin_libvirtd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/libvirtd" file bin_libvirtd)
+
+    (context unit_libvirtd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*libvirtd.*" file unit_libvirtd)
+
+    (blockinherit file_maintains_var_cache_dirs_and_files_block)
+
+    (typeattributeset libvirt_object_type var_cache_object)
+
+    (context var_cache_libvirtd (sys.u sys.r var_cache_object (systemlow systemlow)))
+    (filecon "/var/cache/libvirt(/.*)?" any var_cache_libvirtd)
+
+    (blockinherit file_maintains_var_log_dirs_and_files_block)
+
+    (typeattributeset libvirt_object_type var_log_object)
+
+    (context var_log_libvirtd (sys.u sys.r var_log_object (systemlow systemlow)))
+    (filecon "/var/log/libvirt(/.*)?" any var_log_libvirtd)
+
+    (blockinherit file_run_object_block)
+
+    (typeattributeset libvirt_object_type run_object)
+
+    (context run_libvirtd (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/libvirt(/.*)?" any run_libvirtd)
+    (filecon "/var/run/libvirt\.pid" file run_libvirtd)
+
+    (allow common_subject run_object manage_dir_perms)
+    (allow common_subject run_object manage_file_perms)
+    (allow common_subject run_object manage_sock_file_perms)
+    (call file_run_filetrans (common_subject run_object dir "*"))
+    (call file_run_filetrans (common_subject run_object file "*"))
+
+    (blockinherit file_maintains_var_lib_dirs_files_and_sock_files_block)
+
+    (typeattributeset libvirt_object_type var_lib_object)
+
+    (context var_lib_libvirtd (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/libvirt(/.*)?" any var_lib_libvirtd)
+
+    (allow common_subject libvirtd_dnsmasq.var_lib_object manage_dir_perms)
+    (allow common_subject libvirtd_dnsmasq.var_lib_object manage_file_perms)
+    (call file_type_transition_pattern
+        (common_subject var_lib_object libvirtd_dnsmasq.var_lib_object dir "dnsmasq"))
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset libvirt_object_type etc_object)
+
+    (context etc_libvirtd (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/libvirt(/.*)?" any etc_libvirtd)
+    (filecon "/etc/sysconfig/libvirtd" file etc_libvirtd)
+    (filecon "/etc/sysconfig/virtlockd" file etc_libvirtd)
+
+    (allow common_subject self (capability (dac_override chown net_raw
+        net_admin setgid setuid kill sys_admin)))
+    (allow common_subject self (process (getsched setcap getcap)))
+    (allow common_subject self (unix_stream_socket (listen accept)))
+    (allow common_subject self create_packet_socket_perms)
+    (allow common_subject self create_tun_socket_perms)
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call sys_read_net_proc (common_subject))
+    (call sys_read_kernel_sysctl (common_subject))
+    (call sys_rw_net_sysctl (common_subject))
+    (call sys_request_load_module (common_subject))
+    (call sys_write_mtrr_proc (common_subject))
+
+    (call bin_execute_shell_files (common_subject))
+
+    (call dev_read_urandom (common_subject))
+    (call dev_rw_tun_tap (common_subject))
+
+    (call file_read_generic_etc (common_subject))
+    (call file_read_generic_usr (common_subject))
+
+    (call fs_list_sysfs (common_subject))
+    (call fs_rw_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+
+    (call fs_getattr_hugetlbfs (common_subject))
+    (call fs_manage_hugetlbfs_dirs (common_subject))
+
+    (call sec_get_enforce_mode (common_subject))
+
+    (call audit_client (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_client (common_subject))
+
+    (call dmi_auto_subtrans (common_subject))
+
+    (call dnsmasq_auto_subtrans (common_subject))
+
+    (call iptools_auto_subtrans (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call logind_dbus_chat (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+    (call miscfiles_read_hwdata_files (common_subject))
+    (call miscfiles_read_net_config_files (common_subject))
+
+    ; (call qemu_getattr_qemu_executable_files (common_subject)) ; temporary to make it shut up
+
+    (call seutil_read_config_files (common_subject))
+    (call seutil_read_file_context_files (common_subject))
+
+    (call systemd_stream_connect (common_subject))
+
+    (call udev_client (common_subject))
+
+    (optional libvirtd_optional_firewall
+        (call firewall_dbus_chat (common_subject)))
+)
+
+(block libvirtd_dnsmasq
+    (blockinherit file_var_lib_object_block)
+
+    (typeattributeset libvirt_object_type var_lib_object)
+
+    (context var_lib_libvirtd_dnsmasq (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/libvirt/dnsmasq(/.*)?" any var_lib_libvirtd_dnsmasq)
+)
+
+(block libvirtd_helper
+    (blockinherit bin_object_block)
+
+    (context bin_libvirtd_helper (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/libvirt_iohelper" file bin_libvirtd_helper)
+)
+
+(block virtlockd
+    (blockinherit systemd_daemon_socket_activated_block)
+
+    (typeattributeset libvirt_object_type unit_object)
+    (typeattributeset libvirt_unit_object_type unit_object)
+    (typeattributeset libvirt_subject_type common_subject)
+
+    (context bin_virtlockd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/virtlockd" file bin_virtlockd)
+
+    (context unit_virtlockd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*virtlockd.*" file unit_virtlockd)
+
+    (call systemd_socket_activated_object_type (libvirtd.run_object))
+
+    (allow common_subject libvirtd.run_object manage_dir_perms)
+    (allow common_subject libvirtd.run_object manage_file_perms)
+    (allow common_subject libvirtd.run_object manage_sock_file_perms)
+    (call file_run_filetrans (common_subject libvirtd.run_object dir "*"))
+)
+
+(allow libvirt_admin_type libvirt_subject_type signal_perms)
+(allow libvirt_admin_type libvirt_subject_type (process (ptrace)))
+(call ps_subject_pattern (libvirt_admin_type libvirt_subject_type))
+(allow libvirt_admin_type libvirt_unit_object_type (service (all)))
+(allow libvirt_admin_type libvirt_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype libvirt_admin_role libvirt_object_type)
+
+(macro libvirt_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset libvirt_admin_role ARG1)
+    (typeattributeset libvirt_admin_type ARG2))

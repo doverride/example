@@ -144,6 +144,9 @@
     (optional sysadm_optional_ld
         (call ld_admin (r common_subject)))
 
+    (optional sysadm_optional_libvirt
+        (call libvirt_admin (r common_subject)))
+
     (optional sysadm_optional_login
         (call login_admin (r common_subject)))
 
