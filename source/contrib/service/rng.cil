@@ -1,0 +1,59 @@
+(roleattribute rngtest_role)
+
+(roleattribute rng_admin_role)
+(typeattribute rng_admin_type)
+
+(typeattribute rng_subject_type)
+
+(block rngtest
+    (blockinherit app_block)
+
+    (typeattributeset rng_subject_type common_subject)
+
+    (roletype rngtest_role common_subject)
+
+    (context bin_rngtest (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/rngtest" file bin_rngtest)
+)
+
+(block rngd
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset rng_subject_type common_subject)
+
+    (context bin_rngd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/rngd" file bin_rngd)
+
+    (context unit_rngd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*rngd.*" file unit_rngd)
+
+    (call sys_read_kernel_sysctl (common_subject))
+)
+
+(allow rng_admin_type rng_subject_type signal_perms)
+(allow rng_admin_type rng_subject_type (process (ptrace)))
+(call ps_subject_pattern (rng_admin_type rng_subject_type))
+(allow rng_admin_type rngd.unit_object (service (all)))
+(allow rng_admin_type rngd.unit_object (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype rng_admin_role rngd.unit_object)
+
+(call rng_run_test (rng_admin_type rng_admin_role))
+
+(macro rng_auto_subtrans_test ((type ARG1))
+    (call rng_send_signal_test (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 rngtest.bin_object rngtest.common_subject)))
+
+(macro rng_run_test ((type ARG1)(role ARG2))
+    (call rng_auto_subtrans_test (ARG1))
+    (roleattributeset rngtest_role ARG2))
+
+(macro rng_send_signal_test ((type ARG1))
+    (allow ARG1 rngtest.common_subject (process (signal))))
+
+(macro rng_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset rng_admin_role ARG1)
+    (typeattributeset rng_admin_type ARG2))
