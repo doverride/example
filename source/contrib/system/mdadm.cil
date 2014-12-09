@@ -1,0 +1,90 @@
+(roleattribute mdadm_role)
+
+(roleattribute mdadm_admin_role)
+(typeattribute mdadm_admin_type)
+
+(typeattribute mdadm_object_type)
+(typeattribute mdadm_subject_type)
+
+(typeattribute mdadm_unit_object_type)
+
+(block mdadm
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset mdadm_object_type unit_object)
+    (typeattributeset mdadm_unit_object_type unit_object)
+    (typeattributeset mdadm_subject_type common_subject)
+
+    (roletype mdadm_role common_subject)
+
+    (context bin_mdadm (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/mdadm" file bin_mdadm)
+    (filecon "/usr/sbin/raid-check" file bin_mdadm)
+
+    (context unit_mdadm (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*mdadm-.*" file unit_mdadm)
+
+    (blockinherit file_maintains_run_dirs_and_files_block)
+
+    (typeattributeset mdadm_object_type run_object)
+
+    (context run_mdadm (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/mdadm(/.*)?" any run_mdadm)
+
+    (optional mdadm_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+)
+
+(block mdmon
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset mdadm_object_type unit_object)
+    (typeattributeset mdadm_unit_object_type unit_object)
+    (typeattributeset mdadm_subject_type common_subject)
+
+    (context bin_mdmon (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/mdmon" file bin_mdmon)
+
+    (context unit_mdmon (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*mdmon.*" file unit_mdmon)
+)
+
+(allow mdadm_admin_type mdadm_subject_type signal_perms)
+(allow mdadm_admin_type mdadm_subject_type (process (ptrace)))
+(call ps_subject_pattern (mdadm_admin_type mdadm_subject_type))
+(allow mdadm_admin_type mdadm_unit_object_type (service (all)))
+(allow mdadm_admin_type mdadm_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype mdadm_admin_role mdadm_object_type)
+
+(call mdadm_run (mdadm_admin_type mdadm_admin_role))
+
+(macro mdadm_exec ((type ARG1))
+    (call can_exec (ARG1 mdadm.bin_object)))
+
+(macro mdadm_auto_subtrans ((type ARG1))
+    (call mdadm_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 mdadm.bin_object mdadm.common_subject)))
+
+(macro mdadm_run ((type ARG1)(role ARG2))
+    (call mdadm_auto_subtrans (ARG1))
+    (roleattributeset mdadm_role ARG2))
+
+(macro mdadm_send_signal ((type ARG1))
+    (allow ARG1 mdadm.common_subject (process (signal))))
+
+(macro mdadm_list_run ((type ARG1))
+    (call file_search_run (ARG1))
+    (allow ARG1 mdadm.run_object list_dir_perms))
+
+(macro mdadm_read_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call read_files_pattern (ARG1 mdadm.run_object mdadm.run_object)))
+
+(macro mdadm_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset mdadm_admin_role ARG1)
+    (typeattributeset mdadm_admin_type ARG2))

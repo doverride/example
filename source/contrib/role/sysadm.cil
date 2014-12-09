@@ -162,6 +162,9 @@
     (optional sysadm_optional_mcelog
         (call mcelog_admin (r common_subject)))
 
+    (optional sysadm_optional_mdadm
+        (call mdadm_admin (r common_subject)))
+
     (optional sysadm_optional_mount
         (call mount_run (common_subject r)))
 

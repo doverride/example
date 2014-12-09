@@ -95,6 +95,11 @@
     (call usersubject_use_generic_inherited_terminals (common_subject))
 
     (call utmp_read_run_files (common_subject))
+
+    (optional shutdown_optional_mdadm
+        (call mdadm_exec (common_subject))
+        (call mdadm_list_run (common_subject))
+        (call mdadm_read_run_files (common_subject)))
 )
 
 (block shutdownd
