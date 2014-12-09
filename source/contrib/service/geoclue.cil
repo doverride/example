@@ -1,0 +1,64 @@
+(roleattribute geoclue_admin_role)
+(typeattribute geoclue_admin_type)
+
+(typeattribute geoclue_object_type)
+
+(block geoclue
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset geoclue_object_type unit_object)
+
+    (context bin_geoclue (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/geoclue" file bin_geoclue)
+
+    (context unit_geoclue (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*geoclue.*" file unit_geoclue)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset geoclue_object_type var_lib_object)
+
+    (context var_lib_geoclue (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/geoclue(/.*)?" any var_lib_geoclue)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset geoclue_object_type etc_object)
+
+    (context etc_geoclue (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/geoclue(/.*)?" any etc_geoclue)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset geoclue_object_type dbus_etc_object)
+
+    (context dbus_etc_geoclue (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.GeoClue2\.Agent\.conf" file dbus_etc_geoclue)
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.GeoClue2\.conf" file dbus_etc_geoclue)
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    ; (optional geoclue_optional_mm
+        ; (call mm_dbus_chat (common_subject)))
+
+    ; (optional geoclue_optional_wpa
+        ; (call wpa_dbus_chat (common_subject)))
+)
+
+(allow geoclue_admin_type geoclue.common_subject signal_perms)
+(allow geoclue_admin_type geoclue.common_subject (process (ptrace)))
+(call ps_subject_pattern (geoclue_admin_type geoclue.common_subject))
+(allow geoclue_admin_type geoclue.unit_object (service (all)))
+(allow geoclue_admin_type geoclue_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype geoclue_admin_role geoclue_object_type)
+
+(macro geoclue_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset geoclue_admin_role ARG1)
+    (typeattributeset geoclue_admin_type ARG2))
