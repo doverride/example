@@ -1,5 +1,3 @@
-(typepermissive cracklib.common_subject)
-
 (roleattribute cracklib_role)
 (roleattribute groupadd_role)
 (roleattribute useradd_role)

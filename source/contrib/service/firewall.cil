@@ -1,5 +1,3 @@
-(typepermissive firewallcmd.common_subject)
-
 (roleattribute firewallcmd_role)
 
 (roleattribute firewall_admin_role)

@@ -1,6 +1,3 @@
-(typepermissive systemctl.common_subject)
-(typepermissive systemd_generic.common_subject)
-
 (roleattribute systemd_session_role)
 (typeattribute systemd_session_subject_type)
 

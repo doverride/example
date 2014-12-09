@@ -1,5 +1,3 @@
-(typepermissive hwclock.common_subject)
-
 (roleattribute hwclock_role)
 
 (block hwclock

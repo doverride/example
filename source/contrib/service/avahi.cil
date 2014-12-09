@@ -1,6 +1,3 @@
-(typepermissive avahi_autoipd.common_subject)
-(typepermissive avahid.common_subject)
-
 (roleattribute avahi_admin_role)
 (typeattribute avahi_admin_type)
 

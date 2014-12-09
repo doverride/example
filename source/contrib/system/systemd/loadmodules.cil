@@ -1,5 +1,3 @@
-(typepermissive loadmodules.common_subject)
-
 (roleattribute loadmodules_admin_role)
 (typeattribute loadmodules_admin_type)
 

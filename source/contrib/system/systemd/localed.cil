@@ -1,5 +1,3 @@
-(typepermissive localectl.common_subject)
-
 (roleattribute localectl_role)
 
 (roleattribute localed_admin_role)

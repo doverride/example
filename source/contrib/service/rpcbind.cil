@@ -1,5 +1,3 @@
-(typepermissive rpcbind.common_subject)
-
 (roleattribute rpcbind_admin_role)
 (typeattribute rpcbind_admin_type)
 
