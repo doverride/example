@@ -117,7 +117,7 @@
 
     (call subject_execmem_uncond (common_subject))
 
-    ; (call accountsservice_dbus_chat (common_subject))
+    (call accounts_dbus_chat (common_subject))
 
     (call app_execute_all_exec_files (common_subject))
 
@@ -232,6 +232,10 @@
 
 (macro gdm_use_fd ((type ARG1))
     (allow ARG1 gdm.common_subject (fd (use))))
+
+(macro gdm_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 gdm.etc_object gdm.etc_object)))
 
 (macro gdm_list_var_lib ((type ARG1))
     (call file_search_var_lib (ARG1))
