@@ -107,6 +107,9 @@
     (optional xserver_optional_unconfined
         (call unconfined_rw_shm_all_unconfined_user_subjects (common_subject))
         (call unconfined_read_state_all_unconfined_user_subjects (common_subject)))
+
+    (optional xserver_optional_usersubject
+        (call usersubject_rw_inherited_generic_tmpfs_files (common_subject)))
 )
 
 (block xserver_wrap

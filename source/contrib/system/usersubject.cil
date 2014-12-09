@@ -953,6 +953,9 @@
 (macro usersubject_use_fd_all_common_subjects ((type ARG1))
     (allow ARG1 usersubject_common_type (fd (use))))
 
+(macro usersubject_rw_inherited_generic_tmpfs_files ((type ARG1))
+    (allow ARG1 user.user_tmpfs_object (file (read write))))
+
 (macro usersubject_rw_inherited_fifo_files_all_common_subjects ((type ARG1))
     (allow ARG1 usersubject_common_type rw_inherited_fifo_file_perms))
 
