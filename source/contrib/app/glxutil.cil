@@ -1,0 +1,37 @@
+(roleattribute glxutil_role)
+
+(block glxutil
+    (blockinherit app_block)
+
+    (roletype glxutil_role common_subject)
+
+    (context bin_glxutil (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/glxgears" file bin_glxutil)
+    (filecon "/usr/bin/glxinfo" file bin_glxutil)
+    (filecon "/usr/bin/glxinfo64" file bin_glxutil)
+    (filecon "/usr/bin/xdriinfo" file bin_glxutil)
+
+    (blockinherit usersubject_tmpfs_object_block)
+
+    (call dev_rw_dri (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+
+    (call udev_client (common_subject))
+)
+
+(macro glxutil_auto_subtrans ((type ARG1))
+    (call glxutil_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 glxutil.bin_object glxutil.common_subject)))
+
+(macro glxutil_run ((type ARG1)(role ARG2))
+    (call glxutil_auto_subtrans (ARG1))
+    (roleattributeset glxutil_role ARG2))
+
+(macro glxutil_send_signal ((type ARG1))
+    (allow ARG1 glxutil.common_subject (process (signal))))
