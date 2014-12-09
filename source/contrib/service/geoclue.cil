@@ -45,8 +45,8 @@
     (optional geoclue_optional_mm
         (call mm_dbus_chat (common_subject)))
 
-    ; (optional geoclue_optional_wpa
-        ; (call wpa_dbus_chat (common_subject)))
+    (optional geoclue_optional_wpa
+        (call wpa_dbus_chat (common_subject)))
 )
 
 (allow geoclue_admin_type geoclue.common_subject signal_perms)

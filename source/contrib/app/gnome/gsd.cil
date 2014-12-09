@@ -62,7 +62,7 @@
 
     (call udisks_dbus_chat (common_subject))
 
-    ; (call upower_dbus_chat_upowerd (common_subject))
+    (call upower_dbus_chat (common_subject))
 )
 
 (block gsd_printer

@@ -110,6 +110,10 @@
     (call wpa_auto_subtrans_wpacli (ARG1))
     (roleattributeset wpacli_role ARG2))
 
+(macro wpa_dbus_chat ((type ARG1))
+    (allow ARG1 wpa.common_subject (dbus (send_msg)))
+    (allow wpa.common_subject ARG1 (dbus (send_msg))))
+
 (macro wpa_send_signal_wpacli ((type ARG1))
     (allow ARG1 wpacli.common_subject (process (signal))))
 

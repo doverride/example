@@ -1,0 +1,113 @@
+(roleattribute upower_role)
+
+(roleattribute upower_admin_role)
+(typeattribute upower_admin_type)
+
+(typeattribute upower_object_type)
+(typeattribute upower_subject_type)
+
+(block upower
+    (blockinherit app_block)
+
+    (typeattributeset upower_subject_type common_subject)
+
+    (roletype upower_role common_subject)
+
+    (context bin_upower (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/upower" file bin_upower)
+
+    (call term_use_inherited_unallocated_tts (common_subject))
+
+    (call dbus_system_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call upower_dbus_chat (common_subject))
+)
+
+(block upowerd
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset upower_object_type unit_object)
+    (typeattributeset upower_subject_type common_subject)
+
+    (context bin_upowerd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/upowerd" file bin_upowerd)
+
+    (context unit_upowerd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/upower.*" file unit_upowerd)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset upower_object_type etc_object)
+
+    (context etc_upowerd (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/UPower(/.*)?" any etc_upowerd)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset upower_object_type dbus_etc_object)
+
+    (context dbus_etc_upowerd (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.UPower\.conf" file dbus_etc_upowerd)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset upower_object_type var_lib_object)
+ 
+    (context var_lib_upowerd (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/upower(/.*)?" any var_lib_upowerd)
+
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call dev_read_event (common_subject))
+    (call dev_read_urandom (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+    (call fs_list_devtmpfs (common_subject))
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call logind_dbus_chat (common_subject))
+
+    (call polkit_dbus_chat_polkitd (common_subject))
+
+    (call udev_client (common_subject))
+)
+
+(allow upower_admin_type upower_subject_type signal_perms)
+(allow upower_admin_type upower_subject_type (process (ptrace)))
+(call ps_subject_pattern (upower_admin_type upower_subject_type))
+(allow upower_admin_type upowerd.unit_object (service (all)))
+(allow upower_admin_type upower_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype upower_admin_role upower_object_type)
+
+(call upower_run (upower_admin_type upower_admin_role))
+
+(macro upower_auto_subtrans ((type ARG1))
+    (call upower_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 upower.bin_object upower.common_subject)))
+
+(macro upower_run ((type ARG1)(role ARG2))
+    (call upower_auto_subtrans (ARG1))
+    (roleattributeset upower_role ARG2))
+
+(macro upower_send_signal ((type ARG1))
+    (allow ARG1 upower.common_subject (process (signal))))
+
+(macro upower_dbus_chat ((type ARG1))
+    (allow ARG1 upowerd.common_subject (dbus (send_msg)))
+    (allow upowerd.common_subject ARG1 (dbus (send_msg))))
+
+(macro upower_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset upower_admin_role ARG1)
+    (typeattributeset upower_admin_type ARG2))
