@@ -75,6 +75,8 @@
 
     (call logind_dbus_chat (common_subject))
 
+    (call miscfiles_read_localization (common_subject))
+
     (call polkit_dbus_chat_polkitd (common_subject))
 
     (call udev_client (common_subject))

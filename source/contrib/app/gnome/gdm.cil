@@ -247,7 +247,7 @@
 
 (macro gdm_read_inherited_var_lib_files ((type ARG1))
     (call gdm_use_fd (ARG1))
-    (allow ARG1 gdm.var_lib_object (file (read))))
+    (allow ARG1 gdm.var_lib_object (file (getattr read))))
 
 (macro gdm_read_run_files ((type ARG1))
     (call file_search_run (ARG1))

@@ -48,6 +48,8 @@
 
     (typeattributeset color_object_type tmpfs_object)
 
+    (call dev_read_urandom (common_subject))
+
     (call file_read_generic_usr (common_subject))
 
     (call fs_getattr_fs (common_subject))

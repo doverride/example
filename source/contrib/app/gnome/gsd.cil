@@ -138,7 +138,7 @@
 
 (macro gsd_read_inherited_icc_home_data_files ((type ARG1))
     (call gsd_use_fd (ARG1))
-    (allow ARG1 icc.home_data_object (file (read))))
+    (allow ARG1 icc.home_data_object (file (getattr read))))
 
 (macro gsd_manage_icc_home_data ((role ARG1)(type ARG2))
     (allow ARG2 icc.home_data_object manage_dir_perms)

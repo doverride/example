@@ -36,6 +36,10 @@
     (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.GeoClue2\.Agent\.conf" file dbus_etc_geoclue)
     (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.GeoClue2\.conf" file dbus_etc_geoclue)
 
+    (call dev_read_urandom (common_subject))
+
+    (call file_read_generic_usr (common_subject))
+
     (call auth_nsswitch_client (common_subject))
 
     (call dbus_system_service (common_subject))
