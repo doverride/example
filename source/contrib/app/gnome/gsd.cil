@@ -51,7 +51,7 @@
 
     (call miscfiles_read_hwdata_files (common_subject))
 
-    ; (call mm_dbus_chat (common_subject))
+    (call mm_dbus_chat (common_subject))
 
     (call nm_dbus_chat (common_subject))
 

@@ -97,6 +97,13 @@
 (filecon "/dev/mem" char memory_dev)
 (filecon "/dev/port" char memory_dev)
 
+(type modem_dev)
+(call dev_type (modem_dev))
+
+(context modem_dev (sys.u sys.r modem_dev (systemlow systemlow)))
+(filecon "/dev/cdc-wdm[0-9]" char modem_dev)
+(filecon "/dev/modem" char modem_dev)
+
 (type mouse_dev)
 (call dev_type (mouse_dev))
 
@@ -398,6 +405,9 @@
 
 (macro dev_rw_lvm_control ((type ARG1))
     (allow ARG1 lvm_control_dev rw_chr_file_perms))
+
+(macro dev_rw_modem ((type ARG1))
+    (allow ARG1 modem_dev rw_chr_file_perms))
 
 (macro dev_rw_null ((type ARG1))
     (allow ARG1 null_dev rw_chr_file_perms))

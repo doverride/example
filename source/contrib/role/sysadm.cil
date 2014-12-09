@@ -162,6 +162,9 @@
     (optional sysadm_optional_mount
         (call mount_run (common_subject r)))
 
+    (optional sysadm_optional_mm
+        (call mm_admin (r common_subject)))
+
     (optional sysadm_optional_nettools
         (call nettools_admin (r common_subject)))
 

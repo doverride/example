@@ -1,0 +1,103 @@
+(roleattribute mmcli_role)
+
+(roleattribute mm_admin_role)
+(typeattribute mm_admin_type)
+
+(typeattribute mm_object_type)
+(typeattribute mm_subject_type)
+
+(typeattribute mm_client_type)
+
+(block mmcli
+    (blockinherit app_block)
+
+    (typeattributeset mm_subject_type common_subject)
+
+    (roletype mmcli_role common_subject)
+
+    (context bin_mmcli (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/mmcli" file bin_mmcli)
+
+    (call mm_client (common_subject))
+)
+
+(block mm
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset mm_object_type unit_object)
+    (typeattributeset mm_subject_type common_subject)
+
+    (context bin_mm (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/ModemManager" file bin_mm)
+
+    (context unit_mm (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*ModemManager.*" file unit_mm)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset mm_object_type dbus_etc_object)
+
+    (context dbus_etc_mm (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.ModemManager1\.conf" file dbus_etc_mm)
+
+    (allow common_subject self (capability (sys_admin)))
+
+    (call dev_rw_modem (common_subject))
+
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+
+    (call term_use_unallocated_tts (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call nm_dbus_chat (common_subject))
+
+    (call udev_client (common_subject))
+)
+
+(call mm_dbus_chat (mm_client_type))
+
+(allow mm_admin_type mm_subject_type signal_perms)
+(allow mm_admin_type mm_subject_type (process (ptrace)))
+(call ps_subject_pattern (mm_admin_type mm_subject_type))
+(allow mm_admin_type mm.unit_object (service (all)))
+(allow mm_admin_type mm_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype mm_admin_role mm_object_type)
+
+(call mm_run_mmcli (mm_admin_type mm_admin_role))
+
+(macro mm_exec_nmcli ((type ARG1))
+    (call mm_client (ARG1))
+    (call can_exec (ARG1 mmcli.bin_object)))
+
+(macro mm_auto_subtrans_mmcli ((type ARG1))
+    (call mm_send_signal_mmcli (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 mmcli.bin_object mmcli.common_subject)))
+
+(macro mm_run_mmcli ((type ARG1)(role ARG2))
+    (call mm_auto_subtrans_mmcli (ARG1))
+    (roleattributeset mmcli_role (ARG2)))
+
+(macro mm_send_signal_mmcli ((type ARG1))
+    (allow ARG1 mmcli.common_subject (process (signal))))
+
+(macro mm_client ((type ARG1))
+    (typeattributeset mm_client_type ARG1))
+
+(macro mm_dbus_chat ((type ARG1))
+    (allow ARG1 mm.common_subject (dbus (send_msg)))
+    (allow mm.common_subject ARG1 (dbus (send_msg))))
+
+(macro mm_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset mm_admin_role ARG1)
+    (typeattributeset mm_admin_type ARG2))
