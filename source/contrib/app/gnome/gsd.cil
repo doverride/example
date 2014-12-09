@@ -36,7 +36,7 @@
 
     (call auth_nsswitch_client (common_subject))
 
-    ; (call color_dbus_chat_colord (common_subject))
+    (call color_dbus_chat (common_subject))
 
     (call cups_read_config_files (common_subject))
     (call cups_stream_connect_cupsd (common_subject))
@@ -128,7 +128,16 @@
     (call usersubject_generic_home_data_filetrans
         (ARG1 ARG2 gsd.home_data_object dir "gnome-settings-daemon")))
 
+(macro gsd_read_state ((type ARG1))
+    (allow ARG1 gsd.common_subject list_dir_perms)
+    (allow ARG1 gsd.common_subject read_file_perms)
+    (allow ARG1 gsd.common_subject read_lnk_file_perms))
+
+(macro gsd_use_fd ((type ARG1))
+    (allow ARG1 gsd.common_subject (fd (use))))
+
 (macro gsd_read_inherited_icc_home_data_files ((type ARG1))
+    (call gsd_use_fd (ARG1))
     (allow ARG1 icc.home_data_object (file (read))))
 
 (macro gsd_manage_icc_home_data ((role ARG1)(type ARG2))

@@ -1,0 +1,115 @@
+(roleattribute color_role)
+
+(roleattribute color_admin_role)
+(typeattribute color_admin_type)
+
+(typeattribute color_object_type)
+(typeattribute color_subject_type)
+
+(block color
+    (blockinherit app_block)
+
+    (typeattributeset color_subject_type common_subject)
+
+    (roletype color_role common_subject)
+
+    (context bin_color (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/colord-session" file bin_color)
+)
+
+(block colord
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset color_object_type unit_object)
+    (typeattributeset color_subject_type common_subject)
+
+    (context bin_colord (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/colord" file bin_colord)
+
+    (context unit_colord (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*colord.*" file unit_colord)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset color_object_type var_lib_object)
+
+    (context var_lib_colord (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/color(/.*)?" any var_lib_colord)
+    (filecon "/var/lib/colord(/.*)?" any var_lib_colord)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset color_object_type dbus_etc_object)
+
+    (context dbus_etc_colord (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.ColorManager\.conf" file dbus_etc_colord)
+
+    (blockinherit file_tmpfs_object_block)
+
+    (typeattributeset color_object_type tmpfs_object)
+
+    (call file_read_generic_usr (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call logind_read_run_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call polkit_dbus_chat_polkitd (common_subject))
+
+    (call udev_client (common_subject))
+
+    (optional colord_optional_gdm
+        (call gdm_read_inherited_var_lib_files (common_subject))
+        (call gdm_read_state (common_subject)))
+
+    (optional colord_optional_gsd
+        (call gsd_read_inherited_icc_home_data_files (common_subject))
+        (call gsd_read_state (common_subject)))
+
+    (optional colord_optional_unconfined
+        (call unconfined_use_fd_all_unconfined_user_subjects (common_subject))
+        (call unconfined_read_state_all_unconfined_user_subjects (common_subject)))
+)
+
+(allow color_admin_type color_subject_type signal_perms)
+(allow color_admin_type color_subject_type (process (ptrace)))
+(call ps_subject_pattern (color_admin_type color_subject_type))
+(allow color_admin_type colord.unit_object (service (all)))
+(allow color_admin_type color_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype color_admin_role color_object_type)
+
+(call color_run (color_admin_type color_admin_role))
+
+(macro color_auto_subtrans ((type ARG1))
+    (call color_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 color.bin_object color.common_subject)))
+
+(macro color_run ((type ARG1)(role ARG2))
+    (call color_auto_subtrans (ARG1))
+    (roleattributeset color_role ARG2))
+
+(macro color_send_signal ((type ARG1))
+    (allow ARG1 color.common_subject (process (signal))))
+
+(macro color_dbus_chat ((type ARG1))
+    (allow ARG1 colord.common_subject (dbus (send_msg)))
+    (allow colord.common_subject ARG1 (dbus (send_msg))))
+
+(macro color_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset color_admin_role ARG1)
+    (typeattributeset color_admin_type ARG2))

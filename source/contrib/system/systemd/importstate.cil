@@ -15,7 +15,6 @@
     (call bin_mprot_read_shell_files (common_subject))
 
     (call file_dontaudit_relabel_all (common_subject))
-    (call file_dontaudit_setattr_all (common_subject))
     (call file_setattr_generic_etc_dirs (common_subject))
     (call file_setattr_var_dirs (common_subject))
     (call file_setattr_var_lib_dirs (common_subject))

@@ -20,9 +20,6 @@
 
     There is a bug in secilc that prevents me from declaring contexts in blockbstracts if they are inherited on more than a single level
 
-* implement environ etc file type to differentiate between config and environ files. this will enable me to allow systemd to read all environ files, and only
-    select etc files without things becoming high maintenance.
-
 * cover runuser as its setuid and maintains pam config. maybe it makes sense to run this label it sudo_exec_t (akmods runs runuser)
 
 * double check bluetooth socket activated socket. currently var_lib_object but i suspect it may be the tmpfs_object (fifo_file) instead
@@ -30,3 +27,5 @@
 * create a template for gui app common rules (then apply that to gdm as well, gdm runs gui apps in it own domain and currently added individual macros)
 
 * mdadm: shutdown executes mdadm, and i believe that shutdown (mdadm) wants to read/list /run/mdadm
+
+* exclude things from being tmpfiles manageable/relabelable, and readahead readable ( i create nice macros for that, just need to use them)

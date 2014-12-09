@@ -72,6 +72,9 @@
     (optional sysadm_optional_bootloader
         (call bootloader_admin (r common_subject)))
 
+    (optional sysadm_optional_color
+        (call color_admin (r common_subject)))
+
     (optional sysadm_optional_consoletype
         (call consoletype_run (common_subject r)))
 
