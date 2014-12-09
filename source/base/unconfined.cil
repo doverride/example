@@ -87,6 +87,9 @@
 
         (call unconfined (r common_subject))
 
+        (optional unconfineduser_optional_gkeyring
+            (call gkeyring_tmpfs_filetrans_gkeyringd_user_tmpfs_dirs (r common_subject)))
+
         (optional unconfineduser_optional_gsd
             (call gsd_home_data_filetrans_icc_home_data_dirs (r common_subject))
 
@@ -177,8 +180,6 @@
 
 (macro unconfined_stream_connect_all_unconfined_user_subjects ((type ARG1))
     (allow ARG1 self create_unix_stream_socket_perms)
-    (call file_search_run_user (ARG1))
-    (call usersubject_write_generic_tmpfs_sock_files (ARG1))
     (allow ARG1 unconfined_user_subject_type (unix_stream_socket (connectto))))
 
 (macro unconfined ((role ARG1)(type ARG2))

@@ -35,6 +35,18 @@
     (context staff_tmpfs_systemd (u r systemd.user_tmpfs_object (systemlow systemlow)))
     (filecon "/var/run/user/1001/systemd(/.*)?" any staff_tmpfs_systemd)
 
+    (optional staff_optional_gkeyring
+        (call gkeyring_manage_gkeyringd_user_tmpfs (r common_subject))
+        (call gkeyring_relabel_gkeyringd_user_tmpfs (common_subject))
+        (call gkeyring_tmpfs_filetrans_gkeyringd_user_tmpfs_dirs (r common_subject))
+
+        (call gkeyring_manage_gkeyringd_home_data (r common_subject))
+        (call gkeyring_relabel_gkeyringd_home_data (common_subject))
+        (call gkeyring_home_data_filetrans_gkeyringd_home_data_dirs (r common_subject))
+
+        (context staff_gkeyringd_data (u r gkeyringd.home_data_object (systemlow systemlow)))
+        (filecon "/home/john/\.local/share/keyrings(/.*)?" any staff_gkeyringd_data))
+
     (optional staff_optional_gsd
         (call gsd_manage_gsd_home_data (r common_subject))
         (call gsd_relabel_gsd_home_data (common_subject))

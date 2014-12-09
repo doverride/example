@@ -138,6 +138,10 @@
     (call fuse_run_fusermount (common_subject sys.r))
     (call fuse_use_fusermount_fd (common_subject))
 
+    (call gkeyring_manual_subtrans_gkeyringd (common_subject))
+    (call gkeyring_read_state_gkeyringd (common_subject))
+    (call gkeyring_stream_connect_gkeyringd (common_subject))
+
     (call journal_client (common_subject))
 
     (call localed_dbus_chat (common_subject))
