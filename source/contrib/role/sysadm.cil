@@ -201,6 +201,9 @@
     (optional sysadm_optional_rtkit
         (call rtkit_admin (r common_subject)))
 
+    (optional sysadm_optional_sensors
+        (call sensors_admin (r common_subject)))
+
     (optional sysadm_optional_ssh
         (call ssh_admin (r common_subject)))
 

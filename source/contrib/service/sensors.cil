@@ -1,0 +1,161 @@
+(roleattribute sensors_role)
+
+(roleattribute sensors_admin_role)
+(typeattribute sensors_admin_type)
+
+(typeattribute sensors_object_type)
+(typeattribute sensors_subject_type)
+
+(typeattribute sensors_unit_object_type)
+
+(block sensors
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset sensors_object_type unit_object)
+    (typeattributeset sensors_unit_object_type unit_object)
+    (typeattributeset sensors_subject_type common_subject)
+
+    (roletype sensors_role common_subject)
+
+    (context bin_sensors (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/sensors" file bin_sensors)
+
+    (context unit_sensors (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*lm_sensors.*" file unit_sensors)
+
+    (blockinherit file_maintains_single_etc_file_block)
+
+    (typeattributeset sensors_object_type etc_object)
+
+    (context etc_sensors (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/sensors3\.conf" file etc_sensors)
+    (filecon "/etc/sysconfig/lm_sensors" file etc_sensors)
+
+    (call fs_getattr_sysfs (common_subject))
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (optional sensors_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+)
+
+(block sensors_wrapper
+    (blockinherit systemd_daemon_no_unit_block)
+
+    (typeattributeset sensors_subject_type common_subject)
+
+    (context bin_sensors_wrapper (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/lm_sensors/lm_sensors-modprobe-wrapper" file bin_sensors_wrapper)
+    (filecon "/usr/libexec/lm_sensors/lm_sensors-modprobe-r-wrapper" file bin_sensors_wrapper)
+
+    (call bin_mprot_read_shell_files (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call kmod_auto_subtrans (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+)
+
+(block sensors_detect
+    (blockinherit app_block)
+
+    (typeattributeset sensors_subject_type common_subject)
+
+    (roletype sensors_role common_subject)
+
+    (context bin_sensors_detect (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/sensors-detect" file bin_sensors_detect)
+)
+
+(block fancontrol
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset sensors_object_type unit_object)
+    (typeattributeset sensors_unit_object_type unit_object)
+    (typeattributeset sensors_subject_type common_subject)
+
+    (roletype sensors_role common_subject)
+
+    (context bin_fancontrol (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/fancontrol" file bin_fancontrol)
+
+    (context unit_fancontrol (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*fancontrol.*" file unit_fancontrol)
+
+    (blockinherit systemd_maintains_single_pid_file_block)
+
+    (typeattributeset sensors_object_type run_object)
+
+    (context run_fancontrol (sys.u sys.r run_object (systemlow systemlow)))
+    (filecon "/var/run/fancontrol\.pid" file run_fancontrol)
+
+    (blockinherit file_maintains_single_etc_file_block)
+
+    (typeattributeset sensors_object_type etc_object)
+
+    (context etc_fancontrol (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/fancontrol" file etc_fancontrol)
+
+    (optional fancontrol_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
+)
+
+(allow sensors_admin_type sensors_subject_type signal_perms)
+(allow sensors_admin_type sensors_subject_type (process (ptrace)))
+(call ps_subject_pattern (sensors_admin_type sensors_subject_type))
+(allow sensors_admin_type sensors_unit_object_type (service (all)))
+(allow sensors_admin_type sensors_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype sensors_admin_role sensors_object_type)
+
+(call sensors_run (sensors_admin_type sensors_admin_role))
+(call sensors_run_detect (sensors_admin_type sensors_admin_role))
+(call sensors_run_fancontrol (sensors_admin_type sensors_admin_role))
+
+(macro sensors_auto_subtrans ((type ARG1))
+    (call sensors_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 sensors.bin_object sensors.common_subject)))
+
+(macro sensors_run ((type ARG1)(role ARG2))
+    (call sensors_auto_subtrans (ARG1))
+    (roleattributeset sensors_role ARG2))
+
+(macro sensors_send_signal ((type ARG1))
+    (allow ARG1 sensors.common_subject (process (signal))))
+
+(macro sensors_auto_subtrans_detect ((type ARG1))
+    (call sensors_send_signal_detect (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 sensors_detect.bin_object sensors_detect.common_subject)))
+
+(macro sensors_run_detect ((type ARG1)(role ARG2))
+    (call sensors_auto_subtrans_detect (ARG1))
+    (roleattributeset sensors_role ARG2))
+
+(macro sensors_send_signal_detect ((type ARG1))
+    (allow ARG1 sensors_detect.common_subject (process (signal))))
+
+(macro sensors_auto_subtrans_fancontrol ((type ARG1))
+    (call sensors_send_signal_fancontrol (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 fancontrol.bin_object fancontrol.common_subject)))
+
+(macro sensors_run_fancontrol ((type ARG1)(role ARG2))
+    (call sensors_auto_subtrans_fancontrol (ARG1))
+    (roleattributeset sensors_role ARG2))
+
+(macro sensors_send_signal_fancontrol ((type ARG1))
+    (allow ARG1 fancontrol.common_subject (process (signal))))
+
+(macro sensors_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset sensors_admin_role ARG1)
+    (typeattributeset sensors_admin_type ARG2))
