@@ -43,7 +43,7 @@
 )
 
 (block bluetoothd
-    (blockinherit systemd_daemon_socket_activated_block)
+    (blockinherit systemd_daemon_block)
 
     (typeattributeset bluetooth_object_type unit_object)
     (typeattributeset bluetooth_subject_type common_subject)
@@ -64,8 +64,6 @@
     (blockinherit file_maintains_var_lib_dirs_files_and_sock_files_block)
 
     (typeattributeset bluetooth_object_type var_lib_object)
-
-    (call systemd_socket_activated_object_type (var_lib_object))
 
     (context var_lib_bluetoothd (sys.u sys.r var_lib_object (systemlow systemlow)))
     (filecon "/var/lib/bluetooth(/.*)?" any var_lib_bluetoothd)
