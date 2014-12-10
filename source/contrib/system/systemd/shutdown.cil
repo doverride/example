@@ -40,7 +40,6 @@
     (call file_read_generic_usr (common_subject))
 
     (call fs_getattr_sysfs (common_subject))
-    (call fs_list_rootfs (common_subject))
     (call fs_list_proc (common_subject))
     (call fs_list_devtmpfs (common_subject))
     (call fs_read_devtmpfs_lnk_files (common_subject))
