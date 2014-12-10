@@ -54,6 +54,8 @@
     (allow common_subject self create_netlink_route_socket_perms)
     (allow common_subject self create_packet_socket_perms)
 
+    (call sys_load_kernel_module (common_subject))
+    (call sys_request_load_module (common_subject))
     (call sys_read_net_proc (common_subject))
 
     (call dev_read_random (common_subject))
