@@ -44,7 +44,7 @@
     (context bin_askpwdagent (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/systemd-tty-ask-password-agent" file bin_askpwdagent)
 
-    (blockinherit systemd_maintains_run_dirs_and_fifo_files_block)
+    (blockinherit systemd_run_object_block)
 
     (typeattributeset askpwd_object_type systemd_run_object)
 
@@ -52,6 +52,11 @@
     (filecon "/var/run/systemd/ask-password-block(/.*)?" any systemd_run_askpwdagent)
 
     (allow common_subject self (process (setfscreate)))
+
+    (allow common_subject systemd_run_object manage_dir_perms)
+    (allow common_subject systemd_run_object manage_fifo_file_perms)
+    (call systemd_run_filetrans (common_subject systemd_run_object dir "*"))
+    (roletype askpwdagent_role systemd_run_object)
 
     (call file_search_etc (common_subject))
 
@@ -121,6 +126,10 @@
     (call systemd_search_run (ARG1))
     (call read_files_pattern
         (ARG1 askpwd.systemd_run_object askpwd.systemd_run_object)))
+
+(macro askpwd_system_run_filetrans_askpwdagent_run_dirs ((role ARG1)(type ARG2))
+    (call systemd_run_filetrans (ARG2 askpwdagent.systemd_run_object dir "ask-password-block"))
+    (roletype ARG1 askpwdagent.systemd_run_object))
 
 (macro askpwd_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))

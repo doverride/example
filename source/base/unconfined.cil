@@ -26,6 +26,8 @@
         (call systemd_tmpfs_filetrans_generic_user_tmpfs_dirs (r common_subject))
         (call systemd_generic_home_config_filetrans_generic_home_config_dirs (r common_subject))
 
+        (call askpwd_system_run_filetrans_askpwdagent_run_dirs (r common_subject))
+
         (call unconfined_user_subject_type (common_subject))
 
         (context home_unconfined (u r home_user (systemlow mls_systemhigh)))
