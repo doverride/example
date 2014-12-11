@@ -2,10 +2,10 @@
     (blockinherit net_reserved_port_object_block)
 
     (context port_httpd (sys.u sys.r reserved_port_object (systemlow systemlow)))
-    (portcon "tcp" 67 port_httpd)
-    (portcon "udp" 67 port_httpd)
-    (portcon "tcp" 68 port_httpd)
-    (portcon "udp" 68 port_httpd)
+    (portcon "tcp" 80 port_httpd)
+    (portcon "udp" 80 port_httpd)
+    (portcon "tcp" 443 port_httpd)
+    (portcon "udp" 443 port_httpd)
 )
 
 (macro http_tcp_bind_http_port ((type ARG1))
