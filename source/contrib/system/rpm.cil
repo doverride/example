@@ -33,11 +33,13 @@
 
     (context bin_rpm (sys.u sys.r rpm.bin_object (systemlow systemlow)))
     (filecon "/usr/bin/rpm" file bin_rpm)
+    (filecon "/usr/bin/dnf" file bin_rpm)
     (filecon "/usr/bin/yum" file bin_rpm)
     (filecon "/usr/libexec/packagekitd" file bin_rpm)
 
     (context unit_rpm (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*yum-makecache.*" file unit_rpm)
+    (filecon "/usr/lib/systemd/system/[^/]*dnf-makecache.*" file unit_rpm)
     (filecon "/usr/lib/systemd/system/[^/]*packagekit.*" file unit_rpm)
 
     (blockinherit dbus_maintains_single_etc_file_block)
@@ -53,6 +55,7 @@
 
     (context var_cache_rpm (sys.u sys.r var_cache_object (systemlow systemlow)))
     (filecon "/var/cache/yum(/.*)?" any var_cache_rpm)
+    (filecon "/var/cache/dnf(/.*)?" any var_cache_rpm)
     (filecon "/var/cache/PackageKit(/.*)?" any var_cache_rpm)
 
     (blockinherit file_maintains_var_lib_dirs_and_files_block)
@@ -61,6 +64,7 @@
 
     (context var_lib_rpm (sys.u sys.r var_lib_object (systemlow systemlow)))
     (filecon "/var/lib/rpm(/.*)?" any var_lib_rpm)
+    (filecon "/var/lib/dnf(/.*)?" any var_lib_rpm)
     (filecon "/var/lib/rpm-state(/.*)?" any var_lib_rpm)
     (filecon "/var/lib/yum(/.*)?" any var_lib_rpm)
     (filecon "/var/lib/PackageKit(/.*)?" any var_lib_rpm)
