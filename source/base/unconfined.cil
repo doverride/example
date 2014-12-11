@@ -184,6 +184,9 @@
     (allow ARG1 self create_unix_stream_socket_perms)
     (allow ARG1 unconfined_user_subject_type (unix_stream_socket (connectto))))
 
+(macro unconfined_rw_sem_all_unconfined_user_subjects ((type ARG1))
+    (allow ARG1 unconfined_user_subject_type rw_sem_perms))
+
 (macro unconfined ((role ARG1)(type ARG2))
     (roleattributeset unconfined_role ARG1)
     (typeattributeset unconfined_type ARG2))

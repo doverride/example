@@ -47,17 +47,20 @@
 
     (call dev_rw_lvm_control (common_subject))
 
-    (call dm_rw_dmcrypt_semaphores (common_subject))
+    (call dm_rw_dmcrypt_sem (common_subject))
 
     (call udev_client (common_subject))
     (call udev_rw_inherited_udp_sockets (common_subject))
 
-    (optional dmsetup_optional_lvm
-        (call lvm_rw_lvm_semaphores (common_subject)))
-
     (optional dmsetup_optional_app
         (call app_exec_object_type (bin_object))
         (call app_subject_type (common_subject)))
+
+    (optional dmsetup_optional_lvm
+        (call lvm_rw_lvm_sem (common_subject)))
+
+    (optional dmsetup_optional_unconfined
+        (call unconfined_rw_sem_all_unconfined_user_subjects (common_subject)))
 )
 
 (block dmcrypt
@@ -126,7 +129,7 @@
     (call dm_auto_subtrans_dmsetup (ARG1))
     (roleattributeset dmsetup_role (ARG2)))
 
-(macro dm_rw_dmcrypt_semaphores ((type ARG1))
+(macro dm_rw_dmcrypt_sem ((type ARG1))
     (allow ARG1 dmcrypt.common_subject rw_sem_perms))
 
 (macro dm_admin ((role ARG1)(type ARG2))

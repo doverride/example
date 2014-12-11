@@ -208,7 +208,7 @@
     (call file_search_run_lock (ARG1))
     (call file_run_lock_filetrans (ARG1 lvm.run_lock_object ARG2 ARG3)))
 
-(macro lvm_rw_lvm_semaphores ((type ARG1))
+(macro lvm_rw_lvm_sem ((type ARG1))
     (allow ARG1 lvm.common_subject rw_sem_perms))
 
 (macro lvm_stream_connect_lvmetad ((type ARG1))
