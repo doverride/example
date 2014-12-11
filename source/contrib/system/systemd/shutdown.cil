@@ -1,3 +1,5 @@
+(call file_list_all_except (shutdown.common_subject))
+
 (roleattribute shutdown_admin_role)
 (typeattribute shutdown_admin_type)
 
@@ -96,8 +98,7 @@
 
     (optional shutdown_optional_mdadm
         (call mdadm_exec (common_subject))
-        (call mdadm_list_run (common_subject))
-        (call mdadm_read_run_files (common_subject)))
+        (call mdadm_manage_run_files (common_subject)))
 )
 
 (block shutdownd

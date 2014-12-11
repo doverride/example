@@ -83,6 +83,10 @@
     (call file_search_run (ARG1))
     (call read_files_pattern (ARG1 mdadm.run_object mdadm.run_object)))
 
+(macro mdadm_manage_run_files ((type ARG1))
+    (call file_search_run (ARG1))
+    (call manage_files_pattern (ARG1 mdadm.run_object mdadm.run_object)))
+
 (macro mdadm_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
     (call systemd_system_service_admin (ARG2))
