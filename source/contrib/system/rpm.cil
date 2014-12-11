@@ -66,6 +66,7 @@
     (filecon "/var/lib/rpm(/.*)?" any var_lib_rpm)
     (filecon "/var/lib/dnf(/.*)?" any var_lib_rpm)
     (filecon "/var/lib/rpm-state(/.*)?" any var_lib_rpm)
+    (filecon "/var/lib/rpmrebuilddb.*(/.*)?" any var_lib_rpm)
     (filecon "/var/lib/yum(/.*)?" any var_lib_rpm)
     (filecon "/var/lib/PackageKit(/.*)?" any var_lib_rpm)
 
