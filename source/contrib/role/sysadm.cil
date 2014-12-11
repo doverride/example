@@ -153,6 +153,9 @@
     (optional sysadm_optional_login
         (call login_admin (r common_subject)))
 
+    (optional sysadm_optional_logrotate
+        (call logrotate_admin (r common_subject)))
+
     (optional sysadm_optional_lvm
         (call lvm_admin (r common_subject)))
 

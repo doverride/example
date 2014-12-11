@@ -1,0 +1,50 @@
+(typepermissive logrotate.common_subject)
+
+(roleattribute logrotate_admin_role)
+(typeattribute logrotate_admin_type)
+
+(typeattribute logrotate_object_type)
+
+(block logrotate
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset logrotate_object_type unit_object)
+
+    (context bin_logrotate (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/sbin/logrotate" file bin_logrotate)
+
+    (context unit_logrotate (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*logrotate.*" file unit_logrotate)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset logrotate_object_type etc_object)
+
+    (context etc_logrotate (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/logrotate\.conf" file etc_logrotate)
+    (filecon "/etc/logrotate\.d(/.*)?" any etc_logrotate)
+
+    (blockinherit file_maintains_single_var_lib_file_block)
+
+    (typeattributeset logrotate_object_type var_lib_object)
+
+    (context var_lib_logrotate (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/logrotate\.status" file var_lib_logrotate)
+
+    (optional logrotate_optional_ntp
+        (call ntp_auto_subtrans (common_subject)))
+)
+
+(allow logrotate_admin_type logrotate.common_subject signal_perms)
+(allow logrotate_admin_type logrotate.common_subject (process (ptrace)))
+(call ps_subject_pattern (logrotate_admin_type logrotate.common_subject))
+(allow logrotate_admin_type logrotate.unit_object (service (all)))
+(allow logrotate_admin_type logrotate_object_type (all_file_objects
+(not_mounton_entrypoint_and_execmod)))
+(roletype logrotate_admin_role logrotate_object_type)
+
+(macro logrotate_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset logrotate_admin_role ARG1)
+    (typeattributeset logrotate_admin_type ARG2))
