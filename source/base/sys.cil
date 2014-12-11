@@ -105,6 +105,10 @@
         (call plymouth_manage_run_files (common_subject))
         (call plymouth_manage_var_lib_files (common_subject)))
 
+    (optional sys_optional_stor
+        (call stor_devtmpfs_filetrans_fixed_disk (common_subject))
+        (call stor_devtmpfs_filetrans_removable (common_subject)))
+
     (optional sys_optional_systemd
         (call systemd_dynamic_subtrans (common_subject))
         (call systemd_getattr_exec_files (common_subject))
