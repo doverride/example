@@ -188,6 +188,9 @@
     (optional gdm_optional_color
         (call color_dbus_chat (common_subject)))
 
+    (optional gdm_optional_fprint
+        (call fprint_dbus_chat (common_subject)))
+
     (optional gdm_optional_geoclue
         (call geoclue_dbus_chat (common_subject)))
 

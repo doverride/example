@@ -57,7 +57,7 @@
 
     (call sec_set_check_req_prot (common_subject))
 
-    (call dev_manage_all (tmpfiles_role common_subject))
+    (call dev_manage_all (sys.r common_subject))
     (call dev_relabel_all (common_subject))
 
     (call fs_manage_devtmpfs_dirs (common_subject))
