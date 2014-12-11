@@ -92,6 +92,8 @@
 
     (call hostnamed_read_config_files (common_subject))
 
+    (call http_tcp_connect_http_port (common_subject))
+
     (call iptools_auto_subtrans (common_subject))
 
     (call journal_client (common_subject))

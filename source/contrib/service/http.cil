@@ -1,0 +1,18 @@
+(block httpd
+    (blockinherit net_reserved_port_object_block)
+
+    (context port_httpd (sys.u sys.r reserved_port_object (systemlow systemlow)))
+    (portcon "tcp" 67 port_httpd)
+    (portcon "udp" 67 port_httpd)
+    (portcon "tcp" 68 port_httpd)
+    (portcon "udp" 68 port_httpd)
+)
+
+(macro http_tcp_bind_http_port ((type ARG1))
+    (allow ARG1 self (capability (net_bind_service)))
+    (allow ARG1 self create_tcp_stream_socket_perms)
+    (allow ARG1 httpd.reserved_port_object (tcp_socket (name_bind))))
+
+(macro http_tcp_connect_http_port ((type ARG1))
+    (allow ARG1 self create_tcp_socket_perms)
+    (allow ARG1 httpd.reserved_port_object (tcp_socket (name_connect))))
