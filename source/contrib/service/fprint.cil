@@ -1,0 +1,113 @@
+(roleattribute fprintcli_role)
+
+(roleattribute fprint_admin_role)
+(typeattribute fprint_admin_type)
+
+(typeattribute fprint_object_type)
+(typeattribute fprint_subject_type)
+
+(block fprintcli
+    (blockinherit app_block)
+
+    (typeattributeset fprint_subject_type common_subject)
+
+    (roletype fprintcli_role common_subject)
+
+    (context bin_fprintcli (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/fprintd-delete" file bin_fprintcli)
+    (filecon "/usr/bin/fprintd-enroll" file bin_fprintcli)
+    (filecon "/usr/bin/fprintd-list" file bin_fprintcli)
+    (filecon "/usr/bin/fprintd-verify" file bin_fprintcli)
+
+    (call dbus_system_client (common_subject))
+
+    (call fprint_dbus_chat (common_subject))
+)
+
+(block fprintd
+    (blockinherit systemd_daemon_block)
+
+    (typeattributeset fprint_object_type unit_object)
+    (typeattributeset fprint_subject_type common_subject)
+
+    (context bin_fprintd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/fprintd" file bin_fprintd)
+
+    (context unit_fprintd (sys.u sys.r unit_object (systemlow systemlow)))
+    (filecon "/usr/lib/systemd/system/[^/]*fprintd.*" file unit_fprintd)
+
+    (blockinherit file_maintains_single_etc_file_block)
+
+    (typeattributeset fprint_object_type etc_object)
+
+    (context etc_fprintd (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/fprintd\.conf" file etc_fprintd)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset fprint_object_type dbus_etc_object)
+
+    (context dbus_etc_fprintd (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/net\.reactivated\.Fprint\.conf" file dbus_etc_fprintd)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset fprint_object_type var_lib_object)
+
+    (context var_lib_fprintd (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/fprint(/.*)?" any var_lib_fprintd)
+
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call dev_rw_usb (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+    (call fs_list_devtmpfs (common_subject))
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_service (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call polkit_dbus_chat_polkitd (common_subject))
+
+    (call udev_client (common_subject))
+)
+
+(allow fprint_admin_type fprint_subject_type signal_perms)
+(allow fprint_admin_type fprint_subject_type (process (ptrace)))
+(call ps_subject_pattern (fprint_admin_type fprint_subject_type))
+(allow fprint_admin_type fprintd.unit_object (service (all)))
+(allow fprint_admin_type fprint_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype fprint_admin_role fprint_object_type)
+
+(call fprint_run_fprintcli (fprint_admin_type fprint_admin_role))
+
+(macro fprint_auto_subtrans_fprintcli ((type ARG1))
+    (call fprint_send_signal_fprintcli (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 fprintcli.bin_object fprintcli.common_subject)))
+
+(macro fprint_run_fprintcli ((type ARG1)(role ARG2))
+    (call fprint_auto_subtrans_fprintcli (ARG1))
+    (roleattributeset fprintcli_role ARG2))
+
+(macro fprint_send_signal_fprintcli ((type ARG1))
+    (allow ARG1 fprintcli.common_subject (process (signal))))
+
+(macro fprint_dbus_chat ((type ARG1))
+    (allow ARG1 fprintd.common_subject (dbus (send_msg)))
+    (allow fprintd.common_subject ARG1 (dbus (send_msg))))
+
+(macro fprint_admin ((role ARG1)(type ARG2))
+    (allow ARG2 self (capability (kill sys_ptrace)))
+    (call systemd_system_service_admin (ARG2))
+    (roleattributeset fprint_admin_role ARG1)
+    (typeattributeset fprint_admin_type ARG2))

@@ -105,6 +105,9 @@
     (optional sysadm_optional_firewall
         (call firewall_admin (r common_subject)))
 
+    (optional sysadm_optional_fprint
+        (call fprint_admin (r common_subject)))
+
     (optional sysadm_optional_fstools
         (call fstools_run (common_subject r)))
 
