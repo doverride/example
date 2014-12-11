@@ -158,7 +158,7 @@
 (call sec_unconfined (rpm_subject_type))
 (call sys_unconfined (rpm_subject_type))
 
-(call stor_unconfined (rpm_subject_type))
+(call stor_unconfined (rpm_role rpm_subject_type))
 
 (call lib_etc_filetrans_ld_so_cache_files (rpm_script_t))
 

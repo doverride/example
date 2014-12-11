@@ -132,7 +132,7 @@
     (call dbus_unconfined (unconfined_type)))
 
 (optional unconfined_optional_stor
-    (call stor_unconfined (unconfined_type)))
+    (call stor_unconfined (unconfined_role unconfined_type)))
 
 (optional unconfined_optional_systemd
     (call systemd_unconfined (unconfined_type)))

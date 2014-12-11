@@ -189,13 +189,15 @@
     (class ARG3)(name ARG4))
     (call file_type_transition_pattern (ARG1 tmpfs ARG2 ARG3 ARG4)))
 
-(macro fs_devpts_filetrans ((type ARG1)(type ARG2)
-    (class ARG3)(name ARG4))
-    (call file_type_transition_pattern (ARG1 devpts ARG2 ARG3 ARG4)))
+(macro fs_devpts_filetrans ((role ARG1)(type ARG2)(type ARG3)
+    (class ARG4)(name ARG5))
+    (call file_type_transition_pattern (ARG2 devpts ARG3 ARG4 ARG5))
+    (roletype ARG1 ARG3))
 
-(macro fs_devtmpfs_filetrans ((type ARG1)(type ARG2)
-    (class ARG3)(name ARG4))
-    (call file_type_transition_pattern (ARG1 devtmpfs ARG2 ARG3 ARG4)))
+(macro fs_devtmpfs_filetrans ((role ARG1)(type ARG2)(type ARG3)
+    (class ARG4)(name ARG5))
+    (call file_type_transition_pattern (ARG2 devtmpfs ARG3 ARG4 ARG5))
+    (roletype ARG1 ARG3))
 
 (macro fs_rootfs_filetrans ((type ARG1)(type ARG2)
     (class ARG3)(name ARG4))

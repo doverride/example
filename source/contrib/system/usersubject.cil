@@ -278,7 +278,7 @@
     (blockabstract usersubject_maintains_pty_object_block)
         (blockinherit usersubject_pty_object_block)
 
-        (call term_user_pty (common_subject pty_object))
+        (call term_user_pty (r common_subject pty_object))
 
         (roletype r pty_object)
 )
@@ -294,7 +294,7 @@
     (blockabstract usersubject_maintains_tty_object_block)
         (blockinherit usersubject_tty_object_block)
 
-        (call term_user_tty (common_subject tty_object))
+        (call term_user_tty (r common_subject tty_object))
 
         (roletype r tty_object)
 )
@@ -551,8 +551,7 @@
     (allow ARG1 usersubject_pty_type rw_term_perms))
 
 (macro usersubject_create_generic_pts ((role ARG1)(type ARG2))
-    (call term_create_pty (ARG2 user.pty_object))
-    (roletype ARG1 user.pty_object))
+    (call term_create_pty (ARG1 ARG2 user.pty_object)))
 
 (macro usersubject_use_all_tts ((type ARG1))
     (allow ARG1 usersubject_tty_type rw_term_perms))
@@ -650,16 +649,14 @@
     (call usersubject_use_generic_pts (ARG2)))
 
 (macro usersubject_generic_user_pty ((role ARG1)(type ARG2))
-    (call term_user_pty (ARG2 user.pty_object))
-    (roletype ARG1 user.pty_object))
+    (call term_user_pty (ARG1 ARG2 user.pty_object)))
 
 (macro usersubject_generic_tty_template ((role ARG1)(type ARG2))
     (call usersubject_generic_user_tty (ARG1 ARG2))
     (call usersubject_use_generic_tts (ARG2)))
 
 (macro usersubject_generic_user_tty ((role ARG1)(type ARG2))
-    (call term_user_tty (ARG2 user.tty_object))
-    (roletype ARG1 user.tty_object))
+    (call term_user_tty (ARG1 ARG2 user.tty_object)))
 
 (macro usersubject_generic_terminals_template ((role ARG1)(type ARG2))
     (call usersubject_generic_pty_template (ARG1 ARG2))

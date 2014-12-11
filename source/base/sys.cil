@@ -75,7 +75,7 @@
 
     (call sys_request_load_module (common_subject))
 
-    (call dev_manage_all (common_subject)) ; FIXME
+    (call dev_manage_all (r common_subject)) ; FIXME
 
     (call file_read_generic_usr_files (common_subject))
 
@@ -106,8 +106,8 @@
         (call plymouth_manage_var_lib_files (common_subject)))
 
     (optional sys_optional_stor
-        (call stor_devtmpfs_filetrans_fixed_disk (common_subject))
-        (call stor_devtmpfs_filetrans_removable (common_subject)))
+        (call stor_devtmpfs_filetrans_fixed_disk (r common_subject))
+        (call stor_devtmpfs_filetrans_removable (r common_subject)))
 
     (optional sys_optional_systemd
         (call systemd_dynamic_subtrans (common_subject))

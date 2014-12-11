@@ -76,9 +76,11 @@
     (call file_read_generic_etc_lnk_files (common_subject))
     (call file_read_generic_etc_files (common_subject))
 
-    (call stor_manage_fixed_disk (common_subject))
-    (call stor_manage_removable (common_subject))
-    (call stor_manage_scsi_generic (common_subject))
+    (call stor_manage_fixed_disk (fstools_role common_subject))
+    (call stor_manage_removable (fstools_role common_subject))
+    (call stor_manage_scsi_generic (fstools_role common_subject))
+    (call stor_devtmpfs_filetrans_fixed_disk (fstools_role common_subject))
+    (call stor_devtmpfs_filetrans_removable (fstools_role common_subject))
 
     (call term_use_inherited_unallocated_tts (common_subject))
 

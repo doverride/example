@@ -70,9 +70,9 @@
     (call seutil_read_config_files (common_subject))
     (call seutil_read_file_context_files (common_subject))
 
-    (call stor_manage_fixed_disk (common_subject))
-    (call stor_manage_removable (common_subject))
-    (call stor_manage_scsi_generic (common_subject))
+    (call stor_manage_fixed_disk (lvm_role common_subject))
+    (call stor_manage_removable (lvm_role common_subject))
+    (call stor_manage_scsi_generic (lvm_role common_subject))
 
     (call lvm_read_config_files (common_subject))
     (call lvm_manage_metadata_files (common_subject))

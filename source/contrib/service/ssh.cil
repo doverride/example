@@ -39,7 +39,7 @@
         (allow common_subject pty_object rw_term_perms)
         (allow common_subject pty_object (chr_file (setattr)))
         (allow common_subject pty_object relabelfrom_chr_file_perms)
-        (call term_create_pty (common_subject pty_object))
+        (call term_create_pty (sys.r common_subject pty_object))
 
         (allow common_subject self (capability (sys_resource kill)))
         (allow common_subject self rw_fifo_file_perms)
