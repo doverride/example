@@ -1,0 +1,144 @@
+(roleattribute gsession_role)
+
+(typeattribute gsession_subject_type)
+
+(block gsession_subject_block
+    (blockabstract gsession_subject_block)
+    (blockinherit app_subject_block)
+
+    (call gsession_subject_type (common_subject))
+)
+
+(block gsession
+    (blockinherit bin_object_block)
+
+    (call app_entry (gsession_subject_type bin_object))
+
+    (context bin_gsession (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/gnome-session" file bin_gsession)
+    (filecon "/usr/bin/gnome-session-inhibit" file bin_gsession)
+    (filecon "/usr/bin/gnome-session-quit" file bin_gsession)
+
+    (blockinherit usersubject_tmpfs_object_block)
+    (blockinherit usersubject_home_object_block)
+    (blockinherit usersubject_home_config_object_block)
+)
+
+(block gsession_helper
+    (blockinherit bin_object_block)
+
+    (context bin_gsession_helper (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/gnome-session-check-accelerated" file bin_gsession_helper)
+    (filecon "/usr/libexec/gnome-session-check-accelerated-helper" file bin_gsession_helper)
+    (filecon "/usr/libexec/gnome-session-failed" file bin_gsession_helper)
+)
+
+(allow gsession_subject_type self (unix_stream_socket (listen accept)))
+(allow gsession_subject_type self rw_fifo_file_perms)
+
+(allow gsession_subject_type gsession.user_tmpfs_object manage_file_perms)
+(allow gsession_subject_type gsession.user_tmpfs_object manage_sock_file_perms)
+
+(call fs_tmpfs_filetrans
+    (gsession_subject_type gsession.user_tmpfs_object file "*"))
+(call fs_tmpfs_filetrans
+    (gsession_subject_type gsession.user_tmpfs_object sock_file "*"))
+(roletype gsession_role gsession.user_tmpfs_object)
+
+(allow gsession_subject_type gsession.home_config_object manage_dir_perms)
+(allow gsession_subject_type gsession.home_config_object manage_file_perms)
+
+(call usersubject_generic_home_config_filetrans
+    (gsession_role gsession_subject_type gsession.home_config_object dir "gnome-session"))
+
+(allow gsession_subject_type gsession.home_object manage_file_perms)
+
+(call usersubject_home_user_filetrans
+    (gsession_role gsession_subject_type gsession.home_object file "*"))
+
+(call bin_execute_shell_files (gsession_subject_type))
+
+(call dev_read_urandom (gsession_subject_type))
+
+(call dbus_system_client (gsession_subject_type))
+
+(call file_read_generic_etc (gsession_subject_type))
+(call file_read_generic_usr (gsession_subject_type))
+
+(call fs_getattr_fs (gsession_subject_type))
+
+(call accounts_dbus_chat (gsession_subject_type))
+
+(call gsession_exec_helper (gsession_subject_type))
+
+(call gsd_exec_helper (gsession_subject_type))
+
+(call journal_client (gsession_subject_type))
+
+(call logind_list_run (gsession_subject_type))
+(call logind_read_run_files (gsession_subject_type))
+(call logind_dbus_chat (gsession_subject_type))
+
+(call machine_list_run (gsession_subject_type))
+(call machine_read_run_files (gsession_subject_type))
+
+(call miscfiles_read_localization (gsession_subject_type))
+
+(call systemd_read_state (gsession_subject_type))
+
+(optional gsession_subject_optional_nm
+    (call nm_dbus_chat (gsession_subject_type)))
+
+(macro gsession_subject_type ((type ARG1))
+    (typeattributeset gsession_subject_type ARG1))
+
+(macro gsession_exec_helper ((type ARG1))
+    (call can_exec (ARG1 gsession_helper.bin_object)))
+
+(macro gsession_role_template ((role ARG1)(type ARG2)(type ARG3))
+    (call auto_subject_type_transition_pattern
+        (ARG2 gsession.bin_object ARG3))
+
+    (roletype ARG1 ARG3)
+    (roleattributeset gsession_role ARG1)
+
+    (allow ARG2 ARG3 (fd (use)))
+    (allow ARG2 ARG3 rw_unix_stream_socket_perms)
+
+    (allow ARG2 ARG3 signal_perms)
+    (call ps_subject_pattern (ARG2 ARG3))
+
+    (allow ARG3 ARG2 (process (signal))))
+
+(macro gsession_manage_tmpfs ((role ARG1)(type ARG2))
+    (call fs_search_tmpfs (ARG2))
+    (allow ARG2 gsession.user_tmpfs_object manage_file_perms)
+    (allow ARG2 gsession.user_tmpfs_object manage_sock_file_perms)
+    (roletype ARG1 gsession.user_tmpfs_object))
+
+(macro gsession_relabel_tmpfs ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (allow ARG1 gsession.user_tmpfs_object relabel_file_perms)
+    (allow ARG1 gsession.user_tmpfs_object relabel_sock_file_perms))
+
+(macro gsession_manage_home ((role ARG1)(type ARG2))
+    (call usersubject_search_home_user (ARG2))
+    (allow ARG2 gsession.home_object manage_file_perms)
+    (roletype ARG1 gsession.home_object))
+
+(macro gsession_relabel_home ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 gsession.home_object relabel_file_perms))
+
+(macro gsession_manage_home_config ((role ARG1)(type ARG2))
+    (allow ARG2 gsession.home_config_object manage_dir_perms)
+    (allow ARG2 gsession.home_config_object manage_file_perms)
+    (roletype ARG1 gsession.home_config_object))
+
+(macro gsession_relabel_home_config ((type ARG1))
+    (allow ARG1 gsession.home_config_object relabel_dir_perms)
+    (allow ARG1 gsession.home_config_object relabel_file_perms))
+
+(macro gsession_home_config_filetrans_home_config_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_config_filetrans
+        (ARG1 ARG2 gsession.home_config_object dir "gnome-session")))

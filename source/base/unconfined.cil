@@ -33,6 +33,9 @@
         (context home_unconfined (u r home_user (systemlow mls_systemhigh)))
         (filecon "/home/joe" dir home_unconfined)
 
+        (context home_content_unconfined (u r user.home_object (systemlow systemlow)))
+        (filecon "/home/joe/.*" any home_content_unconfined)
+
         (context unconfined_bin (u r home_user_bin (systemlow systemlow)))
         (filecon "/home/joe/\.bin(/.*)?" any unconfined_bin)
         (filecon "/home/joe/\.local/bin(/.*)?" any unconfined_bin)
@@ -60,9 +63,6 @@
 
         (context unconfined_config_systemd (u r systemd.home_config_object (systemlow systemlow)))
         (filecon "/home/joe/\.config/systemd(/.*)?" any unconfined_config_systemd)
-
-        (context unconfined_tmpfs_systemd (u r systemd.user_tmpfs_object (systemlow systemlow)))
-        (filecon "/var/run/user/1000/systemd(/.*)?" any unconfined_tmpfs_systemd)
 
         (allow common_subject self (process (setsched)))
 

@@ -94,6 +94,9 @@
     (blockinherit usersubject_home_data_object_block)
 )
 
+(macro gsd_exec_helper ((type ARG1))
+    (call can_exec (ARG1 gsd_helper.bin_object)))
+
 (macro gsd_auto_subtrans ((type ARG1))
     (call gsd_send_signal (ARG1))
     (call auto_subject_type_transition_pattern
