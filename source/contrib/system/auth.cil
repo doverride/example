@@ -201,6 +201,9 @@
 
     (context run_faillog (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/faillock(/.*)?" any run_faillog)
+
+    (optional faillog_optional_logrotate
+        (call logrotate_log_object (var_log_object)))
 )
 
 (block lastlog

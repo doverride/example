@@ -128,6 +128,9 @@
 
     (optional ntpd_subject_optional_dhcp
         (call dhcp_list_dhclient_var_lib (common_subject)))
+
+    (optional ntpd_optional_logrotate
+        (call logrotate_log_object (var_log_object)))
 )
 
 (allow ntp_admin_type ntp_subject_type signal_perms)

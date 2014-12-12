@@ -126,6 +126,9 @@
     (call miscfiles_read_localization (common_subject))
 
     (call systemd_stream_connect (common_subject))
+
+    (optional cupsd_optional_logrotate
+        (call logrotate_log_object (var_log_object)))
 )
 
 (block cups_browsed

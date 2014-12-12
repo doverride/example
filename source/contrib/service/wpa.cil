@@ -70,6 +70,9 @@
 
     (call dbus_system_service (common_subject))
 
+    (optional wpa_optional_logrotate
+        (call logrotate_log_object (var_log_object)))
+
     (optional wpa_optional_networkmgr
         (call nm_dbus_chat (common_subject)))
 )

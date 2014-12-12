@@ -43,6 +43,9 @@
 
     (context run_pppd (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/ppp(/.*)?" any run_pppd)
+
+    (optional pppd_optional_logrotate
+        (call logrotate_log_object (var_log_object)))
 )
 
 (allow ppp_admin_type pppd.common_subject signal_perms)

@@ -130,6 +130,9 @@
 
     (optional libvirtd_optional_firewall
         (call firewall_dbus_chat (common_subject)))
+
+    (optional libvirtd_optional_logrotate
+        (call logrotate_log_object (var_log_object)))
 )
 
 (block libvirtd_dnsmasq

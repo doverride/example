@@ -108,6 +108,9 @@
     (optional rpm_optional_app
         (call app_exec_object_type (common_subject))
         (call app_subject_type (common_subject)))
+
+    (optional rpm_optional_logrotate
+        (call logrotate_log_object (var_log_object)))
 )
 
 (type rpm_script_t)
