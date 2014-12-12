@@ -108,7 +108,12 @@
     (allow ARG2 ARG3 signal_perms)
     (call ps_subject_pattern (ARG2 ARG3))
 
-    (allow ARG3 ARG2 (process (signal))))
+    (allow ARG3 ARG2 (process (signal)))
+
+    (call fs_search_tmpfs (ARG2))
+
+    (call stream_connect_pattern
+        (ARG2 gsession.user_tmpfs_object gsession.user_tmpfs_object ARG3)))
 
 (macro gsession_manage_tmpfs ((role ARG1)(type ARG2))
     (call fs_search_tmpfs (ARG2))
