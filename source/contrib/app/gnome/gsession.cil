@@ -69,6 +69,8 @@
 
 (call accounts_dbus_chat (gsession_subject_type))
 
+(call gkeyring_run_gkeyringd (gsession_subject_type gsession_role))
+
 (call gsession_exec_helper (gsession_subject_type))
 
 (call gsd_exec_helper (gsession_subject_type))
