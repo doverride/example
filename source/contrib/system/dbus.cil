@@ -9,6 +9,18 @@
 (typeattribute dbus_system_client_type)
 (typeattribute dbus_unconfined_type)
 
+(roleattribute dbus_session_role)
+
+(typeattribute dbus_session_client_type)
+(typeattribute dbus_session_subject_type)
+
+(block dbus_session_subject_block
+    (blockabstract dbus_session_subject_block)
+    (blockinherit app_subject_block)
+
+    (call dbus_session_subject_type (common_subject))
+)
+
 (block dbus_maintains_single_etc_file_block
     (blockabstract dbus_maintains_single_etc_file_block)
         (blockinherit dbus_etc_object_block)
@@ -36,6 +48,8 @@
     (context unit_dbusd (sys.u sys.r unit_object (systemlow systemlow)))
     (filecon "/usr/lib/systemd/system/[^/]*dbus.*" file unit_dbusd)
 
+    (call app_entry (dbus_session_subject_type bin_object))
+
     (blockinherit file_maintains_run_dirs_and_sock_files_block)
 
     (typeattributeset dbus_object_type run_object)
@@ -52,48 +66,30 @@
     (context var_lib_dbusd (sys.u sys.r var_lib_object (systemlow systemlow)))
     (filecon "/var/lib/dbus(/.*)?" any var_lib_dbusd)
 
+    (blockinherit usersubject_tmpfs_object_block)
+
     (allow common_subject self (process (getcap setcap setrlimit)))
     (allow common_subject self (capability (setgid setuid)))
-    (allow common_subject self create_netlink_selinux_socket_perms)
-    (allow common_subject self (unix_stream_socket (listen accept)))
 
     (call sys_read_kernel_sysctl (common_subject))
 
-    (call dev_read_urandom (common_subject))
     (call dev_rw_inherited_dri (common_subject))
     (call dev_rw_inherited_event (common_subject))
-
-    (call file_read_generic_usr (common_subject))
-
-    (call sec_compute_access_vector (common_subject))
-    (call sec_list (common_subject))
 
     (call audit_client (common_subject))
 
     (call auth_read_pam_console_run_files (common_subject))
-    (call auth_nsswitch_client (common_subject))
 
     (call dbus_chat_all_system_client_subjects (common_subject))
     (call dbus_chat_all_unconfined_subjects (common_subject))
 
-    (call dbus_list_config (common_subject))
     (call dbus_read_all_config_files (common_subject))
 
     (call dbus_read_state_all_system_client_subjects (common_subject))
     (call dbus_read_state_all_unconfined_subjects (common_subject))
 
-    (call journal_client (common_subject))
-
     (call logind_use_fd (common_subject))
-    (call logind_read_run_files (common_subject))
     (call logind_write_inherited_run_fifo_files (common_subject))
-
-    (call miscfiles_read_localization (common_subject))
-
-    (call seutil_read_config_files (common_subject))
-    (call seutil_read_default_context_files (common_subject))
-
-    (call systemd_getattr_unit_dirs (common_subject))
 
     (optional dbusd_optional_gdm
         (call gdm_read_inherited_var_lib_files (common_subject)))
@@ -120,6 +116,42 @@
 (call dbus_read_var_lib_files (dbus_system_client_type))
 (call dbus_stream_connect_system (dbus_system_client_type))
 
+(typeattributeset dbus_subject_type dbus_session_subject_type)
+
+(call dbus_manage_user_tmpfs_sock_files
+    (dbus_session_role dbus_session_subject_type))
+(call dbus_tmpfs_filetrans_user_tmpfs_sock_files
+    (dbus_session_role dbus_session_subject_type))
+
+(call dbus_read_generic_config_files (dbus_session_subject_type))
+
+(allow dbus_subject_type self create_netlink_selinux_socket_perms)
+(allow dbus_subject_type self (unix_stream_socket (listen accept)))
+
+(call dev_read_urandom (dbus_subject_type))
+
+(call file_read_generic_usr (dbus_subject_type))
+
+(call sec_compute_access_vector (dbus_subject_type))
+(call sec_list (dbus_subject_type))
+
+(call auth_nsswitch_client (dbus_subject_type))
+
+(call dbus_list_config (dbus_subject_type))
+
+(call journal_client (dbus_subject_type))
+
+(call logind_read_run_files (dbus_subject_type))
+
+(call miscfiles_read_localization (dbus_subject_type))
+
+(call seutil_read_config_files (dbus_subject_type))
+(call seutil_read_default_context_files (dbus_subject_type))
+
+(call systemd_getattr_unit_dirs (dbus_subject_type))
+
+(call fs_search_tmpfs (dbus_session_client_type))
+
 (allow dbus_admin_type dbus_subject_type signal_perms)
 (allow dbus_admin_type dbus_subject_type (process (ptrace)))
 (call ps_subject_pattern (dbus_admin_type dbus_subject_type))
@@ -133,6 +165,47 @@
 (call dbus_acquire_system_service (dbus_unconfined_type))
 (call dbus_chat_all_unconfined_subjects (dbus_unconfined_type))
 (call dbus_chat_all_system_client_subjects (dbus_unconfined_type))
+
+(macro dbus_session_subject_type ((type ARG1))
+    (typeattributeset dbus_session_subject_type ARG1))
+
+(macro dbus_role_template ((role ARG1)(type ARG2)(type ARG3))
+    (call auto_subject_type_transition_pattern
+        (ARG2 dbusd.bin_object ARG3))
+
+    (roletype ARG1 ARG3)
+    (roleattributeset dbus_session_role ARG1)
+
+    (allow ARG3 ARG2 (process (signal)))
+
+    (call bin_auto_subtrans (ARG3 ARG2))
+    (call bin_shell_auto_subtrans (ARG3 ARG2)))
+
+(macro dbus_session_client ((type ARG1)(type ARG2))
+    (typeattributeset dbus_session_client_type ARG1)
+
+    (call stream_connect_pattern
+        (ARG1 dbusd.user_tmpfs_object dbusd.user_tmpfs_object ARG3))
+
+    (allow ARG1 ARG3 (unix_stream_socket (read write)))
+    (allow ARG1 ARG3 (process (signal)))
+
+    (allow ARG3 ARG1 list_dir_perms)
+    (allow ARG3 ARG1 read_file_perms)
+    (allow ARG3 ARG1 read_lnk_file_perms))
+
+(macro dbus_relabel_user_tmpfs_sock_files ((type ARG1))
+    (allow ARG1 dbusd.user_tmpfs_object relabel_sock_file_perms))
+
+(macro dbus_manage_user_tmpfs_sock_files ((role ARG1)(type ARG2))
+    (call fs_search_tmpfs (ARG2))
+    (call manage_sock_files_pattern
+        (ARG2 dbusd.user_tmpfs_object dbusd.user_tmpfs_object))
+    (roletype ARG1 dbusd.user_tmpfs_object))
+
+(macro dbus_tmpfs_filetrans_user_tmpfs_sock_files ((role ARG1)(type ARG2))
+    (call fs_tmpfs_filetrans (ARG2 dbusd.user_tmpfs_object sock_file "*"))
+    (roletype ARG1 dbusd.user_tmpfs_object))
 
 (macro dbus_exec_dbusd ((type ARG1))
     (call can_exec (ARG1 dbusd.bin_object)))
