@@ -56,6 +56,7 @@
     (call dbus_all_session_client (common_subject)) 
     (call dbus_system_client (common_subject))
 
+    (call fuse_use_fusermount_fd (common_subject))
     (call fuse_run_fusermount (common_subject gvfs_role))
 
     (call logind_read_run_files (common_subject))
