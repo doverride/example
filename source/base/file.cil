@@ -674,6 +674,7 @@
 (type mnt)
 (call file_mnt_type (mnt))
 (call sys_mountpoint_type (mnt))
+(call fs_associate_tmpfs (mnt))
 
 (context mnt (sys.u sys.r mnt (systemlow systemlow)))
 (filecon "/media/[^/]*/.*" any ())
