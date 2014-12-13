@@ -79,6 +79,7 @@
 
                 (call gsession_manage_home (staff.r staff.common_subject))
                 (call gsession_relabel_home (staff.common_subject))
+                (call gsession_user_home_filetrans_home_files (staff.r staff.common_subject))
 
                 (context staff_gsession_home (staff.u staff.r gsession.home_object (systemlow systemlow)))
                 (filecon "/home/john/\.ICEauthority" file staff_gsession_home)

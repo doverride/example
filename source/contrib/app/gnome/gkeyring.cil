@@ -25,17 +25,12 @@
     (allow common_subject self (process (getcap setcap)))
     (allow common_subject self (unix_stream_socket (listen accept connectto)))
 
-    (allow common_subject home_data_object manage_dir_perms)
-    (allow common_subject home_data_object manage_file_perms)
+    (call gkeyring_manage_gkeyringd_home_data (gkeyring_role common_subject))
+    (call gkeyring_home_data_filetrans_gkeyringd_home_data_dirs (gkeyring_role common_subject))
 
-    (call usersubject_generic_home_data_filetrans
-        (gkeyring_role common_subject home_data_object dir "keyrings"))
-
-    (allow common_subject user_tmpfs_object manage_dir_perms)
-    (allow common_subject user_tmpfs_object manage_sock_file_perms)
-
-    (call fs_tmpfs_filetrans (common_subject user_tmpfs_object dir "keyring"))
-    (roletype gkeyring_role user_tmpfs_object)
+    (call gkeyring_manage_gkeyringd_user_tmpfs (gkeyring_role common_subject))
+    (call gkeyring_tmpfs_filetrans_gkeyringd_user_tmpfs_dirs
+        (gkeyring_role common_subject))
 
     (call sys_read_crypto_sysctl (common_subject))
     (call sys_read_kernel_sysctl (common_subject))

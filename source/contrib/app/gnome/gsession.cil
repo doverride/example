@@ -36,8 +36,7 @@
 (allow gsession_subject_type self (unix_stream_socket (listen accept)))
 (allow gsession_subject_type self rw_fifo_file_perms)
 
-(allow gsession_subject_type gsession.user_tmpfs_object manage_file_perms)
-(allow gsession_subject_type gsession.user_tmpfs_object manage_sock_file_perms)
+(call gsession_manage_tmpfs (gsession_role gsession_subject_type))
 
 (call fs_tmpfs_filetrans
     (gsession_subject_type gsession.user_tmpfs_object file "*"))
@@ -45,16 +44,13 @@
     (gsession_subject_type gsession.user_tmpfs_object sock_file "*"))
 (roletype gsession_role gsession.user_tmpfs_object)
 
-(allow gsession_subject_type gsession.home_config_object manage_dir_perms)
-(allow gsession_subject_type gsession.home_config_object manage_file_perms)
+(call gsession_manage_home_config (gsession_role gsession_subject_type))
+(call gsession_home_config_filetrans_home_config_dirs
+    (gsession_role gsession_subject_type))
 
-(call usersubject_generic_home_config_filetrans
-    (gsession_role gsession_subject_type gsession.home_config_object dir "gnome-session"))
-
-(allow gsession_subject_type gsession.home_object manage_file_perms)
-
-(call usersubject_home_user_filetrans
-    (gsession_role gsession_subject_type gsession.home_object file "*"))
+(call gsession_manage_home (gsession_role gsession_subject_type))
+(call gsession_user_home_filetrans_home_files
+    (gsession_role gsession_subject_type))
 
 (call bin_execute_shell_files (gsession_subject_type))
 
@@ -136,6 +132,12 @@
 (macro gsession_relabel_home ((type ARG1))
     (call usersubject_search_home_user (ARG1))
     (allow ARG1 gsession.home_object relabel_file_perms))
+
+(macro gsession_user_home_filetrans_home_files ((role ARG1)(type ARG2))
+    (call usersubject_home_user_filetrans
+        (gsession_role gsession_subject_type gsession.home_object file ".ICEauthority"))
+    (call usersubject_home_user_filetrans
+        (gsession_role gsession_subject_type gsession.home_object file ".ICEauthority-c")))
 
 (macro gsession_manage_home_config ((role ARG1)(type ARG2))
     (allow ARG2 gsession.home_config_object manage_dir_perms)

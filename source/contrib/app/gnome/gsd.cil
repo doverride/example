@@ -12,17 +12,11 @@
 
     (allow common_subject self (unix_stream_socket (listen accept)))
 
-    (allow common_subject home_data_object manage_dir_perms)
-    (allow common_subject home_data_object manage_file_perms)
+    (call gsd_manage_gsd_home_data (gsd_role common_subject))
+    (call gsd_home_data_filetrans_gsd_home_data_dirs (gsd_role common_subject))
 
-    (call usersubject_generic_home_data_filetrans
-        (gsd_role common_subject home_data_object dir "gnome-settings-daemon"))
-
-    (allow common_subject icc.home_data_object manage_dir_perms)
-    (allow common_subject icc.home_data_object manage_file_perms)
-
-    (call usersubject_generic_home_data_filetrans
-        (gsd_role common_subject icc.home_data_object dir "icc"))
+    (call gsd_manage_icc_home_data (gsd_role common_subject))
+    (call gsd_home_data_filetrans_icc_home_data_dirs (gsd_role common_subject))
 
     (call dev_rw_wireless (common_subject))
 
