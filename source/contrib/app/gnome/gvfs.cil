@@ -14,13 +14,13 @@
 
     (call file_read_generic_usr (common_subject))
 
+    (call dbus_all_session_client (common_subject))
+
     (call miscfiles_read_localization (common_subject))
 
-    (allow common_subject user_tmpfs_object manage_dir_perms)
-
-    (call fs_tmpfs_filetrans
-        (common_subject user_tmpfs_object dir "gvfs"))
-    (roletype gvfs_role user_tmpfs_object)
+    (call gvfs_manage_user_gvfsd_tmpfs_dirs (gvfs_role common_subject))
+    (call gvfs_tmpfs_filetrans_user_gvfsd_tmpfs_dirs
+        (gvfs_role common_subject))
 )
 
 (macro gvfs_auto_subtrans_gvfsd ((type ARG1))

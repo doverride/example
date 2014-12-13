@@ -40,7 +40,12 @@
 
             (optional staff_dbusd_optional_atspi
                 (call atspi_read_config_files (common_subject))
-                (call atspi_run_atspiregd (common_subject staff.r)))
+                (call atspi_run_atspiregd (common_subject staff.r))
+            )
+
+            (optional staff_dbusd_optional_gvfs
+                (call gvfs_run_gvfsd (common_subject staff.r))
+            )
         )
 
         (optional staff_optional_gkeyring
