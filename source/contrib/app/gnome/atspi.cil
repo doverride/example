@@ -41,3 +41,7 @@
 
 (macro atspi_send_signal_atspiregd ((type ARG1))
     (allow ARG1 atspiregd.common_subject (process (signal))))
+
+(macro atspi_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 atspiregd.etc_object atspiregd.etc_object)))

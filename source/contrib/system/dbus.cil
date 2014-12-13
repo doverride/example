@@ -152,6 +152,8 @@
 
 (call fs_search_tmpfs (dbus_session_client_type))
 
+(call dbus_read_var_lib_files (dbus_session_client_type))
+
 (allow dbus_admin_type dbus_subject_type signal_perms)
 (allow dbus_admin_type dbus_subject_type (process (ptrace)))
 (call ps_subject_pattern (dbus_admin_type dbus_subject_type))

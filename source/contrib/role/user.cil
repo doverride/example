@@ -39,6 +39,7 @@
             (call dbus_relabel_user_tmpfs_sock_files (user.common_subject))
 
             (optional user_dbusd_optional_atspi
+                (call atspi_read_config_files (common_subject))
                 (call atspi_run_atspiregd (common_subject user.r)))
         )
 
