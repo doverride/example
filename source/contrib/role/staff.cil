@@ -44,6 +44,7 @@
             )
 
             (optional staff_dbusd_optional_gvfs
+                (call gvfs_run (common_subject staff.r))
                 (call gvfs_run_gvfsd (common_subject staff.r))
             )
         )
@@ -104,6 +105,13 @@
         )
 
         (optional staff_optional_gvfs
+            (call gvfs_manage_home_data (r common_subject))
+            (call gvfs_relabel_home_data (common_subject))
+            (call gvfs_home_data_filetrans_home_data_dirs (r common_subject))
+
+            (context staff_gvfs_data (staff.u staff.r gvfs.home_data_object (systemlow systemlow)))
+            (filecon "/home/john/\.local/share/gvfs-metadata(/.*)?" any staff_gvfs_data)
+
             (call gvfs_manage_user_gvfsd_tmpfs_dirs (r common_subject))
             (call gvfs_relabel_user_gvfsd_tmpfs_dirs (common_subject))
             (call gvfs_tmpfs_filetrans_user_gvfsd_tmpfs_dirs (r common_subject))
