@@ -682,6 +682,9 @@
 (filecon "/mnt/[^/]*/.*" any ())
 (filecon "/mnt(/[^/]*)?" symlink mnt)
 (filecon "/mnt(/[^/]*)?" dir mnt)
+(filecon "/var/run/media/[^/]*/.*" any ())
+(filecon "/var/run/media(/[^/]*)?" symlink mnt)
+(filecon "/var/run/media(/[^/]*)?" dir mnt)
 
 (type run)
 (call file_run_type (run))
