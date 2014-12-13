@@ -1,0 +1,43 @@
+(roleattribute atspi_role)
+
+(roleattribute atspi_client_role)
+(typeattribute atspi_client_type)
+
+(block atspiregd
+    (blockinherit app_block)
+
+    (roletype atspi_role common_subject)
+
+    (context bin_atspi (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/at-spi2-registryd" file bin_atspi)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (context etc_atspi (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/at-spi2(/.*)?" file etc_atspi)
+)
+
+(call usersubject_manage_generic_tmpfs_dirs
+    (atspi_client_role atspi_client_type))
+(call usersubject_manage_generic_tmpfs_sock_files
+    (atspi_client_role atspi_client_type))
+(call usersubject_tmpfs_filetrans_user
+    (atspi_client_role atspi_client_type))
+
+(allow atspi_client_type atspiregd.common_subject (unix_stream_socket (connectto)))
+
+(macro atspi_client ((role ARG1)(type ARG2))
+    (typeattributeset atspi_client_role ARG1)
+    (typeattributeset atspi_client_type ARG2))
+
+(macro atspi_auto_subtrans_atspiregd ((type ARG1))
+    (call atspi_send_signal_atspiregd (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 atspiregd.bin_object atspiregd.common_subject)))
+
+(macro atspi_run_atspiregd ((type ARG1)(role ARG2))
+    (call atspi_auto_subtrans_atspiregd (ARG1))
+    (roleattributeset atspi_role ARG2))
+
+(macro atspi_send_signal_atspiregd ((type ARG1))
+    (allow ARG1 atspiregd.common_subject (process (signal))))

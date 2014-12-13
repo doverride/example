@@ -37,6 +37,8 @@
 
     (call dbus_system_client (common_subject))
 
+    (call gsd_auto_subtrans_printer (common_subject))
+
     (call hostnamed_dbus_chat (common_subject))
 
     (call localed_dbus_chat (common_subject))

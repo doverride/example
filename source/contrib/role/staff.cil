@@ -37,6 +37,9 @@
 
             (call dbus_manage_user_tmpfs_sock_files (staff.r staff.common_subject))
             (call dbus_relabel_user_tmpfs_sock_files (staff.common_subject))
+
+            (optional staff_dbusd_optional_atspi
+                (call atspi_run_atspiregd (common_subject staff.r)))
         )
 
         (optional staff_optional_gkeyring

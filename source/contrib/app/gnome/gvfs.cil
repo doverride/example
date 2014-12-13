@@ -35,6 +35,9 @@
 (macro gvfs_send_signal_gvfsd ((type ARG1))
     (allow ARG1 gvfsd.common_subject (process (signal))))
 
+(macro gvfs_use_fd_gvfsd ((type ARG1))
+    (allow ARG1 gvfsd.common_subject (fd (use))))
+
 (macro gvfs_manage_user_gvfsd_tmpfs_dirs ((role ARG1)(type ARG2))
     (allow ARG2 gvfsd.user_tmpfs_object manage_dir_perms)
     (roletype ARG1 gvfsd.user_tmpfs_object))

@@ -671,6 +671,18 @@
         (not_mounton_entrypoint_and_execmod)))
     (call usersubject_tmpfs_filetrans_user (ARG1 ARG2)))
 
+(macro usersubject_manage_generic_tmpfs_dirs ((role ARG1)(type ARG2))
+    (call file_search_run_user (ARG2))
+    (call manage_dirs_pattern
+        (ARG2 user.user_tmpfs_object user.user_tmpfs_object))
+    (roletype ARG1 user.user_tmpfs_object))
+
+(macro usersubject_manage_generic_tmpfs_sock_files ((role ARG1)(type ARG2))
+    (call file_search_run_user (ARG2))
+    (call manage_sock_files_pattern
+        (ARG2 user.user_tmpfs_object user.user_tmpfs_object))
+    (roletype ARG1 user.user_tmpfs_object))
+
 (macro usersubject_tmpfs_filetrans_user ((role ARG1)(type ARG2))
     (call fs_tmpfs_filetrans
         (ARG2 user.user_tmpfs_object all_file_objects "*"))
