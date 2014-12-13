@@ -15,6 +15,8 @@
 
     (context etc_atspi (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/at-spi2(/.*)?" file etc_atspi)
+
+    (call dbus_all_session_client (common_subject))
 )
 
 (call usersubject_manage_generic_tmpfs_dirs
@@ -24,7 +26,7 @@
 (call usersubject_tmpfs_filetrans_user
     (atspi_client_role atspi_client_type))
 
-(allow atspi_client_type atspiregd.common_subject (unix_stream_socket (connectto)))
+(allow atspi_client_type atspi_client_type (unix_stream_socket (connectto)))
 
 (macro atspi_client ((role ARG1)(type ARG2))
     (typeattributeset atspi_client_role ARG1)
