@@ -39,9 +39,8 @@
         (call gdm_rw_stream_sockets (common_subject)))
 
     (optional fusermount_optional_gvfs
-        (call gvfs_use_fd_gvfsd (common_subject)))
-
-    (optional fusermount_optional_usersubject
+        (call gvfs_rw_stream_sockets (common_subject))
+        (call gvfs_use_fd_gvfsd (common_subject))
         (call gvfs_mounton_user_gvfsd_tmpfs_dirs (common_subject)))
 )
 

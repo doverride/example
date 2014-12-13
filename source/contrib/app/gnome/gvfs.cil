@@ -158,6 +158,9 @@
     (allow ARG1 gvfs.home_data_object relabel_dir_perms)
     (allow ARG1 gvfs.home_data_object relabel_file_perms))
 
+(macro gvfs_rw_stream_sockets ((type ARG1))
+    (allow ARG1 gvfs.common_subject (unix_stream_socket (read write))))
+
 (macro gvfs_home_data_filetrans_home_data_dirs ((role ARG1)(type ARG2))
     (call usersubject_generic_home_data_filetrans
         (ARG1 ARG2 gvfs.home_data_object dir "gvfs-metadata")))
