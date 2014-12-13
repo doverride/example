@@ -59,6 +59,7 @@
     (filecon "/etc/dbus-1/system\.d/org\.freedesktop\.UDisks2\.conf" file dbus_etc_udisksd)
 
     (allow common_subject self (capability (sys_rawio)))
+    (allow common_subject self rw_fifo_file_perms)
 
     (call dev_read_urandom (common_subject))
 
@@ -77,13 +78,20 @@
 
     (call dbus_system_service (common_subject))
 
+    (call dm_auto_subtrans_dmcrypt (common_subject))
+
     (call journal_client (common_subject))
+
+    (call logind_read_run_files (common_subject))
 
     (call miscfiles_read_localization (common_subject))
 
     (call polkit_dbus_chat_polkitd (common_subject))
 
     (call udev_client (common_subject))
+
+    (optional udisks_optional_unconfined
+        (call unconfined_read_state_all_unconfined_user_subjects (common_subject)))
 )
 
 (allow udisks_admin_type udisks_subject_type signal_perms)

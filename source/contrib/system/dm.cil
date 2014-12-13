@@ -64,7 +64,7 @@
 )
 
 (block dmcrypt
-    (blockinherit app_block)
+    (blockinherit subject_system_entry_block)
 
     (typeattributeset dm_subject_type common_subject)
 
@@ -100,6 +100,10 @@
     (call miscfiles_read_localization (common_subject))
 
     (call udev_client (common_subject))
+
+    (optional dmcrypt_optional_app
+        (call app_exec_object_type (bin_object))
+        (call app_subject_type (common_subject)))
 )
 
 (allow dm_admin_type dm_subject_type signal_perms)
