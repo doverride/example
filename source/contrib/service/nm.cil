@@ -191,6 +191,10 @@
 
     (context bin_nm_online (sys.u sys.r bin_object (systemlow systemlow)))
     (filecon "/usr/bin/nm-online" file bin_nm_online)
+
+    (allow common_subject self create_unix_stream_socket_perms)
+
+    (call miscfiles_read_localization (common_subject))
 )
 
 (block nmcli
