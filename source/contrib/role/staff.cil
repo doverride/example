@@ -42,6 +42,8 @@
                 (call atspi_read_config_files (common_subject))
                 (call atspi_run_atspiregd (common_subject staff.r))
 
+                (call gshell_run_cald (common_subject staff.r))
+
                 (call gvfs_run (common_subject staff.r))
                 (call gvfs_run_gvfsd (common_subject staff.r))
             )

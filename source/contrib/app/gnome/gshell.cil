@@ -21,11 +21,25 @@
     (blockinherit usersubject_home_data_object_block)
 )
 
+(block gshellcald
+    (blockinherit app_block)
+
+    (roletype gshell_role common_subject)
+
+    (context bin_gshellcald (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/gnome-shell-calendar-server" file bin_gshellcald)
+
+    (call file_read_generic_usr (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+)
+
 (block gshell_helper
     (blockinherit bin_object_block)
 
     (context bin_gshell_helper (sys.u sys.r bin_object (systemlow systemlow)))
-    (filecon "/usr/libexec/gnome-shell-calendar-server" file bin_gshell_helper)
     (filecon "/usr/libexec/gnome-shell-perf-helper" file bin_gshell_helper)
     (filecon "/usr/libexec/gnome-shell-portal-helper" file bin_gshell_helper)
     (filecon "/usr/libexec/gnome-shell-hotplug-sniffer" file bin_gshell_helper)
@@ -93,6 +107,18 @@
 
 (macro gshell_exec_helper ((type ARG1))
     (call can_exec (ARG1 gshell_helper.bin_object)))
+
+(macro gshell_auto_subtrans_cald ((type ARG1))
+    (call gshell_send_signal_cald (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 gshellcald.bin_object gshellcald.common_subject)))
+
+(macro gshell_run_cald ((type ARG1)(role ARG2))
+    (call gshell_auto_subtrans_cald (ARG1))
+    (roleattributeset gshell_role ARG2))
+
+(macro gshell_send_signal_cald ((type ARG1))
+    (allow ARG1 gshellcald.common_subject (process (signal))))
 
 (macro gshell_role_template ((role ARG1)(type ARG2)(type ARG3))
     (call auto_subject_type_transition_pattern
