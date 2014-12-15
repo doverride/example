@@ -964,6 +964,10 @@
     (call file_search_run (ARG1))
     (call manage_dirs_pattern (ARG1 mnt mnt)))
 
+(macro file_run_filetrans_mnt_dirs ((role ARG1)(type ARG2))
+    (call file_run_filetrans (ARG2 mnt dir "media"))
+    (roletype ARG1 mnt))
+
 (macro file_list_all_etc ((type ARG1))
     (allow ARG1 file_etc_type list_dir_perms))
 

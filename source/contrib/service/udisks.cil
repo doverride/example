@@ -70,6 +70,7 @@
     (call fs_read_sysfs_lnk_files (common_subject))
 
     (call file_manage_mnt_dirs (common_subject))
+    (call file_run_filetrans_mnt_dirs (sys.r common_subject))
     (call file_read_generic_etc (common_subject))
     (call file_read_generic_usr (common_subject))
 
