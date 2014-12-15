@@ -77,6 +77,7 @@
     (context var_log_rpm (sys.u sys.r var_log_object (systemlow systemlow)))
     (filecon "/var/log/yum\.log.*" file var_log_rpm)
     (filecon "/var/log/dnf\.log.*" file var_log_rpm)
+    (filecon "/var/log/dnf\.plugin\.log.*" file var_log_rpm)
     (filecon "/var/log/dnf\.rpm\.log.*" file var_log_rpm)
 
     (blockinherit file_var_tmp_object_block)
