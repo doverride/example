@@ -960,6 +960,10 @@
 (macro file_list_mnt ((type ARG1))
     (allow ARG1 mnt list_dir_perms))
 
+(macro file_manage_mnt_dirs ((type ARG1))
+    (call file_search_run (ARG1))
+    (call manage_dirs_pattern (ARG1 mnt mnt)))
+
 (macro file_list_all_etc ((type ARG1))
     (allow ARG1 file_etc_type list_dir_perms))
 

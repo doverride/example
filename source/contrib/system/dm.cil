@@ -87,6 +87,7 @@
     (call fs_list_debugfs (common_subject))
     (call fs_read_devtmpfs_lnk_files (common_subject))
     (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
 
     (call dev_read_urandom (common_subject))
     (call dev_read_random (common_subject))

@@ -63,10 +63,13 @@
 
     (call dev_read_urandom (common_subject))
 
+    (call fs_getattr_tmpfs (common_subject))
+    (call fs_list_devtmpfs (common_subject))
     (call fs_list_sysfs (common_subject))
     (call fs_read_sysfs_files (common_subject))
     (call fs_read_sysfs_lnk_files (common_subject))
 
+    (call file_manage_mnt_dirs (common_subject))
     (call file_read_generic_etc (common_subject))
     (call file_read_generic_usr (common_subject))
 
@@ -85,6 +88,8 @@
     (call logind_read_run_files (common_subject))
 
     (call miscfiles_read_localization (common_subject))
+
+    (call mount_auto_subtrans (common_subject))
 
     (call polkit_dbus_chat_polkitd (common_subject))
 
