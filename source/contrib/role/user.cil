@@ -38,53 +38,47 @@
             (call dbus_manage_user_tmpfs_sock_files (user.r user.common_subject))
             (call dbus_relabel_user_tmpfs_sock_files (user.common_subject))
 
-            (optional user_dbusd_optional_atspi
+            (optional user_dbusd_optional_gnome
                 (call atspi_read_config_files (common_subject))
                 (call atspi_run_atspiregd (common_subject user.r))
-            )
 
-            (optional user_dbusd_optional_gvfs
                 (call gvfs_run (common_subject user.r))
                 (call gvfs_run_gvfsd (common_subject user.r))
             )
         )
 
-        (optional user_optional_gkeyring
-            (call gkeyring_manage_gkeyringd_user_tmpfs (r common_subject))
-            (call gkeyring_relabel_gkeyringd_user_tmpfs (common_subject))
-            (call gkeyring_tmpfs_filetrans_gkeyringd_user_tmpfs_dirs (r common_subject))
+        (optional user_optional_gnome
+            (call gkeyring_manage_tmpfs (user.r user.common_subject))
+            (call gkeyring_relabel_tmpfs (user.common_subject))
+            (call gkeyring_tmpfs_filetrans_tmpfs_dirs (user.r user.common_subject))
 
-            (call gkeyring_manage_gkeyringd_home_data (r common_subject))
-            (call gkeyring_relabel_gkeyringd_home_data (common_subject))
-            (call gkeyring_home_data_filetrans_gkeyringd_home_data_dirs (r common_subject))
+            (call gkeyring_manage_home_data (user.r user.common_subject))
+            (call gkeyring_relabel_home_data (user.common_subject))
+            (call gkeyring_home_data_filetrans_home_data_dirs (user.r user.common_subject))
 
-            (context user_gkeyringd_data (u r gkeyringd.home_data_object (systemlow systemlow)))
+            (context user_gkeyringd_data (user.u user.r gkeyringd.home_data_object (systemlow systemlow)))
             (filecon "/home/.*/\.local/share/keyrings(/.*)?" any user_gkeyringd_data)
-        )
 
-        (optional user_optional_gsd
-            (call gsd_manage_gsd_home_data (r common_subject))
-            (call gsd_relabel_gsd_home_data (common_subject))
-            (call gsd_home_data_filetrans_gsd_home_data_dirs (r common_subject))
+            (call gsd_manage_gsd_home_data (user.r user.common_subject))
+            (call gsd_relabel_gsd_home_data (user.common_subject))
+            (call gsd_home_data_filetrans_gsd_home_data_dirs (user.r user.common_subject))
 
-            (context user_gsd_data (u r gsd.home_data_object (systemlow systemlow)))
+            (context user_gsd_data (user.u user.r gsd.home_data_object (systemlow systemlow)))
             (filecon "/home/.*/\.local/share/gnome-settings-daemon(/.*)?" any user_gsd_data)
 
-            (call gsd_manage_icc_home_data (r common_subject))
-            (call gsd_relabel_icc_home_data (common_subject))
-            (call gsd_home_data_filetrans_icc_home_data_dirs (r common_subject))
+            (call gsd_manage_icc_home_data (user.r user.common_subject))
+            (call gsd_relabel_icc_home_data (user.common_subject))
+            (call gsd_home_data_filetrans_icc_home_data_dirs (user.r user.common_subject))
 
-            (context user_gsd_icc_data (u r icc.home_data_object (systemlow systemlow)))
+            (context user_gsd_icc_data (user.u user.r icc.home_data_object (systemlow systemlow)))
             (filecon "/home/.*/\.local/share/icc(/.*)?" any user_gsd_icc_data)
-        )
 
-        (optional user_optional_gsession
             (block user_gsession
                 (blockinherit gsession_subject_block)
 
                 (call gsession_role_template (user.r user.common_subject common_subject))
 
-                (call gsession_manage_home (user.r user.common_subject))
+                (call gsession_manage_tmpfs (user.r user.common_subject))
                 (call gsession_relabel_tmpfs (user.common_subject))
 
                 (call gsession_manage_home (user.r user.common_subject))
@@ -102,19 +96,34 @@
                 (context user_gsession_config (user.u user.r gsession.home_config_object (systemlow systemlow)))
                 (filecon "/home/.*/\.config/gnome-session(/.*)?" any user_gsession_config)
             )
-        )
 
-        (optional user_optional_gvfs
-            (call gvfs_manage_home_data (r common_subject))
-            (call gvfs_relabel_home_data (common_subject))
-            (call gvfs_home_data_filetrans_home_data_dirs (r common_subject))
+            (block user_gshell
+                (blockinherit gshell_subject_block)
+
+                (call gshell_manage_tmpfs (user.r user.common_subject))
+                (call gshell_relabel_tmpfs (user.common_subject))
+                (call gshell_tmpfs_filetrans_tmpfs_dirs (user.r user.common_subject))
+
+                (call gshell_manage_home_data (user.r user.common_subject))
+                (call gshell_relabel_home_data (user.common_subject))
+                (call gshell_home_data_filetrans_home_data_dirs (user.r user.common_subject))
+
+                (context user_gshell_data (user.u user.r gshell.home_data_object (systemlow systemlow)))
+                (filecon "/home/.*/\.local/share/gnome-shell(/.*)?" any user_gshell_data)
+            )
+
+            (call gshell_role_template (user.r user_gsession.common_subject user_gshell.common_subject)) ; FIXME
+
+            (call gvfs_manage_home_data (user.r user.common_subject))
+            (call gvfs_relabel_home_data (user.common_subject))
+            (call gvfs_home_data_filetrans_home_data_dirs (user.r user.common_subject))
 
             (context user_gvfs_data (user.u user.r gvfs.home_data_object (systemlow systemlow)))
             (filecon "/home/.*/\.local/share/gvfs-metadata(/.*)?" any user_gvfs_data)
 
-            (call gvfs_manage_user_gvfsd_tmpfs_dirs (r common_subject))
-            (call gvfs_relabel_user_gvfsd_tmpfs_dirs (common_subject))
-            (call gvfs_tmpfs_filetrans_user_gvfsd_tmpfs_dirs (r common_subject))
+            (call gvfs_manage_gvfsd_tmpfs_dirs (user.r user.common_subject))
+            (call gvfs_relabel_gvfsd_tmpfs_dirs (user.common_subject))
+            (call gvfs_tmpfs_filetrans_gvfsd_tmpfs_dirs (user.r user.common_subject))
         )
     )
 

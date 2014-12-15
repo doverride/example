@@ -100,9 +100,6 @@
     (roletype ARG1 ARG3)
     (roleattributeset gsession_role ARG1)
 
-    (allow ARG2 ARG3 (fd (use)))
-    (allow ARG2 ARG3 rw_unix_stream_socket_perms)
-
     (allow ARG2 ARG3 signal_perms)
     (call ps_subject_pattern (ARG2 ARG3))
 

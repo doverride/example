@@ -80,8 +80,8 @@
 
     (blockinherit usersubject_tmpfs_object_block)
 
-    (call gvfs_manage_user_gvfsd_tmpfs_dirs (gvfs_role common_subject))
-    (call gvfs_tmpfs_filetrans_user_gvfsd_tmpfs_dirs
+    (call gvfs_manage_gvfsd_tmpfs_dirs (gvfs_role common_subject))
+    (call gvfs_tmpfs_filetrans_gvfsd_tmpfs_dirs
         (gvfs_role common_subject))
 
     (allow common_subject self rw_fifo_file_perms)
@@ -122,32 +122,32 @@
 (macro gvfs_send_signal ((type ARG1))
     (allow ARG1 gvfs.common_subject (process (signal))))
 
-(macro gvfs_manage_user_gvfsd_tmpfs_dirs ((role ARG1)(type ARG2))
+(macro gvfs_manage_gvfsd_tmpfs_dirs ((role ARG1)(type ARG2))
     (allow ARG2 gvfsd.user_tmpfs_object manage_dir_perms)
     (roletype ARG1 gvfsd.user_tmpfs_object))
 
-(macro gvfs_relabel_user_gvfsd_tmpfs_dirs ((type ARG1))
+(macro gvfs_relabel_gvfsd_tmpfs_dirs ((type ARG1))
     (allow ARG1 gvfsd.user_tmpfs_object relabel_dir_perms))
 
-(macro gvfs_tmpfs_filetrans_user_gvfsd_tmpfs_dirs ((role ARG1)(type ARG2))
+(macro gvfs_tmpfs_filetrans_gvfsd_tmpfs_dirs ((role ARG1)(type ARG2))
     (call fs_tmpfs_filetrans
         (ARG2 gvfsd.user_tmpfs_object dir "gvfs"))
     (roletype ARG1 gvfsd.user_tmpfs_object))
 
-(macro gvfs_dontaudit_audit_access_user_gvfsd_tmpfs_dirs ((type ARG1))
+(macro gvfs_dontaudit_audit_access_gvfsd_tmpfs_dirs ((type ARG1))
     (dontaudit ARG1 gvfsd.user_tmpfs_object (dir (audit_access))))
 
-(macro gvfs_list_user_gvfsd_tmpfs ((type ARG1))
+(macro gvfs_list_gvfsd_tmpfs ((type ARG1))
     (call file_search_run_user (ARG1))
     (allow ARG1 gvfsd.user_tmpfs_object list_dir_perms))
 
-(macro gvfs_mounton_user_gvfsd_tmpfs_dirs ((type ARG1))
-    (call gvfs_dontaudit_audit_access_user_gvfsd_tmpfs_dirs (ARG1))
-    (call gvfs_list_user_gvfsd_tmpfs (ARG1))
-    (call gvfs_setattr_user_gvfsd_tmpfs_dirs (ARG1))
+(macro gvfs_mounton_gvfsd_tmpfs_dirs ((type ARG1))
+    (call gvfs_dontaudit_audit_access_gvfsd_tmpfs_dirs (ARG1))
+    (call gvfs_list_gvfsd_tmpfs (ARG1))
+    (call gvfs_setattr_gvfsd_tmpfs_dirs (ARG1))
     (allow ARG1 gvfsd.user_tmpfs_object (dir (mounton))))
 
-(macro gvfs_setattr_user_gvfsd_tmpfs_dirs ((type ARG1))
+(macro gvfs_setattr_gvfsd_tmpfs_dirs ((type ARG1))
     (allow ARG1 gvfsd.user_tmpfs_object (dir (setattr))))
 
 (macro gvfs_manage_home_data ((role ARG1)(type ARG2))

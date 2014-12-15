@@ -301,6 +301,10 @@
 (macro gdm_setattr_tmpfs_dirs ((type ARG1))
     (allow ARG1 gdm.tmpfs_object (dir (setattr))))
 
+(macro gdm_dbus_chat ((type ARG1))
+    (allow ARG1 gdm.common_subject (dbus (send_msg)))
+    (allow gdm.common_subject ARG1 (dbus (send_msg))))
+
 (macro gdm_admin ((role ARG1)(type ARG2))
     (allow ARG2 self (capability (kill sys_ptrace)))
     (call systemd_system_service_admin (ARG2))

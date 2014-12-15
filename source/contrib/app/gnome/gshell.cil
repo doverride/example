@@ -1,0 +1,141 @@
+(roleattribute gshell_role)
+
+(typeattribute gshell_subject_type)
+
+(block gshell_subject_block
+    (blockabstract gshell_subject_block)
+    (blockinherit app_subject_block)
+
+    (call gshell_subject_type (common_subject))
+)
+
+(block gshell
+    (blockinherit bin_object_block)
+
+    (call app_entry (gshell_subject_type bin_object))
+
+    (context bin_gshell (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/gnome-shell" file bin_gshell)
+
+    (blockinherit usersubject_tmpfs_object_block)
+    (blockinherit usersubject_home_data_object_block)
+)
+
+(block gshell_helper
+    (blockinherit bin_object_block)
+
+    (context bin_gshell_helper (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/gnome-shell-calendar-server" file bin_gshell_helper)
+    (filecon "/usr/libexec/gnome-shell-perf-helper" file bin_gshell_helper)
+    (filecon "/usr/libexec/gnome-shell-portal-helper" file bin_gshell_helper)
+    (filecon "/usr/libexec/gnome-shell-hotplug-sniffer" file bin_gshell_helper)
+)
+
+(allow gshell_subject_type self (process (setsched)))
+(allow gshell_subject_type self (unix_stream_socket (listen accept)))
+
+(call gshell_manage_tmpfs (gshell_role gshell_subject_type))
+
+(call fs_tmpfs_filetrans
+    (gshell_subject_type gshell.user_tmpfs_object file "*"))
+(call gshell_tmpfs_filetrans_tmpfs_dirs (gshell_role gshell_subject_type))
+
+(call gshell_manage_home_data (gshell_role gshell_subject_type))
+(call gshell_home_data_filetrans_home_data_dirs
+    (gshell_role gshell_subject_type))
+
+(call dev_read_urandom (gshell_subject_type))
+(call dev_rw_dri (gshell_subject_type))
+
+(call fs_read_sysfs_files (gshell_subject_type))
+
+(call file_read_generic_etc (gshell_subject_type))
+
+(call subject_execmem_uncond (gshell_subject_type))
+
+(call accounts_dbus_chat (gshell_subject_type))
+
+(call atspi_client (gshell_role gshell_subject_type))
+
+(call auth_nsswitch_client (gshell_subject_type))
+
+(call bluetooth_dbus_chat (gshell_subject_type))
+
+(call dbus_system_client (gshell_subject_type))
+
+(call gdm_dbus_chat (gshell_subject_type))
+
+(call geoclue_dbus_chat (gshell_subject_type))
+
+(call logind_client (gshell_subject_type))
+(call logind_list_run (gshell_subject_type))
+(call logind_read_run_files (gshell_subject_type))
+
+(call miscfiles_read_generic_cert (gshell_subject_type))
+
+(call nm_dbus_chat (gshell_subject_type))
+
+(call polkit_dbus_chat_polkitd (gshell_subject_type))
+
+(call seutil_read_config_files (gshell_subject_type))
+
+(call systemd_read_state (gshell_subject_type))
+
+(call udev_client (gshell_subject_type))
+
+(call upower_dbus_chat (gshell_subject_type))
+
+(optional gshell_subject_optional_mm
+    (call mm_dbus_chat (gshell_subject_type)))
+
+(macro gshell_subject_type ((type ARG1))
+    (typeattributeset gshell_subject_type ARG1))
+
+(macro gshell_exec_helper ((type ARG1))
+    (call can_exec (ARG1 gshell_helper.bin_object)))
+
+(macro gshell_role_template ((role ARG1)(type ARG2)(type ARG3))
+    (call auto_subject_type_transition_pattern
+        (ARG2 gshell.bin_object ARG3))
+
+    (roletype ARG1 ARG3)
+    (roleattributeset gshell_role ARG1)
+
+    (allow ARG3 ARG2 (fd (use)))
+    (allow ARG3 ARG2 rw_unix_stream_socket_perms)
+
+    (allow ARG2 ARG3 signal_perms)
+    (call ps_subject_pattern (ARG2 ARG3))
+
+    (allow ARG3 ARG2 (process (signal)))
+
+    (call bin_auto_subtrans (ARG3 ARG2))
+    (call bin_shell_auto_subtrans (ARG3 ARG2)))
+
+(macro gshell_manage_tmpfs ((role ARG1)(type ARG2))
+    (call fs_search_tmpfs (ARG2))
+    (allow ARG2 gshell.user_tmpfs_object manage_file_perms)
+    (allow ARG2 gshell.user_tmpfs_object manage_sock_file_perms)
+    (roletype ARG1 gshell.user_tmpfs_object))
+
+(macro gshell_relabel_tmpfs ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (allow ARG1 gshell.user_tmpfs_object relabel_file_perms)
+    (allow ARG1 gshell.user_tmpfs_object relabel_sock_file_perms))
+
+(macro gshell_tmpfs_filetrans_tmpfs_dirs ((role ARG1)(type ARG2))
+    (call fs_tmpfs_filetrans (ARG2 gshell.user_tmpfs_object dir "gnome-shell"))
+    (roletype ARG1 gshell.user_tmpfs_object))
+
+(macro gshell_manage_home_data ((role ARG1)(type ARG2))
+    (allow ARG2 gshell.home_data_object manage_dir_perms)
+    (allow ARG2 gshell.home_data_object manage_file_perms)
+    (roletype ARG1 gshell.home_data_object))
+
+(macro gshell_relabel_home_data ((type ARG1))
+    (allow ARG1 gshell.home_data_object relabel_dir_perms)
+    (allow ARG1 gshell.home_data_object relabel_file_perms))
+
+(macro gshell_home_data_filetrans_home_data_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_data_filetrans
+        (ARG1 ARG2 gshell.home_data_object dir "gnome-shell")))

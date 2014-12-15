@@ -688,6 +688,11 @@
         (ARG2 user.user_tmpfs_object all_file_objects "*"))
     (roletype ARG1 user.user_tmpfs_object))
 
+(macro usersubject_tmpfs_filetrans_user_dirs ((role ARG1)(type ARG2))
+    (call fs_tmpfs_filetrans
+        (ARG2 user.user_tmpfs_object dir "*"))
+    (roletype ARG1 user.user_tmpfs_object))
+
 (macro usersubject_getattr_all_tmpfs ((type ARG1))
     (allow ARG1 usersubject_tmpfs_type (all_file_objects (getattr))))
 

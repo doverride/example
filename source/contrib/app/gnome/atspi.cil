@@ -23,13 +23,13 @@
     (atspi_client_role atspi_client_type))
 (call usersubject_manage_generic_tmpfs_sock_files
     (atspi_client_role atspi_client_type))
-(call usersubject_tmpfs_filetrans_user
+(call usersubject_tmpfs_filetrans_user_dirs
     (atspi_client_role atspi_client_type))
 
 (allow atspi_client_type atspi_client_type (unix_stream_socket (connectto)))
 
 (macro atspi_client ((role ARG1)(type ARG2))
-    (typeattributeset atspi_client_role ARG1)
+    (roleattributeset atspi_client_role ARG1)
     (typeattributeset atspi_client_type ARG2))
 
 (macro atspi_auto_subtrans_atspiregd ((type ARG1))

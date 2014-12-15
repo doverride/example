@@ -90,7 +90,7 @@
         (call unconfined (r common_subject))
 
         (optional unconfineduser_optional_gkeyring
-            (call gkeyring_tmpfs_filetrans_gkeyringd_user_tmpfs_dirs (r common_subject)))
+            (call gkeyring_tmpfs_filetrans_tmpfs_dirs (r common_subject)))
 
         (optional unconfineduser_optional_gsd
             (call gsd_home_data_filetrans_icc_home_data_dirs (r common_subject))
@@ -99,8 +99,8 @@
             (filecon "/home/joe/\.local/share/icc(/.*)?" any unconfined_gsd_icc_data))
 
         (optional unconfineduser_optional_gvfs
-            (call gvfs_mounton_user_gvfsd_tmpfs_dirs (common_subject))
-            (call gvfs_tmpfs_filetrans_user_gvfsd_tmpfs_dirs (r common_subject)))
+            (call gvfs_mounton_gvfsd_tmpfs_dirs (common_subject))
+            (call gvfs_tmpfs_filetrans_gvfsd_tmpfs_dirs (r common_subject)))
 
         (optional unconfineduser_optional_rpm ; FIXME
             (call rpm_run (common_subject r)))
