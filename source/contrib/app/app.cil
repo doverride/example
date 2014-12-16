@@ -39,6 +39,21 @@
 (macro app_getattr_all_app_exec_files ((type ARG1))
     (allow ARG1 app_exec_object_type (file (getattr))))
 
+(macro app_send_signal_all_app_subjects ((type ARG1))
+    (allow ARG1 app_subject_type (process (signal))))
+
+(macro app_send_signull_all_app_subjects ((type ARG1))
+    (allow ARG1 app_subject_type (process (signull))))
+
+(macro app_send_sigstop_all_app_subjects ((type ARG1))
+    (allow ARG1 app_subject_type (process (sigstop))))
+
+(macro app_send_sigkill_all_app_subjects ((type ARG1))
+    (allow ARG1 app_subject_type (process (sigkill))))
+
+(macro app_getattr_all_app_subjects ((type ARG1))
+    (allow ARG1 app_subject_type (process (getattr))))
+
 (macro app_execute_all_app_exec_files ((type ARG1))
     (call can_exec (ARG1 app_exec_object_type)))
 

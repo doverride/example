@@ -359,6 +359,13 @@
 (call net_dontaudit_tcp_bind_all_ports (usersubject_common_type))
 (call net_dontaudit_tcp_connect_all_ports (usersubject_common_type))
 
+(call app_getattr_all_app_subjects (usersubject_common_type))
+(call app_read_state_all_app_subjects (usersubject_common_type))
+(call app_send_signal_all_app_subjects (usersubject_common_type))
+(call app_send_signull_all_app_subjects (usersubject_common_type))
+(call app_send_sigstop_all_app_subjects (usersubject_common_type))
+(call app_send_sigkill_all_app_subjects (usersubject_common_type))
+
 (call miscfiles_read_terminfo (usersubject_common_type))
 (call miscfiles_read_localization (usersubject_common_type))
 

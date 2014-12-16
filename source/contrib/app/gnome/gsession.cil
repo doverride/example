@@ -100,9 +100,6 @@
     (roletype ARG1 ARG3)
     (roleattributeset gsession_role ARG1)
 
-    (allow ARG2 ARG3 signal_perms)
-    (call ps_subject_pattern (ARG2 ARG3))
-
     (allow ARG3 ARG2 (process (signal)))
 
     (call fs_search_tmpfs (ARG2))
