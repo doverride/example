@@ -130,6 +130,7 @@
     (allow ARG3 ARG2 (fd (use)))
     (allow ARG3 ARG2 rw_unix_stream_socket_perms)
 
+    (allow ARG2 ARG3 (process (signal)))
     (allow ARG3 ARG2 (process (signal)))
 
     (call bin_auto_subtrans (ARG3 ARG2))
