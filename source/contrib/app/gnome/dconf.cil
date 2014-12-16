@@ -1,0 +1,97 @@
+(roleattribute dconf_role)
+
+(roleattribute dconf_admin_role)
+(typeattribute dconf_admin_type)
+
+(roleattribute dconf_client_role)
+(typeattribute dconf_client_type)
+
+(typeattribute dconf_object_type)
+
+(block dconfsvc
+    (blockinherit app_block)
+
+    (roletype dconf_role common_subject)
+
+    (context bin_dconfsvc (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/dconf-service" file bin_dconfsvc)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (context etc_dconfsvc (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/dconf(/.*)?" any etc_dconfsvc)
+
+    (typeattributeset dconf_object_type etc_object)
+
+    (blockinherit usersubject_tmpfs_object_block)
+    (blockinherit usersubject_home_config_object_block)
+
+    (call dconf_manage_tmpfs (dconf_role common_subject))
+    (call dconf_tmpfs_filetrans_tmpfs_dirs (dconf_role common_subject))
+
+    (call dconf_manage_home_config (dconf_role common_subject))
+    (call dconf_home_config_filetrans_home_config_dirs (dconf_role common_subject))
+
+    (call fs_getattr_fs (common_subject))
+)
+
+(call dconf_manage_tmpfs (dconf_client_role dconf_client_type))
+(call dconf_tmpfs_filetrans_tmpfs_dirs (dconf_client_role dconf_client_type))
+
+(call dconf_manage_home_config (dconf_client_role dconf_client_type))
+(call dconf_home_config_filetrans_home_config_dirs (dconf_client_role dconf_client_type))
+
+(call file_search_run_user (dconf_client_type))
+
+(call dbus_all_session_client (dconf_client_type))
+
+(allow dconf_admin_type dconf_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype dconf_admin_role dconf_object_type)
+
+(macro dconf_client ((role ARG1)(type ARG2))
+    (roleattributeset dconf_client_role ARG1)
+    (typeattributeset dconf_client_type ARG2))
+
+(macro dconf_auto_subtrans_dconfsvc ((type ARG1))
+    (call dconf_send_signal_dconfsvc (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 dconfsvc.bin_object dconfsvc.common_subject)))
+
+(macro dconf_run_dconfsvc ((type ARG1)(role ARG2))
+    (call dconf_auto_subtrans_dconfsvc (ARG1))
+    (roleattributeset dconf_role ARG2))
+
+(macro dconf_send_signal_dconfsvc ((type ARG1))
+    (allow ARG1 dconfsvc.common_subject (process (signal))))
+
+(macro dconf_manage_tmpfs ((role ARG1)(type ARG2))
+    (allow ARG2 dconfsvc.user_tmpfs_object manage_dir_perms)
+    (allow ARG2 dconfsvc.user_tmpfs_object manage_file_perms)
+    (roletype ARG1 dconfsvc.user_tmpfs_object))
+
+(macro dconf_relabel_tmpfs ((type ARG1))
+    (allow ARG1 dconfsvc.user_tmpfs_object relabel_dir_perms)
+    (allow ARG1 dconfsvc.user_tmpfs_object relabel_file_perms))
+
+(macro dconf_tmpfs_filetrans_tmpfs_dirs ((role ARG1)(type ARG2))
+    (call fs_tmpfs_filetrans
+        (ARG2 dconfsvc.user_tmpfs_object dir "dconf"))
+    (roletype ARG1 dconfsvc.user_tmpfs_object))
+
+(macro dconf_manage_home_config ((role ARG1)(type ARG2))
+    (allow ARG2 dconfsvc.home_config_object manage_dir_perms)
+    (allow ARG2 dconfsvc.home_config_object manage_file_perms)
+    (roletype ARG1 dconfsvc.home_config_object))
+
+(macro dconf_relabel_home_config ((type ARG1))
+    (allow ARG1 dconfsvc.home_config_object relabel_dir_perms)
+    (allow ARG1 dconfsvc.home_config_object relabel_file_perms))
+
+(macro dconf_home_config_filetrans_home_config_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_config_filetrans
+        (ARG1 ARG2 dconfsvc.home_config_object dir "dconf")))
+
+(macro dconf_admin ((role ARG1)(type ARG2))
+    (roleattributeset dconf_admin_role ARG1)
+    (typeattributeset dconf_admin_type ARG2))

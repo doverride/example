@@ -42,6 +42,8 @@
                 (call atspi_read_config_files (common_subject))
                 (call atspi_run_atspiregd (common_subject staff.r))
 
+                (call dconf_run_dconfsvc (common_subject staff.r))
+
                 (call gshell_run_cald (common_subject staff.r))
 
                 (call gvfs_run (common_subject staff.r))
@@ -50,6 +52,17 @@
         )
 
         (optional staff_optional_gnome
+            (call dconf_manage_tmpfs (staff.r staff.common_subject))
+            (call dconf_relabel_tmpfs (staff.common_subject))
+            (call dconf_tmpfs_filetrans_tmpfs_dirs (staff.r staff.common_subject))
+
+            (call dconf_manage_home_config (staff.r staff.common_subject))
+            (call dconf_relabel_home_config (staff.common_subject))
+            (call dconf_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
+
+            (context staff_dconf_config (staff.u staff.r dconfsvc.home_config_object (systemlow systemlow)))
+            (filecon "/home/john/\.config/dconf(/.*)?" any staff_dconf_config)
+
             (call gkeyring_manage_tmpfs (staff.r staff.common_subject))
             (call gkeyring_relabel_tmpfs (staff.common_subject))
             (call gkeyring_tmpfs_filetrans_tmpfs_dirs (staff.r staff.common_subject))
