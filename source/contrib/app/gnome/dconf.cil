@@ -26,11 +26,7 @@
     (blockinherit usersubject_tmpfs_object_block)
     (blockinherit usersubject_home_config_object_block)
 
-    (call dconf_manage_tmpfs (dconf_role common_subject))
-    (call dconf_tmpfs_filetrans_tmpfs_dirs (dconf_role common_subject))
-
-    (call dconf_manage_home_config (dconf_role common_subject))
-    (call dconf_home_config_filetrans_home_config_dirs (dconf_role common_subject))
+    (call dconf_client (dconf_role common_subject))
 
     (call fs_getattr_fs (common_subject))
 )
