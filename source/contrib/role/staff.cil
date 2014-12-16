@@ -60,7 +60,7 @@
             (call dconf_relabel_home_config (staff.common_subject))
             (call dconf_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
 
-            (context staff_dconf_config (staff.u staff.r dconfsvc.home_config_object (systemlow systemlow)))
+            (context staff_dconf_config (staff.u staff.r dconf.home_config_object (systemlow systemlow)))
             (filecon "/home/john/\.config/dconf(/.*)?" any staff_dconf_config)
 
             (call gkeyring_manage_tmpfs (staff.r staff.common_subject))
