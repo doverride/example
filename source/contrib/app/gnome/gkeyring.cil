@@ -45,6 +45,8 @@
     (call journal_client (common_subject))
 
     (call miscfiles_read_localization (common_subject))
+
+    (call dconf_client (gkeyring_role common_subject))
 )
 
 (macro gkeyring_manual_subtrans_gkeyringd ((type ARG1))

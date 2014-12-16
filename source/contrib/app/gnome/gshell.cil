@@ -34,6 +34,8 @@
     (call auth_nsswitch_client (common_subject))
 
     (call miscfiles_read_localization (common_subject))
+
+    (call dconf_client (gshell_role common_subject))
 )
 
 (block gshell_helper
@@ -76,6 +78,8 @@
 (call bluetooth_dbus_chat (gshell_subject_type))
 
 (call dbus_system_client (gshell_subject_type))
+
+(call dconf_client (gshell_role gshell_subject_type))
 
 (call gdm_dbus_chat (gshell_subject_type))
 

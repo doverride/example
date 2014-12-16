@@ -35,6 +35,8 @@
     (call cups_read_config_files (common_subject))
     (call cups_stream_connect_cupsd (common_subject))
 
+    (call dconf_client (gsd_role common_subject))
+
     (call dbus_system_client (common_subject))
 
     (call gsd_auto_subtrans_printer (common_subject))
