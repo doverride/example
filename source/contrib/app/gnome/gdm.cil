@@ -44,7 +44,7 @@
 
     (typeattributeset gdm_object_type tmpfs_object)
 
-    (call pa_shm_object (tmpfs_object))
+    (call pa_shm (tmpfs_object))
 
     (blockinherit file_maintains_var_lib_dirs_and_files_block)
 
@@ -159,9 +159,9 @@
     (call miscfiles_read_hwdata_files (common_subject))
     (call miscfiles_read_generic_cert (common_subject))
 
-    (call pa_delete_all_shm_object_files (common_subject))
+    (call pa_delete_all_shm_files (common_subject))
     (call pa_read_config_files (common_subject))
-    (call pa_read_all_shm_object_files (common_subject))
+    (call pa_read_all_shm_files (common_subject))
     (call pa_send_signal_all_client_subjects (common_subject))
     (call pa_send_signull_all_client_subjects (common_subject))
 

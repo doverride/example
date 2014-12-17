@@ -7,13 +7,13 @@
 (typeattribute pa_client_type)
 
 (typeattribute pa_object_type)
-(typeattribute pa_shm_object_type)
+(typeattribute pa_shm_type)
 
 (block pa_shm_object_block
     (blockabstract pa_shm_object_block)
         (blockinherit usersubject_tmpfs_object_block)
 
-        (call pa_shm_object (usersubject_tmpfs_object))
+        (call pa_shm (user_tmpfs_object))
 )
 
 (block pa
@@ -49,8 +49,7 @@
 
     (blockinherit usersubject_home_config_object_block)
 
-    (blockinherit usersubject_tmpfs_object_block)
-    (call pa_shm_object (user_tmpfs_object))
+    (blockinherit pa_shm_object_block)
 
     (allow common_subject self (process (setcap setsched setrlimit)))
     (allow common_subject self (unix_stream_socket (listen accept)))
@@ -98,7 +97,6 @@
 
     (call miscfiles_read_localization (common_subject))
 
-    (call pa_client (pa_role common_subject))
     (call pa_stream_connect (common_subject))
 )
 
@@ -106,8 +104,8 @@
 (allow pa_client_type pa_client_type (process (signal signull)))
 (allow pa_client_type self rw_fifo_file_perms)
 
-(allow pa_client_type pa_shm_object_type read_file_perms)
-(allow pa_client_type pa_shm_object_type delete_file_perms)
+(allow pa_client_type pa_shm_type read_file_perms)
+(allow pa_client_type pa_shm_type delete_file_perms)
 
 (call dev_read_urandom (pa_client_type))
 
@@ -158,16 +156,16 @@
 (macro pa_send_signull_all_client_subjects ((type ARG1))
     (allow ARG1 pa_client_type (process (signull))))
 
-(macro pa_shm_object ((type ARG1))
-    (typeattributeset pa_shm_object_type ARG1))
+(macro pa_shm ((type ARG1))
+    (typeattributeset pa_shm_type ARG1))
 
-(macro pa_read_all_shm_object_files ((type ARG1))
+(macro pa_read_all_shm_files ((type ARG1))
     (call fs_search_tmpfs (ARG1))
-    (allow ARG1 pa_shm_object_type read_file_perms))
+    (allow ARG1 pa_shm_type read_file_perms))
 
-(macro pa_delete_all_shm_object_files ((type ARG1))
+(macro pa_delete_all_shm_files ((type ARG1))
     (call fs_del_entry_tmpfs (ARG1))
-    (allow ARG1 pa_shm_object_type delete_file_perms))
+    (allow ARG1 pa_shm_type delete_file_perms))
 
 (macro pa_auto_subtrans ((type ARG1))
     (call pa_send_signal (ARG1))
