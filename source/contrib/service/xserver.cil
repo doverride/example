@@ -8,7 +8,7 @@
 (typeattribute xserver_subject_type)
 
 (block xserver
-    (blockinherit app_block)
+    (blockinherit subject_entry_block)
 
     (typeattributeset xserver_subject_type common_subject)
 
