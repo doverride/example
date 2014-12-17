@@ -66,7 +66,7 @@
     (call fs_getattr_tmpfs (common_subject))
     (call fs_list_devtmpfs (common_subject))
     (call fs_list_sysfs (common_subject))
-    (call fs_read_sysfs_files (common_subject))
+    (call fs_rw_sysfs_files (common_subject))
     (call fs_read_sysfs_lnk_files (common_subject))
 
     (call file_manage_mnt_dirs (common_subject))

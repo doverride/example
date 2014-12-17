@@ -84,6 +84,7 @@
     (call sys_request_load_module (common_subject))
 
     (call fs_getattr_devtmpfs (common_subject))
+    (call fs_list_devtmpfs (common_subject))
     (call fs_list_debugfs (common_subject))
     (call fs_read_devtmpfs_lnk_files (common_subject))
     (call fs_read_sysfs_files (common_subject))
