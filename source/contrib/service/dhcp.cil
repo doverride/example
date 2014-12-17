@@ -132,6 +132,9 @@
     (allow ARG1 dhclient.var_lib_object (dir (setattr)))
     (allow ARG1 dhclient.var_lib_object (file (setattr))))
 
+(macro dhcp_send_sigkill_dhclient ((type ARG1))
+    (allow ARG1 dhclient.common_subject (process (sigkill))))
+
 (macro dhcp_udp_bind_dhcp_port ((type ARG1))
     (allow ARG1 self (capability (net_bind_service)))
     (allow ARG1 self create_udp_socket_perms)

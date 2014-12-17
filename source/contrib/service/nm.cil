@@ -126,6 +126,7 @@
         (call dhcp_delete_dhclient_run_files (common_subject))
         (call dhcp_read_config_files (common_subject))
         (call dhcp_read_dhclient_var_lib_files (common_subject))
+        (call dhcp_send_sigkill_dhclient (common_subject))
         (call dhcp_auto_subtrans_dhclient (common_subject)))
 
     (optional nm_optinal_polkit
