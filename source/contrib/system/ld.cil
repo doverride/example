@@ -30,6 +30,7 @@
     (call file_read_generic_etc_files (common_subject))
     (call file_read_generic_etc_lnk_files (common_subject))
 
+    (call lib_create_lnk_files (common_subject))
     (call lib_manage_ld_so_cache_files (common_subject))
     (call lib_etc_filetrans_ld_so_cache_files (common_subject))
 
@@ -41,6 +42,8 @@
 
     (optional ldconfig_optional_rpm
         (call rpm_manage_var_tmp_files (common_subject))
+        (call rpm_write_inherited_var_tmp_fifo_files (common_subject))
+        (call rpm_read_var_tmp_lnk_files (common_subject))
         (call rpm_read_inherited_fifo_files (common_subject))
         (call rpm_append_inherited_tmpfs_files (common_subject))
         (call rpm_read_inherited_tmpfs_files (common_subject)))

@@ -57,9 +57,9 @@
 
     (call file_list_boot (common_subject))
     (call file_list_home (common_subject))
-    (call file_list_etc (common_subject))
-    (call file_read_generic_etc_files (common_subject))
+    (call file_read_generic_etc (common_subject))
     (call file_read_generic_usr_files (common_subject))
+    (call file_read_boot_lnk_files (common_subject))
     (call file_rw_boot_files (common_subject))
 
     (call fs_getattr_devpts_chr_files (common_subject))

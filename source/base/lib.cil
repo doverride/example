@@ -45,6 +45,9 @@
 (macro lib_read_lnk_files ((type ARG1))
     (allow ARG1 lib read_lnk_file_perms))
 
+(macro lib_create_lnk_files ((type ARG1))
+    (call create_lnk_files_pattern (ARG1 lib lib)))
+
 (macro lib_search ((type ARG1))
     (call file_search_usr (ARG1))
     (call lib_read_lnk_files (ARG1))

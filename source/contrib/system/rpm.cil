@@ -229,6 +229,13 @@
     (call file_search_var_tmp (ARG1))
     (call manage_files_pattern (ARG1 rpm.var_tmp_object rpm.var_tmp_object)))
 
+(macro rpm_write_inherited_var_tmp_fifo_files ((type ARG1))
+    (allow ARG1 rpm.var_tmp_object (fifo_file (write))))
+
+(macro rpm_read_var_tmp_lnk_files ((type ARG1))
+    (call file_search_var_tmp (ARG1))
+    (call read_lnk_files_pattern (ARG1 rpm.var_tmp_object rpm.var_tmp_object)))
+
 (macro rpm_append_inherited_tmpfs_files ((type ARG1))
     (call rpm_use_fd (ARG1))
     (allow ARG1 rpm.tmpfs_object (file (append))))
