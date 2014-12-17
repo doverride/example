@@ -67,10 +67,6 @@
     (call miscfiles_read_localization (common_subject))
 
     (call udev_rw_inherited_udp_sockets (common_subject))
-
-    (optional alsactl_optional_app
-        (call app_exec_object_type (bin_object))
-        (call app_subject_type (common_subject)))
 )
 
 (allow alsa_admin_type alsactl.common_subject signal_perms)
