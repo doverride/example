@@ -53,6 +53,8 @@
 
     (call nm_dbus_chat (common_subject))
 
+    (call pa_client (gsd_role common_subject))
+
     (call systemd_dbus_chat (common_subject))
     (call systemd_status_system (common_subject))
 

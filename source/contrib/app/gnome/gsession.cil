@@ -52,6 +52,7 @@
 (call gsession_user_home_filetrans_home_files
     (gsession_role gsession_subject_type))
 
+(call bin_execute_bin_files (gsession_subject_type))
 (call bin_execute_shell_files (gsession_subject_type))
 
 (call dev_read_urandom (gsession_subject_type))
@@ -81,6 +82,9 @@
 (call machine_read_run_files (gsession_subject_type))
 
 (call miscfiles_read_localization (gsession_subject_type))
+
+(call pa_run (gsession_subject_type gsession_role))
+(call pa_run_pactl (gsession_subject_type gsession_role))
 
 (call systemd_read_state (gsession_subject_type))
 
