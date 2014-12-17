@@ -51,192 +51,192 @@
         (context user_pa_home (u r pa.home_object (systemlow systemlow)))
         (filecon "/home/john/\.esd_auth" file user_pa_home)
     )
+)
 
-    (optional staff_optional_dbus
-        (block staff_dbusd
-            (blockinherit dbus_session_subject_block)
+(optional staff_optional_dbus
+    (block staff_dbusd
+        (blockinherit dbus_session_subject_block)
 
-            (call dbus_role_template (staff.r staff.common_subject common_subject))
+        (call dbus_role_template (staff.r staff.common_subject common_subject))
 
-            (call dbus_manage_user_tmpfs_sock_files (staff.r staff.common_subject))
-            (call dbus_relabel_user_tmpfs_sock_files (staff.common_subject))
+        (call dbus_manage_user_tmpfs_sock_files (staff.r staff.common_subject))
+        (call dbus_relabel_user_tmpfs_sock_files (staff.common_subject))
 
-            (optional staff_dbusd_optional_gnome
-                (call atspi_read_config_files (common_subject))
-                (call atspi_run_atspiregd (common_subject staff.r))
+        (optional staff_dbusd_optional_gnome
+            (call atspi_read_config_files (common_subject))
+            (call atspi_run_atspiregd (common_subject staff.r))
 
-                (call dconf_run_dconfsvc (common_subject staff.r))
+            (call dconf_run_dconfsvc (common_subject staff.r))
 
-                (call gshell_run_cald (common_subject staff.r))
+            (call gshell_run_cald (common_subject staff.r))
 
-                (call gvfs_run (common_subject staff.r))
-                (call gvfs_run_gvfsd (common_subject staff.r))
-            )
-        )
-
-        (optional staff_optional_gnome
-            (call dconf_manage_tmpfs (staff.r staff.common_subject))
-            (call dconf_relabel_tmpfs (staff.common_subject))
-            (call dconf_tmpfs_filetrans_tmpfs_dirs (staff.r staff.common_subject))
-
-            (call dconf_manage_home_config (staff.r staff.common_subject))
-            (call dconf_relabel_home_config (staff.common_subject))
-            (call dconf_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
-
-            (context staff_dconf_config (staff.u staff.r dconf.home_config_object (systemlow systemlow)))
-            (filecon "/home/john/\.config/dconf(/.*)?" any staff_dconf_config)
-
-            (call gkeyring_manage_tmpfs (staff.r staff.common_subject))
-            (call gkeyring_relabel_tmpfs (staff.common_subject))
-            (call gkeyring_tmpfs_filetrans_tmpfs_dirs (staff.r staff.common_subject))
-
-            (call gkeyring_manage_home_data (staff.r staff.common_subject))
-            (call gkeyring_relabel_home_data (staff.common_subject))
-            (call gkeyring_home_data_filetrans_home_data_dirs (staff.r staff.common_subject))
-
-            (context staff_gkeyringd_data (staff.u staff.r gkeyringd.home_data_object (systemlow systemlow)))
-            (filecon "/home/john/\.local/share/keyrings(/.*)?" any staff_gkeyringd_data)
-
-            (call gsd_manage_gsd_home_data (staff.r staff.common_subject))
-            (call gsd_relabel_gsd_home_data (staff.common_subject))
-            (call gsd_home_data_filetrans_gsd_home_data_dirs (staff.r staff.common_subject))
-
-            (context staff_gsd_data (staff.u staff.r gsd.home_data_object (systemlow systemlow)))
-            (filecon "/home/john/\.local/share/gnome-settings-daemon(/.*)?" any staff_gsd_data)
-
-            (call gsd_manage_icc_home_data (staff.r staff.common_subject))
-            (call gsd_relabel_icc_home_data (staff.common_subject))
-            (call gsd_home_data_filetrans_icc_home_data_dirs (staff.r staff.common_subject))
-
-            (context staff_gsd_icc_data (staff.u staff.r icc.home_data_object (systemlow systemlow)))
-            (filecon "/home/john/\.local/share/icc(/.*)?" any staff_gsd_icc_data)
-
-            (block staff_gsession
-                (blockinherit gsession_subject_block)
-
-                (call gsession_role_template (staff.r staff.common_subject common_subject))
-
-                (call gsession_manage_tmpfs (staff.r staff.common_subject))
-                (call gsession_relabel_tmpfs (staff.common_subject))
-
-                (call gsession_manage_home (staff.r staff.common_subject))
-                (call gsession_relabel_home (staff.common_subject))
-                (call gsession_user_home_filetrans_home_files (staff.r staff.common_subject))
-
-                (context staff_gsession_home (staff.u staff.r gsession.home_object (systemlow systemlow)))
-                (filecon "/home/john/\.ICEauthority" file staff_gsession_home)
-                (filecon "/home/john/\.ICEauthority-c" file staff_gsession_home)
-
-                (call gsession_manage_home_config (staff.r staff.common_subject))
-                (call gsession_relabel_home_config (staff.common_subject))
-                (call gsession_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
-
-                (context staff_gsession_config (staff.u staff.r gsession.home_config_object (systemlow systemlow)))
-                (filecon "/home/john/\.config/gnome-session(/.*)?" any staff_gsession_config)
-            )
-
-            (block staff_gshell
-                (blockinherit gshell_subject_block)
-
-                (call gshell_manage_tmpfs (staff.r staff.common_subject))
-                (call gshell_relabel_tmpfs (staff.common_subject))
-                (call gshell_tmpfs_filetrans_tmpfs_dirs (staff.r staff.common_subject))
-
-                (call gshell_manage_home_data (staff.r staff.common_subject))
-                (call gshell_relabel_home_data (staff.common_subject))
-                (call gshell_home_data_filetrans_home_data_dirs (staff.r staff.common_subject))
-
-                (context staff_gshell_data (staff.u staff.r gshell.home_data_object (systemlow systemlow)))
-                (filecon "/home/john/\.local/share/gnome-shell(/.*)?" any staff_gshell_data)
-            )
-
-            (call gshell_role_template (staff.r staff_gsession.common_subject staff_gshell.common_subject)) ; FIXME
-
-            (call gvfs_manage_home_data (staff.r staff.common_subject))
-            (call gvfs_relabel_home_data (staff.common_subject))
-            (call gvfs_home_data_filetrans_home_data_dirs (staff.r staff.common_subject))
-
-            (context staff_gvfs_data (staff.u staff.r gvfs.home_data_object (systemlow systemlow)))
-            (filecon "/home/john/\.local/share/gvfs-metadata(/.*)?" any staff_gvfs_data)
-
-            (call gvfs_manage_gvfsd_tmpfs_dirs (staff.r staff.common_subject))
-            (call gvfs_relabel_gvfsd_tmpfs_dirs (staff.common_subject))
-            (call gvfs_tmpfs_filetrans_gvfsd_tmpfs_dirs (staff.r staff.common_subject))
+            (call gvfs_run (common_subject staff.r))
+            (call gvfs_run_gvfsd (common_subject staff.r))
         )
     )
 
-    (block staff_chfn
-        (blockinherit usermanage_chfn_subject_block)
+    (optional staff_optional_gnome
+        (call dconf_manage_tmpfs (staff.r staff.common_subject))
+        (call dconf_relabel_tmpfs (staff.common_subject))
+        (call dconf_tmpfs_filetrans_tmpfs_dirs (staff.r staff.common_subject))
 
-        (call usermanage_role_template_chfn (staff.r staff.common_subject common_subject))
-    )
+        (call dconf_manage_home_config (staff.r staff.common_subject))
+        (call dconf_relabel_home_config (staff.common_subject))
+        (call dconf_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
 
-    (block staff_passwd
-        (blockinherit usermanage_passwd_subject_block)
+        (context staff_dconf_config (staff.u staff.r dconf.home_config_object (systemlow systemlow)))
+        (filecon "/home/john/\.config/dconf(/.*)?" any staff_dconf_config)
 
-        (call usermanage_role_template_passwd (staff.r staff.common_subject common_subject))
-    )
+        (call gkeyring_manage_tmpfs (staff.r staff.common_subject))
+        (call gkeyring_relabel_tmpfs (staff.common_subject))
+        (call gkeyring_tmpfs_filetrans_tmpfs_dirs (staff.r staff.common_subject))
 
-    (optional staff_optional_systemd
-        (block staff_systemd
-            (blockinherit systemd_session_subject_block)
+        (call gkeyring_manage_home_data (staff.r staff.common_subject))
+        (call gkeyring_relabel_home_data (staff.common_subject))
+        (call gkeyring_home_data_filetrans_home_data_dirs (staff.r staff.common_subject))
 
-            (call systemd_session_role_template (staff.r staff.common_subject common_subject))
+        (context staff_gkeyringd_data (staff.u staff.r gkeyringd.home_data_object (systemlow systemlow)))
+        (filecon "/home/john/\.local/share/keyrings(/.*)?" any staff_gkeyringd_data)
 
-            (context staff_config_systemd (staff.u staff.r systemd.home_config_object (systemlow systemlow)))
-            (filecon "/home/john/\.config/systemd(/.*)?" any staff_config_systemd)
+        (call gsd_manage_gsd_home_data (staff.r staff.common_subject))
+        (call gsd_relabel_gsd_home_data (staff.common_subject))
+        (call gsd_home_data_filetrans_gsd_home_data_dirs (staff.r staff.common_subject))
+
+        (context staff_gsd_data (staff.u staff.r gsd.home_data_object (systemlow systemlow)))
+        (filecon "/home/john/\.local/share/gnome-settings-daemon(/.*)?" any staff_gsd_data)
+
+        (call gsd_manage_icc_home_data (staff.r staff.common_subject))
+        (call gsd_relabel_icc_home_data (staff.common_subject))
+        (call gsd_home_data_filetrans_icc_home_data_dirs (staff.r staff.common_subject))
+
+        (context staff_gsd_icc_data (staff.u staff.r icc.home_data_object (systemlow systemlow)))
+        (filecon "/home/john/\.local/share/icc(/.*)?" any staff_gsd_icc_data)
+
+        (block staff_gsession
+            (blockinherit gsession_subject_block)
+
+            (call gsession_role_template (staff.r staff.common_subject common_subject))
+
+            (call gsession_manage_tmpfs (staff.r staff.common_subject))
+            (call gsession_relabel_tmpfs (staff.common_subject))
+
+            (call gsession_manage_home (staff.r staff.common_subject))
+            (call gsession_relabel_home (staff.common_subject))
+            (call gsession_user_home_filetrans_home_files (staff.r staff.common_subject))
+
+            (context staff_gsession_home (staff.u staff.r gsession.home_object (systemlow systemlow)))
+            (filecon "/home/john/\.ICEauthority" file staff_gsession_home)
+            (filecon "/home/john/\.ICEauthority-c" file staff_gsession_home)
+
+            (call gsession_manage_home_config (staff.r staff.common_subject))
+            (call gsession_relabel_home_config (staff.common_subject))
+            (call gsession_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
+
+            (context staff_gsession_config (staff.u staff.r gsession.home_config_object (systemlow systemlow)))
+            (filecon "/home/john/\.config/gnome-session(/.*)?" any staff_gsession_config)
+
+            (call gshell_role_template (staff.r common_subject staff_gshell.common_subject))
         )
+
+        (block staff_gshell
+            (blockinherit gshell_subject_block)
+
+            (call gshell_manage_tmpfs (staff.r staff.common_subject))
+            (call gshell_relabel_tmpfs (staff.common_subject))
+            (call gshell_tmpfs_filetrans_tmpfs_dirs (staff.r staff.common_subject))
+
+            (call gshell_manage_home_data (staff.r staff.common_subject))
+            (call gshell_relabel_home_data (staff.common_subject))
+            (call gshell_home_data_filetrans_home_data_dirs (staff.r staff.common_subject))
+
+            (context staff_gshell_data (staff.u staff.r gshell.home_data_object (systemlow systemlow)))
+            (filecon "/home/john/\.local/share/gnome-shell(/.*)?" any staff_gshell_data)
+        )
+
+        (call gvfs_manage_home_data (staff.r staff.common_subject))
+        (call gvfs_relabel_home_data (staff.common_subject))
+        (call gvfs_home_data_filetrans_home_data_dirs (staff.r staff.common_subject))
+
+        (context staff_gvfs_data (staff.u staff.r gvfs.home_data_object (systemlow systemlow)))
+        (filecon "/home/john/\.local/share/gvfs-metadata(/.*)?" any staff_gvfs_data)
+
+        (call gvfs_manage_gvfsd_tmpfs_dirs (staff.r staff.common_subject))
+        (call gvfs_relabel_gvfsd_tmpfs_dirs (staff.common_subject))
+        (call gvfs_tmpfs_filetrans_gvfsd_tmpfs_dirs (staff.r staff.common_subject))
     )
+)
 
-    (optional staff_optional_sudo
-        (block staff_sudo
-            (blockinherit sudo_subject_block)
+(block staff_chfn
+    (blockinherit usermanage_chfn_subject_block)
 
-            (call sudo_role_template (staff.r staff.common_subject common_subject))
+    (call usermanage_role_template_chfn (staff.r staff.common_subject common_subject))
+)
 
-            (optional staff_optional_auditadm
-                (call auditadm_manage_keyring (common_subject))
-                (call auditadm_send_signal (common_subject))
-                (call auditadm_shell_manual_subtrans (common_subject))
+(block staff_passwd
+    (blockinherit usermanage_passwd_subject_block)
 
-                (call auditadm_userrole (staff.u))
-                (call auditadm_roleallow (staff.r))
+    (call usermanage_role_template_passwd (staff.r staff.common_subject common_subject))
+)
 
-                (call auditadm_send_signal (staff.common_subject))
-            )
+(optional staff_optional_systemd
+    (block staff_systemd
+        (blockinherit systemd_session_subject_block)
 
-            (optional staff_optional_authadm
-                (call authadm_manage_keyring (common_subject))
-                (call authadm_send_signal (common_subject))
-                (call authadm_shell_manual_subtrans (common_subject))
+        (call systemd_session_role_template (staff.r staff.common_subject common_subject))
 
-                (call authadm_userrole (staff.u))
-                (call authadm_roleallow (staff.r))
+        (context staff_config_systemd (staff.u staff.r systemd.home_config_object (systemlow systemlow)))
+        (filecon "/home/john/\.config/systemd(/.*)?" any staff_config_systemd)
+    )
+)
 
-                (call authadm_send_signal (staff.common_subject))
-            )
+(optional staff_optional_sudo
+    (block staff_sudo
+        (blockinherit sudo_subject_block)
 
-            (optional staff_optional_sysadm
-                (call sysadm_manage_keyring (common_subject))
-                (call sysadm_send_signal (common_subject))
-                (call sysadm_shell_manual_subtrans (common_subject))
+        (call sudo_role_template (staff.r staff.common_subject common_subject))
 
-                (call sysadm_userrole (staff.u))
-                (call sysadm_roleallow (staff.r))
+        (optional staff_optional_auditadm
+            (call auditadm_manage_keyring (common_subject))
+            (call auditadm_send_signal (common_subject))
+            (call auditadm_shell_manual_subtrans (common_subject))
 
-                (call sysadm_send_signal (staff.common_subject))
-            )
+            (call auditadm_userrole (staff.u))
+            (call auditadm_roleallow (staff.r))
 
-            (optional staff_optional_secadm
-                (call secadm_manage_keyring (common_subject))
-                (call secadm_send_signal (common_subject))
-                (call secadm_shell_manual_subtrans (common_subject))
+            (call auditadm_send_signal (staff.common_subject))
+        )
 
-                (call secadm_userrole (staff.u))
-                (call secadm_roleallow (staff.r))
+        (optional staff_optional_authadm
+            (call authadm_manage_keyring (common_subject))
+            (call authadm_send_signal (common_subject))
+            (call authadm_shell_manual_subtrans (common_subject))
 
-                (call secadm_send_signal (staff.common_subject))
-            )
+            (call authadm_userrole (staff.u))
+            (call authadm_roleallow (staff.r))
+
+            (call authadm_send_signal (staff.common_subject))
+        )
+
+        (optional staff_optional_sysadm
+            (call sysadm_manage_keyring (common_subject))
+            (call sysadm_send_signal (common_subject))
+            (call sysadm_shell_manual_subtrans (common_subject))
+
+            (call sysadm_userrole (staff.u))
+            (call sysadm_roleallow (staff.r))
+
+            (call sysadm_send_signal (staff.common_subject))
+        )
+
+        (optional staff_optional_secadm
+            (call secadm_manage_keyring (common_subject))
+            (call secadm_send_signal (common_subject))
+            (call secadm_shell_manual_subtrans (common_subject))
+
+            (call secadm_userrole (staff.u))
+            (call secadm_roleallow (staff.r))
+
+            (call secadm_send_signal (staff.common_subject))
         )
     )
 )
