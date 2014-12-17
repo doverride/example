@@ -151,6 +151,12 @@
 (macro unconfined_send_sigchld_all_unconfined_user_subjects ((type ARG1))
     (allow ARG1 unconfined_user_subject_type (process (sigchld))))
 
+(macro unconfined_send_signal_all_unconfined_user_subjects ((type ARG1))
+    (allow ARG1 unconfined_user_subject_type (process (signal))))
+
+(macro unconfined_send_signull_all_unconfined_user_subjects ((type ARG1))
+    (allow ARG1 unconfined_user_subject_type (process (signull))))
+
 (macro unconfined_create_keyring_all_unconfined_user_subjects ((type ARG1))
     (allow ARG1 self (process (setkeycreate)))
     (allow ARG1 unconfined_user_subject_type (key (create search link write))))

@@ -29,6 +29,29 @@
     (context var_spool_user (u r var_spool_object (systemlow mls_systemhigh)))
     (filecon "/var/spool/mail/.*?" file var_spool_user)
 
+    (optional user_optional_pa
+        (call pa_run (common_subject r))
+        (call pa_run_pactl (common_subject r))
+
+        (call pa_manage_tmpfs (r common_subject))
+        (call pa_relabel_tmpfs (common_subject))
+        (call pa_tmpfs_filetrans_tmpfs_dirs (r common_subject))
+
+        (call pa_manage_home_config (r common_subject))
+        (call pa_relabel_home_config (common_subject))
+        (call pa_home_config_filetrans_home_config_dirs (r common_subject))
+
+        (context user_pa_config (u r pa.home_config_object (systemlow systemlow)))
+        (filecon "/home/.*/\.config/pulse(/.*)?" any user_pa_config)
+
+        (call pa_manage_home (r common_subject))
+        (call pa_relabel_home (common_subject))
+        (call pa_user_home_filetrans_home_files (r common_subject))
+
+        (context user_pa_home (u r pa.home_object (systemlow systemlow)))
+        (filecon "/home/.*/\.esd_auth" file user_pa_home)
+    )
+
     (optional user_optional_dbus
         (block user_dbusd
             (blockinherit dbus_session_subject_block)

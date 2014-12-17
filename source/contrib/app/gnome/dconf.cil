@@ -109,6 +109,10 @@
     (call usersubject_generic_home_config_filetrans
         (ARG1 ARG2 dconf.home_config_object dir "dconf")))
 
+(macro dconf_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 dconf.etc_object dconf.etc_object)))
+
 (macro dconf_admin ((role ARG1)(type ARG2))
     (roleattributeset dconf_admin_role ARG1)
     (typeattributeset dconf_admin_type ARG2))

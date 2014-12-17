@@ -1,0 +1,248 @@
+(roleattribute pa_role)
+
+(roleattribute pa_admin_role)
+(typeattribute pa_admin_type)
+
+(roleattribute pa_client_role)
+(typeattribute pa_client_type)
+
+(typeattribute pa_object_type)
+(typeattribute pa_shm_object_type)
+
+(block pa_shm_object_block
+    (blockabstract pa_shm_object_block)
+        (blockinherit usersubject_tmpfs_object_block)
+
+        (call pa_shm_object (usersubject_tmpfs_object))
+)
+
+(block pa
+    (blockinherit app_block)
+
+    (roletype pa_role common_subject)
+
+    (context bin_pa (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/pulseaudio" file bin_pa)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset pa_object_type etc_object)
+
+    (context etc_pa (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/pulse(/.*)?" any etc_pa)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset pa_object_type dbus_etc_object)
+
+    (context dbus_etc_pa (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/pulseaudio-system\.conf" file dbus_etc_pa)
+
+    (blockinherit file_maintains_var_lib_dirs_and_files_block)
+
+    (typeattributeset pa_object_type var_lib_object)
+
+    (context var_lib_pa (sys.u sys.r var_lib_object (systemlow systemlow)))
+    (filecon "/var/lib/pulse(/.*)?" any var_lib_pa)
+
+    (blockinherit usersubject_home_object_block)
+
+    (blockinherit usersubject_home_config_object_block)
+
+    (blockinherit usersubject_tmpfs_object_block)
+    (call pa_shm_object (user_tmpfs_object))
+
+    (allow common_subject self (process (setcap setsched setrlimit)))
+    (allow common_subject self (unix_stream_socket (listen accept)))
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call fs_tmpfs_filetrans (common_subject user_tmpfs_object file "*")) ; /dev/shm/pulse-shm
+    (call fs_tmpfs_filetrans (common_subject user_tmpfs_object dir "*")) ; $TMP/.esd_auth-$UID
+    (roletype pa_role user_tmpfs_object)
+
+    (call dev_rw_sound (common_subject))
+
+    (call file_read_generic_usr (common_subject))
+
+    (call fs_getattr_proc (common_subject))
+    (call fs_list_devtmpfs (common_subject))
+    (call fs_list_proc (common_subject))
+
+    (call dbus_system_client (common_subject))
+
+    (call journal_client (common_subject))
+
+    (call logind_list_run (common_subject))
+    (call logind_read_run_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call pa_client (pa_role common_subject))
+
+    (call rtkit_client (common_subject))
+
+    (call udev_client (common_subject))
+
+    (optional pa_optional_bluetooth
+        (call bluetooth_dbus_chat (common_subject)))
+)
+
+(block pactl
+    (blockinherit app_block)
+
+    (roletype pa_role common_subject)
+
+    (context bin_pactl (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/pactl" file bin_pactl)
+    (filecon "/usr/bin/pacmd" file bin_pactl)
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call pa_client (pa_role common_subject))
+    (call pa_stream_connect (common_subject))
+)
+
+(allow pa_client_type self (process (getsched)))
+(allow pa_client_type pa_client_type (process (signal signull)))
+(allow pa_client_type self rw_fifo_file_perms)
+
+(allow pa_client_type pa_shm_object_type read_file_perms)
+(allow pa_client_type pa_shm_object_type delete_file_perms)
+
+(call dev_read_urandom (pa_client_type))
+
+(call fs_getattr_tmpfs (pa_client_type))
+(call fs_list_sysfs (pa_client_type))
+(call fs_read_sysfs_files (pa_client_type))
+(call fs_read_sysfs_lnk_files (pa_client_type))
+
+(call alsa_read_config_files (pa_client_type))
+
+(call gdm_send_signal (pa_client_type))
+(call gdm_send_signull (pa_client_type))
+
+(call pa_read_config_files (pa_client_type))
+
+(call machine_read_config_files (pa_client_type))
+
+(call pa_manage_home (pa_client_role pa_client_type))
+(call pa_user_home_filetrans_home_files
+    (pa_client_role pa_client_type)) ; $HOME/.esd_auth
+
+(call pa_manage_home_config (pa_client_role pa_client_type))
+(call pa_home_config_filetrans_home_config_dirs (pa_client_role pa_client_type)) ; $XDG_CONFIG_DIR/pulse
+
+(call pa_manage_tmpfs (pa_client_role pa_client_type))
+(call pa_tmpfs_filetrans_tmpfs_dirs (pa_client_role pa_client_type)) ; $XDG_RUNTIME_DIR/pulse
+
+(call pa_run (pa_client_type pa_client_role))
+
+(call usersubject_read_generic_tmpfs_files (pa_client_type))
+(call usersubject_delete_generic_tmpfs_files (pa_client_type))
+
+(optional pa_client_type_optional_unconfined
+    (call unconfined_send_signal_all_unconfined_user_subjects (pa_client_type))
+    (call unconfined_send_signull_all_unconfined_user_subjects (pa_client_type)))
+
+(allow pa_admin_type pa_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype pa_admin_role pa_object_type)
+
+(macro pa_client ((role ARG1)(type ARG2))
+    (roleattributeset pa_client_role ARG1)
+    (typeattributeset pa_client_type ARG2))
+
+(macro pa_send_signal_all_client_subjects ((type ARG1))
+    (allow ARG1 pa_client_type (process (signal))))
+
+(macro pa_send_signull_all_client_subjects ((type ARG1))
+    (allow ARG1 pa_client_type (process (signull))))
+
+(macro pa_shm_object ((type ARG1))
+    (typeattributeset pa_shm_object_type ARG1))
+
+(macro pa_read_all_shm_object_files ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (allow ARG1 pa_shm_object_type read_file_perms))
+
+(macro pa_delete_all_shm_object_files ((type ARG1))
+    (call fs_del_entry_tmpfs (ARG1))
+    (allow ARG1 pa_shm_object_type delete_file_perms))
+
+(macro pa_auto_subtrans ((type ARG1))
+    (call pa_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 pa.bin_object pa.common_subject)))
+
+(macro pa_run ((type ARG1)(role ARG2))
+    (call pa_auto_subtrans (ARG1))
+    (roleattributeset pa_role ARG2))
+
+(macro pa_send_signal ((type ARG1))
+    (allow ARG1 pa.common_subject (process (signal))))
+
+(macro pa_auto_subtrans_pactl ((type ARG1))
+    (call pa_send_signal_pactl (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 pactl.bin_object pactl.common_subject)))
+
+(macro pa_run_pactl ((type ARG1)(role ARG2))
+    (call pa_auto_subtrans_pactl (ARG1))
+    (roleattributeset pa_role ARG2))
+
+(macro pa_send_signal_pactl ((type ARG1))
+    (allow ARG1 pactl.common_subject (process (signal))))
+
+(macro pa_manage_home ((role ARG1)(type ARG2))
+    (call usersubject_search_home_user (ARG2))
+    (allow ARG2 pa.home_object manage_file_perms)
+    (roletype ARG1 pa.home_object))
+
+(macro pa_relabel_home ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 pa.home_object relabel_file_perms))
+
+(macro pa_user_home_filetrans_home_files ((role ARG1)(type ARG2))
+    (call usersubject_home_user_filetrans
+        (ARG1 ARG2 pa.home_object file ".esd_auth")))
+
+(macro pa_manage_home_config ((role ARG1)(type ARG2))
+    (allow ARG2 pa.home_config_object manage_dir_perms)
+    (allow ARG2 pa.home_config_object manage_file_perms)
+    (roletype ARG1 pa.home_config_object))
+
+(macro pa_relabel_home_config ((type ARG1))
+    (allow ARG1 pa.home_config_object relabel_dir_perms)
+    (allow ARG1 pa.home_config_object relabel_file_perms))
+
+(macro pa_home_config_filetrans_home_config_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_config_filetrans
+        (ARG1 ARG2 pa.home_config_object dir "pulse")))
+
+(macro pa_manage_tmpfs ((role ARG1)(type ARG2))
+    (allow ARG2 pa.user_tmpfs_object manage_dir_perms)
+    (allow ARG2 pa.user_tmpfs_object manage_file_perms)
+    (allow ARG2 pa.user_tmpfs_object manage_sock_file_perms)
+    (roletype ARG1 pa.user_tmpfs_object))
+
+(macro pa_relabel_tmpfs ((type ARG1))
+    (allow ARG1 pa.user_tmpfs_object relabel_dir_perms)
+    (allow ARG1 pa.user_tmpfs_object relabel_file_perms)
+    (allow ARG1 pa.user_tmpfs_object relabel_sock_file_perms))
+
+(macro pa_tmpfs_filetrans_tmpfs_dirs ((role ARG1)(type ARG2))
+    (call fs_tmpfs_filetrans (ARG2 pa.user_tmpfs_object dir "pulse"))
+    (roletype ARG1 pa.user_tmpfs_object))
+
+(macro pa_stream_connect ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (call stream_connect_pattern
+        (ARG1 pa.user_tmpfs_object pa.user_tmpfs_object pa.common_subject)))
+
+(macro pa_read_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 pa.etc_object pa.etc_object)))
+
+(macro pa_admin ((role ARG1)(type ARG2))
+    (roleattributeset pa_admin_role ARG1)
+    (typeattributeset pa_admin_type ARG2))

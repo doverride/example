@@ -683,6 +683,14 @@
         (ARG2 user.user_tmpfs_object user.user_tmpfs_object))
     (roletype ARG1 user.user_tmpfs_object))
 
+(macro usersubject_read_generic_tmpfs_files ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (allow ARG1 user.user_tmpfs_object read_file_perms))
+
+(macro usersubject_delete_generic_tmpfs_files ((type ARG1))
+    (call fs_del_entry_tmpfs (ARG1))
+    (allow ARG1 user.user_tmpfs_object delete_file_perms))
+
 (macro usersubject_manage_generic_tmpfs_sock_files ((role ARG1)(type ARG2))
     (call file_search_run_user (ARG2))
     (call manage_sock_files_pattern

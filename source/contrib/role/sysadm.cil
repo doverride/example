@@ -60,6 +60,9 @@
     (optional sysadm_optional_alsa
         (call alsa_admin (r common_subject)))
 
+    (optional sysadm_optional_atspi
+        (call atspi_admin (r common_subject)))
+
     (optional sysadm_optional_avahi
         (call avahi_admin (r common_subject)))
 
@@ -182,6 +185,9 @@
 
     (optional sysadm_optional_ntp
         (call ntp_admin (r common_subject)))
+
+    (optional sysadm_optional_pa
+        (call pa_admin (r common_subject)))
 
     (optional sysadm_optional_pcsc
         (call pcsc_admin (r common_subject)))

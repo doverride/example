@@ -133,9 +133,9 @@
 
 (macro gsession_user_home_filetrans_home_files ((role ARG1)(type ARG2))
     (call usersubject_home_user_filetrans
-        (gsession_role gsession_subject_type gsession.home_object file ".ICEauthority"))
+        (ARG1 ARG2 gsession.home_object file ".ICEauthority"))
     (call usersubject_home_user_filetrans
-        (gsession_role gsession_subject_type gsession.home_object file ".ICEauthority-c")))
+        (ARG1 ARG2 gsession.home_object file ".ICEauthority-c")))
 
 (macro gsession_manage_home_config ((role ARG1)(type ARG2))
     (allow ARG2 gsession.home_config_object manage_dir_perms)
