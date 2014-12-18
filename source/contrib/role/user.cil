@@ -167,8 +167,11 @@
         (call gis_manage_home_config (user.r user.common_subject))
         (call gis_relabel_home_config (user.common_subject))
 
+        (call gis_home_config_filetrans_home_config_files (user.r user.common_subject))
+
         (context user_gis_config (user.u user.r gis.home_config_object (systemlow systemlow)))
         (filecon "/home/.*/\.config/run-welcome-tour.*" any user_gis_config)
+        (filecon "/home/.*/\.config/gnome-initial-setup-done" file user_gis_config)
 
         (call gvfs_manage_home_data (user.r user.common_subject))
         (call gvfs_relabel_home_data (user.common_subject))

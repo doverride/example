@@ -167,8 +167,11 @@
         (call gis_manage_home_config (staff.r staff.common_subject))
         (call gis_relabel_home_config (staff.common_subject))
 
+        (call gis_home_config_filetrans_home_config_files (staff.r staff.common_subject))
+
         (context staff_gis_config (staff.u staff.r gis.home_config_object (systemlow systemlow)))
         (filecon "/home/john/\.config/run-welcome-tour.*" any staff_gis_config)
+        (filecon "/home/john/\.config/gnome-initial-setup-done" file staff_gis_config)
 
         (call gvfs_manage_home_data (staff.r staff.common_subject))
         (call gvfs_relabel_home_data (staff.common_subject))

@@ -24,6 +24,7 @@
     (call gis_manage_home_config (gis_role common_subject))
     (call usersubject_generic_home_config_filetrans
         (gis_role common_subject gis.home_config_object dir "*"))
+    (call gis_home_config_filetrans_home_config_files (gis_role common_subject))
 
     (call gis_manage_tmpfs (gis_role common_subject))
     (call fs_tmpfs_filetrans (common_subject gis.user_tmpfs_object file "*"))
@@ -104,6 +105,10 @@
     (allow ARG2 gis.home_config_object manage_dir_perms)
     (allow ARG2 gis.home_config_object manage_file_perms)
     (roletype ARG1 gis.home_config_object))
+
+(macro gis_home_config_filetrans_home_config_files ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_config_filetrans
+        (ARG1 ARG2 gis.home_config_object file "gnome-initial-setup-done")))
 
 (macro gis_relabel_home_config ((type ARG1))
     (allow ARG1 gis.home_config_object relabel_dir_perms)
