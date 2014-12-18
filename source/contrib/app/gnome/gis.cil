@@ -66,6 +66,8 @@
 
     (call udev_client (common_subject))
 
+    (call yelp_run (common_subject gis_role))
+
     (optional gis_optional_nm
         (call nm_dbus_chat (common_subject)))
 )

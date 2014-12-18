@@ -1,0 +1,64 @@
+(roleattribute yelp_role)
+
+(block yelp
+    (blockinherit gshell_app_block)
+
+    (roletype yelp_role common_subject)
+
+    (context bin_yelp (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/yelp" file bin_yelp)
+
+    (blockinherit usersubject_tmpfs_object_block)
+    (blockinherit usersubject_home_config_object_block)
+
+    (allow common_subject self (unix_stream_socket (listen accept)))
+
+    (call yelp_manage_tmpfs (gis_role common_subject))
+    (call fs_tmpfs_filetrans (common_subject yelp.user_tmpfs_object file "*"))
+    (roletype yelp_role yelp.user_tmpfs_object)
+
+    (call yelp_manage_home_config (yelp_role common_subject))
+    (call yelp_home_config_filetrans_home_config_dirs (yelp_role common_subject))
+
+    (call dev_read_urandom (common_subject))
+
+    (call atspi_client (yelp_role common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dconf_client (yelp_role common_subject))
+
+    (call machine_read_config_files (common_subject))
+)
+
+(macro yelp_auto_subtrans ((type ARG1))
+    (call yelp_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 yelp.bin_object yelp.common_subject)))
+
+(macro yelp_run ((type ARG1)(role ARG2))
+    (call yelp_auto_subtrans (ARG1))
+    (roleattributeset yelp_role ARG2))
+
+(macro yelp_send_signal ((type ARG1))
+    (allow ARG1 yelp.common_subject (process (signal))))
+
+(macro yelp_manage_tmpfs ((role ARG1)(type ARG2))
+    (allow ARG2 yelp.user_tmpfs_object manage_file_perms)
+    (roletype ARG1 yelp.user_tmpfs_object))
+
+(macro yelp_relabel_tmpfs ((type ARG1))
+    (allow ARG1 yelp.user_tmpfs_object relabel_file_perms))
+
+(macro yelp_manage_home_config ((role ARG1)(type ARG2))
+    (allow ARG2 yelp.home_config_object manage_dir_perms)
+    (allow ARG2 yelp.home_config_object manage_file_perms)
+    (roletype ARG1 yelp.home_config_object))
+
+(macro yelp_relabel_home_config ((type ARG1))
+    (allow ARG1 yelp.home_config_object relabel_dir_perms)
+    (allow ARG1 yelp.home_config_object relabel_file_perms))
+
+(macro yelp_home_config_filetrans_home_config_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_config_filetrans
+        (ARG1 ARG2 yelp.home_config_object dir "yelp")))

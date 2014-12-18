@@ -180,6 +180,16 @@
         (call gvfs_manage_gvfsd_tmpfs_dirs (staff.r staff.common_subject))
         (call gvfs_relabel_gvfsd_tmpfs_dirs (staff.common_subject))
         (call gvfs_tmpfs_filetrans_gvfsd_tmpfs_dirs (staff.r staff.common_subject))
+
+        (call yelp_manage_tmpfs (staff.r staff.common_subject))
+        (call yelp_relabel_tmpfs (staff.common_subject))
+
+        (call yelp_manage_home_config (staff.r staff.common_subject))
+        (call yelp_relabel_home_config (staff.common_subject))
+        (call yelp_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
+
+        (context staff_yelp_config (staff.u staff.r yelp.home_config_object (systemlow systemlow)))
+        (filecon "/home/john/\.config/yelp(/.*)?" any staff_yelp_config)
     )
 )
 
