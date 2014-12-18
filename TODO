@@ -24,8 +24,7 @@
 
 * create a template for gui app common rules (then apply that to gdm as well, gdm runs gui apps in it own domain and currently added individual macros)
 
-* mdadm: shutdown executes mdadm, and i believe that shutdown (mdadm) wants to read/list /run/mdadm
-
 * exclude things from being tmpfiles manageable/relabelable, and readahead readable ( i create nice macros for that, just need to use them)
 
-* dnf, logrotate (i disabled cron because i could not get it to work for some reason)
+* useradd/userdel RFE: use setfscreatecon for user mail spool files as well (not just for user home directories)
+    currently the user mail spool files get created with the wrong security context

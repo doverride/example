@@ -87,6 +87,8 @@
         (call seutil_relabel_policy_config (common_subject))
         (call seutil_config_filetrans_policy_conf_dirs (r common_subject))
 
+        (call usersubject_var_spool_filetrans_generic_mail_spool_files (r common_subject "*"))
+
         (call unconfined (r common_subject))
 
         (optional unconfineduser_optional_gkeyring
