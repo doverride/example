@@ -25,11 +25,9 @@
     (call usersubject_generic_home_config_filetrans
         (gis_role common_subject gis.home_config_object dir "*"))
 
-    ; conflicts with atspi_client()
-
-    ; (call gis_manage_tmpfs (gis_role common_subject))
-    ; (call fs_tmpfs_filetrans (common_subject gis.user_tmpfs_object dir "*"))
-    ; (roletype gis_role gis.user_tmpfs_object)
+    (call gis_manage_tmpfs (gis_role common_subject))
+    (call fs_tmpfs_filetrans (common_subject gis.user_tmpfs_object file "*"))
+    (roletype gis_role gis.user_tmpfs_object)
 
     (call bin_execute_bin_files (common_subject))
     (call bin_mprot_read_shell_files (common_subject))
@@ -85,13 +83,11 @@
     (allow ARG1 gis.common_subject (process (signal))))
 
 (macro gis_manage_tmpfs ((role ARG1)(type ARG2))
-    (allow ARG2 gis.user_tmpfs_object manage_dir_perms)
-    (allow ARG2 gis.user_tmpfs_object manage_sock_file_perms)
+    (allow ARG2 gis.user_tmpfs_object manage_file_perms)
     (roletype ARG1 gis.user_tmpfs_object))
 
 (macro gis_relabel_tmpfs ((type ARG1))
-    (allow ARG1 gis.user_tmpfs_object relabel_dir_perms)
-    (allow ARG1 gis.user_tmpfs_object relabel_sock_file_perms))
+    (allow ARG1 gis.user_tmpfs_object relabel_file_perms))
 
 (macro gis_manage_home_cache ((role ARG1)(type ARG2))
     (allow ARG2 gis.home_cache_object manage_dir_perms)

@@ -155,10 +155,8 @@
             (filecon "/home/.*/\.local/share/gnome-shell(/.*)?" any user_gshell_data)
         )
 
-        ; conflicts with atspi_client
-
-        ; (call gis_manage_tmpfs (user.r user.common_subject))
-        ; (call gis_relabel_tmpfs (user.common_subject))
+        (call gis_manage_tmpfs (user.r user.common_subject))
+        (call gis_relabel_tmpfs (user.common_subject))
 
         (call gis_manage_home_cache (user.r user.common_subject))
         (call gis_relabel_home_cache (user.common_subject))
