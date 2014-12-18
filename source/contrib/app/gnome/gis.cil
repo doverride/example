@@ -1,0 +1,112 @@
+(roleattribute gis_role)
+
+(block gis
+    (blockinherit app_block)
+
+    (roletype gis_role common_subject)
+
+    (context bin_gis (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/gnome-initial-setup" file bin_gis)
+    (filecon "/usr/libexec/gnome-welcome-tour" file bin_gis)
+    (filecon "/usr/libexec/gnome-initial-setup-copy-worker" file bin_gis)
+
+    (blockinherit usersubject_home_cache_object_block)
+    (blockinherit usersubject_home_config_object_block)
+    (blockinherit usersubject_tmpfs_object_block)
+
+    (allow common_subject self rw_fifo_file_perms)
+    (allow common_subject self (unix_stream_socket (listen accept)))
+
+    (call gis_manage_home_cache (gis_role common_subject))
+    (call usersubject_generic_home_cache_filetrans
+        (gis_role common_subject gis.home_cache_object dir "*"))
+
+    (call gis_manage_home_config (gis_role common_subject))
+    (call usersubject_generic_home_config_filetrans
+        (gis_role common_subject gis.home_config_object dir "*"))
+
+    ; conflicts with atspi_client()
+
+    ; (call gis_manage_tmpfs (gis_role common_subject))
+    ; (call fs_tmpfs_filetrans (common_subject gis.user_tmpfs_object dir "*"))
+    ; (roletype gis_role gis.user_tmpfs_object)
+
+    (call bin_execute_bin_files (common_subject))
+    (call bin_mprot_read_shell_files (common_subject))
+
+    (call dev_read_urandom (common_subject))
+    (call dev_rw_dri (common_subject))
+
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call sec_list (common_subject))
+
+    (call subject_execmem_uncond (common_subject))
+
+    (call accounts_dbus_chat (common_subject))
+
+    (call atspi_client (gis_role common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dbus_system_client (common_subject))
+    (call dbus_all_session_client (common_subject))
+
+    (call dconf_client (gis_role common_subject))
+
+    (call gkeyring_run_gkeyringd (common_subject gis_role))
+
+    (call localed_dbus_chat (common_subject))
+
+    (call machine_read_config_files (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+
+    (call udev_client (common_subject))
+
+    (optional gis_optional_nm
+        (call nm_dbus_chat (common_subject)))
+)
+
+(macro gis_auto_subtrans ((type ARG1))
+    (call gis_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 gis.bin_object gis.common_subject)))
+
+(macro gis_run ((type ARG1)(role ARG2))
+    (call gis_auto_subtrans (ARG1))
+    (roleattributeset gis_role ARG2))
+
+(macro gis_send_signal ((type ARG1))
+    (allow ARG1 gis.common_subject (process (signal))))
+
+(macro gis_manage_tmpfs ((role ARG1)(type ARG2))
+    (allow ARG2 gis.user_tmpfs_object manage_dir_perms)
+    (allow ARG2 gis.user_tmpfs_object manage_sock_file_perms)
+    (roletype ARG1 gis.user_tmpfs_object))
+
+(macro gis_relabel_tmpfs ((type ARG1))
+    (allow ARG1 gis.user_tmpfs_object relabel_dir_perms)
+    (allow ARG1 gis.user_tmpfs_object relabel_sock_file_perms))
+
+(macro gis_manage_home_cache ((role ARG1)(type ARG2))
+    (allow ARG2 gis.home_cache_object manage_dir_perms)
+    (allow ARG2 gis.home_cache_object manage_file_perms)
+    (roletype ARG1 gis.home_cache_object))
+
+(macro gis_relabel_home_cache ((type ARG1))
+    (allow ARG1 gis.home_cache_object relabel_dir_perms)
+    (allow ARG1 gis.home_cache_object relabel_file_perms))
+
+(macro gis_manage_home_config ((role ARG1)(type ARG2))
+    (allow ARG2 gis.home_config_object manage_dir_perms)
+    (allow ARG2 gis.home_config_object manage_file_perms)
+    (roletype ARG1 gis.home_config_object))
+
+(macro gis_relabel_home_config ((type ARG1))
+    (allow ARG1 gis.home_config_object relabel_dir_perms)
+    (allow ARG1 gis.home_config_object relabel_file_perms))
