@@ -107,6 +107,7 @@
         (call audit_relabel_log (common_subject)))
 
     (optional rpm_optional_logrotate
+        (call logrotate_log_object (var_cache_object))
         (call logrotate_log_object (var_log_object)))
 )
 
