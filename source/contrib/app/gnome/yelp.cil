@@ -13,7 +13,7 @@
 
     (allow common_subject self (unix_stream_socket (listen accept)))
 
-    (call yelp_manage_tmpfs (gis_role common_subject))
+    (call yelp_manage_tmpfs (yelp_role common_subject))
     (call fs_tmpfs_filetrans (common_subject yelp.user_tmpfs_object file "*"))
     (roletype yelp_role yelp.user_tmpfs_object)
 
