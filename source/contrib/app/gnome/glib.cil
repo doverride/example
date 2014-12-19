@@ -58,7 +58,7 @@
 
     (call glib_manage_home_data (gsd_role common_subject))
     (call usersubject_generic_home_data_filetrans
-        (glib_role common_subject glib.home_data_object file "*"))
+        (glib_role common_subject home_data_object file "*"))
 
     (call file_read_generic_usr_files (common_subject))
 
