@@ -10,10 +10,12 @@
 
     (blockinherit usersubject_tmpfs_object_block)
 
+    (call pa_shm (user_tmpfs_object))
+
     (call canberra_manage_tmpfs (canberra_role common_subject))
     (call fs_tmpfs_filetrans
-        (common_subject canberra.user_tmpfs_object file "*"))
-    (roletype canberra_role canberra.user_tmpfs_object)
+        (common_subject user_tmpfs_object file "*"))
+    (roletype canberra_role user_tmpfs_object)
 
     (call file_read_generic_usr_files (common_subject))
 
