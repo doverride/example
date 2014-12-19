@@ -1,0 +1,44 @@
+(roleattribute canberra_role)
+
+(block canberra
+    (blockinherit app_block)
+
+    (roletype canberra_role common_subject)
+
+    (context bin_canberra (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/canberra-gtk-play" file bin_canberra)
+
+    (blockinherit usersubject_tmpfs_object_block)
+
+    (call canberra_manage_tmpfs (canberra_role common_subject))
+    (call fs_tmpfs_filetrans
+        (common_subject canberra.user_tmpfs_object file "*"))
+    (roletype canberra_role canberra.user_tmpfs_object)
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call pa_client (canberra_role common_subject))
+
+    (call miscfiles_read_localization_files (common_subject))
+)
+
+(macro canberra_auto_subtrans ((type ARG1))
+    (call canberra_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 canberra.bin_object canberra.common_subject)))
+
+(macro canberra_run ((type ARG1)(role ARG2))
+    (call canberra_auto_subtrans (ARG1))
+    (roleattributeset canberra_role ARG2))
+
+(macro canberra_send_signal ((type ARG1))
+    (allow ARG1 canberra.common_subject (process (signal))))
+
+(macro canberra_manage_tmpfs ((role ARG1)(type ARG2))
+    (call fs_search_tmpfs (ARG2))
+    (allow ARG2 canberra.user_tmpfs_object manage_file_perms)
+    (roletype ARG1 canberra.user_tmpfs_object))
+
+(macro canberra_relabel_tmpfs ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (allow ARG1 canberra.user_tmpfs_object relabel_file_perms))
