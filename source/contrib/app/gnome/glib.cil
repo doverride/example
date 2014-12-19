@@ -1,0 +1,131 @@
+(roleattribute glib_role)
+
+(roleattribute glib_admin_role)
+(typeattribute glib_admin_type)
+
+(typeattribute glib_object_type)
+
+(block gconfd
+    (blockinherit app_block)
+
+    (roletype glib_role common_subject)
+
+    (context bin_gconfd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/gconfd-2" file bin_gconfd)
+
+    (blockinherit file_maintains_etc_dirs_and_files_block)
+
+    (typeattributeset glib_object_type etc_object)
+
+    (context etc_gconfd (sys.u sys.r etc_object (systemlow systemlow)))
+    (filecon "/etc/gconf(/.*)?" any etc_gconfd)
+
+    (blockinherit dbus_maintains_single_etc_file_block)
+
+    (typeattributeset glib_object_type dbus_etc_object)
+
+    (context dbus_etc_gconfd (sys.u sys.r dbus_etc_object (systemlow systemlow)))
+    (filecon "/etc/dbus-1/system\.d/org\.gnome\.GConf\.Defaults\.conf" file dbus_etc_gconfd)
+)
+
+(block gconf_helper
+    (blockinherit bin_object_block)
+
+    (context bin_gconf_helper (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/gconf-defaults-mechanism" file bin_gconf_helper)
+)
+
+(block glib
+    (blockinherit app_block)
+
+    (roletype glib_role common_subject)
+
+    (context bin_glib (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/gsettings" file bin_glib)
+    (filecon "/usr/bin/gsettings-data-convert" file bin_glib)
+    (filecon "/usr/bin/gapplication" file bin_glib)
+    (filecon "/usr/bin/gio-querymodules-64" file bin_glib)
+    (filecon "/usr/bin/glib-compile-schemas" file bin_glib)
+    (filecon "/usr/bin/gdbus" file bin_glib)
+    (filecon "/usr/bin/gconf-merge-tree" file bin_glib)
+    (filecon "/usr/bin/gconftool-2" file bin_glib)
+
+    (blockinherit usersubject_home_config_object_block)
+    (blockinherit usersubject_home_data_object_block)
+
+    (call glib_manage_home_config (glib_role common_subject))
+    (call glib_home_config_filetrans_home_config_dirs (glib_role common_subject))
+
+    (call glib_manage_home_data (gsd_role common_subject))
+    (call usersubject_generic_home_data_filetrans
+        (glib_role common_subject glib.home_data_object file "*"))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+
+    (call dconf_client (glib_role common_subject))
+
+    (call glib_read_gconfd_config_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+)
+
+(allow glib_admin_type glib_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype glib_admin_role glib_object_type)
+
+(macro glib_exec_gconf_helper ((type ARG1))
+    (call can_exec (ARG1 gconf_helper.bin_object)))
+
+(macro glib_auto_subtrans ((type ARG1))
+    (call glib_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 glib.bin_object gsd.common_subject)))
+
+(macro glib_run ((type ARG1)(role ARG2))
+    (call glib_auto_subtrans (ARG1))
+    (roleattributeset glib_role ARG2))
+
+(macro glib_send_signal ((type ARG1))
+    (allow ARG1 glib.common_subject (process (signal))))
+
+(macro glib_auto_subtrans_gconfd ((type ARG1))
+    (call glib_send_signal_gconfd (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 gconfd.bin_object gconfd.common_subject)))
+
+(macro glib_run_gconfd ((type ARG1)(role ARG2))
+    (call glib_auto_subtrans_gconfd (ARG1))
+    (roleattributeset glib_role ARG2))
+
+(macro glib_send_signal_gconfd ((type ARG1))
+    (allow ARG1 gconfd.common_subject (process (signal))))
+
+(macro glib_manage_home_data ((role ARG1)(type ARG2))
+    (allow ARG2 glib.home_data_object manage_file_perms)
+    (roletype ARG1 glib.home_data_object))
+
+(macro glib_relabel_home_data ((type ARG1))
+    (allow ARG1 glib.home_data_object relabel_file_perms))
+
+(macro glib_manage_home_config ((role ARG1)(type ARG2))
+    (allow ARG2 glib.home_config_object manage_dir_perms)
+    (allow ARG2 glib.home_config_object manage_file_perms)
+    (roletype ARG1 glib.home_config_object))
+
+(macro glib_relabel_home_config ((type ARG1))
+    (allow ARG1 glib.home_config_object relabel_dir_perms)
+    (allow ARG1 glib.home_config_object relabel_file_perms))
+
+(macro glib_home_config_filetrans_home_config_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_config_filetrans
+        (ARG1 ARG2 glib.home_config_object dir "gconf")))
+
+(macro glib_read_gconfd_config_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (call read_files_pattern (ARG1 gconfd.etc_object gconfd.etc_object)))
+
+(macro glib_admin ((role ARG1)(type ARG2))
+    (roleattributeset glib_admin_role ARG1)
+    (typeattributeset glib_admin_type ARG2))

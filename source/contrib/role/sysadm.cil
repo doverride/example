@@ -126,6 +126,9 @@
     (optional sysadm_optional_getty
         (call getty_admin (r common_subject)))
 
+    (optional sysadm_optional_glib
+        (call glib_admin (r common_subject)))
+
     (optional sysadm_optional_glxutil
         (call glxutil_run (common_subject r)))
 

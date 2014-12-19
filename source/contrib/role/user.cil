@@ -139,6 +139,8 @@
 
             (call gis_run (common_subject gsession_role))
 
+            (call glib_run (common_subject gsession_role))
+
             (call gshell_role_template (gsession_role common_subject user_gshell.common_subject))
         )
 
@@ -177,6 +179,19 @@
         (context user_gis_config (user.u user.r gis.home_config_object (systemlow systemlow)))
         (filecon "/home/.*/\.config/run-welcome-tour.*" any user_gis_config)
         (filecon "/home/.*/\.config/gnome-initial-setup-done" file user_gis_config)
+
+        (call glib_manage_home_config (user.r user.common_subject))
+        (call glib_relabel_home_config (user.common_subject))
+        (call glib_home_config_filetrans_home_config_dirs (user.r user.common_subject))
+
+        (context user_glib_config (user.u user.r glib.home_config_object (systemlow systemlow)))
+        (filecon "/home/.*/\.config/gconf(/.*)?" any user_glib_config)
+
+        (call glib_manage_home_data (user.r user.common_subject))
+        (call glib_relabel_home_data (user.common_subject))
+
+        (context user_glib_data (user.u user.r glib.home_data_object (systemlow systemlow)))
+        (filecon "/home/.*/\.local/share/gsettings-data-convert" file user_glib_data)
 
         (call gvfs_manage_home_data (user.r user.common_subject))
         (call gvfs_relabel_home_data (user.common_subject))
