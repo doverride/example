@@ -64,18 +64,23 @@
 
         (optional staff_dbusd_optional_gnome
             (call atspi_read_config_files (common_subject))
-            (call atspi_run_atspiregd (common_subject dbus_session_role))
+            (call atspi_run_atspiregd (common_subject staff.r))
 
-            (call dconf_run_dconfsvc (common_subject dbus_session_role))
+            (call dconf_run_dconfsvc (common_subject staff.r))
 
-            (call gshell_run_cald (common_subject dbus_session_role))
+            (call gshell_run_cald (common_subject staff.r))
 
-            (call gvfs_run (common_subject dbus_session_role))
-            (call gvfs_run_gvfsd (common_subject dbus_session_role))
+            (call gvfs_run (common_subject staff.r))
+            (call gvfs_run_gvfsd (common_subject staff.r))
+
+            (call ibus_run_ibusd (common_subject staff.r))
         )
     )
 
     (optional staff_optional_gnome
+        (call canberra_manage_tmpfs (staff.r staff.common_subject))
+        (call canberra_relabel_tmpfs (staff.common_subject))
+
         (call dconf_manage_tmpfs (staff.r staff.common_subject))
         (call dconf_relabel_tmpfs (staff.common_subject))
         (call dconf_tmpfs_filetrans_tmpfs_dirs (staff.r staff.common_subject))
@@ -87,6 +92,24 @@
         (context staff_dconf_config (staff.u staff.r dconf.home_config_object (systemlow systemlow)))
         (filecon "/home/john/\.config/dconf(/.*)?" any staff_dconf_config)
 
+        (call gis_manage_tmpfs (staff.r staff.common_subject))
+        (call gis_relabel_tmpfs (staff.common_subject))
+
+        (call gis_manage_home_cache (staff.r staff.common_subject))
+        (call gis_relabel_home_cache (staff.common_subject))
+
+        (context staff_gis_cache (staff.u staff.r gis.home_cache_object (systemlow systemlow)))
+        (filecon "/home/john/\.cache/run-welcome-tour.*" any staff_gis_cache) ; FIXME
+
+        (call gis_manage_home_config (staff.r staff.common_subject))
+        (call gis_relabel_home_config (staff.common_subject))
+
+        (call gis_home_config_filetrans_home_config_files (staff.r staff.common_subject))
+
+        (context staff_gis_config (staff.u staff.r gis.home_config_object (systemlow systemlow)))
+        (filecon "/home/john/\.config/run-welcome-tour.*" any staff_gis_config)
+        (filecon "/home/john/\.config/gnome-initial-setup-done" file staff_gis_config)
+
         (call gkeyring_manage_tmpfs (staff.r staff.common_subject))
         (call gkeyring_relabel_tmpfs (staff.common_subject))
         (call gkeyring_tmpfs_filetrans_tmpfs_dirs (staff.r staff.common_subject))
@@ -97,6 +120,19 @@
 
         (context staff_gkeyringd_data (staff.u staff.r gkeyringd.home_data_object (systemlow systemlow)))
         (filecon "/home/john/\.local/share/keyrings(/.*)?" any staff_gkeyringd_data)
+
+        (call glib_manage_home_config (staff.r staff.common_subject))
+        (call glib_relabel_home_config (staff.common_subject))
+        (call glib_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
+
+        (context staff_glib_config (staff.u staff.r glib.home_config_object (systemlow systemlow)))
+        (filecon "/home/john/\.config/gconf(/.*)?" any staff_glib_config)
+
+        (call glib_manage_home_data (staff.r staff.common_subject))
+        (call glib_relabel_home_data (staff.common_subject))
+
+        (context staff_glib_data (staff.u staff.r glib.home_data_object (systemlow systemlow)))
+        (filecon "/home/john/\.local/share/gsettings-data-convert" file staff_glib_data)
 
         (call gsd_manage_gsd_home_data (staff.r staff.common_subject))
         (call gsd_relabel_gsd_home_data (staff.common_subject))
@@ -111,6 +147,34 @@
 
         (context staff_gsd_icc_data (staff.u staff.r icc.home_data_object (systemlow systemlow)))
         (filecon "/home/john/\.local/share/icc(/.*)?" any staff_gsd_icc_data)
+
+        (call gvfs_manage_home_data (staff.r staff.common_subject))
+        (call gvfs_relabel_home_data (staff.common_subject))
+        (call gvfs_home_data_filetrans_home_data_dirs (staff.r staff.common_subject))
+
+        (context staff_gvfs_data (staff.u staff.r gvfs.home_data_object (systemlow systemlow)))
+        (filecon "/home/john/\.local/share/gvfs-metadata(/.*)?" any staff_gvfs_data)
+
+        (call gvfs_manage_gvfsd_tmpfs_dirs (staff.r staff.common_subject))
+        (call gvfs_relabel_gvfsd_tmpfs_dirs (staff.common_subject))
+        (call gvfs_tmpfs_filetrans_gvfsd_tmpfs_dirs (staff.r staff.common_subject))
+
+        (call ibus_manage_home_config (staff.r staff.common_subject))
+        (call ibus_relabel_home_config (staff.common_subject))
+        (call ibus_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
+
+        (context staff_ibus_config (staff.u staff.r ibus.home_config_object (systemlow systemlow)))
+        (filecon "/home/john/\.config/ibus(/.*)?" any staff_ibus_config)
+
+        (call yelp_manage_tmpfs (staff.r staff.common_subject))
+        (call yelp_relabel_tmpfs (staff.common_subject))
+
+        (call yelp_manage_home_config (staff.r staff.common_subject))
+        (call yelp_relabel_home_config (staff.common_subject))
+        (call yelp_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
+
+        (context staff_yelp_config (staff.u staff.r yelp.home_config_object (systemlow systemlow)))
+        (filecon "/home/john/\.config/yelp(/.*)?" any staff_yelp_config)
 
         (block staff_gsession
             (blockinherit gsession_subject_block)
@@ -158,61 +222,6 @@
             (context staff_gshell_data (staff.u staff.r gshell.home_data_object (systemlow systemlow)))
             (filecon "/home/john/\.local/share/gnome-shell(/.*)?" any staff_gshell_data)
         )
-
-        (call canberra_manage_tmpfs (staff.r staff.common_subject))
-        (call canberra_relabel_tmpfs (staff.common_subject))
-
-        (call gis_manage_tmpfs (staff.r staff.common_subject))
-        (call gis_relabel_tmpfs (staff.common_subject))
-
-        (call gis_manage_home_cache (staff.r staff.common_subject))
-        (call gis_relabel_home_cache (staff.common_subject))
-
-        (context staff_gis_cache (staff.u staff.r gis.home_cache_object (systemlow systemlow)))
-        (filecon "/home/john/\.cache/run-welcome-tour.*" any staff_gis_cache) ; FIXME
-
-        (call gis_manage_home_config (staff.r staff.common_subject))
-        (call gis_relabel_home_config (staff.common_subject))
-
-        (call gis_home_config_filetrans_home_config_files (staff.r staff.common_subject))
-
-        (context staff_gis_config (staff.u staff.r gis.home_config_object (systemlow systemlow)))
-        (filecon "/home/john/\.config/run-welcome-tour.*" any staff_gis_config)
-        (filecon "/home/john/\.config/gnome-initial-setup-done" file staff_gis_config)
-
-        (call glib_manage_home_config (staff.r staff.common_subject))
-        (call glib_relabel_home_config (staff.common_subject))
-        (call glib_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
-
-        (context staff_glib_config (staff.u staff.r glib.home_config_object (systemlow systemlow)))
-        (filecon "/home/john/\.config/gconf(/.*)?" any staff_glib_config)
-
-        (call glib_manage_home_data (staff.r staff.common_subject))
-        (call glib_relabel_home_data (staff.common_subject))
-
-        (context staff_glib_data (staff.u staff.r glib.home_data_object (systemlow systemlow)))
-        (filecon "/home/john/\.local/share/gsettings-data-convert" file staff_glib_data)
-
-        (call gvfs_manage_home_data (staff.r staff.common_subject))
-        (call gvfs_relabel_home_data (staff.common_subject))
-        (call gvfs_home_data_filetrans_home_data_dirs (staff.r staff.common_subject))
-
-        (context staff_gvfs_data (staff.u staff.r gvfs.home_data_object (systemlow systemlow)))
-        (filecon "/home/john/\.local/share/gvfs-metadata(/.*)?" any staff_gvfs_data)
-
-        (call gvfs_manage_gvfsd_tmpfs_dirs (staff.r staff.common_subject))
-        (call gvfs_relabel_gvfsd_tmpfs_dirs (staff.common_subject))
-        (call gvfs_tmpfs_filetrans_gvfsd_tmpfs_dirs (staff.r staff.common_subject))
-
-        (call yelp_manage_tmpfs (staff.r staff.common_subject))
-        (call yelp_relabel_tmpfs (staff.common_subject))
-
-        (call yelp_manage_home_config (staff.r staff.common_subject))
-        (call yelp_relabel_home_config (staff.common_subject))
-        (call yelp_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
-
-        (context staff_yelp_config (staff.u staff.r yelp.home_config_object (systemlow systemlow)))
-        (filecon "/home/john/\.config/yelp(/.*)?" any staff_yelp_config)
     )
 )
 

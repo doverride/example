@@ -211,6 +211,10 @@
         (ARG2 dbusd.user_tmpfs_object dbusd.user_tmpfs_object))
     (roletype ARG1 dbusd.user_tmpfs_object))
 
+(macro dbus_write_user_tmpfs_sock_files ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (allow ARG1 dbusd.user_tmpfs_object write_sock_file_perms))
+
 (macro dbus_tmpfs_filetrans_user_tmpfs_sock_files ((role ARG1)(type ARG2))
     (call fs_tmpfs_filetrans (ARG2 dbusd.user_tmpfs_object sock_file "*"))
     (roletype ARG1 dbusd.user_tmpfs_object))

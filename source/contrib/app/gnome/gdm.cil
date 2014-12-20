@@ -144,6 +144,8 @@
     (call gkeyring_read_state_gkeyringd (common_subject))
     (call gkeyring_stream_connect_gkeyringd (common_subject))
 
+    (call ibus_read_var_cache_files (common_subject))
+
     (call journal_client (common_subject))
 
     (call localed_dbus_chat (common_subject))

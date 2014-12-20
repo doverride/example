@@ -138,6 +138,9 @@
     (optional sysadm_optional_hwclock
         (call hwclock_run (common_subject r)))
 
+    (optional sysadm_optional_ibus
+        (call ibus_admin (r common_subject)))
+
     (optional sysadm_optional_iptables
         (call iptables_admin (r common_subject)))
 

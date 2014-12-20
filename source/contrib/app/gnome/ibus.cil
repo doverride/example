@@ -1,0 +1,136 @@
+(roleattribute ibus_role)
+
+(roleattribute ibus_admin_role)
+(typeattribute ibus_admin_type)
+
+(roleattribute ibus_client_role)
+(typeattribute ibus_client_type)
+
+(typeattribute ibus_object_type)
+
+(block ibus
+    (blockinherit app_block)
+
+    (roletype ibus_role common_subject)
+
+    (context bin_ibus (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/ibus" file bin_ibus)
+    (filecon "/usr/libexec/ibus-dconf" file bin_ibus)
+    (filecon "/usr/libexec/ibus-engine-simple" file bin_ibus)
+    (filecon "/usr/libexec/ibus-ui-gtk3" file bin_ibus)
+    (filecon "/usr/libexec/ibus-x11" file bin_ibus)
+
+    (blockinherit usersubject_home_config_object_block)
+
+    (call ibus_client (ibus_role common_subject))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+
+    (call dbus_system_client (common_subject))
+
+    (call dconf_read_config_files (common_subject))
+
+    (call machine_read_config_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+)
+
+(block ibusd
+    (blockinherit app_block)
+
+    (roletype ibus_role common_subject)
+
+    (context bin_ibusd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/ibus-daemon" file bin_ibusd)
+
+    (blockinherit file_maintains_var_cache_dirs_and_files_block)
+
+    (typeattributeset ibus_object_type var_cache_object)
+
+    (context var_cache_ibusd (sys.u sys.r var_cache_object (systemlow systemlow)))
+    (filecon "/var/cache/ibus(/.*)?" any var_cache_ibusd)
+
+    (allow common_subject self (process (setpgid)))
+    (allow common_subject self (unix_stream_socket (listen accept)))
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call ibus_manage_home_config (ibus_role common_subject))
+    (call ibus_home_config_filetrans_home_config_dirs (ibus_role common_subject))
+
+    (call ibus_auto_subtrans (common_subject))
+
+    (call dev_read_urandom (common_subject))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call fs_list_tmpfs (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call machine_read_config_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+)
+
+(call ibus_stream_connect_ibusd (ibus_client_type))
+(call ibus_manage_home_config (ibus_client_role ibus_client_type))
+(call ibus_home_config_filetrans_home_config_dirs (ibus_client_role ibus_client_type))
+
+(allow ibus_admin_type ibus_object_type (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+(roletype ibus_admin_role ibus_object_type)
+
+(macro ibus_client ((role ARG1)(type ARG2))
+    (roleattributeset ibus_client_role ARG1)
+    (typeattributeset ibus_client_type ARG2))
+
+(macro ibus_auto_subtrans ((type ARG1))
+    (call ibus_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 ibus.bin_object ibus.common_subject)))
+
+(macro ibus_run ((type ARG1)(role ARG2))
+    (call ibus_auto_subtrans (ARG1))
+    (roleattributeset ibus_role ARG2))
+
+(macro ibus_send_signal ((type ARG1))
+    (allow ARG1 ibus.common_subject (process (signal))))
+
+(macro ibus_auto_subtrans_ibusd ((type ARG1))
+    (call ibus_send_signal_ibusd (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 ibusd.bin_object ibusd.common_subject)))
+
+(macro ibus_run_ibusd ((type ARG1)(role ARG2))
+    (call ibus_auto_subtrans_ibusd (ARG1))
+    (roleattributeset ibus_role ARG2))
+
+(macro ibus_send_signal_ibusd ((type ARG1))
+    (allow ARG1 ibusd.common_subject (process (signal))))
+
+(macro ibus_manage_home_config ((role ARG1)(type ARG2))
+    (allow ARG2 ibus.home_config_object manage_dir_perms)
+    (allow ARG2 ibus.home_config_object manage_file_perms)
+    (roletype ARG1 ibus.home_config_object))
+
+(macro ibus_relabel_home_config ((type ARG1))
+    (allow ARG1 ibus.home_config_object relabel_dir_perms)
+    (allow ARG1 ibus.home_config_object relabel_file_perms))
+
+(macro ibus_home_config_filetrans_home_config_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_config_filetrans
+        (ARG1 ARG2 ibus.home_config_object dir "ibus")))
+
+(macro ibus_stream_connect_ibusd ((type ARG1))
+    (call dbus_write_user_tmpfs_sock_files (ARG1))
+    (allow ARG1 ibusd.common_subject (unix_stream_socket (connectto))))
+
+(macro ibus_read_var_cache_files ((type ARG1))
+    (call file_search_var_cache (ARG1))
+    (call read_files_pattern (ARG1 ibusd.var_cache_object ibusd.var_cache_object)))
+
+(macro ibus_admin ((role ARG1)(type ARG2))
+    (roleattributeset ibus_admin_role ARG1)
+    (typeattributeset ibus_admin_type ARG2))

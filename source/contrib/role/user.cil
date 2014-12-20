@@ -64,18 +64,23 @@
 
         (optional user_dbusd_optional_gnome
             (call atspi_read_config_files (common_subject))
-            (call atspi_run_atspiregd (common_subject dbus_session_role))
+            (call atspi_run_atspiregd (common_subject user.r))
 
-            (call dconf_run_dconfsvc (common_subject dbus_session_role))
+            (call dconf_run_dconfsvc (common_subject user.r))
 
-            (call gshell_run_cald (common_subject dbus_session_role))
+            (call gshell_run_cald (common_subject user.r))
 
-            (call gvfs_run (common_subject dbus_session_role))
-            (call gvfs_run_gvfsd (common_subject dbus_session_role))
+            (call gvfs_run (common_subject user.r))
+            (call gvfs_run_gvfsd (common_subject user.r))
+
+            (call ibus_run_ibusd (common_subject user.r))
         )
     )
 
     (optional user_optional_gnome
+        (call canberra_manage_tmpfs (user.r user.common_subject))
+        (call canberra_relabel_tmpfs (user.common_subject))
+
         (call dconf_manage_tmpfs (user.r user.common_subject))
         (call dconf_relabel_tmpfs (user.common_subject))
         (call dconf_tmpfs_filetrans_tmpfs_dirs (user.r user.common_subject))
@@ -87,6 +92,24 @@
         (context user_dconf_config (user.u user.r dconf.home_config_object (systemlow systemlow)))
         (filecon "/home/.*/\.config/dconf(/.*)?" any user_dconf_config)
 
+        (call gis_manage_tmpfs (user.r user.common_subject))
+        (call gis_relabel_tmpfs (user.common_subject))
+
+        (call gis_manage_home_cache (user.r user.common_subject))
+        (call gis_relabel_home_cache (user.common_subject))
+
+        (context user_gis_cache (user.u user.r gis.home_cache_object (systemlow systemlow)))
+        (filecon "/home/.*/\.cache/run-welcome-tour.*" any user_gis_cache) ; FIXME
+
+        (call gis_manage_home_config (user.r user.common_subject))
+        (call gis_relabel_home_config (user.common_subject))
+
+        (call gis_home_config_filetrans_home_config_files (user.r user.common_subject))
+
+        (context user_gis_config (user.u user.r gis.home_config_object (systemlow systemlow)))
+        (filecon "/home/.*/\.config/run-welcome-tour.*" any user_gis_config)
+        (filecon "/home/.*/\.config/gnome-initial-setup-done" file user_gis_config)
+
         (call gkeyring_manage_tmpfs (user.r user.common_subject))
         (call gkeyring_relabel_tmpfs (user.common_subject))
         (call gkeyring_tmpfs_filetrans_tmpfs_dirs (user.r user.common_subject))
@@ -97,6 +120,19 @@
 
         (context user_gkeyringd_data (user.u user.r gkeyringd.home_data_object (systemlow systemlow)))
         (filecon "/home/.*/\.local/share/keyrings(/.*)?" any user_gkeyringd_data)
+
+        (call glib_manage_home_config (user.r user.common_subject))
+        (call glib_relabel_home_config (user.common_subject))
+        (call glib_home_config_filetrans_home_config_dirs (user.r user.common_subject))
+
+        (context user_glib_config (user.u user.r glib.home_config_object (systemlow systemlow)))
+        (filecon "/home/.*/\.config/gconf(/.*)?" any user_glib_config)
+
+        (call glib_manage_home_data (user.r user.common_subject))
+        (call glib_relabel_home_data (user.common_subject))
+
+        (context user_glib_data (user.u user.r glib.home_data_object (systemlow systemlow)))
+        (filecon "/home/.*/\.local/share/gsettings-data-convert" file user_glib_data)
 
         (call gsd_manage_gsd_home_data (user.r user.common_subject))
         (call gsd_relabel_gsd_home_data (user.common_subject))
@@ -111,6 +147,34 @@
 
         (context user_gsd_icc_data (user.u user.r icc.home_data_object (systemlow systemlow)))
         (filecon "/home/.*/\.local/share/icc(/.*)?" any user_gsd_icc_data)
+
+        (call gvfs_manage_home_data (user.r user.common_subject))
+        (call gvfs_relabel_home_data (user.common_subject))
+        (call gvfs_home_data_filetrans_home_data_dirs (user.r user.common_subject))
+
+        (context user_gvfs_data (user.u user.r gvfs.home_data_object (systemlow systemlow)))
+        (filecon "/home/.*/\.local/share/gvfs-metadata(/.*)?" any user_gvfs_data)
+
+        (call gvfs_manage_gvfsd_tmpfs_dirs (user.r user.common_subject))
+        (call gvfs_relabel_gvfsd_tmpfs_dirs (user.common_subject))
+        (call gvfs_tmpfs_filetrans_gvfsd_tmpfs_dirs (user.r user.common_subject))
+
+        (call ibus_manage_home_config (user.r user.common_subject))
+        (call ibus_relabel_home_config (user.common_subject))
+        (call ibus_home_config_filetrans_home_config_dirs (user.r user.common_subject))
+
+        (context user_ibus_config (user.u user.r ibus.home_config_object (systemlow systemlow)))
+        (filecon "/home/.*/\.config/ibus(/.*)?" any user_ibus_config)
+
+        (call yelp_manage_tmpfs (user.r user.common_subject))
+        (call yelp_relabel_tmpfs (user.common_subject))
+
+        (call yelp_manage_home_config (user.r user.common_subject))
+        (call yelp_relabel_home_config (user.common_subject))
+        (call yelp_home_config_filetrans_home_config_dirs (user.r user.common_subject))
+
+        (context user_yelp_config (user.u user.r yelp.home_config_object (systemlow systemlow)))
+        (filecon "/home/.*/\.config/yelp(/.*)?" any user_yelp_config)
 
         (block user_gsession
             (blockinherit gsession_subject_block)
@@ -158,61 +222,6 @@
             (context user_gshell_data (user.u user.r gshell.home_data_object (systemlow systemlow)))
             (filecon "/home/.*/\.local/share/gnome-shell(/.*)?" any user_gshell_data)
         )
-
-        (call canberra_manage_tmpfs (user.r user.common_subject))
-        (call canberra_relabel_tmpfs (user.common_subject))
-
-        (call gis_manage_tmpfs (user.r user.common_subject))
-        (call gis_relabel_tmpfs (user.common_subject))
-
-        (call gis_manage_home_cache (user.r user.common_subject))
-        (call gis_relabel_home_cache (user.common_subject))
-
-        (context user_gis_cache (user.u user.r gis.home_cache_object (systemlow systemlow)))
-        (filecon "/home/.*/\.cache/run-welcome-tour.*" any user_gis_cache) ; FIXME
-
-        (call gis_manage_home_config (user.r user.common_subject))
-        (call gis_relabel_home_config (user.common_subject))
-
-        (call gis_home_config_filetrans_home_config_files (user.r user.common_subject))
-
-        (context user_gis_config (user.u user.r gis.home_config_object (systemlow systemlow)))
-        (filecon "/home/.*/\.config/run-welcome-tour.*" any user_gis_config)
-        (filecon "/home/.*/\.config/gnome-initial-setup-done" file user_gis_config)
-
-        (call glib_manage_home_config (user.r user.common_subject))
-        (call glib_relabel_home_config (user.common_subject))
-        (call glib_home_config_filetrans_home_config_dirs (user.r user.common_subject))
-
-        (context user_glib_config (user.u user.r glib.home_config_object (systemlow systemlow)))
-        (filecon "/home/.*/\.config/gconf(/.*)?" any user_glib_config)
-
-        (call glib_manage_home_data (user.r user.common_subject))
-        (call glib_relabel_home_data (user.common_subject))
-
-        (context user_glib_data (user.u user.r glib.home_data_object (systemlow systemlow)))
-        (filecon "/home/.*/\.local/share/gsettings-data-convert" file user_glib_data)
-
-        (call gvfs_manage_home_data (user.r user.common_subject))
-        (call gvfs_relabel_home_data (user.common_subject))
-        (call gvfs_home_data_filetrans_home_data_dirs (user.r user.common_subject))
-
-        (context user_gvfs_data (user.u user.r gvfs.home_data_object (systemlow systemlow)))
-        (filecon "/home/.*/\.local/share/gvfs-metadata(/.*)?" any user_gvfs_data)
-
-        (call gvfs_manage_gvfsd_tmpfs_dirs (user.r user.common_subject))
-        (call gvfs_relabel_gvfsd_tmpfs_dirs (user.common_subject))
-        (call gvfs_tmpfs_filetrans_gvfsd_tmpfs_dirs (user.r user.common_subject))
-
-        (call yelp_manage_tmpfs (user.r user.common_subject))
-        (call yelp_relabel_tmpfs (user.common_subject))
-
-        (call yelp_manage_home_config (user.r user.common_subject))
-        (call yelp_relabel_home_config (user.common_subject))
-        (call yelp_home_config_filetrans_home_config_dirs (user.r user.common_subject))
-
-        (context user_yelp_config (user.u user.r yelp.home_config_object (systemlow systemlow)))
-        (filecon "/home/.*/\.config/yelp(/.*)?" any user_yelp_config)
     )
 )
 
