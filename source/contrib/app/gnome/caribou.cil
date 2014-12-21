@@ -1,0 +1,35 @@
+(roleattribute caribou_role)
+
+(block caribou
+    (blockinherit app_block)
+
+    (roletype caribou_role common_subject)
+
+    (context bin_caribou (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/caribou-preferences" file bin_caribou)
+    (filecon "/usr/libexec/caribou" file bin_caribou)
+
+    (allow common_subject self (unix_stream_socket (listen accept)))
+
+    (call dev_read_urandom (common_subject))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call atspi_client (caribou_role common_subject))
+
+    (call dbus_all_session_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+)
+
+(macro caribou_auto_subtrans ((type ARG1))
+    (call caribou_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 caribou.bin_object caribou.common_subject)))
+
+(macro caribou_run ((type ARG1)(role ARG2))
+    (call caribou_auto_subtrans (ARG1))
+    (roleattributeset caribou_role ARG2))
+
+(macro caribou_send_signal ((type ARG1))
+    (allow ARG1 caribou.common_subject (process (signal))))
