@@ -848,6 +848,10 @@
     (call usersubject_search_home_user (ARG1))
     (allow ARG1 home_user_config search_dir_perms))
 
+(macro usersubject_read_generic_home_config ((type ARG1))
+    (call usersubject_list_generic_home_config (ARG1))
+    (allow ARG1 home_user_config (all_file_objects (read))))
+
 (macro usersubject_create_generic_home_config_dirs ((role ARG1)(type ARG2))
     (call create_dirs_pattern (ARG2 home_user home_user_config))
     (roletype ARG1 home_user_config))
@@ -871,6 +875,10 @@
 (macro usersubject_search_generic_home_data ((type ARG1))
     (call usersubject_search_home_user (ARG1))
     (allow ARG1 home_user_data search_dir_perms))
+
+(macro usersubject_read_generic_home_data ((type ARG1))
+    (call usersubject_list_generic_home_data (ARG1))
+    (allow ARG1 home_user_data (all_file_objects (read))))
 
 (macro usersubject_create_generic_home_data_dirs ((role ARG1)(type ARG2))
     (call create_dirs_pattern (ARG2 home_user home_user_data))
@@ -903,6 +911,9 @@
 
 (macro usersubject_list_all_home_content ((type ARG1))
     (allow ARG1 usersubject_home_type list_dir_perms))
+
+(macro usersubject_getattr_all_home_content_files ((type ARG1))
+    (call getattr_files_pattern (ARG1 usersubject_home_type usersubject_home_type)))
 
 (macro usersubject_delete_all_home_content ((type ARG1))
     (allow ARG1 usersubject_home_type del_entry_dir_perms)

@@ -64,22 +64,24 @@
 
         (optional user_dbusd_optional_gnome
             (call atspi_read_config_files (common_subject))
-            (call atspi_run_atspiregd (common_subject user.r))
+            (call atspi_run_atspiregd (common_subject dbus_session_role))
 
-            (call caribou_run (common_subject user.r))
+            (call caribou_run (common_subject dbus_session_role))
 
-            (call dconf_run_dconfsvc (common_subject user.r))
+            (call dconf_run_dconfsvc (common_subject dbus_session_role))
 
-            (call goa_run_goad (common_subject user.r))
+            (call goa_run_goad (common_subject dbus_session_role))
 
-            (call gshell_run_cald (common_subject user.r))
+            (call gshell_run_cald (common_subject dbus_session_role))
 
-            (call gvfs_run (common_subject user.r))
-            (call gvfs_run_gvfsd (common_subject user.r))
+            (call gvfs_run (common_subject dbus_session_role))
+            (call gvfs_run_gvfsd (common_subject dbus_session_role))
 
-            (call ibus_run_ibusd (common_subject user.r))
+            (call ibus_run_ibusd (common_subject dbus_session_role))
 
-            (call tp_run_tpmc (common_subject user.r))
+            (call tp_run_tpmc (common_subject dbus_session_role))
+
+            (call tracker_run_trstore (common_subject dbus_session_role))
         )
     )
 
@@ -207,6 +209,30 @@
         (context user_tpmc_data (user.u user.r tpmc.home_data_object (systemlow systemlow)))
         (filecon "/home/.*/\.local/share/telepathy/mission-control(/.*)?" any user_tpmc_data)
 
+        (call tracker_manage_trminer_tmpfs (user.r user.common_subject))
+        (call tracker_relabel_trminer_tmpfs (user.common_subject))
+
+        (call tracker_manage_home_cache (user.r user.common_subject))
+        (call tracker_relabel_home_cache (user.common_subject))
+        (call tracker_home_cache_filetrans_home_cache_dirs (user.r user.common_subject))
+
+        (context user_tracker_cache (user.u user.r tracker.home_cache_object (systemlow systemlow)))
+        (filecon "/home/.*/\.cache/tracker(/.*)?" any user_tracker_cache)
+
+        (call tracker_manage_home_config (user.r user.common_subject))
+        (call tracker_relabel_home_config (user.common_subject))
+        (call tracker_home_config_filetrans_home_config_dirs (user.r user.common_subject))
+
+        (context user_tracker_config (user.u user.r tracker.home_config_object (systemlow systemlow)))
+        (filecon "/home/.*/\.config/tracker(/.*)?" any user_tracker_config)
+
+        (call tracker_manage_home_data (user.r user.common_subject))
+        (call tracker_relabel_home_data (user.common_subject))
+        (call tracker_home_data_filetrans_home_data_dirs (user.r user.common_subject))
+
+        (context user_tracker_data (user.u user.r tracker.home_data_object (systemlow systemlow)))
+        (filecon "/home/.*/\.local/share/tracker(/.*)?" any user_tracker_data)
+
         (call yelp_manage_tmpfs (user.r user.common_subject))
         (call yelp_relabel_tmpfs (user.common_subject))
 
@@ -247,6 +273,8 @@
             (call glib_run (common_subject gsession_role))
 
             (call gshell_role_template (gsession_role common_subject user_gshell.common_subject))
+
+            (call tracker_run_trminer (common_subject gsession_role))
         )
 
         (block user_gshell

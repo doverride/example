@@ -1,0 +1,199 @@
+(roleattribute tracker_role)
+
+(block tracker
+    (blockinherit app_block)
+
+    (roletype tracker_role common_subject)
+
+    (context bin_tracker (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/tracker-control" file bin_tracker)
+    (filecon "/usr/bin/tracker-import" file bin_tracker)
+    (filecon "/usr/bin/tracker-info" file bin_tracker)
+    (filecon "/usr/bin/tracker-search" file bin_tracker)
+    (filecon "/usr/bin/tracker-sparql" file bin_tracker)
+    (filecon "/usr/bin/tracker-stats" file bin_tracker)
+    (filecon "/usr/bin/tracker-tag" file bin_tracker)
+
+    (blockinherit usersubject_home_cache_object_block)
+    (blockinherit usersubject_home_config_object_block)
+    (blockinherit usersubject_home_data_object_block)
+)
+
+(block trstore
+    (blockinherit app_block)
+
+    (roletype tracker_role common_subject)
+
+    (context bin_trstore (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/tracker-store" file bin_trstore)
+
+    (allow common_subject self (process (getsched setsched)))
+
+    (call tracker_manage_home_cache (tracker_role common_subject))
+    (call tracker_home_cache_filetrans_home_cache_dirs (tracker_role common_subject))
+
+    (call tracker_manage_home_config (tracker_role common_subject))
+    (call tracker_home_config_filetrans_home_config_dirs (tracker_role common_subject))
+
+    (call tracker_manage_home_data (tracker_role common_subject))
+    (call tracker_home_data_filetrans_home_data_dirs (tracker_role common_subject))
+
+    (call dev_read_urandom (common_subject))
+    (call dev_read_random (common_subject))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+
+    (call dbus_all_session_client (common_subject))
+
+    (call dconf_client (tracker_role common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call tracker_read_inherited_trminer_fifo_files (common_subject))
+)
+
+(block trminer
+    (blockinherit app_block)
+
+    (roletype tracker_role common_subject)
+
+    (context bin_trminer (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/tracker-extract" file bin_trminer)
+    (filecon "/usr/libexec/tracker-miner-apps" file bin_trminer)
+    (filecon "/usr/libexec/tracker-miner-fs" file bin_trminer)
+    (filecon "/usr/libexec/tracker-miner-user-guides" file bin_trminer)
+    (filecon "/usr/libexec/tracker-writeback" file bin_trminer)
+
+    (blockinherit usersubject_tmpfs_object_block)
+
+    (allow common_subject self (process (getsched setsched)))
+    (allow common_subject self rw_fifo_file_perms)
+
+    (call tracker_manage_home_cache (tracker_role common_subject))
+    (call tracker_home_cache_filetrans_home_cache_dirs (tracker_role common_subject))
+
+    (call tracker_manage_home_config (tracker_role common_subject))
+    (call tracker_home_config_filetrans_home_config_dirs (tracker_role common_subject))
+
+    (call tracker_manage_home_data (tracker_role common_subject))
+    (call tracker_home_data_filetrans_home_data_dirs (tracker_role common_subject))
+
+    (call tracker_manage_trminer_tmpfs (tracker_role common_subject))
+
+    (call fs_tmpfs_filetrans (common_subject user_tmpfs_object file "*"))
+    (roletype tracker_role user_tmpfs_object)
+
+    (call sys_read_fs_sysctl (common_subject))
+
+    (call dev_read_urandom (common_subject))
+    (call dev_read_random (common_subject))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+
+    (call dbus_all_session_client (common_subject))
+    (call dbus_system_client (common_subject))
+
+    (call dconf_client (tracker_role common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call upower_dbus_chat (common_subject))
+
+    (call usersubject_list_all_home_content (common_subject))
+    (call usersubject_getattr_all_home_content_files (common_subject))
+    (call usersubject_read_generic_home_content (common_subject))
+    (call usersubject_read_generic_home_config (common_subject))
+    (call usersubject_read_generic_home_data (common_subject))
+)
+
+(macro tracker_auto_subtrans ((type ARG1))
+    (call tracker_send_signal (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 tracker.bin_object tracker.common_subject)))
+
+(macro tracker_run ((type ARG1)(role ARG2))
+    (call tracker_auto_subtrans (ARG1))
+    (roleattributeset tracker_role ARG2))
+
+(macro tracker_send_signal ((type ARG1))
+    (allow ARG1 tracker.common_subject (process (signal))))
+
+(macro tracker_auto_subtrans_trstore ((type ARG1))
+    (call tracker_send_signal_trstore (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 trstore.bin_object trstore.common_subject)))
+
+(macro tracker_run_trstore ((type ARG1)(role ARG2))
+    (call tracker_auto_subtrans_trstore (ARG1))
+    (roleattributeset tracker_role ARG2))
+
+(macro tracker_send_signal_trstore ((type ARG1))
+    (allow ARG1 trstore.common_subject (process (signal))))
+
+(macro tracker_auto_subtrans_trminer ((type ARG1))
+    (call tracker_send_signal_trminer (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 trminer.bin_object trminer.common_subject)))
+
+(macro tracker_run_trminer ((type ARG1)(role ARG2))
+    (call tracker_auto_subtrans_trminer (ARG1))
+    (roleattributeset tracker_role ARG2))
+
+(macro tracker_send_signal_trminer ((type ARG1))
+    (allow ARG1 trminer.common_subject (process (signal))))
+
+(macro tracker_manage_home_cache ((role ARG1)(type ARG2))
+    (allow ARG2 tracker.home_cache_object manage_dir_perms)
+    (allow ARG2 tracker.home_cache_object manage_file_perms)
+    (roletype ARG1 tracker.home_cache_object))
+
+(macro tracker_relabel_home_cache ((type ARG1))
+    (allow ARG1 tracker.home_cache_object relabel_dir_perms)
+    (allow ARG1 tracker.home_cache_object relabel_file_perms))
+
+(macro tracker_home_cache_filetrans_home_cache_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_cache_filetrans
+        (ARG1 ARG2 tracker.home_cache_object dir "tracker")))
+
+(macro tracker_manage_home_config ((role ARG1)(type ARG2))
+    (allow ARG2 tracker.home_config_object manage_dir_perms)
+    (allow ARG2 tracker.home_config_object manage_file_perms)
+    (roletype ARG1 tracker.home_config_object))
+
+(macro tracker_relabel_home_config ((type ARG1))
+    (allow ARG1 tracker.home_config_object relabel_dir_perms)
+    (allow ARG1 tracker.home_config_object relabel_file_perms))
+
+(macro tracker_home_config_filetrans_home_config_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_config_filetrans
+        (ARG1 ARG2 tracker.home_config_object dir "tracker")))
+
+(macro tracker_manage_home_data ((role ARG1)(type ARG2))
+    (allow ARG2 tracker.home_data_object manage_dir_perms)
+    (allow ARG2 tracker.home_data_object manage_file_perms)
+    (roletype ARG1 tracker.home_data_object))
+
+(macro tracker_relabel_home_data ((type ARG1))
+    (allow ARG1 tracker.home_data_object relabel_dir_perms)
+    (allow ARG1 tracker.home_data_object relabel_file_perms))
+
+(macro tracker_home_data_filetrans_home_data_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_data_filetrans
+        (ARG1 ARG2 tracker.home_data_object dir "tracker")))
+
+(macro tracker_manage_trminer_tmpfs ((role ARG1)(type ARG2))
+    (call fs_search_tmpfs (ARG2))
+    (allow ARG2 trminer.user_tmpfs_object manage_file_perms)
+    (roletype ARG1 trminer.user_tmpfs_object))
+
+(macro tracker_relabel_trminer_tmpfs ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (allow ARG1 trminer.user_tmpfs_object relabel_file_perms))
+
+(macro tracker_read_inherited_trminer_fifo_files ((type ARG1))
+    (allow ARG1 trminer.common_subject (fd (use)))
+    (allow ARG1 trminer.common_subject (fifo_file (read))))
