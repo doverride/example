@@ -28,3 +28,5 @@
 
 * useradd/userdel RFE: use setfscreatecon for user mail spool files as well (not just for user home directories)
     currently the user mail spool files get created with the wrong security context
+
+* role: everything run by dbus session bus is a dbus_session_service. should create that macro instead
