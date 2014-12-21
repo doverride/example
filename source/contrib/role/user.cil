@@ -74,6 +74,8 @@
             (call gvfs_run_gvfsd (common_subject user.r))
 
             (call ibus_run_ibusd (common_subject user.r))
+
+            (call tp_run_tpmc (common_subject user.r))
         )
     )
 
@@ -165,6 +167,34 @@
 
         (context user_ibus_config (user.u user.r ibus.home_config_object (systemlow systemlow)))
         (filecon "/home/.*/\.config/ibus(/.*)?" any user_ibus_config)
+
+        (call tp_manage_home_cache (user.r user.common_subject))
+        (call tp_relabel_home_cache (user.common_subject))
+        (call tp_home_cache_filetrans_home_cache_dirs (user.r user.common_subject))
+
+        (context user_tp_cache (user.u user.r tp.home_cache_object (systemlow systemlow)))
+        (filecon "/home/.*/\.cache/telepathy(/.*)?" any user_tp_cache)
+
+        (call tp_manage_tpmc_home_cache (user.r user.common_subject))
+        (call tp_relabel_tpmc_home_cache (user.common_subject))
+        (call tp_home_cache_filetrans_tpmc_home_cache_files (user.r user.common_subject))
+
+        (context user_tpmc_cache (user.u user.r tpmc.home_cache_object (systemlow systemlow)))
+        (filecon "/home/.*/\.cache/telepathy/\.mission-control" file user_tpmc_cache)
+
+        (call tp_manage_home_data (user.r user.common_subject))
+        (call tp_relabel_home_data (user.common_subject))
+        (call tp_home_data_filetrans_home_data_dirs (user.r user.common_subject))
+
+        (context user_tp_data (user.u user.r tp.home_data_object (systemlow systemlow)))
+        (filecon "/home/.*/\.local/share/telepathy(/.*)?" any user_tp_data)
+
+        (call tp_manage_tpmc_home_data (user.r user.common_subject))
+        (call tp_relabel_tpmc_home_data (user.common_subject))
+        (call tp_home_data_filetrans_tpmc_home_data_dirs (user.r user.common_subject))
+
+        (context user_tpmc_data (user.u user.r tpmc.home_data_object (systemlow systemlow)))
+        (filecon "/home/.*/\.local/share/telepathy/mission-control(/.*)?" any user_tpmc_data)
 
         (call yelp_manage_tmpfs (user.r user.common_subject))
         (call yelp_relabel_tmpfs (user.common_subject))
