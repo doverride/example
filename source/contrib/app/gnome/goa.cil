@@ -1,0 +1,52 @@
+(roleattribute goa_role)
+
+(block goad
+    (blockinherit app_block)
+
+    (roletype goa_role common_subject)
+
+    (context bin_goad (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/goa-daemon" file bin_goad)
+
+    (blockinherit usersubject_home_config_object_block)
+
+    (allow common_subject self (key (write link search read view)))
+
+    (call goa_manage_goad_home_config (goa_role common_subject))
+    (call goa_home_config_filetrans_goad_home_config_dirs (goa_role common_subject))
+
+    (call dev_read_urandom (common_subject))
+
+    (call file_read_generic_etc_files (common_subject)) ; FIXME: /etc/krb5.conf
+
+    (call fs_getattr_fs (common_subject))
+
+    (call dbus_all_session_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+)
+
+(macro goa_auto_subtrans_goad ((type ARG1))
+    (call goa_send_signal_goad (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 goad.bin_object goad.common_subject)))
+
+(macro goa_run_goad ((type ARG1)(role ARG2))
+    (call goa_auto_subtrans_goad (ARG1))
+    (roleattributeset goa_role ARG2))
+
+(macro goa_send_signal_goad ((type ARG1))
+    (allow ARG1 goad.common_subject (process (signal))))
+
+(macro goa_manage_goad_home_config ((role ARG1)(type ARG2))
+    (allow ARG2 goad.home_config_object manage_dir_perms)
+    (allow ARG2 goad.home_config_object manage_file_perms)
+    (roletype ARG1 goad.home_config_object))
+
+(macro goa_relabel_goad_home_config ((type ARG1))
+    (allow ARG1 goad.home_config_object relabel_dir_perms)
+    (allow ARG1 goad.home_config_object relabel_file_perms))
+
+(macro goa_home_config_filetrans_goad_home_config_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_config_filetrans
+        (ARG1 ARG2 goad.home_config_object dir "goa-1.0")))

@@ -70,6 +70,8 @@
 
             (call dconf_run_dconfsvc (common_subject staff.r))
 
+            (call goa_run_goad (common_subject staff.r))
+
             (call gshell_run_cald (common_subject staff.r))
 
             (call gvfs_run (common_subject staff.r))
@@ -137,6 +139,13 @@
 
         (context staff_glib_data (staff.u staff.r glib.home_data_object (systemlow systemlow)))
         (filecon "/home/john/\.local/share/gsettings-data-convert" file staff_glib_data)
+
+        (call goa_manage_goad_home_config (staff.r staff.common_subject))
+        (call goa_relabel_goad_home_config (staff.common_subject))
+        (call goa_home_config_filetrans_goad_home_config_dirs (staff.r staff.common_subject))
+
+        (context staff_goad_config (staff.u staff.r goad.home_config_object (systemlow systemlow)))
+        (filecon "/home/john/\.config/goa-1\.0(/.*)?" any staff_goad_config)
 
         (call gsd_manage_gsd_home_data (staff.r staff.common_subject))
         (call gsd_relabel_gsd_home_data (staff.common_subject))
