@@ -1,0 +1,57 @@
+(roleattribute gtk_role)
+
+(roleattribute gtk_client_role)
+(typeattribute gtk_client_type)
+
+(block gtk
+    (blockinherit usersubject_home_config_object_block)
+)
+
+(block xdgupd
+    (blockinherit app_block)
+
+    (roletype gtk_role common_subject)
+
+    (context bin_xdgupd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/bin/xdg-user-dirs-gtk-update" file bin_xdgupd)
+
+    (call fs_getattr_fs (common_subject))
+
+    (call gtk_client (gtk_role common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+)
+
+(call gtk_manage_home_config (gtk_client_role gtk_client_type))
+(call gtk_home_config_filetrans_home_config_dirs (gtk_client_role gtk_client_type))
+
+(macro gtk_client ((role ARG1)(type ARG2))
+    (roleattributeset gtk_client_role ARG1)
+    (typeattributeset gtk_client_type ARG2))
+
+(macro gtk_auto_subtrans_xdgupd ((type ARG1))
+    (call gtk_send_signal_xdgupd (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 xdgupd.bin_object xdgupd.common_subject)))
+
+(macro gtk_run_xdgupd ((type ARG1)(role ARG2))
+    (call gtk_auto_subtrans_xdgupd (ARG1))
+    (roleattributeset gtk_role ARG2))
+
+(macro gtk_send_signal_xdgupd ((type ARG1))
+    (allow ARG1 xdgupd.common_subject (process (signal))))
+
+(macro gtk_manage_home_config ((role ARG1)(type ARG2))
+    (allow ARG2 gtk.home_config_object manage_dir_perms)
+    (allow ARG2 gtk.home_config_object manage_file_perms)
+    (roletype ARG1 gtk.home_config_object))
+
+(macro gtk_relabel_home_config ((type ARG1))
+    (allow ARG1 gtk.home_config_object relabel_dir_perms)
+    (allow ARG1 gtk.home_config_object relabel_file_perms))
+
+(macro gtk_home_config_filetrans_home_config_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_config_filetrans
+        (ARG1 ARG2 gtk.home_config_object dir "gtk-2.0"))
+    (call usersubject_generic_home_config_filetrans
+        (ARG1 ARG2 gtk.home_config_object dir "gtk-3.0")))

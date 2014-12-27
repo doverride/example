@@ -187,6 +187,14 @@
         (context staff_gsd_icc_data (staff.u staff.r icc.home_data_object (systemlow systemlow)))
         (filecon "/home/john/\.local/share/icc(/.*)?" any staff_gsd_icc_data)
 
+        (call gtk_manage_home_config (staff.r staff.common_subject))
+        (call gtk_relabel_home_config (staff.common_subject))
+        (call gtk_home_config_filetrans_home_config_dirs (staff.r staff.common_subject))
+
+        (context staff_gtk_config (staff.u staff.r gtk.home_config_object (systemlow systemlow)))
+        (filecon "/home/john/\.config/gtk-2\.0(/.*)?" any staff_gtk_config)
+        (filecon "/home/john/\.config/gtk-3\.0(/.*)?" any staff_gtk_config)
+
         (call gvfs_manage_home_data (staff.r staff.common_subject))
         (call gvfs_relabel_home_data (staff.common_subject))
         (call gvfs_home_data_filetrans_home_data_dirs (staff.r staff.common_subject))
@@ -301,6 +309,8 @@
             (call gshell_role_template (gsession_role common_subject staff_gshell.common_subject))
 
             (call gsoftware_run (common_subject gsession_role))
+
+            (call gtk_run_xdgupd (common_subject gsession_role))
 
             (call tracker_run_trminer (common_subject gsession_role))
         )
