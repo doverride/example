@@ -300,6 +300,8 @@
 
             (call gshell_role_template (gsession_role common_subject user_gshell.common_subject))
 
+            (call gsoftware_run (common_subject gsession_role))
+
             (call tracker_run_trminer (common_subject gsession_role))
         )
 
