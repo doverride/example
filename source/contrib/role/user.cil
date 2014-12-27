@@ -70,6 +70,9 @@
 
             (call dconf_run_dconfsvc (common_subject dbus_session_role))
 
+            (call evolution_run_srcregd (common_subject dbus_session_role))
+            (call evolution_run_calf (common_subject dbus_session_role))
+
             (call goa_run_goad (common_subject dbus_session_role))
 
             (call gshell_run_cald (common_subject dbus_session_role))
@@ -99,6 +102,27 @@
 
         (context user_dconf_config (user.u user.r dconf.home_config_object (systemlow systemlow)))
         (filecon "/home/.*/\.config/dconf(/.*)?" any user_dconf_config)
+
+        (call evolution_manage_home_cache (user.r user.common_subject))
+        (call evolution_relabel_home_cache (user.common_subject))
+        (call evolution_home_cache_filetrans_home_cache_dirs (user.r user.common_subject))
+
+        (context user_evolution_cache (user.u user.r evolution.home_cache_object (systemlow systemlow)))
+        (filecon "/home/.*/\.cache/evolution(/.*)?" any user_evolution_cache)
+
+        (call evolution_manage_home_config (user.r user.common_subject))
+        (call evolution_relabel_home_config (user.common_subject))
+        (call evolution_home_config_filetrans_home_config_dirs (user.r user.common_subject))
+
+        (context user_evolution_config (user.u user.r evolution.home_config_object (systemlow systemlow)))
+        (filecon "/home/.*/\.config/evolution(/.*)?" any user_evolution_config)
+
+        (call evolution_manage_home_data (user.r user.common_subject))
+        (call evolution_relabel_home_data (user.common_subject))
+        (call evolution_home_data_filetrans_home_data_dirs (user.r user.common_subject))
+
+        (context user_evolution_data (user.u user.r evolution.home_data_object (systemlow systemlow)))
+        (filecon "/home/.*/\.local/share/evolution(/.*)?" any user_evolution_data)
 
         (call gis_manage_tmpfs (user.r user.common_subject))
         (call gis_relabel_tmpfs (user.common_subject))
@@ -267,6 +291,8 @@
             (filecon "/home/.*/\.config/gnome-session(/.*)?" any user_gsession_config)
 
             (call canberra_run (common_subject gsession_role))
+
+            (call evolution_run_anotify (common_subject gsession_role))
 
             (call gis_run (common_subject gsession_role))
 

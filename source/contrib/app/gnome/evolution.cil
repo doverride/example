@@ -1,0 +1,156 @@
+(roleattribute evolution_role)
+
+(block evolution
+    (blockinherit usersubject_home_cache_object_block)
+    (blockinherit usersubject_home_config_object_block)
+    (blockinherit usersubject_home_data_object_block)
+)
+
+(block evosrcregd
+    (blockinherit app_block)
+
+    (roletype evolution_role common_subject)
+
+    (context bin_evosrcregd (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/evolution-source-registry" file bin_evosrcregd)
+
+    (call evolution_manage_home_cache (evolution_role common_subject))
+    (call evolution_home_cache_filetrans_home_cache_dirs (evolution_role common_subject))
+
+    (call evolution_manage_home_config (evolution_role common_subject))
+    (call evolution_home_config_filetrans_home_config_dirs (evolution_role common_subject))
+
+    (call evolution_manage_home_data (evolution_role common_subject))
+    (call evolution_home_data_filetrans_home_data_dirs (evolution_role common_subject))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dconf_client (evolution_role common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+)
+
+(block evocalf
+    (blockinherit app_block)
+
+    (roletype evolution_role common_subject)
+
+    (context bin_evocalf (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/evolution-calendar-factory" file bin_evocalf)
+
+    (call evolution_manage_home_data (evolution_role common_subject))
+    (call evolution_home_data_filetrans_home_data_dirs (evolution_role common_subject))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call fs_getattr_fs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dconf_client (evolution_role common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+)
+
+(block evoanotify
+    (blockinherit app_block)
+
+    (roletype evolution_role common_subject)
+
+    (context bin_evoanotify (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/evolution/.*/evolution-alarm-notify" file bin_evoanotify)
+
+    (allow common_subject self (unix_stream_socket (listen accept)))
+
+    (call dev_read_urandom (common_subject))
+
+    (call file_read_generic_usr_files (common_subject))
+
+    (call atspi_client (evolution_role common_subject))
+
+    (call auth_nsswitch_client (common_subject))
+
+    (call dconf_client (evolution_role common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+)
+
+(macro evolution_auto_subtrans_srcregd ((type ARG1))
+    (call evolution_send_signal_srcregd (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 evosrcregd.bin_object evosrcregd.common_subject)))
+
+(macro evolution_run_srcregd ((type ARG1)(role ARG2))
+    (call evolution_auto_subtrans_srcregd (ARG1))
+    (roleattributeset evolution_role ARG2))
+
+(macro evolution_send_signal_srcregd ((type ARG1))
+    (allow ARG1 evosrcregd.common_subject (process (signal))))
+
+(macro evolution_auto_subtrans_calf ((type ARG1))
+    (call evolution_send_signal_calf (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 evocalf.bin_object evocalf.common_subject)))
+
+(macro evolution_run_calf ((type ARG1)(role ARG2))
+    (call evolution_auto_subtrans_calf (ARG1))
+    (roleattributeset evolution_role ARG2))
+
+(macro evolution_send_signal_calf ((type ARG1))
+    (allow ARG1 evocalf.common_subject (process (signal))))
+
+(macro evolution_auto_subtrans_anotify ((type ARG1))
+    (call evolution_send_signal_anotify (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 evoanotify.bin_object evoanotify.common_subject)))
+
+(macro evolution_run_anotify ((type ARG1)(role ARG2))
+    (call evolution_auto_subtrans_anotify (ARG1))
+    (roleattributeset evolution_role ARG2))
+
+(macro evolution_send_signal_anotify ((type ARG1))
+    (allow ARG1 evoanotify.common_subject (process (signal))))
+
+(macro evolution_manage_home_cache ((role ARG1)(type ARG2))
+    (allow ARG2 evolution.home_cache_object manage_dir_perms)
+    (allow ARG2 evolution.home_cache_object manage_file_perms)
+    (roletype ARG1 evolution.home_cache_object))
+
+(macro evolution_relabel_home_cache ((type ARG1))
+    (allow ARG1 evolution.home_cache_object relabel_dir_perms)
+    (allow ARG1 evolution.home_cache_object relabel_file_perms))
+
+(macro evolution_home_cache_filetrans_home_cache_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_cache_filetrans
+        (ARG1 ARG2 evolution.home_cache_object dir "evolution")))
+
+(macro evolution_manage_home_config ((role ARG1)(type ARG2))
+    (allow ARG2 evolution.home_config_object manage_dir_perms)
+    (allow ARG2 evolution.home_config_object manage_file_perms)
+    (roletype ARG1 evolution.home_config_object))
+
+(macro evolution_relabel_home_config ((type ARG1))
+    (allow ARG1 evolution.home_config_object relabel_dir_perms)
+    (allow ARG1 evolution.home_config_object relabel_file_perms))
+
+(macro evolution_home_config_filetrans_home_config_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_config_filetrans
+        (ARG1 ARG2 evolution.home_config_object dir "evolution")))
+
+(macro evolution_manage_home_data ((role ARG1)(type ARG2))
+    (allow ARG2 evolution.home_data_object manage_dir_perms)
+    (allow ARG2 evolution.home_data_object manage_file_perms)
+    (roletype ARG1 evolution.home_data_object))
+
+(macro evolution_relabel_home_data ((type ARG1))
+    (allow ARG1 evolution.home_data_object relabel_dir_perms)
+    (allow ARG1 evolution.home_data_object relabel_file_perms))
+
+(macro evolution_home_data_filetrans_home_data_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_data_filetrans
+        (ARG1 ARG2 evolution.home_data_object dir "evolution")))
