@@ -68,6 +68,7 @@
 (allow gshell_subject_type self (process (setsched)))
 (allow gshell_subject_type self (unix_stream_socket (listen accept)))
 
+(allow gshell_subject_type gshell.user_tmpfs_object mmap_file_perms)
 (call gshell_manage_tmpfs (gshell_role gshell_subject_type))
 
 (call fs_tmpfs_filetrans

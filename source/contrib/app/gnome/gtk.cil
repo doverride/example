@@ -23,6 +23,8 @@
     (call miscfiles_read_localization (common_subject))
 )
 
+(call file_read_generic_usr (gtk_client_type))
+
 (call gtk_manage_home_config (gtk_client_role gtk_client_type))
 (call gtk_home_config_filetrans_home_config_dirs (gtk_client_role gtk_client_type))
 
