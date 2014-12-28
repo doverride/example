@@ -36,7 +36,7 @@
 )
 
 (block glib
-    (blockinherit app_block)
+    (blockinherit gsession_app_block)
 
     (roletype glib_role common_subject)
 

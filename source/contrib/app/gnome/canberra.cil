@@ -1,7 +1,7 @@
 (roleattribute canberra_role)
 
 (block canberra
-    (blockinherit app_block)
+    (blockinherit gsession_app_block)
 
     (roletype canberra_role common_subject)
 

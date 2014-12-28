@@ -8,7 +8,7 @@
 )
 
 (block xdgupd
-    (blockinherit app_block)
+    (blockinherit gsession_app_block)
 
     (roletype gtk_role common_subject)
 

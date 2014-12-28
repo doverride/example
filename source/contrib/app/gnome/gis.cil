@@ -1,7 +1,7 @@
 (roleattribute gis_role)
 
 (block gis
-    (blockinherit app_block)
+    (blockinherit gsession_app_block)
 
     (roletype gis_role common_subject)
 
@@ -58,6 +58,8 @@
     (call dconf_client (gis_role common_subject))
 
     (call gkeyring_run_gkeyringd (common_subject gis_role))
+
+    (call gst_run_plugsc (common_subject gis_role))
 
     (call localed_dbus_chat (common_subject))
 

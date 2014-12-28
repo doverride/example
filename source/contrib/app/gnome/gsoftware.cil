@@ -1,7 +1,7 @@
 (roleattribute gsoftware_role)
 
 (block gsoftware
-    (blockinherit app_block)
+    (blockinherit gsession_app_block)
 
     (roletype gsoftware_role common_subject)
 

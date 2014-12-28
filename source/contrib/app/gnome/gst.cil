@@ -1,0 +1,88 @@
+(roleattribute gst_role)
+
+(roleattribute gst_client_role)
+(typeattribute gst_client_type)
+
+(block gst
+    (blockinherit usersubject_home_cache_object_block)
+)
+
+(block gstplugsc
+    (blockinherit gsession_app_block)
+
+    (roletype gst_role common_subject)
+
+    (context bin_gstplugsc (sys.u sys.r bin_object (systemlow systemlow)))
+    (filecon "/usr/libexec/gstreamer-1\.0/gst-plugin-scanner" file bin_gstplugsc)
+
+    (blockinherit usersubject_tmpfs_object_block)
+
+    (call gst_manage_plugsc_tmpfs (gst_role common_subject))
+
+    (call fs_tmpfs_filetrans
+        (common_subject gstplugsc.user_tmpfs_object file "*"))
+    (roletype gst_role gstplugsc.user_tmpfs_object)
+
+    (call dev_read_urandom (common_subject))
+    (call dev_rw_v4l (common_subject))
+    (call dev_rw_dri (common_subject))
+
+    (call file_read_generic_etc_files (common_subject))
+
+    (call fs_list_sysfs (common_subject))
+    (call fs_read_sysfs_files (common_subject))
+    (call fs_read_sysfs_lnk_files (common_subject))
+
+    (call sec_list (common_subject))
+
+    (call subject_execmem_uncond (common_subject))
+
+    (call dbus_all_session_client (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
+
+    (call seutil_read_config_files (common_subject))
+
+    (call udev_client (common_subject))
+)
+
+(call gst_manage_home_cache (gst_client_role gst_client_type))
+(call gst_home_cache_filetrans_home_cache_dirs (gst_client_role gst_client_type))
+
+(macro gst_client ((role ARG1)(type ARG2))
+    (roleattributeset gst_client_role ARG1)
+    (typeattributeset gst_client_type ARG2))
+
+(macro gst_auto_subtrans_plugsc ((type ARG1))
+    (call gst_send_signal_plugsc (ARG1))
+    (call auto_subject_type_transition_pattern
+        (ARG1 gstplugsc.bin_object gstplugsc.common_subject)))
+
+(macro gst_run_plugsc ((type ARG1)(role ARG2))
+    (call gst_auto_subtrans_plugsc (ARG1))
+    (roleattributeset gst_role ARG2))
+
+(macro gst_send_signal_plugsc ((type ARG1))
+    (allow ARG1 gstplugsc.common_subject (process (signal))))
+
+(macro gst_manage_home_cache ((role ARG1)(type ARG2))
+    (allow ARG2 gst.home_cache_object manage_dir_perms)
+    (allow ARG2 gst.home_cache_object manage_file_perms)
+    (roletype ARG1 gst.home_cache_object))
+
+(macro gst_relabel_home_cache ((type ARG1))
+    (allow ARG1 gst.home_cache_object relabel_dir_perms)
+    (allow ARG1 gst.home_cache_object relabel_file_perms))
+
+(macro gst_home_cache_filetrans_home_cache_dirs ((role ARG1)(type ARG2))
+    (call usersubject_generic_home_cache_filetrans
+        (ARG1 ARG2 gst.home_cache_object dir "gstreamer-1.0")))
+
+(macro gst_manage_plugsc_tmpfs ((role ARG1)(type ARG2))
+    (call fs_search_tmpfs (ARG2))
+    (allow ARG2 gstplugsc.user_tmpfs_object manage_file_perms)
+    (roletype ARG1 gstplugsc.user_tmpfs_object))
+
+(macro gst_relabel_plugsc_tmpfs ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (allow ARG1 gstplugsc.user_tmpfs_object relabel_file_perms))

@@ -1,6 +1,14 @@
 (roleattribute gsession_role)
 
 (typeattribute gsession_subject_type)
+(typeattribute gsession_app_subject_type)
+
+(block gsession_app_block
+    (blockabstract gsession_app_block)
+        (blockinherit app_block)
+
+        (call gsession_app (common_subject bin_object))
+)
 
 (block gsession_subject_block
     (blockabstract gsession_subject_block)
@@ -32,9 +40,6 @@
     (filecon "/usr/libexec/gnome-session-check-accelerated-helper" file bin_gsession_helper)
     (filecon "/usr/libexec/gnome-session-failed" file bin_gsession_helper)
 )
-
-(allow gsession_subject_type self (unix_stream_socket (listen accept)))
-(allow gsession_subject_type self rw_fifo_file_perms)
 
 (call gsession_manage_tmpfs (gsession_role gsession_subject_type))
 
@@ -88,8 +93,26 @@
 
 (call systemd_read_state (gsession_subject_type))
 
+(allow gsession_app_subject_type gsession_subject_type (process (signal)))
+(allow gsession_app_subject_type gsession_subject_type
+    (unix_stream_socket (listen accept)))
+(allow gsession_app_subject_type gsession_subject_type rw_fifo_file_perms)
+
+(call fs_search_tmpfs (gsession_app_subject_type))
+(call stream_connect_pattern
+    (gsession_app_subject_type gsession.user_tmpfs_object gsession.user_tmpfs_object gsession_subject_type))
+
+(call gsession_read_home_files (gsession_app_subject_type))
+
 (optional gsession_subject_optional_nm
     (call nm_dbus_chat (gsession_subject_type)))
+
+(macro gsession_app ((type ARG1)(type ARG2))
+    (call auto_subject_type_transition_pattern (gsession_subject_type ARG2 ARG1))
+    (call gsession_app_subject_type (ARG1)))
+
+(macro gsession_app_subject_type ((type ARG1))
+    (typeattributeset gsession_app_subject_type ARG1))
 
 (macro gsession_subject_type ((type ARG1))
     (typeattributeset gsession_subject_type ARG1))
@@ -104,16 +127,8 @@
     (roletype ARG1 ARG3)
     (roleattributeset gsession_role ARG1)
 
-    (allow ARG2 ARG3 (fd (use)))
-    (allow ARG2 ARG3 rw_unix_stream_socket_perms)
-
     (allow ARG2 ARG3 (process (signal)))
-    (allow ARG3 ARG2 (process (signal)))
-
-    (call fs_search_tmpfs (ARG2))
-
-    (call stream_connect_pattern
-        (ARG2 gsession.user_tmpfs_object gsession.user_tmpfs_object ARG3)))
+    (allow ARG3 ARG2 (process (signal))))
 
 (macro gsession_manage_tmpfs ((role ARG1)(type ARG2))
     (call fs_search_tmpfs (ARG2))
@@ -125,6 +140,10 @@
     (call fs_search_tmpfs (ARG1))
     (allow ARG1 gsession.user_tmpfs_object relabel_file_perms)
     (allow ARG1 gsession.user_tmpfs_object relabel_sock_file_perms))
+
+(macro gsession_read_home_files ((type ARG1))
+    (call usersubject_search_home_user (ARG1))
+    (allow ARG1 gsession.home_object read_file_perms))
 
 (macro gsession_manage_home ((role ARG1)(type ARG2))
     (call usersubject_search_home_user (ARG2))

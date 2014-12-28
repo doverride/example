@@ -55,7 +55,7 @@
 )
 
 (block trminer
-    (blockinherit app_block)
+    (blockinherit gsession_app_block)
 
     (roletype tracker_role common_subject)
 

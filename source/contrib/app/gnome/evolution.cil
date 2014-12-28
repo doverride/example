@@ -58,7 +58,7 @@
 )
 
 (block evoanotify
-    (blockinherit app_block)
+    (blockinherit gsession_app_block)
 
     (roletype evolution_role common_subject)
 
