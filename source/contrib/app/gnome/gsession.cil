@@ -62,14 +62,18 @@
 
 (call dev_read_urandom (gsession_subject_type))
 
-(call dbus_system_client (gsession_subject_type))
-
 (call file_read_generic_etc (gsession_subject_type))
 (call file_read_generic_usr (gsession_subject_type))
 
 (call fs_getattr_fs (gsession_subject_type))
 
 (call accounts_dbus_chat (gsession_subject_type))
+
+(call caribou_run (gsession_subject_type gsession_role))
+
+(call dbus_system_client (gsession_subject_type))
+
+(call dconf_client (gsession_role gsession_subject_type))
 
 (call gkeyring_run_gkeyringd (gsession_subject_type gsession_role))
 

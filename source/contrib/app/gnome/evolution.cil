@@ -8,6 +8,7 @@
 
 (block evosrcregd
     (blockinherit dbus_session_app_block)
+    (roleattributeset evolution_role dbus_session_role)
 
     (roletype evolution_role common_subject)
 
@@ -36,6 +37,7 @@
 
 (block evocalf
     (blockinherit dbus_session_app_block)
+    (roleattributeset evolution_role dbus_session_role)
 
     (roletype evolution_role common_subject)
 
@@ -59,6 +61,7 @@
 
 (block evoanotify
     (blockinherit gsession_app_block)
+    (roleattributeset evolution_role gsession_role)
 
     (roletype evolution_role common_subject)
 

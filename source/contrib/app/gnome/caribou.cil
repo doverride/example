@@ -2,6 +2,7 @@
 
 (block caribou
     (blockinherit dbus_session_app_block)
+    (roleattributeset caribou_role dbus_session_role)
 
     (roletype caribou_role common_subject)
 

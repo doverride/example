@@ -59,6 +59,8 @@
     (call fs_tmpfs_filetrans (common_subject user_tmpfs_object dir "*")) ; $TMP/.esd_auth-$UID
     (roletype pa_role user_tmpfs_object)
 
+    (call can_exec (common_subject bin_object))
+
     (call dev_rw_sound (common_subject))
 
     (call file_read_generic_usr (common_subject))
@@ -97,6 +99,7 @@
 
     (call miscfiles_read_localization (common_subject))
 
+    (call pa_client (pa_role common_subject))
     (call pa_stream_connect (common_subject))
 )
 

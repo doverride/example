@@ -9,6 +9,7 @@
 
 (block gstplugsc
     (blockinherit gsession_app_block)
+    (roleattributeset gst_role gsession_role)
 
     (roletype gst_role common_subject)
 

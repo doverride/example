@@ -2,6 +2,7 @@
 
 (block gvfs
     (blockinherit dbus_session_app_block)
+    (roleattributeset gvfs_role dbus_session_role)
 
     (roletype gvfs_role common_subject)
 
@@ -45,6 +46,7 @@
     (call dev_rw_fuse (common_subject))
 
     (call file_read_generic_etc (common_subject))
+    (call file_read_generic_usr (common_subject))
 
     (call fs_getattr_fs (common_subject))
     (call fs_list_sysfs (common_subject))
@@ -57,6 +59,8 @@
 
     (call fuse_use_fusermount_fd (common_subject))
     (call fuse_run_fusermount (common_subject gvfs_role))
+
+    (call gvfs_mounton_gvfsd_tmpfs_dirs (common_subject))
 
     (call logind_read_run_files (common_subject))
 
@@ -71,6 +75,7 @@
 
 (block gvfsd
     (blockinherit dbus_session_app_block)
+    (roleattributeset gvfs_role dbus_session_role)
 
     (roletype gvfs_role common_subject)
 

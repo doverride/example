@@ -2,6 +2,7 @@
 
 (block goad
     (blockinherit dbus_session_app_block)
+    (roleattributeset goa_role dbus_session_role)
 
     (roletype goa_role common_subject)
 

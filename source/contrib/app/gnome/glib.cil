@@ -37,6 +37,7 @@
 
 (block glib
     (blockinherit gsession_app_block)
+    (roleattributeset glib_role gsession_role)
 
     (roletype glib_role common_subject)
 
@@ -59,6 +60,8 @@
     (call glib_manage_home_data (gsd_role common_subject))
     (call usersubject_generic_home_data_filetrans
         (glib_role common_subject home_data_object file "*"))
+
+    (call dev_read_urandom (common_subject))
 
     (call file_read_generic_usr_files (common_subject))
 

@@ -10,6 +10,7 @@
 
 (block dconfsvc
     (blockinherit dbus_session_app_block)
+    (roleattributeset dconf_role dbus_session_role)
 
     (roletype dconf_role common_subject)
 

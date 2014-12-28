@@ -29,6 +29,9 @@
     (context var_spool_staff (u r user.var_spool_object (systemlow mls_systemhigh)))
     (filecon "/var/spool/mail/john" file var_spool_staff)
 
+    (optional staff_optional_glxutil
+        (call glxutil_run (common_subject r)))
+
     (optional staff_optional_pa
         (call pa_run (common_subject r))
         (call pa_run_pactl (common_subject r))

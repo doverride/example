@@ -2,6 +2,7 @@
 
 (block gsd
     (blockinherit gsession_app_block)
+    (roleattributeset gsd_role gsession_role)
 
     (roletype gsd_role common_subject)
 
@@ -22,6 +23,7 @@
 
     (call file_list_boot (common_subject))
     (call file_read_generic_etc (common_subject))
+    (call file_read_generic_usr (common_subject))
 
     (call fs_list_tmpfs (common_subject))
     (call fs_read_devtmpfs_lnk_files (common_subject))
@@ -47,6 +49,7 @@
 
     (call logind_client (common_subject))
 
+    (call miscfiles_read_localization (common_subject))
     (call miscfiles_read_hwdata_files (common_subject))
 
     (call mm_dbus_chat (common_subject))
@@ -67,6 +70,7 @@
 
 (block gsd_printer
     (blockinherit gsession_app_block)
+    (roleattributeset gsd_role gsession_role)
 
     (roletype gsd_role common_subject)
 

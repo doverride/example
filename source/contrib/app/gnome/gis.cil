@@ -2,6 +2,7 @@
 
 (block gis
     (blockinherit gsession_app_block)
+    (roleattributeset gis_role gsession_role)
 
     (roletype gis_role common_subject)
 
@@ -41,6 +42,7 @@
     (call fs_read_sysfs_lnk_files (common_subject))
 
     (call file_read_generic_etc_files (common_subject))
+    (call file_read_generic_usr (common_subject))
 
     (call sec_list (common_subject))
 
@@ -63,6 +65,8 @@
     (call localed_dbus_chat (common_subject))
 
     (call machine_read_config_files (common_subject))
+
+    (call miscfiles_read_localization (common_subject))
 
     (call nm_client (common_subject))
 

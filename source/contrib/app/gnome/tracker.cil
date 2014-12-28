@@ -21,6 +21,7 @@
 
 (block trstore
     (blockinherit dbus_session_app_block)
+    (roleattributeset tracker_role dbus_session_role)
 
     (roletype tracker_role common_subject)
 
@@ -54,6 +55,7 @@
 
 (block trminer
     (blockinherit gsession_app_block)
+    (roleattributeset tracker_role gsession_role)
 
     (roletype tracker_role common_subject)
 

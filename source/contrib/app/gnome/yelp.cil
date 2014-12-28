@@ -2,6 +2,7 @@
 
 (block yelp
     (blockinherit gshell_app_block)
+    (roleattributeset yelp_role gshell_role)
 
     (roletype yelp_role common_subject)
 

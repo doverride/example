@@ -10,6 +10,7 @@
 
 (block atspiregd
     (blockinherit dbus_session_app_block)
+    (roleattributeset atspi_role dbus_session_role)
 
     (roletype atspi_role common_subject)
 
