@@ -47,8 +47,7 @@
 
     (call miscfiles_read_localization (common_subject))
 
-    (optional tpmc_optional_nm
-        (call nm_dbus_chat (common_subject)))
+    (call nm_client (common_subject))
 )
 
 (macro tp_auto_subtrans_tpmc ((type ARG1))

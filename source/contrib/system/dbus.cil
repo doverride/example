@@ -120,6 +120,7 @@
 (typeattributeset dbus_object_type dbus_etc_file_type)
 
 (allow dbus_system_client_type self (dbus (send_msg)))
+(allow dbus_system_client_type dbusd.common_subject (dbus (send_msg)))
 
 (call dbus_read_generic_config_files (dbus_system_client_type))
 (call dbus_read_var_lib_files (dbus_system_client_type))

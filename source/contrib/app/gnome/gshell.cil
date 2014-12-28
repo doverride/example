@@ -12,19 +12,18 @@
     (call gshell_subject_type (common_subject))
 )
 
+(block gshell_app_block
+    (blockabstract gshell_app_block)
+        (blockinherit app_block)
+
+        (call gshell_app (common_subject bin_object))
+)
+
 (block gshell_app_subject_block
     (blockabstract gshell_app_subject_block)
         (blockinherit app_subject_block)
 
         (call gshell_app_subject_type (common_subject))
-)
-
-(block gshell_app_block
-    (blockabstract gshell_app_block)
-        (blockinherit app_block)
-
-        (call gshell_app_subject_type (common_subject))
-        (call gshell_app_exec_object_type (bin_object))
 )
 
 (block gshell
@@ -126,6 +125,11 @@
 
 (macro gshell_subject_type ((type ARG1))
     (typeattributeset gshell_subject_type ARG1))
+
+(macro gshell_app ((type ARG1)(type ARG2))
+    (call auto_subject_type_transition_pattern (gshell_subject_type ARG2 ARG1))
+    (call gshell_app_exec_object_type (ARG2))
+    (call gshell_app_subject_type (ARG1)))
 
 (macro gshell_app_subject_type ((type ARG1))
     (typeattributeset gshell_app_subject_type ARG1))

@@ -142,6 +142,8 @@
         (filecon "/home/john/\.config/run-welcome-tour.*" any staff_gis_config)
         (filecon "/home/john/\.config/gnome-initial-setup-done" file staff_gis_config)
 
+        (call gkeyring_run_gkeyringd (staff.common_subject staff.r))
+
         (call gkeyring_manage_tmpfs (staff.r staff.common_subject))
         (call gkeyring_relabel_tmpfs (staff.common_subject))
         (call gkeyring_tmpfs_filetrans_tmpfs_dirs (staff.r staff.common_subject))

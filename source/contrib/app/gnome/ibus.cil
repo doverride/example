@@ -38,7 +38,7 @@
 )
 
 (block ibusd
-    (blockinherit dbus_session_app_block)
+    (blockinherit gshell_app_block)
 
     (roletype ibus_role common_subject)
 

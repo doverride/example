@@ -1,7 +1,7 @@
 (roleattribute gsd_role)
 
 (block gsd
-    (blockinherit app_block)
+    (blockinherit gsession_app_block)
 
     (roletype gsd_role common_subject)
 
@@ -51,7 +51,7 @@
 
     (call mm_dbus_chat (common_subject))
 
-    (call nm_dbus_chat (common_subject))
+    (call nm_client (common_subject))
 
     (call pa_client (gsd_role common_subject))
 
@@ -66,7 +66,7 @@
 )
 
 (block gsd_printer
-    (blockinherit app_block)
+    (blockinherit gsession_app_block)
 
     (roletype gsd_role common_subject)
 

@@ -53,7 +53,6 @@
     (call auth_nsswitch_client (common_subject))
 
     (call dbus_system_client (common_subject))
-    (call dbus_all_session_client (common_subject))
 
     (call dconf_client (gis_role common_subject))
 
@@ -65,14 +64,13 @@
 
     (call machine_read_config_files (common_subject))
 
+    (call nm_client (common_subject))
+
     (call seutil_read_config_files (common_subject))
 
     (call udev_client (common_subject))
 
     (call yelp_run (common_subject gis_role))
-
-    (optional gis_optional_nm
-        (call nm_dbus_chat (common_subject)))
 )
 
 (macro gis_auto_subtrans ((type ARG1))
