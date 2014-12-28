@@ -41,6 +41,8 @@
     (filecon "/usr/libexec/gnome-session-failed" file bin_gsession_helper)
 )
 
+(allow gsession_subject_type self (unix_stream_socket (listen accept)))
+
 (call gsession_manage_tmpfs (gsession_role gsession_subject_type))
 
 (call fs_tmpfs_filetrans

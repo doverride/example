@@ -157,6 +157,9 @@
         (context user_goad_config (user.u user.r goad.home_config_object (systemlow systemlow)))
         (filecon "/home/.*/\.config/goa-1\.0(/.*)?" any user_goad_config)
 
+        (call gsd_manage_tmpfs (user.r user.common_subject))
+        (call gsd_relabel_tmpfs (user.common_subject))
+
         (call gsd_manage_gsd_home_data (user.r user.common_subject))
         (call gsd_relabel_gsd_home_data (user.common_subject))
         (call gsd_home_data_filetrans_gsd_home_data_dirs (user.r user.common_subject))

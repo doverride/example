@@ -97,6 +97,8 @@
     (filecon "/usr/bin/pactl" file bin_pactl)
     (filecon "/usr/bin/pacmd" file bin_pactl)
 
+    (call fs_tmpfs_filetrans (common_subject pa.user_tmpfs_object file "*"))
+
     (call miscfiles_read_localization (common_subject))
 
     (call pa_client (pa_role common_subject))

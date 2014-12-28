@@ -11,6 +11,11 @@
 
     (blockinherit usersubject_home_data_object_block)
 
+    (blockinherit pa_shm_object_block)
+
+    (call gsd_manage_tmpfs (gsd_role common_subject))
+    (call fs_tmpfs_filetrans (common_subject user_tmpfs_object file "*"))
+
     (allow common_subject self (unix_stream_socket (listen accept)))
 
     (call gsd_manage_gsd_home_data (gsd_role common_subject))
@@ -134,6 +139,15 @@
 (macro gsd_home_data_filetrans_gsd_home_data_dirs ((role ARG1)(type ARG2))
     (call usersubject_generic_home_data_filetrans
         (ARG1 ARG2 gsd.home_data_object dir "gnome-settings-daemon")))
+
+(macro gsd_manage_tmpfs ((role ARG1)(type ARG2))
+    (call fs_search_tmpfs (ARG2))
+    (allow ARG2 gsd.user_tmpfs_object manage_file_perms)
+    (roletype ARG1 gsd.user_tmpfs_object))
+
+(macro gsd_relabel_tmpfs ((type ARG1))
+    (call fs_search_tmpfs (ARG1))
+    (allow ARG1 gsd.user_tmpfs_object relabel_file_perms))
 
 (macro gsd_read_state ((type ARG1))
     (allow ARG1 gsd.common_subject list_dir_perms)

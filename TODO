@@ -30,3 +30,6 @@
     currently the user mail spool files get created with the wrong security context
 
 * role: everything run by dbus session bus is a dbus_session_service. should create that macro instead
+    update: i did this, as well for gsession apps and gshell apps, the problem is role association
+    calling "app_run" interfaces is cleaner. currently i implemented a dirty hack to associate roles
+    example: roleattributeset gvfs_role dbus_session_role (so all dbus_session_roles are automatically also gvfs_role)

@@ -178,6 +178,9 @@
         (context staff_goad_config (staff.u staff.r goad.home_config_object (systemlow systemlow)))
         (filecon "/home/john/\.config/goa-1\.0(/.*)?" any staff_goad_config)
 
+        (call gsd_manage_tmpfs (staff.r staff.common_subject))
+        (call gsd_relabel_tmpfs (staff.common_subject))
+
         (call gsd_manage_gsd_home_data (staff.r staff.common_subject))
         (call gsd_relabel_gsd_home_data (staff.common_subject))
         (call gsd_home_data_filetrans_gsd_home_data_dirs (staff.r staff.common_subject))
