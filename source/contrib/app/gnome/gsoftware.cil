@@ -20,6 +20,8 @@
 
     (call dbus_system_client (common_subject))
 
+    (call dconf_client (gsoftware_role common_subject))
+
     (call miscfiles_read_localization (common_subject))
 
     (optional gsoftware_optional_rpm

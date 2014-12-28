@@ -67,6 +67,7 @@
 
 (allow gshell_subject_type self (process (setsched)))
 (allow gshell_subject_type self (unix_stream_socket (listen accept)))
+(allow gshell_subject_type self rw_fifo_file_perms)
 
 (allow gshell_subject_type gshell.user_tmpfs_object mmap_file_perms)
 (call gshell_manage_tmpfs (gshell_role gshell_subject_type))
@@ -108,6 +109,7 @@
 (call logind_list_run (gshell_subject_type))
 (call logind_read_run_files (gshell_subject_type))
 
+(call miscfiles_read_localization (gshell_subject_type))
 (call miscfiles_read_generic_cert (gshell_subject_type))
 
 (call nm_dbus_chat (gshell_subject_type))
