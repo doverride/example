@@ -1,7 +1,7 @@
 (roleattribute caribou_role)
 
 (block caribou
-    (blockinherit app_block)
+    (blockinherit dbus_session_app_block)
 
     (roletype caribou_role common_subject)
 
@@ -16,8 +16,6 @@
     (call file_read_generic_usr_files (common_subject))
 
     (call atspi_client (caribou_role common_subject))
-
-    (call dbus_all_session_client (common_subject))
 
     (call miscfiles_read_localization (common_subject))
 )

@@ -62,29 +62,8 @@
         (call dbus_manage_user_tmpfs_sock_files (user.r user.common_subject))
         (call dbus_relabel_user_tmpfs_sock_files (user.common_subject))
 
-        (optional user_dbusd_optional_gnome
+        (optional user_dbusd_optional_atspi
             (call atspi_read_config_files (common_subject))
-            (call atspi_run_atspiregd (common_subject dbus_session_role))
-
-            (call caribou_run (common_subject dbus_session_role))
-
-            (call dconf_run_dconfsvc (common_subject dbus_session_role))
-
-            (call evolution_run_srcregd (common_subject dbus_session_role))
-            (call evolution_run_calf (common_subject dbus_session_role))
-
-            (call goa_run_goad (common_subject dbus_session_role))
-
-            (call gshell_run_cald (common_subject dbus_session_role))
-
-            (call gvfs_run (common_subject dbus_session_role))
-            (call gvfs_run_gvfsd (common_subject dbus_session_role))
-
-            (call ibus_run_ibusd (common_subject dbus_session_role))
-
-            (call tp_run_tpmc (common_subject dbus_session_role))
-
-            (call tracker_run_trstore (common_subject dbus_session_role))
         )
     )
 

@@ -7,7 +7,7 @@
 )
 
 (block evosrcregd
-    (blockinherit app_block)
+    (blockinherit dbus_session_app_block)
 
     (roletype evolution_role common_subject)
 
@@ -35,7 +35,7 @@
 )
 
 (block evocalf
-    (blockinherit app_block)
+    (blockinherit dbus_session_app_block)
 
     (roletype evolution_role common_subject)
 

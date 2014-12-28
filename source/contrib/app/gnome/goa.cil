@@ -1,7 +1,7 @@
 (roleattribute goa_role)
 
 (block goad
-    (blockinherit app_block)
+    (blockinherit dbus_session_app_block)
 
     (roletype goa_role common_subject)
 
@@ -20,8 +20,6 @@
     (call file_read_generic_etc_files (common_subject)) ; FIXME: /etc/krb5.conf
 
     (call fs_getattr_fs (common_subject))
-
-    (call dbus_all_session_client (common_subject))
 
     (call miscfiles_read_localization (common_subject))
 )

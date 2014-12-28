@@ -6,7 +6,7 @@
 )
 
 (block tpmc
-    (blockinherit app_block)
+    (blockinherit dbus_session_app_block)
 
     (roletype tp_role common_subject)
 

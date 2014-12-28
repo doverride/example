@@ -1,7 +1,7 @@
 (roleattribute gvfs_role)
 
 (block gvfs
-    (blockinherit app_block)
+    (blockinherit dbus_session_app_block)
 
     (roletype gvfs_role common_subject)
 
@@ -53,7 +53,6 @@
 
     (call auth_nsswitch_client (common_subject))
 
-    (call dbus_all_session_client (common_subject)) 
     (call dbus_system_client (common_subject))
 
     (call fuse_use_fusermount_fd (common_subject))
@@ -71,7 +70,7 @@
 )
 
 (block gvfsd
-    (blockinherit app_block)
+    (blockinherit dbus_session_app_block)
 
     (roletype gvfs_role common_subject)
 
@@ -87,8 +86,6 @@
     (allow common_subject self rw_fifo_file_perms)
 
     (call file_read_generic_usr (common_subject))
-
-    (call dbus_all_session_client (common_subject))
 
     (call gvfs_auto_subtrans (common_subject))
 

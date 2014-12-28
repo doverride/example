@@ -9,7 +9,7 @@
 (typeattribute dconf_object_type)
 
 (block dconfsvc
-    (blockinherit app_block)
+    (blockinherit dbus_session_app_block)
 
     (roletype dconf_role common_subject)
 

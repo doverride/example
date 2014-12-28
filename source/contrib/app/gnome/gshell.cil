@@ -40,7 +40,7 @@
 )
 
 (block gshellcald
-    (blockinherit app_block)
+    (blockinherit dbus_session_app_block)
 
     (roletype gshell_role common_subject)
 

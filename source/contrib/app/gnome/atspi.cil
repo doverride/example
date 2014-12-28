@@ -9,7 +9,7 @@
 (typeattribute atspi_object_type)
 
 (block atspiregd
-    (blockinherit app_block)
+    (blockinherit dbus_session_app_block)
 
     (roletype atspi_role common_subject)
 
@@ -22,8 +22,6 @@
 
     (context etc_atspi (sys.u sys.r etc_object (systemlow systemlow)))
     (filecon "/etc/at-spi2(/.*)?" file etc_atspi)
-
-    (call dbus_all_session_client (common_subject))
 )
 
 (call usersubject_manage_generic_tmpfs_dirs
