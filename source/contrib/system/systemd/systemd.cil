@@ -425,6 +425,8 @@
 
         (call usersubject_mounton_home_user_dirs (common_subject)) ; FIXME
 
+        (call usersubject_use_generic_terminals (common_subject))
+
         (optional systemd_optional_unconfined
             (call unconfined_noatsecure_all_unconfined_user_subjects (common_subject))
             (call unconfined_send_sigchld_all_unconfined_user_subjects (common_subject))

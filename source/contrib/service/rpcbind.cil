@@ -29,7 +29,7 @@
 
     (context run_rpcbind (sys.u sys.r run_object (systemlow systemlow)))
     (filecon "/var/run/rpcbind\.sock" socket run_rpcbind)
-    (filecon "/var/run/rpcbind\.lock" socket run_rpcbind)
+    (filecon "/var/run/rpcbind\.lock" file run_rpcbind)
 
     (blockinherit file_maintains_var_lib_dirs_and_files_block)
 
