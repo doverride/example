@@ -33,3 +33,5 @@
     update: i did this, as well for gsession apps and gshell apps, the problem is role association
     calling "app_run" interfaces is cleaner. currently i implemented a dirty hack to associate roles
     example: roleattributeset gvfs_role dbus_session_role (so all dbus_session_roles are automatically also gvfs_role)
+
+* deal with nfs related stuff (seems systemd all of a sudden started requiring this with a recent update)
