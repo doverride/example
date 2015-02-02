@@ -422,7 +422,6 @@
         (call systemd_send_sigchld_all_session_subjects (common_subject))
 
         (call usersubject_link_keyring_all_common_login_subjects (common_subject))
-		(call usersubject_search_generic_home_data (common_subject))
 
         (call usersubject_mounton_home_user_dirs (common_subject)) ; FIXME
 
@@ -566,6 +565,8 @@
 
 (call udev_client (systemd_session_subject_type))
 (call udev_list_run (systemd_session_subject_type))
+
+(call usersubject_search_generic_home_data (systemd_session_subject_type))
 
 (optional systemd_session_subject_type_optional_gdm
     (call gdm_search_var_lib (systemd_session_subject_type)))
