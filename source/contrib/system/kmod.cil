@@ -51,7 +51,8 @@
     (call miscfiles_read_modules_files (common_subject))
 
     (optional kmod_optional_firewall
-        (call firewall_rw_inherited_fifo_files (common_subject)))
+        (call firewall_rw_inherited_fifo_files (common_subject))
+		(call firewall_rw_inherited_tmpfs_files (common_subject)))
 
     (optional kmod_optional_iptables
         (call iptables_dontaudit_rw_inherited_stream_sockets (common_subject))

@@ -117,6 +117,7 @@
     (call nm_getattr_all_clients (common_subject))
     (call nm_manage_config_files (common_subject))
     (call nm_read_state_all_clients (common_subject))
+	(call nm_read_state_online (common_subject))
 
     (call sysctl_read_config_files (common_subject))
 
@@ -195,7 +196,17 @@
 
     (allow common_subject self create_unix_stream_socket_perms)
 
+	(call dev_read_urandom (common_subject))
+
+	(call file_list_var_tmp (common_subject))
+
+	(call fs_list_tmpfs (common_subject))
+
+	(call auth_read_passwd (common_subject))
+
     (call miscfiles_read_localization (common_subject))
+
+	(call nm_stream_connect (common_subject))
 )
 
 (block nmcli
@@ -305,6 +316,11 @@
     (allow ARG1 nm_client_type list_dir_perms)
     (allow ARG1 nm_client_type read_file_perms)
     (allow ARG1 nm_client_type read_lnk_file_perms))
+
+(macro nm_read_state_online ((type ARG1))
+	(allow ARG1 nm_online.common_subject list_dir_perms)
+	(allow ARG1 nm_online.common_subject read_file_perms)
+	(allow ARG1 nm_online.common_subject read_lnk_file_perms))
 
 (macro nm_dbus_chat ((type ARG1))
     (allow ARG1 nm.common_subject (dbus (send_msg)))

@@ -75,6 +75,8 @@
 
     (call iptables_auto_subtrans (common_subject))
 
+	(call journal_client (common_subject))
+
     (call kmod_auto_subtrans (common_subject))
 
     (call miscfiles_read_localization (common_subject))

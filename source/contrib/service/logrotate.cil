@@ -34,6 +34,7 @@
     (filecon "/var/lib/logrotate\.status" file var_lib_logrotate)
 
     (allow common_subject self (process (setfscreate)))
+    (allow common_subject self (capability (chown fsetid dac_override)))
     (allow common_subject self create_unix_stream_socket_perms)
 
     (call file_read_generic_etc (common_subject))
@@ -54,7 +55,7 @@
 (allow logrotate.common_subject logrotate_log_object_type rw_dir_perms)
 (allow logrotate.common_subject logrotate_log_object_type create_file_perms)
 (allow logrotate.common_subject logrotate_log_object_type read_file_perms)
-(allow logrotate.common_subject logrotate_log_object_type (file (setattr rename write)))
+(allow logrotate.common_subject logrotate_log_object_type (file (setattr rename write unlink)))
 
 (allow logrotate_admin_type logrotate.common_subject signal_perms)
 (allow logrotate_admin_type logrotate.common_subject (process (ptrace)))

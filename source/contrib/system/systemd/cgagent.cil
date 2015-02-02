@@ -12,6 +12,7 @@
 
     (call journal_client (common_subject))
 
+	(call systemd_read_state (common_subject))
     (call systemd_stream_connect (common_subject))
 )
 

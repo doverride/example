@@ -133,6 +133,9 @@
     (call udev_client (common_subject))
 )
 
+(allow journalctl_client_type self (capability (sys_resource)))
+(allow journalctl_client_type self (process (setrlimit)))
+
 (call sys_read_crypto_sysctl (journalctl_client_type))
 (call sys_read_kernel_sysctl (journalctl_client_type))
 
